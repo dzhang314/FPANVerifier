@@ -1,0 +1,106 @@
+module FloatAbstractions
+
+using Base: uinttype, exponent_bias, exponent_mask,
+    significand_bits, significand_mask
+
+################################################################################
+
+
+export unsafe_exponent,
+    mantissa_leading_bit, mantissa_leading_bits,
+    mantissa_leading_zeros, mantissa_leading_ones,
+    mantissa_trailing_bit, mantissa_trailing_bits,
+    mantissa_trailing_zeros, mantissa_trailing_ones
+
+
+const _BITS_PER_BYTE = div(64, sizeof(UInt64))
+@assert _BITS_PER_BYTE * sizeof(UInt32) == 32
+@assert _BITS_PER_BYTE * sizeof(UInt64) == 64
+
+
+@inline function unsafe_exponent(x::T) where {T}
+    raw_exponent = reinterpret(Unsigned, x) & exponent_mask(T)
+    raw_exponent >>= significand_bits(T)
+    return Int(raw_exponent) - exponent_bias(T)
+end
+
+
+@inline mantissa_leading_bit(x::T) where {T} = !iszero(
+    (reinterpret(Unsigned, x) >> (significand_bits(T) - 1)) & one(uinttype(T)))
+
+
+@inline function mantissa_leading_zeros(x::T) where {T}
+    shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
+    shifted_mask = significand_mask(T) << shift
+    return leading_zeros((reinterpret(Unsigned, x) << shift) | ~shifted_mask)
+end
+
+
+@inline function mantissa_leading_ones(x::T) where {T}
+    shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
+    shifted_mask = significand_mask(T) << shift
+    return leading_ones((reinterpret(Unsigned, x) << shift) & shifted_mask)
+end
+
+
+@inline mantissa_leading_bits(x::T) where {T} = ifelse(
+    mantissa_leading_bit(x),
+    mantissa_leading_ones(x),
+    mantissa_leading_zeros(x))
+
+
+@inline mantissa_trailing_bit(x::T) where {T} = !iszero(
+    reinterpret(Unsigned, x) & one(uinttype(T)))
+
+
+@inline function mantissa_trailing_zeros(x::T) where {T}
+    return trailing_zeros(reinterpret(Unsigned, x) | ~significand_mask(T))
+end
+
+
+@inline function mantissa_trailing_ones(x::T) where {T}
+    return trailing_ones(reinterpret(Unsigned, x) & significand_mask(T))
+end
+
+
+@inline mantissa_trailing_bits(x::T) where {T} = ifelse(
+    mantissa_trailing_bit(x),
+    mantissa_trailing_ones(x),
+    mantissa_trailing_zeros(x))
+
+
+################################################################################
+
+
+export SEAbstraction, SETZAbstraction, SELTZOAbstraction
+
+
+abstract type FloatAbstraction end
+
+
+# Our packed FloatAbstraction representation assumes that:
+# - The exponent fits into a 15-bit signed integer.
+# - The number of mantissa bits fits into a 7-bit unsigned integer.
+# This just barely accommodates IEEE quadruple precision (binary128) using
+# 1 (sign) + 1 (leading bit) + 1 (trailing bit) + 15 (exponent) +
+# 7 (leading bit count) + 7 (trailing bit count) = 32 bits.
+
+
+struct SEAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+struct SETZAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+struct SELTZOAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+################################################################################
+
+end # module FloatAbstractions
