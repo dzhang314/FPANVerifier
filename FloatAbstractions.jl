@@ -83,11 +83,19 @@ abstract type FloatAbstraction end
 # - The number of mantissa bits fits into a 7-bit unsigned integer.
 # This just barely accommodates IEEE quadruple precision (binary128) using
 # 1 (sign) + 1 (leading bit) + 1 (trailing bit) + 15 (exponent) +
-# 7 (leading bit count) + 7 (trailing bit count) = 32 bits.
+#     7 (leading bit count) + 7 (trailing bit count) = 32 bits.
 
 
 struct SEAbstraction <: FloatAbstraction
     data::UInt32
+end
+
+
+@inline function SEAbstraction(x::AbstractFloat)
+    s = signbit(x)
+    e = unsafe_exponent(x)
+    @assert -16383 <= e <= 16384
+    return SEAbstraction((UInt32(s) << 31) | (UInt32(e + 16383) << 14))
 end
 
 
@@ -96,9 +104,70 @@ struct SETZAbstraction <: FloatAbstraction
 end
 
 
+@inline function SETZAbstraction(x::AbstractFloat)
+    s = signbit(x)
+    e = unsafe_exponent(x)
+    @assert -16383 <= e <= 16384
+    tz = mantissa_trailing_zeros(x)
+    @assert 0 <= tz <= 127
+    return SETZAbstraction(
+        (UInt32(s) << 31) | (UInt32(e + 16383) << 14) | UInt32(tz))
+end
+
+
 struct SELTZOAbstraction <: FloatAbstraction
     data::UInt32
 end
+
+
+@inline function SELTZOAbstraction(x::AbstractFloat)
+    s = signbit(x)
+    lb = mantissa_leading_bit(x)
+    tb = mantissa_trailing_bit(x)
+    e = unsafe_exponent(x)
+    @assert -16383 <= e <= 16384
+    nlb = mantissa_leading_bits(x)
+    @assert 0 <= nlb <= 127
+    ntb = mantissa_trailing_bits(x)
+    @assert 0 <= ntb <= 127
+    return SELTZOAbstraction(
+        (UInt32(s) << 31) | (UInt32(lb) << 30) | (UInt32(tb) << 29) |
+        (UInt32(e + 16383) << 14) | UInt32(nlb << 7) | UInt32(ntb))
+end
+
+
+@inline Base.signbit(x::SEAbstraction) = isone(x.data >> 31)
+@inline Base.signbit(x::SETZAbstraction) = isone(x.data >> 31)
+@inline Base.signbit(x::SELTZOAbstraction) = isone(x.data >> 31)
+
+
+@inline unsafe_exponent(x::SEAbstraction) =
+    Int((x.data >> 14) & 0x00007FFF) - 16383
+@inline unsafe_exponent(x::SETZAbstraction) =
+    Int((x.data >> 14) & 0x00007FFF) - 16383
+@inline unsafe_exponent(x::SELTZOAbstraction) =
+    Int((x.data >> 14) & 0x00007FFF) - 16383
+
+
+@inline mantissa_trailing_zeros(x::SETZAbstraction) = Int(x.data & 0x0000007F)
+
+
+@inline mantissa_leading_bit(x::SELTZOAbstraction) =
+    isone((x.data >> 30) & 0x00000001)
+@inline mantissa_trailing_bit(x::SELTZOAbstraction) =
+    isone((x.data >> 29) & 0x00000001)
+@inline mantissa_leading_bits(x::SELTZOAbstraction) =
+    Int((x.data >> 7) & 0x0000007F)
+@inline mantissa_trailing_bits(x::SELTZOAbstraction) =
+    Int(x.data & 0x0000007F)
+@inline mantissa_leading_zeros(x::SELTZOAbstraction) =
+    ifelse(mantissa_leading_bit(x), 0, mantissa_leading_bits(x))
+@inline mantissa_leading_ones(x::SELTZOAbstraction) =
+    ifelse(mantissa_leading_bit(x), mantissa_leading_bits(x), 0)
+@inline mantissa_trailing_zeros(x::SELTZOAbstraction) =
+    ifelse(mantissa_trailing_bit(x), 0, mantissa_trailing_bits(x))
+@inline mantissa_trailing_ones(x::SELTZOAbstraction) =
+    ifelse(mantissa_trailing_bit(x), mantissa_trailing_bits(x), 0)
 
 
 ################################################################################
