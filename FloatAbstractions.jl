@@ -3,7 +3,7 @@ module FloatAbstractions
 using Base: uinttype, exponent_bias, exponent_mask,
     significand_bits, significand_mask
 
-################################################################################
+################################################ FLOATING-POINT BIT MANIPULATION
 
 
 export unsafe_exponent,
@@ -69,7 +69,7 @@ end
     mantissa_trailing_zeros(x))
 
 
-################################################################################
+################################################### ABSTRACTION TYPE DEFINITIONS
 
 
 export SEAbstraction, SETZAbstraction, SELTZOAbstraction
@@ -91,16 +91,24 @@ struct SEAbstraction <: FloatAbstraction
 end
 
 
+struct SETZAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+struct SELTZOAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+####################################################### ABSTRACTION CONSTRUCTORS
+
+
 @inline function SEAbstraction(x::AbstractFloat)
     s = signbit(x)
     e = unsafe_exponent(x)
     @assert -16383 <= e <= 16384
     return SEAbstraction((UInt32(s) << 31) | (UInt32(e + 16383) << 14))
-end
-
-
-struct SETZAbstraction <: FloatAbstraction
-    data::UInt32
 end
 
 
@@ -112,11 +120,6 @@ end
     @assert 0 <= tz <= 127
     return SETZAbstraction(
         (UInt32(s) << 31) | (UInt32(e + 16383) << 14) | UInt32(tz))
-end
-
-
-struct SELTZOAbstraction <: FloatAbstraction
-    data::UInt32
 end
 
 
@@ -134,6 +137,9 @@ end
         (UInt32(s) << 31) | (UInt32(lb) << 30) | (UInt32(tb) << 29) |
         (UInt32(e + 16383) << 14) | UInt32(nlb << 7) | UInt32(ntb))
 end
+
+
+##################################################### ABSTRACTION DATA ACCESSORS
 
 
 @inline Base.signbit(x::SEAbstraction) = isone(x.data >> 31)
