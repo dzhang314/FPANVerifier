@@ -72,7 +72,8 @@ end
 ################################################### ABSTRACTION TYPE DEFINITIONS
 
 
-export SEAbstraction, SETZAbstraction, SELTZOAbstraction
+export SEAbstraction, SETZAbstraction, SELTZOAbstraction,
+    TwoSumAbstraction, TwoProdAbstraction
 
 
 abstract type FloatAbstraction end
@@ -98,6 +99,22 @@ end
 
 struct SELTZOAbstraction <: FloatAbstraction
     data::UInt32
+end
+
+
+struct TwoSumAbstraction{A<:FloatAbstraction}
+    x::A
+    y::A
+    s::A
+    e::A
+end
+
+
+struct TwoProdAbstraction{A<:FloatAbstraction}
+    x::A
+    y::A
+    p::A
+    e::A
 end
 
 
@@ -137,6 +154,16 @@ end
         (UInt32(s) << 31) | (UInt32(lb) << 30) | (UInt32(tb) << 29) |
         (UInt32(e + 16383) << 14) | UInt32(nlb << 7) | UInt32(ntb))
 end
+
+
+@inline TwoSumAbstraction{A}(x::T, y::T, s::T, e::T) where
+{A<:FloatAbstraction,T<:AbstractFloat} =
+    TwoSumAbstraction{A}(A(x), A(y), A(s), A(e))
+
+
+@inline TwoProdAbstraction{A}(x::T, y::T, p::T, e::T) where
+{A<:FloatAbstraction,T<:AbstractFloat} =
+    TwoProdAbstraction{A}(A(x), A(y), A(p), A(e))
 
 
 ##################################################### ABSTRACTION DATA ACCESSORS
