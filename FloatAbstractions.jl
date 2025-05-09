@@ -2,6 +2,7 @@ module FloatAbstractions
 
 using Base: uinttype, exponent_bias, exponent_mask,
     significand_bits, significand_mask
+using Base.Threads: @threads, nthreads
 
 ################################################ FLOATING-POINT BIT MANIPULATION
 
@@ -201,6 +202,102 @@ end
     ifelse(mantissa_trailing_bit(x), 0, mantissa_trailing_bits(x))
 @inline mantissa_trailing_ones(x::SELTZOAbstraction) =
     ifelse(mantissa_trailing_bit(x), mantissa_trailing_bits(x), 0)
+
+
+######################################################### EXHAUSTIVE ENUMERATION
+
+
+export two_sum_abstractions, two_prod_abstractions
+
+
+@inline Base.isless(
+    a::TwoSumAbstraction{A},
+    b::TwoSumAbstraction{A},
+) where {A<:FloatAbstraction} = isless(
+    (a.x.data, a.y.data, a.s.data, a.e.data),
+    (b.x.data, b.y.data, b.s.data, b.e.data),
+)
+
+
+@inline Base.isless(
+    a::TwoProdAbstraction{A},
+    b::TwoProdAbstraction{A},
+) where {A<:FloatAbstraction} = isless(
+    (a.x.data, a.y.data, a.p.data, a.e.data),
+    (b.x.data, b.y.data, b.p.data, b.e.data),
+)
+
+
+@inline function _deinterleave(k::UInt32)
+    i = (k >> 0) & 0x55555555
+    j = (k >> 1) & 0x55555555
+    i = (i | (i >> 1)) & 0x33333333
+    j = (j | (j >> 1)) & 0x33333333
+    i = (i | (i >> 2)) & 0x0F0F0F0F
+    j = (j | (j >> 2)) & 0x0F0F0F0F
+    i = (i | (i >> 4)) & 0x00FF00FF
+    j = (j | (j >> 4)) & 0x00FF00FF
+    i = (i | (i >> 8)) & 0x0000FFFF
+    j = (j | (j >> 8)) & 0x0000FFFF
+    return (UInt16(i), UInt16(j))
+end
+
+
+@inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
+
+
+function two_sum_abstractions(::Type{A}, ::Type{T}) where
+{A<:FloatAbstraction,T<:AbstractFloat}
+    n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
+    chunk_size = (0xFFFFFFFF >> n) + 0x00000001
+    results = Vector{Set{TwoSumAbstraction{A}}}(undef, 1 << n)
+    @threads :dynamic for chunk_index = 1:(1<<n)
+        k_lo = chunk_size * UInt32(chunk_index - 1)
+        k_hi = chunk_size * UInt32(chunk_index) - 0x00000001
+        result = Set{TwoSumAbstraction{A}}()
+        for k = k_lo:k_hi
+            i, j = _deinterleave(k)
+            x = reinterpret(T, i)
+            y = reinterpret(T, j)
+            s = x + y
+            x_prime = s - y
+            y_prime = s - x_prime
+            x_err = x - x_prime
+            y_err = y - y_prime
+            e = x_err + y_err
+            if _isnormal(x) & _isnormal(y) & _isnormal(s) & _isnormal(e)
+                push!(result, TwoSumAbstraction{A}(x, y, s, e))
+            end
+        end
+        results[chunk_index] = result
+    end
+    return sort!(collect(union(results...)))
+end
+
+
+function two_prod_abstractions(::Type{A}, ::Type{T}) where
+{A<:FloatAbstraction,T<:AbstractFloat}
+    n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
+    chunk_size = (0xFFFFFFFF >> n) + 0x00000001
+    results = Vector{Set{TwoProdAbstraction{A}}}(undef, 1 << n)
+    @threads :dynamic for chunk_index = 1:(1<<n)
+        k_lo = chunk_size * UInt32(chunk_index - 1)
+        k_hi = chunk_size * UInt32(chunk_index) - 0x00000001
+        result = Set{TwoProdAbstraction{A}}()
+        for k = k_lo:k_hi
+            i, j = _deinterleave(k)
+            x = reinterpret(T, i)
+            y = reinterpret(T, j)
+            p = x * y
+            e = fma(x, y, -p)
+            if _isnormal(x) & _isnormal(y) & _isnormal(p) & _isnormal(e)
+                push!(result, TwoProdAbstraction{A}(x, y, p, e))
+            end
+        end
+        results[chunk_index] = result
+    end
+    return sort!(collect(union(results...)))
+end
 
 
 ################################################################################
