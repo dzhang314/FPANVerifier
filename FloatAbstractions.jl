@@ -204,28 +204,27 @@ end
     ifelse(mantissa_trailing_bit(x), mantissa_trailing_bits(x), 0)
 
 
+########################################################### ABSTRACTION ORDERING
+
+
+@inline Base.isless(a::SEAbstraction, b::SEAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SETZAbstraction, b::SETZAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SELTZOAbstraction, b::SELTZOAbstraction) =
+    isless(a.data, b.data)
+
+
+@inline Base.isless(a::TwoSumAbstraction{A}, b::TwoSumAbstraction{A}) where
+{A<:FloatAbstraction} = isless((a.x, a.y, a.s, a.e), (b.x, b.y, b.s, b.e))
+@inline Base.isless(a::TwoProdAbstraction{A}, b::TwoProdAbstraction{A}) where
+{A<:FloatAbstraction} = isless((a.x, a.y, a.p, a.e), (b.x, b.y, b.p, b.e))
+
+
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
 export two_sum_abstractions, two_prod_abstractions
-
-
-@inline Base.isless(
-    a::TwoSumAbstraction{A},
-    b::TwoSumAbstraction{A},
-) where {A<:FloatAbstraction} = isless(
-    (a.x.data, a.y.data, a.s.data, a.e.data),
-    (b.x.data, b.y.data, b.s.data, b.e.data),
-)
-
-
-@inline Base.isless(
-    a::TwoProdAbstraction{A},
-    b::TwoProdAbstraction{A},
-) where {A<:FloatAbstraction} = isless(
-    (a.x.data, a.y.data, a.p.data, a.e.data),
-    (b.x.data, b.y.data, b.p.data, b.e.data),
-)
 
 
 @inline function _deinterleave(k::UInt32)
@@ -248,6 +247,8 @@ end
 
 function two_sum_abstractions(::Type{A}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
+    @assert 2 * sizeof(T) == sizeof(UInt32)
+    # Run at least 4 chunks per thread.
     n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     results = Vector{Set{TwoSumAbstraction{A}}}(undef, 1 << n)
@@ -277,6 +278,8 @@ end
 
 function two_prod_abstractions(::Type{A}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
+    @assert 2 * sizeof(T) == sizeof(UInt32)
+    # Run at least 4 chunks per thread.
     n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     results = Vector{Set{TwoProdAbstraction{A}}}(undef, 1 << n)
