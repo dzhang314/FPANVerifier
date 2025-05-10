@@ -224,7 +224,25 @@ end
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
-export two_sum_abstractions, two_prod_abstractions
+export float_abstractions, two_sum_abstractions, two_prod_abstractions
+
+
+@inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
+
+
+function float_abstractions(::Type{A}, ::Type{T}) where
+{A<:FloatAbstraction,T<:AbstractFloat}
+    @assert isbitstype(T)
+    @assert sizeof(T) == sizeof(UInt16)
+    result = Set{A}()
+    for i = typemin(UInt16):typemax(UInt16)
+        x = reinterpret(T, i)
+        if _isnormal(x)
+            push!(result, A(x))
+        end
+    end
+    return sort!(collect(result))
+end
 
 
 @inline function _deinterleave(k::UInt32)
@@ -242,11 +260,9 @@ export two_sum_abstractions, two_prod_abstractions
 end
 
 
-@inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
-
-
 function two_sum_abstractions(::Type{A}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
+    @assert isbitstype(T)
     @assert 2 * sizeof(T) == sizeof(UInt32)
     # Run at least 4 chunks per thread.
     n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
@@ -278,6 +294,7 @@ end
 
 function two_prod_abstractions(::Type{A}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
+    @assert isbitstype(T)
     @assert 2 * sizeof(T) == sizeof(UInt32)
     # Run at least 4 chunks per thread.
     n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
