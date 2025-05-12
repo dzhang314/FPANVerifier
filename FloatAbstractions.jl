@@ -470,8 +470,8 @@ function reduced_outputs(
     y::A,
 ) where {A<:FloatAbstraction,E<:EFTAbstraction{A}}
     outputs = [
-        (Tuple(s)..., Tuple(e)...)
-        for (s, e) in abstract_outputs(eft_abstractions, x, y)
+        (Tuple(r)..., Tuple(e)...)
+        for (r, e) in abstract_outputs(eft_abstractions, x, y)
     ]
     result = Dict{Tuple,Vector{Tuple}}()
     for output in outputs
