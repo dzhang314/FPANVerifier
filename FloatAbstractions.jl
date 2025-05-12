@@ -125,39 +125,44 @@ end
 ####################################################### ABSTRACTION CONSTRUCTORS
 
 
-@inline function SEAbstraction(x::AbstractFloat)
-    s = signbit(x)
-    e = unsafe_exponent(x)
+@inline function SEAbstraction(s::Bool, e::Int)
     @assert -16383 <= e <= 16384
     return SEAbstraction((UInt32(s) << 31) | (UInt32(e + 16383) << 14))
 end
 
 
-@inline function SETZAbstraction(x::AbstractFloat)
-    s = signbit(x)
-    e = unsafe_exponent(x)
+@inline function SETZAbstraction(s::Bool, e::Int, tz::Int)
     @assert -16383 <= e <= 16384
-    tz = mantissa_trailing_zeros(x)
     @assert 0 <= tz <= 127
     return SETZAbstraction(
         (UInt32(s) << 31) | (UInt32(e + 16383) << 14) | UInt32(tz))
 end
 
 
-@inline function SELTZOAbstraction(x::AbstractFloat)
-    s = signbit(x)
-    lb = mantissa_leading_bit(x)
-    tb = mantissa_trailing_bit(x)
-    e = unsafe_exponent(x)
+@inline function SELTZOAbstraction(
+    s::Bool, lb::Bool, tb::Bool,
+    e::Int, nlb::Int, ntb::Int,
+)
     @assert -16383 <= e <= 16384
-    nlb = mantissa_leading_bits(x)
     @assert 0 <= nlb <= 127
-    ntb = mantissa_trailing_bits(x)
     @assert 0 <= ntb <= 127
     return SELTZOAbstraction(
         (UInt32(s) << 31) | (UInt32(lb) << 30) | (UInt32(tb) << 29) |
         (UInt32(e + 16383) << 14) | UInt32(nlb << 7) | UInt32(ntb))
 end
+
+
+@inline SEAbstraction(x::AbstractFloat) = SEAbstraction(
+    signbit(x), unsafe_exponent(x))
+
+
+@inline SETZAbstraction(x::AbstractFloat) = SETZAbstraction(
+    signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
+
+
+@inline SELTZOAbstraction(x::AbstractFloat) = SELTZOAbstraction(
+    signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x),
+    unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
 
 
 @inline TwoSumAbstraction{A}(x::T, y::T, s::T, e::T) where
