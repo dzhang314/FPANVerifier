@@ -73,11 +73,8 @@ end
 ################################################### ABSTRACTION TYPE DEFINITIONS
 
 
-export SEAbstraction, SETZAbstraction, SELTZOAbstraction,
-    TwoSumAbstraction, TwoProdAbstraction
-
-
-abstract type FloatAbstraction end
+export FloatAbstraction, SEAbstraction, SETZAbstraction, SELTZOAbstraction,
+    EFTAbstraction, TwoSumAbstraction, TwoProdAbstraction
 
 
 # Our packed FloatAbstraction representation assumes that:
@@ -86,6 +83,9 @@ abstract type FloatAbstraction end
 # This just barely accommodates IEEE quadruple precision (binary128) using
 # 1 (sign) + 1 (leading bit) + 1 (trailing bit) + 15 (exponent) +
 #     7 (leading bit count) + 7 (trailing bit count) = 32 bits.
+
+
+abstract type FloatAbstraction end
 
 
 struct SEAbstraction <: FloatAbstraction
@@ -103,7 +103,10 @@ struct SELTZOAbstraction <: FloatAbstraction
 end
 
 
-struct TwoSumAbstraction{A<:FloatAbstraction}
+abstract type EFTAbstraction{A<:FloatAbstraction} end
+
+
+struct TwoSumAbstraction{A<:FloatAbstraction} <: EFTAbstraction{A}
     x::A
     y::A
     s::A
@@ -111,7 +114,7 @@ struct TwoSumAbstraction{A<:FloatAbstraction}
 end
 
 
-struct TwoProdAbstraction{A<:FloatAbstraction}
+struct TwoProdAbstraction{A<:FloatAbstraction} <: EFTAbstraction{A}
     x::A
     y::A
     p::A
@@ -317,6 +320,168 @@ function two_prod_abstractions(::Type{A}, ::Type{T}) where
         results[chunk_index] = result
     end
     return sort!(collect(union(results...)))
+end
+
+
+################################################################## OUTPUT LOOKUP
+
+
+export abstract_outputs
+
+
+function abstract_outputs(
+    eft_abstractions::AbstractVector{TwoSumAbstraction{A}},
+    x::A,
+    y::A,
+) where {A<:FloatAbstraction}
+    target = TwoSumAbstraction{A}(x, y, x, y)
+    v = view(eft_abstractions, searchsorted(eft_abstractions, target;
+        by=(a -> (a.x, a.y))))
+    return [(a.s, a.e) for a in v]
+end
+
+
+function abstract_outputs(
+    eft_abstractions::AbstractVector{TwoProdAbstraction{A}},
+    x::A,
+    y::A,
+) where {A<:FloatAbstraction}
+    target = TwoProdAbstraction{A}(x, y, x, y)
+    v = view(eft_abstractions, searchsorted(eft_abstractions, target;
+        by=(a -> (a.x, a.y))))
+    return [(a.p, a.e) for a in v]
+end
+
+
+############################################################### OUTPUT REDUCTION
+
+
+export reduced_outputs
+
+
+@inline Base.Tuple(x::SEAbstraction) =
+    (signbit(x), unsafe_exponent(x))
+@inline Base.Tuple(x::SETZAbstraction) =
+    (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
+@inline Base.Tuple(x::SELTZOAbstraction) = (
+    signbit(x),
+    mantissa_leading_bit(x),
+    mantissa_trailing_bit(x),
+    unsafe_exponent(x),
+    mantissa_leading_bits(x),
+    mantissa_trailing_bits(x),
+)
+
+
+@inline _combine(i::Int, j::Int) =
+    (i + 1 == j) ? (i:j) :
+    (j + 1 == i) ? (j:i) : nothing
+@inline _combine(i::Int, r::UnitRange{Int}) =
+    (i + 1 == r.start) ? (i:r.stop) :
+    (r.stop + 1 == i) ? (r.start:i) : nothing
+@inline _combine(r::UnitRange{Int}, j::Int) =
+    (r.stop + 1 == j) ? (r.start:j) :
+    (j + 1 == r.start) ? (j:r.stop) : nothing
+@inline _combine(r::UnitRange{Int}, s::UnitRange{Int}) =
+    (r.stop + 1 == s.start) ? (r.start:s.stop) :
+    (s.stop + 1 == r.start) ? (s.start:r.stop) : nothing
+
+
+@inline function _combine(s::Tuple, t::Tuple)
+    n = length(s)
+    @assert n == length(t)
+    # Find a unique index k at which s[k] and t[k] differ.
+    k = 0
+    for i = 1:n
+        if s[i] != t[i]
+            if k == 0
+                k = i
+            else
+                # s and t differ at more than one index.
+                return nothing
+            end
+        end
+    end
+    # If we reach this point, then s and t differ only at index k.
+    @assert all((i == k) || (s[i] == t[i]) for i = 1:n)
+    # Attempt to combine s[k] with t[k].
+    c = _combine(s[k], t[k])
+    if isnothing(c)
+        return nothing
+    end
+    # If successful, replace the combined values.
+    result_s = Base.setindex(s, c, k)
+    result_t = Base.setindex(t, c, k)
+    @assert result_s == result_t
+    return result_s
+end
+
+
+@inline function _combine!(v::AbstractVector{<:Tuple})
+    while true
+        found = false
+        i = firstindex(v)
+        while i < lastindex(v)
+            # Try to combine v[i] with v[i+1], v[i+2], ...
+            item = v[i]
+            j = i + 1
+            while j <= lastindex(v)
+                next = _combine(item, v[j])
+                # Stop when no further combinations are possible.
+                if isnothing(next)
+                    break
+                end
+                found = true
+                item = next
+                j = j + 1
+            end
+            # At this point, item represents v[i:j-1] combined.
+            v[i] = item
+            deleteat!(v, i+1:j-1)
+            i = j
+        end
+        # Repeat until no further combinations are found.
+        if !found
+            return v
+        end
+    end
+end
+
+
+@generated function _extract_type(x::Tuple, ::Type{T}) where {T}
+    result = Expr[]
+    for i in eachindex(x.parameters)
+        if x.parameters[i] === T
+            push!(result, :(x[$i]))
+        end
+    end
+    return Expr(:tuple, result...)
+end
+
+
+function reduced_outputs(
+    eft_abstractions::AbstractVector{E},
+    x::A,
+    y::A,
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A}}
+    outputs = [
+        (Tuple(s)..., Tuple(e)...)
+        for (s, e) in abstract_outputs(eft_abstractions, x, y)
+    ]
+    result = Dict{Tuple,Vector{Tuple}}()
+    for output in outputs
+        key = _extract_type(output, Bool)
+        value = _extract_type(output, Int)
+        if haskey(result, key)
+            push!(result[key], value)
+        else
+            result[key] = [value]
+        end
+    end
+    for (_, values) in result
+        _combine!(sort!(values))
+    end
+    return result
 end
 
 
