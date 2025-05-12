@@ -361,14 +361,29 @@ end
 ############################################################### OUTPUT REDUCTION
 
 
-export reduced_outputs
+export unpack, reduced_outputs
 
 
-@inline Base.Tuple(x::SEAbstraction) =
+@inline unpack(x::SEAbstraction) =
     (signbit(x), unsafe_exponent(x))
-@inline Base.Tuple(x::SETZAbstraction) =
+
+@inline unpack(x::SEAbstraction, ::Type{T}) where {T} =
+    (signbit(x), unsafe_exponent(x))
+
+
+@inline unpack(x::SETZAbstraction) =
     (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
-@inline Base.Tuple(x::SELTZOAbstraction) = (
+
+@inline function unpack(x::SETZAbstraction, ::Type{T}) where {T}
+    p = precision(T)
+    s = signbit(x)
+    e = unsafe_exponent(x)
+    ntz = mantissa_trailing_zeros(x)
+    return (s, e, e - (p - 1 - ntz))
+end
+
+
+@inline unpack(x::SELTZOAbstraction) = (
     signbit(x),
     mantissa_leading_bit(x),
     mantissa_trailing_bit(x),
@@ -376,6 +391,21 @@ export reduced_outputs
     mantissa_leading_bits(x),
     mantissa_trailing_bits(x),
 )
+
+@inline function unpack(x::SELTZOAbstraction, ::Type{T}) where {T}
+    p = precision(T)
+    s = signbit(x)
+    e = unsafe_exponent(x)
+    nlz = mantissa_leading_zeros(x)
+    ntz = mantissa_trailing_zeros(x)
+    nlo = mantissa_leading_ones(x)
+    nto = mantissa_trailing_ones(x)
+    fo = e - (nlz + 1)
+    go = e - (p - 1 - ntz)
+    fz = e - (nlo + 1)
+    gz = e - (p - 1 - nto)
+    return (s, e, fo, go, fz, gz)
+end
 
 
 @inline _combine(i::Int, j::Int) =
@@ -468,9 +498,10 @@ function reduced_outputs(
     eft_abstractions::AbstractVector{E},
     x::A,
     y::A,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A}}
+    ::Type{T},
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T}
     outputs = [
-        (Tuple(r)..., Tuple(e)...)
+        (unpack(r, T)..., unpack(e, T)...)
         for (r, e) in abstract_outputs(eft_abstractions, x, y)
     ]
     result = Dict{Tuple,Vector{Tuple}}()
