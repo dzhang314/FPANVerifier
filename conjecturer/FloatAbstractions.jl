@@ -19,52 +19,52 @@ const _BITS_PER_BYTE = div(64, sizeof(UInt64))
 @assert _BITS_PER_BYTE * sizeof(UInt64) == 64
 
 
-@inline function unsafe_exponent(x::T) where {T}
+@inline function unsafe_exponent(x::T) where {T<:AbstractFloat}
     raw_exponent = reinterpret(Unsigned, x) & exponent_mask(T)
     raw_exponent >>= significand_bits(T)
     return Int(raw_exponent) - exponent_bias(T)
 end
 
 
-@inline mantissa_leading_bit(x::T) where {T} = !iszero(
+@inline mantissa_leading_bit(x::T) where {T<:AbstractFloat} = !iszero(
     (reinterpret(Unsigned, x) >> (significand_bits(T) - 1)) & one(uinttype(T)))
 
 
-@inline function mantissa_leading_zeros(x::T) where {T}
+@inline function mantissa_leading_zeros(x::T) where {T<:AbstractFloat}
     shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
     shifted_mask = significand_mask(T) << shift
     return leading_zeros((reinterpret(Unsigned, x) << shift) | ~shifted_mask)
 end
 
 
-@inline function mantissa_leading_ones(x::T) where {T}
+@inline function mantissa_leading_ones(x::T) where {T<:AbstractFloat}
     shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
     shifted_mask = significand_mask(T) << shift
     return leading_ones((reinterpret(Unsigned, x) << shift) & shifted_mask)
 end
 
 
-@inline mantissa_leading_bits(x::T) where {T} = ifelse(
+@inline mantissa_leading_bits(x::AbstractFloat) = ifelse(
     mantissa_leading_bit(x),
     mantissa_leading_ones(x),
     mantissa_leading_zeros(x))
 
 
-@inline mantissa_trailing_bit(x::T) where {T} = !iszero(
+@inline mantissa_trailing_bit(x::T) where {T<:AbstractFloat} = !iszero(
     reinterpret(Unsigned, x) & one(uinttype(T)))
 
 
-@inline function mantissa_trailing_zeros(x::T) where {T}
+@inline function mantissa_trailing_zeros(x::T) where {T<:AbstractFloat}
     return trailing_zeros(reinterpret(Unsigned, x) | ~significand_mask(T))
 end
 
 
-@inline function mantissa_trailing_ones(x::T) where {T}
+@inline function mantissa_trailing_ones(x::T) where {T<:AbstractFloat}
     return trailing_ones(reinterpret(Unsigned, x) & significand_mask(T))
 end
 
 
-@inline mantissa_trailing_bits(x::T) where {T} = ifelse(
+@inline mantissa_trailing_bits(x::AbstractFloat) = ifelse(
     mantissa_trailing_bit(x),
     mantissa_trailing_ones(x),
     mantissa_trailing_zeros(x))

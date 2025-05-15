@@ -8,7 +8,7 @@ using FloatAbstractions
 function check_se_two_sum_lemmas(
     eft_abstractions::Vector{TwoSumAbstraction{SEAbstraction}},
     ::Type{T},
-) where {T}
+) where {T<:AbstractFloat}
 
     ± = false:true
     p = precision(T)
