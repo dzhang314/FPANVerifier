@@ -446,7 +446,7 @@ function add_case!(
     lemma::_LemmaOutputs{SEAbstraction,T},
     (sr_range, er_range)::_SERange,
     e::SEAbstraction
-) where {T}
+) where {T<:AbstractFloat}
     for sr in _lemma_range_s(sr_range)
         for er in _lemma_range_e(er_range, T)
             r = SEAbstraction(sr, er)
@@ -460,7 +460,7 @@ function add_case!(
     lemma::_LemmaOutputs{SEAbstraction,T},
     (sr_range, er_range)::_SERange,
     (se_range, ee_range)::_SERange,
-) where {T}
+) where {T<:AbstractFloat}
     for sr in _lemma_range_s(sr_range)
         for er in _lemma_range_e(er_range, T)
             for se in _lemma_range_s(se_range)
@@ -486,6 +486,47 @@ end
 
 
 const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SETZAbstraction,T},
+    (sr_range, er_range, fr_range)::_SETZRange,
+    e::SETZAbstraction,
+) where {T<:AbstractFloat}
+    p = precision(T)
+    for sr in _lemma_range_s(sr_range)
+        for er in _lemma_range_e(er_range, T)
+            for fr in _lemma_range_t(fr_range, T)
+                r = SETZAbstraction(sr, er, (p - 1) - (er - fr))
+                push!(lemma.claimed_outputs, (r, e))
+            end
+        end
+    end
+end
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SETZAbstraction,T},
+    (sr_range, er_range, fr_range)::_SETZRange,
+    (se_range, ee_range, fe_range)::_SETZRange,
+) where {T<:AbstractFloat}
+    p = precision(T)
+    for sr in _lemma_range_s(sr_range)
+        for er in _lemma_range_e(er_range, T)
+            for fr in _lemma_range_t(fr_range, T)
+                for se in _lemma_range_s(se_range)
+                    for ee in _lemma_range_e(ee_range, T)
+                        for fe in _lemma_range_t(fe_range, T)
+                            r = SETZAbstraction(sr, er, (p - 1) - (er - fr))
+                            e = SETZAbstraction(se, ee, (p - 1) - (ee - fe))
+                            push!(lemma.claimed_outputs, (r, e))
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
 
 
 ############################################################### OUTPUT REDUCTION

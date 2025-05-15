@@ -64,7 +64,7 @@ function check_se_two_sum_lemmas(
 
             ################################################## LEMMA FAMILY SE-I
 
-            # Lemmas in family SE-I (for "identical") apply
+            # Lemmas in Family SE-I (for "identical") apply
             # to addends unchanged by the TwoSum algorithm.
 
             checker("SE-I-X", (ex > ey + (p+1)) | ((ex == ey + (p+1)) & same_sign)) do lemma
