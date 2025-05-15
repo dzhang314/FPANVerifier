@@ -5,9 +5,9 @@ import sys
 import z3
 
 from operator import eq
-from se_lemmas import two_sum_se_lemmas
-from setz_lemmas import two_sum_setz_lemmas
-from seltzo_lemmas import two_sum_seltzo_lemmas
+from se_lemmas import se_two_sum_lemmas
+from setz_lemmas import setz_two_sum_lemmas
+from seltzo_lemmas import seltzo_two_sum_lemmas
 from smt_utils import (
     SMT_SOLVERS,
     SMTJob,
@@ -112,7 +112,7 @@ def create_two_sum_jobs(
 
     lemmas: dict[str, z3.BoolRef]
     if model == "SE":
-        lemmas = two_sum_se_lemmas(
+        lemmas = se_two_sum_lemmas(
             x,
             y,
             s,
@@ -134,7 +134,7 @@ def create_two_sum_jobs(
             z3.BitVecVal(2, promoted_exponent_width),
         )
     elif model == "SETZ":
-        lemmas = two_sum_setz_lemmas(
+        lemmas = setz_two_sum_lemmas(
             x,
             y,
             s,
@@ -161,7 +161,7 @@ def create_two_sum_jobs(
             z3.BitVecVal(3, promoted_exponent_width),
         )
     elif model == "SELTZO":
-        lemmas = two_sum_seltzo_lemmas(
+        lemmas = seltzo_two_sum_lemmas(
             x,
             y,
             s,

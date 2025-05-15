@@ -3,7 +3,7 @@ from smt_utils import BoolVar, IntVar, FloatVar
 from typing import Callable
 
 
-def two_sum_se_lemmas(
+def se_two_sum_lemmas(
     x: FloatVar,
     y: FloatVar,
     s: FloatVar,
@@ -55,29 +55,29 @@ def two_sum_se_lemmas(
     # when one or both addends are zero.
 
     # Lemma SE-Z1: Both addends are zero.
-    result["TwoSum-SE-Z1-PP"] = z3.Implies(
+    result["SE-TwoSum-Z1-PP"] = z3.Implies(
         z3.And(x_pos_zero, y_pos_zero),
         z3.And(s_pos_zero, e_pos_zero),
     )
-    result["TwoSum-SE-Z1-PN"] = z3.Implies(
+    result["SE-TwoSum-Z1-PN"] = z3.Implies(
         z3.And(x_pos_zero, y_neg_zero),
         z3.And(s_pos_zero, e_pos_zero),
     )
-    result["TwoSum-SE-Z1-NP"] = z3.Implies(
+    result["SE-TwoSum-Z1-NP"] = z3.Implies(
         z3.And(x_neg_zero, y_pos_zero),
         z3.And(s_pos_zero, e_pos_zero),
     )
-    result["TwoSum-SE-Z1-NN"] = z3.Implies(
+    result["SE-TwoSum-Z1-NN"] = z3.Implies(
         z3.And(x_neg_zero, y_neg_zero),
         z3.And(s_neg_zero, e_pos_zero),
     )
 
     # Lemma SE-Z2: One addend is zero.
-    result["TwoSum-SE-Z2-X"] = z3.Implies(
+    result["SE-TwoSum-Z2-X"] = z3.Implies(
         z3.And(y_zero, z3.Not(x_zero)),
         z3.And(s_equals_x, e_pos_zero),
     )
-    result["TwoSum-SE-Z2-Y"] = z3.Implies(
+    result["SE-TwoSum-Z2-Y"] = z3.Implies(
         z3.And(x_zero, z3.Not(y_zero)),
         z3.And(s_equals_y, e_pos_zero),
     )
@@ -87,14 +87,14 @@ def two_sum_se_lemmas(
     # Lemma SE-I (for "identical") applies to addends
     # returned unchanged by the TwoSum algorithm.
 
-    result["TwoSum-SE-I-X"] = z3.Implies(
+    result["SE-TwoSum-I-X"] = z3.Implies(
         z3.And(
             xy_nonzero,
             z3.Or(ex > ey + (p + one), z3.And(ex == ey + (p + one), same_sign)),
         ),
         z3.And(s_equals_x, e_equals_y),
     )
-    result["TwoSum-SE-I-Y"] = z3.Implies(
+    result["SE-TwoSum-I-Y"] = z3.Implies(
         z3.And(
             xy_nonzero,
             z3.Or(ey > ex + (p + one), z3.And(ey == ex + (p + one), same_sign)),
@@ -152,14 +152,14 @@ def two_sum_se_lemmas(
 
     # Lemmas in Family SE-S apply to addends with the same sign.
 
-    result["TwoSum-SE-S1-X"] = z3.Implies(
+    result["SE-TwoSum-S1-X"] = z3.Implies(
         z3.And(same_sign, ex == ey + p),
         z3.Or(
             se_case(sx, (ex, ex + one), (sy,), (ey - (p - one), ex - p)),
             z3.And(s_equals_x, e_equals_y),
         ),
     )
-    result["TwoSum-SE-S1-Y"] = z3.Implies(
+    result["SE-TwoSum-S1-Y"] = z3.Implies(
         z3.And(same_sign, ey == ex + p),
         z3.Or(
             se_case(sy, (ey, ey + one), (sx,), (ex - (p - one), ey - p)),
@@ -167,14 +167,14 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-S2-X"] = z3.Implies(
+    result["SE-TwoSum-S2-X"] = z3.Implies(
         z3.And(same_sign, ex == ey + (p - one)),
         z3.Or(
             se_case_zero(sx, (ex, ex + one)),
             se_case(sx, (ex, ex + one), None, (ey - (p - one), ex - p)),
         ),
     )
-    result["TwoSum-SE-S2-Y"] = z3.Implies(
+    result["SE-TwoSum-S2-Y"] = z3.Implies(
         z3.And(same_sign, ey == ex + (p - one)),
         z3.Or(
             se_case_zero(sy, (ey, ey + one)),
@@ -182,7 +182,7 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-S3-X"] = z3.Implies(
+    result["SE-TwoSum-S3-X"] = z3.Implies(
         z3.And(same_sign, ex == ey + (p - two)),
         z3.Or(
             se_case_zero(sx, (ex, ex + one)),
@@ -191,7 +191,7 @@ def two_sum_se_lemmas(
             se_case(sx, ex + one, sy, (ey - (p - one), ex - (p - one))),
         ),
     )
-    result["TwoSum-SE-S3-Y"] = z3.Implies(
+    result["SE-TwoSum-S3-Y"] = z3.Implies(
         z3.And(same_sign, ey == ex + (p - two)),
         z3.Or(
             se_case_zero(sy, (ey, ey + one)),
@@ -201,7 +201,7 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-S4-X"] = z3.Implies(
+    result["SE-TwoSum-S4-X"] = z3.Implies(
         z3.And(same_sign, ex > ey, ex < ey + (p - two)),
         z3.Or(
             se_case_zero(sx, (ex, ex + one)),
@@ -209,7 +209,7 @@ def two_sum_se_lemmas(
             se_case(sx, ex + one, None, (ey - (p - one), ex - (p - one))),
         ),
     )
-    result["TwoSum-SE-S4-Y"] = z3.Implies(
+    result["SE-TwoSum-S4-Y"] = z3.Implies(
         z3.And(same_sign, ey > ex, ey < ex + (p - two)),
         z3.Or(
             se_case_zero(sy, (ey, ey + one)),
@@ -218,7 +218,7 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-S5"] = z3.Implies(
+    result["SE-TwoSum-S5"] = z3.Implies(
         z3.And(xy_nonzero, same_sign, ex == ey),
         z3.Or(
             se_case_zero(sx, ex + one),
@@ -230,14 +230,14 @@ def two_sum_se_lemmas(
 
     # Lemmas in Family SE-D apply to addends with different signs.
 
-    result["TwoSum-SE-D1-X"] = z3.Implies(
+    result["SE-TwoSum-D1-X"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, ex == ey + (p + one)),
         z3.Or(
             se_case(sx, ex - one, (sy,), (ey - (p - one), ex - (p + two))),
             z3.And(s_equals_x, e_equals_y),
         ),
     )
-    result["TwoSum-SE-D1-Y"] = z3.Implies(
+    result["SE-TwoSum-D1-Y"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, ey == ex + (p + one)),
         z3.Or(
             se_case(sy, ey - one, (sx,), (ex - (p - one), ey - (p + two))),
@@ -245,7 +245,7 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-D2-X"] = z3.Implies(
+    result["SE-TwoSum-D2-X"] = z3.Implies(
         z3.And(diff_sign, ex == ey + p),
         z3.Or(
             se_case_zero(sx, ex - one),
@@ -255,7 +255,7 @@ def two_sum_se_lemmas(
             z3.And(s_equals_x, e_equals_y),
         ),
     )
-    result["TwoSum-SE-D2-Y"] = z3.Implies(
+    result["SE-TwoSum-D2-Y"] = z3.Implies(
         z3.And(diff_sign, ey == ex + p),
         z3.Or(
             se_case_zero(sy, ey - one),
@@ -266,7 +266,7 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-D3-X"] = z3.Implies(
+    result["SE-TwoSum-D3-X"] = z3.Implies(
         z3.And(diff_sign, ex > ey + one, ex < ey + p),
         z3.Or(
             se_case_zero(sx, (ex - one, ex)),
@@ -274,7 +274,7 @@ def two_sum_se_lemmas(
             se_case(sx, ex, None, (ey - (p - one), ex - p)),
         ),
     )
-    result["TwoSum-SE-D3-Y"] = z3.Implies(
+    result["SE-TwoSum-D3-Y"] = z3.Implies(
         z3.And(diff_sign, ey > ex + one, ey < ex + p),
         z3.Or(
             se_case_zero(sy, (ey - one, ey)),
@@ -283,14 +283,14 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-D4-X"] = z3.Implies(
+    result["SE-TwoSum-D4-X"] = z3.Implies(
         z3.And(diff_sign, ex == ey + one),
         z3.Or(
             se_case_zero(sx, (ex - p, ex)),
             se_case(sx, ex, None, ex - p),
         ),
     )
-    result["TwoSum-SE-D4-Y"] = z3.Implies(
+    result["SE-TwoSum-D4-Y"] = z3.Implies(
         z3.And(diff_sign, ey == ex + one),
         z3.Or(
             se_case_zero(sy, (ey - p, ey)),
@@ -298,7 +298,7 @@ def two_sum_se_lemmas(
         ),
     )
 
-    result["TwoSum-SE-D5"] = z3.Implies(
+    result["SE-TwoSum-D5"] = z3.Implies(
         z3.And(diff_sign, ex == ey),
         z3.Or(
             z3.And(s_pos_zero, e_pos_zero),
