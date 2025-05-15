@@ -7,9 +7,9 @@ using FloatAbstractions
 
 function generate_abstraction_data(
     ::Type{A},
-    operation::Symbol,
+    op::Symbol,
     ::Type{T},
-    expected_size::Int,
+    expected_count::Int,
     expected_crc::UInt32,
 ) where {A<:FloatAbstraction,T<:AbstractFloat}
 
@@ -17,37 +17,37 @@ function generate_abstraction_data(
     @assert endswith(abstraction_name, "Abstraction")
     abstraction_name = abstraction_name[begin:end-length("Abstraction")]
 
-    file_name = "$abstraction_name-$operation-$T.bin"
+    file_name = "$abstraction_name-$op-$T.bin"
     if !isfile(file_name)
         println("Generating $file_name...")
         flush(stdout)
-        if operation === :TwoSum
+        if op === :TwoSum
             open(file_name, "w") do io
                 write(io, two_sum_abstractions(A, T))
             end
-        elseif operation === :TwoProd
+        elseif op === :TwoProd
             open(file_name, "w") do io
                 write(io, two_prod_abstractions(A, T))
             end
         else
-            error("Unknown operation: $operation (expected :TwoSum or :TwoProd)")
+            error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
         end
     end
 
     println("Verifying $file_name...")
     flush(stdout)
     @assert isfile(file_name)
-    fsize = filesize(file_name)
-    if operation === :TwoSum
-        @assert fsize === expected_size * sizeof(TwoSumAbstraction{A})
-    elseif operation === :TwoProd
-        @assert fsize === expected_size * sizeof(TwoProdAbstraction{A})
+    file_size = filesize(file_name)
+    if op === :TwoSum
+        @assert file_size === expected_count * sizeof(TwoSumAbstraction{A})
+    elseif op === :TwoProd
+        @assert file_size === expected_count * sizeof(TwoProdAbstraction{A})
     else
-        error("Unknown operation: $operation (expected :TwoSum or :TwoProd)")
+        error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
     end
     @assert open(crc32c, file_name) === expected_crc
 
-    println("Generated and verified $file_name.")
+    println("Successfully verified $file_name.")
     flush(stdout)
     return nothing
 
