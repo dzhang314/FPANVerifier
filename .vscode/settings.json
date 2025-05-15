@@ -1,12 +1,29 @@
 {
     "cSpell.words": [
+        "bitwuzla",
+        "BVFP",
         "deinterleave",
+        "FPRM",
         "isnormal",
+        "mathsat",
+        "nlbe",
+        "nlbs",
+        "nlbx",
+        "nlby",
+        "ntbs",
+        "ntbx",
+        "ntby",
         "nthreads",
+        "ntze",
+        "ntzs",
+        "ntzx",
+        "ntzy",
         "Quadmath",
         "SELTZO",
         "SETZ",
         "testset",
-        "uinttype"
+        "uinttype",
+        "unsat",
+        "yices"
     ]
 }
