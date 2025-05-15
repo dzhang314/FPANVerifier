@@ -358,6 +358,136 @@ function abstract_outputs(
 end
 
 
+################################################################# LEMMA CHECKING
+
+
+export LemmaChecker, add_case!
+
+
+struct LemmaChecker{A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+    eft_abstractions::Vector{E}
+    x::A
+    y::A
+    count::Array{Int,0}
+    total_counts::Dict{String,Int}
+end
+
+
+function LemmaChecker(
+    eft_abstractions::Vector{E},
+    x::A,
+    y::A,
+    ::Type{T},
+    total_counts::Dict{String,Int},
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+    return LemmaChecker{A,E,T}(eft_abstractions, x, y, fill(0), total_counts)
+end
+
+
+struct _LemmaOutputs{A<:FloatAbstraction,T<:AbstractFloat}
+    claimed_outputs::Vector{Tuple{A,A}}
+end
+
+
+function (checker::LemmaChecker{A,E,T})(
+    state_claims!::Function,
+    lemma_name::String,
+    hypothesis::Bool,
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+    if hypothesis
+        computed_outputs = abstract_outputs(
+            checker.eft_abstractions, checker.x, checker.y)
+        lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
+        state_claims!(lemma)
+        @assert computed_outputs == sort!(lemma.claimed_outputs)
+        checker.count[] += 1
+        if haskey(checker.total_counts, lemma_name)
+            checker.total_counts[lemma_name] += 1
+        else
+            checker.total_counts[lemma_name] = 1
+        end
+    end
+    return nothing
+end
+
+
+function add_case!(
+    lemma::_LemmaOutputs{A,T},
+    r::A,
+    e::A,
+) where {A<:FloatAbstraction,T<:AbstractFloat}
+    push!(lemma.claimed_outputs, (r, e))
+    return nothing
+end
+
+
+const _BoolRange = Union{Bool,UnitRange{Bool}}
+const _IntRange = Union{Int,UnitRange{Int}}
+
+
+@inline _lemma_range_s(b::Bool) = b:b
+
+@inline _lemma_range_s(r::UnitRange{Bool}) = r
+
+
+@inline function _lemma_range_e(r::UnitRange{Int}, ::Type{T}) where {T}
+    e_min = exponent(floatmin(T))
+    e_max = exponent(floatmax(T))
+    return max(r.start, e_min):min(r.stop, e_max)
+end
+
+@inline _lemma_range_e(i::Int, ::Type{T}) where {T} = _lemma_range_e(i:i, T)
+
+
+const _SERange = Tuple{_BoolRange,_IntRange}
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SEAbstraction,T},
+    (sr_range, er_range)::_SERange,
+    e::SEAbstraction
+) where {T}
+    for sr in _lemma_range_s(sr_range)
+        for er in _lemma_range_e(er_range, T)
+            r = SEAbstraction(sr, er)
+            push!(lemma.claimed_outputs, (r, e))
+        end
+    end
+end
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SEAbstraction,T},
+    (sr_range, er_range)::_SERange,
+    (se_range, ee_range)::_SERange,
+) where {T}
+    for sr in _lemma_range_s(sr_range)
+        for er in _lemma_range_e(er_range, T)
+            for se in _lemma_range_s(se_range)
+                for ee in _lemma_range_e(ee_range, T)
+                    r = SEAbstraction(sr, er)
+                    e = SEAbstraction(se, ee)
+                    push!(lemma.claimed_outputs, (r, e))
+                end
+            end
+        end
+    end
+end
+
+
+@inline function _lemma_range_t(r::UnitRange{Int}, ::Type{T}) where {T}
+    p = precision(T)
+    t_min = exponent(floatmin(T)) - (p - 1)
+    t_max = exponent(floatmax(T))
+    return max(r.start, t_min):min(r.stop, t_max)
+end
+
+@inline _lemma_range_t(i::Int, ::Type{T}) where {T} = _lemma_range_t(i:i, T)
+
+
+const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
+
+
 ############################################################### OUTPUT REDUCTION
 
 
