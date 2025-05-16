@@ -23,11 +23,11 @@ function generate_abstraction_data(
         flush(stdout)
         if op === :TwoSum
             open(file_name, "w") do io
-                write(io, two_sum_abstractions(A, T))
+                write(io, enumerate_abstractions(TwoSumAbstraction{A}, T))
             end
         elseif op === :TwoProd
             open(file_name, "w") do io
-                write(io, two_prod_abstractions(A, T))
+                write(io, enumerate_abstractions(TwoProdAbstraction{A}, T))
             end
         else
             error("Unknown operation: $op (expected :TwoSum or :TwoProd)")

@@ -232,13 +232,13 @@ end
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
-export float_abstractions, two_sum_abstractions, two_prod_abstractions
+export enumerate_abstractions
 
 
 @inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
 
 
-function float_abstractions(::Type{A}, ::Type{T}) where
+function enumerate_abstractions(::Type{A}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
     @assert sizeof(T) == sizeof(UInt16)
@@ -268,7 +268,7 @@ end
 end
 
 
-function two_sum_abstractions(::Type{A}, ::Type{T}) where
+function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
     @assert 2 * sizeof(T) == sizeof(UInt32)
@@ -300,7 +300,7 @@ function two_sum_abstractions(::Type{A}, ::Type{T}) where
 end
 
 
-function two_prod_abstractions(::Type{A}, ::Type{T}) where
+function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
     @assert 2 * sizeof(T) == sizeof(UInt32)

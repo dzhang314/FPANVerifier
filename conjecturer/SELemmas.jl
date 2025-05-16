@@ -14,7 +14,7 @@ function check_se_two_sum_lemmas(
     p = precision(T)
     pos_zero = SEAbstraction(+zero(T))
     neg_zero = SEAbstraction(-zero(T))
-    abstract_inputs = float_abstractions(SEAbstraction, T)
+    abstract_inputs = enumerate_abstractions(SEAbstraction, T)
     lemma_counts = Dict{String,Int}()
 
     for x in abstract_inputs, y in abstract_inputs
