@@ -335,24 +335,24 @@ export abstract_outputs
 
 
 function abstract_outputs(
-    eft_abstractions::AbstractVector{TwoSumAbstraction{A}},
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{A}},
     x::A,
     y::A,
 ) where {A<:FloatAbstraction}
     target = TwoSumAbstraction{A}(x, y, x, y)
-    v = view(eft_abstractions, searchsorted(eft_abstractions, target;
+    v = view(two_sum_abstractions, searchsorted(two_sum_abstractions, target;
         by=(a -> (a.x, a.y))))
     return [(a.s, a.e) for a in v]
 end
 
 
 function abstract_outputs(
-    eft_abstractions::AbstractVector{TwoProdAbstraction{A}},
+    two_prod_abstractions::AbstractVector{TwoProdAbstraction{A}},
     x::A,
     y::A,
 ) where {A<:FloatAbstraction}
     target = TwoProdAbstraction{A}(x, y, x, y)
-    v = view(eft_abstractions, searchsorted(eft_abstractions, target;
+    v = view(two_prod_abstractions, searchsorted(two_prod_abstractions, target;
         by=(a -> (a.x, a.y))))
     return [(a.p, a.e) for a in v]
 end
