@@ -836,6 +836,7 @@ function main(
     println("Successfully checked all SETZ-TwoSum-$T lemmas.")
     flush(stdout)
 
+    return nothing
 end
 
 
