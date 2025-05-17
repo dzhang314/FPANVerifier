@@ -399,12 +399,28 @@ function (checker::LemmaChecker{A,E,T})(
             checker.eft_abstractions, checker.x, checker.y)
         lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
         state_claims!(lemma)
-        @assert computed_outputs == sort!(lemma.claimed_outputs)
-        checker.count[] += 1
-        if haskey(checker.total_counts, lemma_name)
-            checker.total_counts[lemma_name] += 1
+        if computed_outputs == sort!(lemma.claimed_outputs)
+            checker.count[] += 1
+            if haskey(checker.total_counts, lemma_name)
+                checker.total_counts[lemma_name] += 1
+            else
+                checker.total_counts[lemma_name] = 1
+            end
         else
-            checker.total_counts[lemma_name] = 1
+            println(stderr,
+                "ERROR: Claimed outputs of lemma $lemma_name" *
+                " do not match actual computed outputs.")
+            println(stderr, "Input 1: $(unpack(checker.x, T)) [$(checker.x)]")
+            println(stderr, "Input 2: $(unpack(checker.y, T)) [$(checker.y)]")
+            println(stderr, "Claimed outputs:")
+            for (r, e) in lemma.claimed_outputs
+                println(stderr, "    $(unpack(r, T)), $(unpack(e, T))")
+            end
+            println(stderr, "Computed outputs:")
+            for (r, e) in computed_outputs
+                println(stderr, "    $(unpack(r, T)), $(unpack(e, T))")
+            end
+            flush(stderr)
         end
     end
     return nothing
