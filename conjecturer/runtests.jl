@@ -1,7 +1,7 @@
-using Base.Threads
-using BFloat16s
-using Quadmath
-using Test
+using Base.Threads: @threads
+using BFloat16s: BFloat16
+using Quadmath: Float128
+using Test: @test, @testset
 
 push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions

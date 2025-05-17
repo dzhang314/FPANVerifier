@@ -1,5 +1,5 @@
-using BFloat16s
-using CRC32c
+using BFloat16s: BFloat16
+using CRC32c: crc32c
 
 push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
