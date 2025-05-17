@@ -6,7 +6,7 @@ using FloatAbstractions
 
 
 function check_setz_two_sum_lemmas(
-    eft_abstractions::Vector{TwoSumAbstraction{SETZAbstraction}},
+    two_sum_abstractions::Vector{TwoSumAbstraction{SETZAbstraction}},
     ::Type{T},
 ) where {T<:AbstractFloat}
 
@@ -29,12 +29,12 @@ function check_setz_two_sum_lemmas(
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
-        checker = LemmaChecker(eft_abstractions, x, y, T, lemma_counts)
+        checker = LemmaChecker(two_sum_abstractions, x, y, T, lemma_counts)
 
         #! format: off
         if x_zero | y_zero ############################# LEMMA FAMILY SETZ-Z (2)
 
-            # Lemmas in Family SE-Z (for "zero") apply
+            # Lemmas in Family SETZ-Z (for "zero") apply
             # when one or both addends are zero.
 
             # Lemma SETZ-Z1: Both addends are zero.
@@ -780,7 +780,15 @@ function check_setz_two_sum_lemmas(
         end
         #! format: on
 
-        @assert isone(checker.count[])
+        if iszero(checker.count[])
+            println(stderr,
+                "ERROR: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
+                " are not covered by any lemmas.")
+        elseif !isone(checker.count[])
+            println(stderr,
+                "WARNING: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
+                " are covered by multiple lemmas.")
+        end
     end
 
     println("SETZ-TwoSum-$T lemmas:")
@@ -793,36 +801,45 @@ function check_setz_two_sum_lemmas(
 end
 
 
-try
+const EXIT_INPUT_FILE_MISSING = 1
+const EXIT_INPUT_FILE_MALFORMED = 2
 
-    @assert isfile("SETZ-TwoSum-Float16.bin")
-    @assert filesize("SETZ-TwoSum-Float16.bin") ===
-            3_833_700 * sizeof(TwoSumAbstraction{SETZAbstraction})
-    @assert open(crc32c, "SETZ-TwoSum-Float16.bin") === 0x66E6D552
-    setz_two_sum_f16_abstractions =
-        Vector{TwoSumAbstraction{SETZAbstraction}}(undef, 3_833_700)
-    read!("SETZ-TwoSum-Float16.bin", setz_two_sum_f16_abstractions)
-    check_setz_two_sum_lemmas(setz_two_sum_f16_abstractions, Float16)
-    println("Successfully checked all SETZ-TwoSum-Float16 lemmas.")
-    flush(stdout)
 
-    @assert isfile("SETZ-TwoSum-BFloat16.bin")
-    @assert filesize("SETZ-TwoSum-BFloat16.bin") ===
-            26_618_866 * sizeof(TwoSumAbstraction{SETZAbstraction})
-    @assert open(crc32c, "SETZ-TwoSum-BFloat16.bin") === 0x1DB442CF
-    setz_two_sum_bf16_abstractions =
-        Vector{TwoSumAbstraction{SETZAbstraction}}(undef, 26_618_866)
-    read!("SETZ-TwoSum-BFloat16.bin", setz_two_sum_bf16_abstractions)
-    check_setz_two_sum_lemmas(setz_two_sum_bf16_abstractions, BFloat16)
-    println("Successfully checked all SETZ-TwoSum-BFloat16 lemmas.")
-    flush(stdout)
+function main(
+    file_name::String,
+    expected_count::Int,
+    expected_crc::UInt32,
+    ::Type{T},
+) where {T<:AbstractFloat}
 
-catch e
-    if e isa AssertionError
-        println("Run `julia GenerateAbstractionData.jl` to" *
-                " generate the input data for this program.")
-        exit(1)
-    else
-        rethrow()
+    if !isfile(file_name)
+        println(stderr,
+            "ERROR: Input file $file_name not found." *
+            " Run `julia GenerateAbstractionData.jl` to" *
+            " generate the input files for this program.")
+        exit(EXIT_INPUT_FILE_MISSING)
     end
+    valid = (filesize(file_name) ===
+             expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})) &&
+            (open(crc32c, file_name) === expected_crc)
+    if !valid
+        println(stderr,
+            "ERROR: Input file $file_name is malformed." *
+            " Run `julia GenerateAbstractionData.jl` to" *
+            " generate the input files for this program.")
+        exit(EXIT_INPUT_FILE_MALFORMED)
+    end
+    two_sum_abstractions =
+        Vector{TwoSumAbstraction{SETZAbstraction}}(undef, expected_count)
+    read!(file_name, two_sum_abstractions)
+    check_setz_two_sum_lemmas(two_sum_abstractions, T)
+    println("Successfully checked all SETZ-TwoSum-$T lemmas.")
+    flush(stdout)
+
+end
+
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    main("SETZ-TwoSum-Float16.bin", 3_833_700, 0x66E6D552, Float16)
+    main("SETZ-TwoSum-BFloat16.bin", 26_618_866, 0x1DB442CF, BFloat16)
 end

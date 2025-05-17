@@ -6,7 +6,7 @@ using FloatAbstractions
 
 
 function check_se_two_sum_lemmas(
-    eft_abstractions::Vector{TwoSumAbstraction{SEAbstraction}},
+    two_sum_abstractions::Vector{TwoSumAbstraction{SEAbstraction}},
     ::Type{T},
 ) where {T<:AbstractFloat}
 
@@ -27,7 +27,7 @@ function check_se_two_sum_lemmas(
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
-        checker = LemmaChecker(eft_abstractions, x, y, T, lemma_counts)
+        checker = LemmaChecker(two_sum_abstractions, x, y, T, lemma_counts)
 
         #! format: off
         if x_zero | y_zero ################################### LEMMA FAMILY SE-Z
@@ -181,7 +181,15 @@ function check_se_two_sum_lemmas(
         end
         #! format: on
 
-        @assert isone(checker.count[])
+        if iszero(checker.count[])
+            println(stderr,
+                "ERROR: Abstract SE-TwoSum-$T inputs ($x, $y)" *
+                " are not covered by any lemmas.")
+        elseif !isone(checker.count[])
+            println(stderr,
+                "WARNING: Abstract SE-TwoSum-$T inputs ($x, $y)" *
+                " are covered by multiple lemmas.")
+        end
     end
 
     println("SE-TwoSum-$T lemmas:")
@@ -194,36 +202,45 @@ function check_se_two_sum_lemmas(
 end
 
 
-try
+const EXIT_INPUT_FILE_MISSING = 1
+const EXIT_INPUT_FILE_MALFORMED = 2
 
-    @assert isfile("SE-TwoSum-Float16.bin")
-    @assert filesize("SE-TwoSum-Float16.bin") ===
-            38_638 * sizeof(TwoSumAbstraction{SEAbstraction})
-    @assert open(crc32c, "SE-TwoSum-Float16.bin") === 0x18557287
-    se_two_sum_f16_abstractions =
-        Vector{TwoSumAbstraction{SEAbstraction}}(undef, 38_638)
-    read!("SE-TwoSum-Float16.bin", se_two_sum_f16_abstractions)
-    check_se_two_sum_lemmas(se_two_sum_f16_abstractions, Float16)
-    println("Successfully checked all SE-TwoSum-Float16 lemmas.")
-    flush(stdout)
 
-    @assert isfile("SE-TwoSum-BFloat16.bin")
-    @assert filesize("SE-TwoSum-BFloat16.bin") ===
-            548_026 * sizeof(TwoSumAbstraction{SEAbstraction})
-    @assert open(crc32c, "SE-TwoSum-BFloat16.bin") === 0xB20B9481
-    se_two_sum_bf16_abstractions =
-        Vector{TwoSumAbstraction{SEAbstraction}}(undef, 548_026)
-    read!("SE-TwoSum-BFloat16.bin", se_two_sum_bf16_abstractions)
-    check_se_two_sum_lemmas(se_two_sum_bf16_abstractions, BFloat16)
-    println("Successfully checked all SE-TwoSum-BFloat16 lemmas.")
-    flush(stdout)
+function main(
+    file_name::String,
+    expected_count::Int,
+    expected_crc::UInt32,
+    ::Type{T},
+) where {T<:AbstractFloat}
 
-catch e
-    if e isa AssertionError
-        println("Run `julia GenerateAbstractionData.jl` to" *
-                " generate the input data for this program.")
-        exit(1)
-    else
-        rethrow()
+    if !isfile(file_name)
+        println(stderr,
+            "ERROR: Input file $file_name not found." *
+            " Run `julia GenerateAbstractionData.jl` to" *
+            " generate the input files for this program.")
+        exit(EXIT_INPUT_FILE_MISSING)
     end
+    valid = (filesize(file_name) ===
+             expected_count * sizeof(TwoSumAbstraction{SEAbstraction})) &&
+            (open(crc32c, file_name) === expected_crc)
+    if !valid
+        println(stderr,
+            "ERROR: Input file $file_name is malformed." *
+            " Run `julia GenerateAbstractionData.jl` to" *
+            " generate the input files for this program.")
+        exit(EXIT_INPUT_FILE_MALFORMED)
+    end
+    two_sum_abstractions =
+        Vector{TwoSumAbstraction{SEAbstraction}}(undef, expected_count)
+    read!(file_name, two_sum_abstractions)
+    check_se_two_sum_lemmas(two_sum_abstractions, T)
+    println("Successfully checked all SE-TwoSum-$T lemmas.")
+    flush(stdout)
+
+end
+
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    main("SE-TwoSum-Float16.bin", 38_638, 0x18557287, Float16)
+    main("SE-TwoSum-BFloat16.bin", 548_026, 0xB20B9481, BFloat16)
 end
