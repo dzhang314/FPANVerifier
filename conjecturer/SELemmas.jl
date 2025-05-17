@@ -380,4 +380,5 @@ if abspath(PROGRAM_FILE) == @__FILE__
     main_two_sum("SE-TwoSum-Float16.bin", 38_638, 0x18557287, Float16)
     main_two_sum("SE-TwoSum-BFloat16.bin", 548_026, 0xB20B9481, BFloat16)
     main_two_prod("SE-TwoProd-Float16.bin", 62_524, 0x194E7F4D, Float16)
+    main_two_prod("SE-TwoProd-BFloat16.bin", 6_053_588, 0x89B01463, BFloat16)
 end

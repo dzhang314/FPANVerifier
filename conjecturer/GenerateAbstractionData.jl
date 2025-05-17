@@ -5,6 +5,10 @@ push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
 
 
+@inline Base.fma(x::BFloat16, y::BFloat16, z::BFloat16) =
+    BFloat16(fma(Float32(x), Float32(y), Float32(z)))
+
+
 function generate_abstraction_data(
     ::Type{A},
     op::Symbol,
@@ -49,8 +53,8 @@ function generate_abstraction_data(
 
     println("Successfully verified $file_name.")
     flush(stdout)
-    return nothing
 
+    return nothing
 end
 
 
@@ -62,7 +66,8 @@ if abspath(PROGRAM_FILE) == @__FILE__
         548_026, 0xB20B9481)
     generate_abstraction_data(SEAbstraction, :TwoProd, Float16,
         62_524, 0x194E7F4D)
-    # generate_abstraction_data(SEAbstraction, :TwoProd, BFloat16, ?, ?)
+    generate_abstraction_data(SEAbstraction, :TwoProd, BFloat16,
+        6_053_588, 0x89B01463)
 
     generate_abstraction_data(SETZAbstraction, :TwoSum, Float16,
         3_833_700, 0x66E6D552)
@@ -70,7 +75,8 @@ if abspath(PROGRAM_FILE) == @__FILE__
         26_618_866, 0x1DB442CF)
     generate_abstraction_data(SETZAbstraction, :TwoProd, Float16,
         11_454_024, 0x8182FE97)
-    # generate_abstraction_data(SETZAbstraction, :TwoProd, BFloat16, ?, ?)
+    generate_abstraction_data(SETZAbstraction, :TwoProd, BFloat16,
+        313_420_440, 0x897409CD)
 
     generate_abstraction_data(SELTZOAbstraction, :TwoSum, Float16,
         319_985_950, 0xCC55FA4F)
