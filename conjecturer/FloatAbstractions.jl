@@ -650,30 +650,25 @@ end
 
 
 @inline function _combine!(v::AbstractVector{<:Tuple})
-    # TODO: Handle non-adjacent combinations.
     while true
         found = false
         i = firstindex(v)
         while i < lastindex(v)
             # Try to combine v[i] with v[i+1], v[i+2], ...
             item = v[i]
-            j = i + 1
-            while j <= lastindex(v)
+            combined_indices = BitSet()
+            for j = i+1:lastindex(v)
                 next = _combine(item, v[j])
-                # Stop when no further combinations are possible.
-                if isnothing(next)
-                    break
+                if !isnothing(next)
+                    found = true
+                    item = next
+                    push!(combined_indices, j)
                 end
-                found = true
-                item = next
-                j = j + 1
             end
-            # At this point, item represents v[i:j-1] combined.
             v[i] = item
-            deleteat!(v, i+1:j-1)
-            i = j
+            deleteat!(v, combined_indices)
+            i += 1
         end
-        # Repeat until no further combinations are found.
         if !found
             return v
         end
