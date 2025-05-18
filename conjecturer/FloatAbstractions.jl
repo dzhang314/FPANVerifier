@@ -565,8 +565,8 @@ export unpack, reduced_outputs
     p = precision(T)
     s = signbit(x)
     e = unsafe_exponent(x)
-    ntz = mantissa_trailing_zeros(x)
-    return (s, e, e - (p - 1 - ntz))
+    f = e - ((p - 1) - mantissa_trailing_zeros(x))
+    return (s, e, f)
 end
 
 
@@ -582,16 +582,12 @@ end
 @inline function unpack(x::SELTZOAbstraction, ::Type{T}) where {T}
     p = precision(T)
     s = signbit(x)
+    lb = mantissa_leading_bit(x)
+    tb = mantissa_trailing_bit(x)
     e = unsafe_exponent(x)
-    nlz = mantissa_leading_zeros(x)
-    ntz = mantissa_trailing_zeros(x)
-    nlo = mantissa_leading_ones(x)
-    nto = mantissa_trailing_ones(x)
-    fo = e - (nlz + 1)
-    go = e - (p - 1 - ntz)
-    fz = e - (nlo + 1)
-    gz = e - (p - 1 - nto)
-    return (s, e, fo, go, fz, gz)
+    f = e - (mantissa_leading_bits(x) + 1)
+    g = e - ((p - 1) - mantissa_trailing_bits(x))
+    return (s, lb, tb, e, f, g)
 end
 
 
