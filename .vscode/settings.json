@@ -3,6 +3,8 @@
         "bitwuzla",
         "BVFP",
         "deinterleave",
+        "dnlb",
+        "dntb",
         "FPRM",
         "isnormal",
         "mathsat",

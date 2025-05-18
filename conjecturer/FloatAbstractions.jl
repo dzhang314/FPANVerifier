@@ -446,13 +446,17 @@ const _IntRange = Union{Int,UnitRange{Int}}
 @inline _lemma_range_s(r::UnitRange{Bool}) = r
 
 
-@inline function _lemma_range_e(r::UnitRange{Int}, ::Type{T}) where {T}
+@inline function _lemma_range_e(
+    r::UnitRange{Int},
+    ::Type{T},
+) where {T<:AbstractFloat}
     e_min = exponent(floatmin(T))
     e_max = exponent(floatmax(T))
     return max(r.start, e_min):min(r.stop, e_max)
 end
 
-@inline _lemma_range_e(i::Int, ::Type{T}) where {T} = _lemma_range_e(i:i, T)
+@inline _lemma_range_e(i::Int, ::Type{T}) where {T<:AbstractFloat} =
+    _lemma_range_e(i:i, T)
 
 
 const _SERange = Tuple{_BoolRange,_IntRange}
@@ -491,14 +495,18 @@ function add_case!(
 end
 
 
-@inline function _lemma_range_t(r::UnitRange{Int}, ::Type{T}) where {T}
+@inline function _lemma_range_t(
+    r::UnitRange{Int},
+    ::Type{T},
+) where {T<:AbstractFloat}
     p = precision(T)
     t_min = exponent(floatmin(T)) - (p - 1)
     t_max = exponent(floatmax(T))
     return max(r.start, t_min):min(r.stop, t_max)
 end
 
-@inline _lemma_range_t(i::Int, ::Type{T}) where {T} = _lemma_range_t(i:i, T)
+@inline _lemma_range_t(i::Int, ::Type{T}) where {T<:AbstractFloat} =
+    _lemma_range_t(i:i, T)
 
 
 const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
@@ -554,14 +562,17 @@ export unpack, reduced_outputs
 @inline unpack(x::SEAbstraction) =
     (signbit(x), unsafe_exponent(x))
 
-@inline unpack(x::SEAbstraction, ::Type{T}) where {T} =
+@inline unpack(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
     (signbit(x), unsafe_exponent(x))
 
 
 @inline unpack(x::SETZAbstraction) =
     (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
 
-@inline function unpack(x::SETZAbstraction, ::Type{T}) where {T}
+@inline function unpack(
+    x::SETZAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
     p = precision(T)
     s = signbit(x)
     e = unsafe_exponent(x)
@@ -579,7 +590,10 @@ end
     mantissa_trailing_bits(x),
 )
 
-@inline function unpack(x::SELTZOAbstraction, ::Type{T}) where {T}
+@inline function unpack(
+    x::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
     p = precision(T)
     s = signbit(x)
     lb = mantissa_leading_bit(x)
@@ -636,6 +650,7 @@ end
 
 
 @inline function _combine!(v::AbstractVector{<:Tuple})
+    # TODO: Handle non-adjacent combinations.
     while true
         found = false
         i = firstindex(v)
@@ -682,7 +697,7 @@ function reduced_outputs(
     x::A,
     y::A,
     ::Type{T},
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T}
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
     outputs = [
         (unpack(r, T)..., unpack(e, T)...)
         for (r, e) in abstract_outputs(eft_abstractions, x, y)
@@ -699,6 +714,134 @@ function reduced_outputs(
     end
     for (_, values) in result
         _combine!(sort!(values))
+    end
+    return result
+end
+
+
+####################################################### NEIGHBORHOOD EXPLORATION
+
+
+export compatible_neighbors
+
+
+function _neighborhood(x::SELTZOAbstraction)
+    result = SELTZOAbstraction[]
+    s, lb, tb, e, nlb, ntb = unpack(x)
+    for ds = false:true
+        for dlb = false:true
+            for dtb = false:true
+                for de = -1:+1
+                    for dnlb = -1:+1
+                        for dntb = -1:+1
+                            push!(result, SELTZOAbstraction(
+                                xor(s, ds),
+                                xor(lb, dlb),
+                                xor(tb, dtb),
+                                e + de,
+                                nlb + dnlb,
+                                ntb + dntb,
+                            ))
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return result
+end
+
+
+@inline function _compatible(x::Int, y::Int)
+    return (x == y) | (x == y + 1) | (x + 1 == y)
+end
+
+@inline function _compatible(x::Int, y::UnitRange{Int})
+    # return _compatible(x, y.start) & _compatible(x, y.stop)
+    return false
+end
+
+@inline function _compatible(x::UnitRange{Int}, y::Int)
+    # return _compatible(x.start, y) & _compatible(x.stop, y)
+    return false
+end
+
+@inline function _compatible(x::UnitRange{Int}, y::UnitRange{Int})
+    return _compatible(x.start, y.start) & _compatible(x.stop, y.stop)
+end
+
+@inline function _compatible(x::Tuple, y::Tuple)
+    if length(x) != length(y)
+        return false
+    end
+    for (a, b) in zip(x, y)
+        if !_compatible(a, b)
+            return false
+        end
+    end
+    return true
+end
+
+@inline function _compatible(
+    x::AbstractVector{T},
+    y::AbstractVector{T},
+) where {T}
+    if axes(x) != axes(y)
+        return false
+    end
+    for i in eachindex(x, y)
+        if !_compatible(x[i], y[i])
+            return false
+        end
+    end
+    return true
+end
+
+@inline function _compatible(x::Dict{K,V}, y::Dict{K,V}) where {K,V}
+    if keys(x) != keys(y)
+        return false
+    end
+    for k in keys(x)
+        if !_compatible(x[k], y[k])
+            return false
+        end
+    end
+    return true
+end
+
+
+function compatible_neighbors(
+    eft_abstractions::AbstractVector{E},
+    x::A,
+    y::A,
+    ::Type{T};
+    r_max::Int=1,
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+    result = Dict{Tuple{A,A},Dict{Tuple,Vector{Tuple}}}()
+    stack = Vector{Tuple{A,A,Int}}()
+    rejected = Set{Tuple{A,A}}()
+    result[(x, y)] = reduced_outputs(eft_abstractions, x, y, T)
+    push!(stack, (x, y, 1))
+    while !isempty(stack)
+        sx, sy, r = popfirst!(stack)
+        reference = result[(sx, sy)]
+        if r <= r_max
+            nsx = _neighborhood(sx)
+            nsy = _neighborhood(sy)
+            for nx in nsx, ny in nsy
+                if !(((nx, ny) in rejected) || haskey(result, (nx, ny)))
+                    neighbor = reduced_outputs(eft_abstractions, nx, ny, T)
+                    if _compatible(neighbor, reference)
+                        result[(nx, ny)] = neighbor
+                        if r < r_max
+                            push!(stack, (nx, ny, r + 1))
+                        end
+                    else
+                        push!(rejected, (nx, ny))
+                    end
+                end
+            end
+        end
     end
     return result
 end
