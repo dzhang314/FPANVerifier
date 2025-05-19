@@ -126,14 +126,20 @@ end
 
 
 @inline function SEAbstraction(s::Bool, e::Int)
-    @assert -16383 <= e <= 16384
+    if !(-16383 <= e <= 16384)
+        throw(DomainError(e, "Exponent out of range."))
+    end
     return SEAbstraction((UInt32(s) << 31) | (UInt32(e + 16383) << 14))
 end
 
 
 @inline function SETZAbstraction(s::Bool, e::Int, tz::Int)
-    @assert -16383 <= e <= 16384
-    @assert 0 <= tz <= 127
+    if !(-16383 <= e <= 16384)
+        throw(DomainError(e, "Exponent out of range."))
+    end
+    if !(0 <= tz <= 127)
+        throw(DomainError(tz, "Number of trailing zeros out of range."))
+    end
     return SETZAbstraction(
         (UInt32(s) << 31) | (UInt32(e + 16383) << 14) | UInt32(tz))
 end
@@ -143,9 +149,15 @@ end
     s::Bool, lb::Bool, tb::Bool,
     e::Int, nlb::Int, ntb::Int,
 )
-    @assert -16383 <= e <= 16384
-    @assert 0 <= nlb <= 127
-    @assert 0 <= ntb <= 127
+    if !(-16383 <= e <= 16384)
+        throw(DomainError(e, "Exponent out of range."))
+    end
+    if !(0 <= nlb <= 127)
+        throw(DomainError(nlb, "Number of leading bits out of range."))
+    end
+    if !(0 <= ntb <= 127)
+        throw(DomainError(ntb, "Number of trailing bits out of range."))
+    end
     return SELTZOAbstraction(
         (UInt32(s) << 31) | (UInt32(lb) << 30) | (UInt32(tb) << 29) |
         (UInt32(e + 16383) << 14) | UInt32(nlb << 7) | UInt32(ntb))
