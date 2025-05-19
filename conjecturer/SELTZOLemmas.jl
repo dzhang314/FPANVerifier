@@ -43,14 +43,8 @@ function check_seltzo_two_sum_lemmas(
 
     for x in abstract_inputs, y in abstract_inputs
 
-        sx = signbit(x)
-        sy = signbit(y)
-        lbx = mantissa_leading_bit(x)
-        lby = mantissa_leading_bit(y)
-        tbx = mantissa_trailing_bit(x)
-        tby = mantissa_trailing_bit(y)
-        ex = unsafe_exponent(x)
-        ey = unsafe_exponent(y)
+        sx, lbx, lby, ex, fx, gx = unpack(x, T)
+        sy, tbx, tby, ey, fy, gy = unpack(y, T)
         f0x = ex - (mantissa_leading_ones(x) + 1)
         f0y = ey - (mantissa_leading_ones(y) + 1)
         f1x = ex - (mantissa_leading_zeros(x) + 1)

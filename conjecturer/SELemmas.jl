@@ -19,10 +19,8 @@ function check_se_two_sum_lemmas(
 
     for x in abstract_inputs, y in abstract_inputs
 
-        sx = signbit(x)
-        sy = signbit(y)
-        ex = unsafe_exponent(x)
-        ey = unsafe_exponent(y)
+        sx, ex = unpack(x, T)
+        sy, ey = unpack(y, T)
         same_sign = (sx == sy)
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
