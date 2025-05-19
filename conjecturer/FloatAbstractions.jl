@@ -433,7 +433,7 @@ function add_case!(
     e::A,
 ) where {A<:FloatAbstraction,T<:AbstractFloat}
     push!(lemma.claimed_outputs, (r, e))
-    return nothing
+    return lemma
 end
 
 
@@ -473,6 +473,7 @@ function add_case!(
             push!(lemma.claimed_outputs, (r, e))
         end
     end
+    return lemma
 end
 
 
@@ -492,6 +493,7 @@ function add_case!(
             end
         end
     end
+    return lemma
 end
 
 
@@ -526,6 +528,7 @@ function add_case!(
             end
         end
     end
+    return lemma
 end
 
 
@@ -550,6 +553,79 @@ function add_case!(
             end
         end
     end
+    return lemma
+end
+
+
+const _SELTZORange = Tuple{
+    _BoolRange,_BoolRange,_BoolRange,
+    _IntRange,_IntRange,_IntRange}
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SELTZOAbstraction,T},
+    (sr_range, lbr_range, tbr_range, er_range, fr_range, gr_range)::_SELTZORange,
+    e::SELTZOAbstraction,
+) where {T<:AbstractFloat}
+    p = precision(T)
+    for sr in _lemma_range_s(sr_range)
+        for lbr in _lemma_range_s(lbr_range)
+            for tbr in _lemma_range_s(tbr_range)
+                for er in _lemma_range_e(er_range, T)
+                    for fr in _lemma_range_t(fr_range, T)
+                        for gr in _lemma_range_t(gr_range, T)
+                            nlbr = (er - fr) - 1
+                            ntbr = (p - 1) - (er - gr)
+                            r = SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr)
+                            push!(lemma.claimed_outputs, (r, e))
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return lemma
+end
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SELTZOAbstraction,T},
+    (sr_range, lbr_range, tbr_range, er_range, fr_range, gr_range)::_SELTZORange,
+    (se_range, lbe_range, tbe_range, ee_range, fe_range, ge_range)::_SELTZORange,
+) where {T<:AbstractFloat}
+    p = precision(T)
+    for sr in _lemma_range_s(sr_range)
+        for lbr in _lemma_range_s(lbr_range)
+            for tbr in _lemma_range_s(tbr_range)
+                for er in _lemma_range_e(er_range, T)
+                    for fr in _lemma_range_t(fr_range, T)
+                        for gr in _lemma_range_t(gr_range, T)
+                            for se in _lemma_range_s(se_range)
+                                for lbe in _lemma_range_s(lbe_range)
+                                    for tbe in _lemma_range_s(tbe_range)
+                                        for ee in _lemma_range_e(ee_range, T)
+                                            for fe in _lemma_range_t(fe_range, T)
+                                                for ge in _lemma_range_t(ge_range, T)
+                                                    nlbr = (er - fr) - 1
+                                                    ntbr = (p - 1) - (er - gr)
+                                                    nlbe = (ee - fe) - 1
+                                                    ntbe = (p - 1) - (ee - ge)
+                                                    r = SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr)
+                                                    e = SELTZOAbstraction(se, lbe, tbe, ee, nlbe, ntbe)
+                                                    push!(lemma.claimed_outputs, (r, e))
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return lemma
 end
 
 
@@ -761,8 +837,8 @@ end
     return false
 end
 
-@inline function _compatible(x::UnitRange{Int}, y::UnitRange{Int})
-    return _compatible(x.start, y.start) & _compatible(x.stop, y.stop)
+@inline function _compatible(x::AbstractUnitRange, y::AbstractUnitRange)
+    return _compatible(first(x), first(y)) & _compatible(last(x), last(y))
 end
 
 @inline function _compatible(x::Tuple, y::Tuple)
@@ -777,10 +853,7 @@ end
     return true
 end
 
-@inline function _compatible(
-    x::AbstractVector{T},
-    y::AbstractVector{T},
-) where {T}
+@inline function _compatible(x::AbstractVector, y::AbstractVector)
     if axes(x) != axes(y)
         return false
     end
@@ -792,7 +865,7 @@ end
     return true
 end
 
-@inline function _compatible(x::Dict{K,V}, y::Dict{K,V}) where {K,V}
+@inline function _compatible(x::AbstractDict, y::AbstractDict)
     if keys(x) != keys(y)
         return false
     end
@@ -839,6 +912,122 @@ function compatible_neighbors(
         end
     end
     return result
+end
+
+
+############################################################### LEMMA GENERATION
+
+
+export _deep_indices, _deep_getindex, _majority, _seltzo_string
+
+
+@inline _deep_indices(::Integer; prefix::Tuple=()) = Tuple[prefix]
+
+@inline _deep_indices(::UnitRange; prefix::Tuple=()) =
+    Tuple[(prefix..., :start), (prefix..., :stop)]
+
+function _deep_indices(
+    collection::Union{Tuple,AbstractVector,AbstractDict};
+    prefix::Tuple=(),
+)
+    result = Tuple[]
+    for (index, item) in pairs(collection)
+        append!(result, _deep_indices(item; prefix=(prefix..., index)))
+    end
+    return result
+end
+
+
+@inline _deep_getindex(x) = x
+
+@inline _deep_getindex(r::UnitRange, field::Symbol) = getfield(r, field)
+
+@inline _deep_getindex(
+    collection::Union{Tuple,AbstractVector},
+    index::Integer,
+    suffix...,
+) = _deep_getindex(collection[index], suffix...)
+
+@inline _deep_getindex(
+    dictionary::AbstractDict{K,V},
+    key::K,
+    suffix...,
+) where {K,V} = _deep_getindex(dictionary[key], suffix...)
+
+
+@inline function _majority(v::AbstractVector{T}) where {T}
+    counts = Dict{T,Int}()
+    for item in v
+        if haskey(counts, item)
+            counts[item] += 1
+        else
+            counts[item] = 1
+        end
+    end
+    result = nothing
+    max_count = 0
+    for (item, count) in counts
+        if count > max_count
+            result = item
+            max_count = count
+        end
+    end
+    return (result, max_count)
+end
+
+
+function _seltzo_string((c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int})
+    result = ""
+    if c1 == +1
+        result *= (isempty(result) ? "ex" : "+ex")
+    elseif c1 == -1
+        result *= "-ex"
+    else
+        @assert iszero(c1)
+    end
+    if c2 == +1
+        result *= (isempty(result) ? "fx" : "+fx")
+    elseif c2 == -1
+        result *= "-fx"
+    else
+        @assert iszero(c2)
+    end
+    if c3 == +1
+        result *= (isempty(result) ? "gx" : "+gx")
+    elseif c3 == -1
+        result *= "-gx"
+    else
+        @assert iszero(c3)
+    end
+    if c4 == +1
+        result *= (isempty(result) ? "ey" : "+ey")
+    elseif c4 == -1
+        result *= "-ey"
+    else
+        @assert iszero(c4)
+    end
+    if c5 == +1
+        result *= (isempty(result) ? "fy" : "+fy")
+    elseif c5 == -1
+        result *= "-fy"
+    else
+        @assert iszero(c5)
+    end
+    if c6 == +1
+        result *= (isempty(result) ? "gy" : "+gy")
+    elseif c6 == -1
+        result *= "-gy"
+    else
+        @assert iszero(c6)
+    end
+    if c0 > 0
+        result *= (isempty(result) ? "$c0" : "+$c0")
+    elseif c0 < 0
+        result *= "-$(-c0)"
+    else
+        @assert iszero(c0)
+    end
+    return isempty(result) ? "0" : result
 end
 
 
