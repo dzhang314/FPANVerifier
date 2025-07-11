@@ -1,5 +1,6 @@
 using BFloat16s: BFloat16
 using CRC32c: crc32c
+using Printf: @printf
 
 push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
@@ -40,19 +41,46 @@ function generate_abstraction_data(
 
     println("Verifying $file_name...")
     flush(stdout)
-    @assert isfile(file_name)
-    file_size = filesize(file_name)
+
+    if !isfile(file_name)
+        println("ERROR: $file_name not found.")
+        flush(stdout)
+        return nothing
+    end
+
+    actual_size = filesize(file_name)
     if op === :TwoSum
-        @assert file_size === expected_count * sizeof(TwoSumAbstraction{A})
+        expected_size = expected_count * sizeof(TwoSumAbstraction{A})
+        if actual_size !== expected_size
+            println("ERROR: Size of $file_name is incorrect.")
+            println("Expected size: $expected_size bytes")
+            println("Actual size: $actual_size bytes")
+            flush(stdout)
+            return nothing
+        end
     elseif op === :TwoProd
-        @assert file_size === expected_count * sizeof(TwoProdAbstraction{A})
+        expected_size = expected_count * sizeof(TwoProdAbstraction{A})
+        if actual_size !== expected_size
+            println("ERROR: Size of $file_name is incorrect.")
+            println("Expected size: $expected_size bytes")
+            println("Actual size: $actual_size bytes")
+            flush(stdout)
+            return nothing
+        end
     else
         error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
     end
-    @assert open(crc32c, file_name) === expected_crc
 
-    println("Successfully verified $file_name.")
-    flush(stdout)
+    actual_crc = open(crc32c, file_name)
+    if actual_crc === expected_crc
+        println("Successfully verified $file_name.")
+        flush(stdout)
+    else
+        println("ERROR: Contents of $file_name are incorrect.")
+        @printf("Expected CRC: 0x%08X\n", expected_crc)
+        @printf("Actual CRC: 0x%08X\n", actual_crc)
+        flush(stdout)
+    end
 
     return nothing
 end
