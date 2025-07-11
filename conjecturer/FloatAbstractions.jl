@@ -280,6 +280,17 @@ end
 end
 
 
+function two_sum(x::T, y::T) where {T}
+    s = x + y
+    x_prime = s - y
+    y_prime = s - x_prime
+    x_err = x - x_prime
+    y_err = y - y_prime
+    e = x_err + y_err
+    return (s, e)
+end
+
+
 function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
@@ -296,12 +307,7 @@ function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
             i, j = _deinterleave(k)
             x = reinterpret(T, i)
             y = reinterpret(T, j)
-            s = x + y
-            x_prime = s - y
-            y_prime = s - x_prime
-            x_err = x - x_prime
-            y_err = y - y_prime
-            e = x_err + y_err
+            s, e = two_sum(x, y)
             if _isnormal(x) & _isnormal(y) & _isnormal(s) & _isnormal(e)
                 push!(result, TwoSumAbstraction{A}(x, y, s, e))
             end
@@ -309,6 +315,13 @@ function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
         results[chunk_index] = result
     end
     return sort!(collect(union(results...)))
+end
+
+
+function two_prod(x::T, y::T) where {T}
+    p = x * y
+    e = fma(x, y, -p)
+    return (p, e)
 end
 
 
@@ -328,8 +341,7 @@ function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
             i, j = _deinterleave(k)
             x = reinterpret(T, i)
             y = reinterpret(T, j)
-            p = x * y
-            e = fma(x, y, -p)
+            p, e = two_prod(x, y)
             if _isnormal(x) & _isnormal(y) & _isnormal(p) & _isnormal(e)
                 push!(result, TwoProdAbstraction{A}(x, y, p, e))
             end

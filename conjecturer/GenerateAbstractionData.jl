@@ -6,8 +6,13 @@ push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
 
 
-@inline Base.fma(x::BFloat16, y::BFloat16, z::BFloat16) =
-    BFloat16(fma(Float32(x), Float32(y), Float32(z)))
+function FloatAbstractions.two_prod(x::BFloat16, y::BFloat16)
+    p64 = Float64(x) * Float64(y)
+    p16 = BFloat16(p64)
+    e64 = p64 - Float64(p16)
+    e16 = BFloat16(e64)
+    return (p16, e16)
+end
 
 
 function generate_abstraction_data(
@@ -56,7 +61,6 @@ function generate_abstraction_data(
             println("Expected size: $expected_size bytes")
             println("Actual size: $actual_size bytes")
             flush(stdout)
-            return nothing
         end
     elseif op === :TwoProd
         expected_size = expected_count * sizeof(TwoProdAbstraction{A})
@@ -65,7 +69,6 @@ function generate_abstraction_data(
             println("Expected size: $expected_size bytes")
             println("Actual size: $actual_size bytes")
             flush(stdout)
-            return nothing
         end
     else
         error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
