@@ -138,7 +138,7 @@ function check_seltzo_two_sum_lemmas(
         x, y = rs.reservoir[i]
         println("Input 1: $(unpack(x, T)) [$x]")
         println("Input 2: $(unpack(y, T)) [$y]")
-        for (k, vs) in reduced_outputs(two_sum_abstractions, x, y, T)
+        for (k, vs) in condense(abstract_outputs(two_sum_abstractions, x, y), T)
             println("    $k:")
             for v in vs
                 println("        $v")

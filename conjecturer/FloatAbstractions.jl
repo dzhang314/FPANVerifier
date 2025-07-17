@@ -415,6 +415,20 @@ end
 
 function (checker::LemmaChecker{A,E,T})(
     state_claims!::Function,
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+    computed_outputs = abstract_outputs(
+        checker.eft_abstractions, checker.x, checker.y)
+    if isempty(computed_outputs)
+        return false
+    end
+    lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
+    state_claims!(lemma)
+    return computed_outputs == sort!(lemma.claimed_outputs)
+end
+
+
+function (checker::LemmaChecker{A,E,T})(
+    state_claims!::Function,
     lemma_name::String,
     hypothesis::Bool,
 ) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
@@ -656,7 +670,7 @@ end
 ############################################################### OUTPUT REDUCTION
 
 
-export unpack, reduced_outputs
+export unpack, condense
 
 
 @inline unpack(x::SEAbstraction) =
@@ -787,20 +801,15 @@ end
 end
 
 
-function reduced_outputs(
-    eft_abstractions::AbstractVector{E},
-    x::A,
-    y::A,
+function condense(
+    pairs::AbstractVector{Tuple{A,A}},
     ::Type{T},
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
-    outputs = [
-        (unpack(r, T)..., unpack(e, T)...)
-        for (r, e) in abstract_outputs(eft_abstractions, x, y)
-    ]
+) where {A<:FloatAbstraction,T<:AbstractFloat}
+    unpacked_pairs = [(unpack(a, T)..., unpack(b, T)...) for (a, b) in pairs]
     result = Dict{Tuple,Vector{Tuple}}()
-    for output in outputs
-        key = _extract_type(output, Bool)
-        value = _extract_type(output, Int)
+    for item in unpacked_pairs
+        key = _extract_type(item, Bool)
+        value = _extract_type(item, Int)
         if haskey(result, key)
             push!(result[key], value)
         else
@@ -912,7 +921,7 @@ function compatible_neighbors(
     result = Dict{Tuple{A,A},Dict{Tuple,Vector{Tuple}}}()
     stack = Vector{Tuple{A,A,Int}}()
     rejected = Set{Tuple{A,A}}()
-    result[(x, y)] = reduced_outputs(eft_abstractions, x, y, T)
+    result[(x, y)] = condense(abstract_outputs(eft_abstractions, x, y), T)
     push!(stack, (x, y, 1))
     while !isempty(stack)
         sx, sy, r = popfirst!(stack)
@@ -922,7 +931,8 @@ function compatible_neighbors(
             nsy = _neighborhood(sy)
             for nx in nsx, ny in nsy
                 if !(((nx, ny) in rejected) || haskey(result, (nx, ny)))
-                    neighbor = reduced_outputs(eft_abstractions, nx, ny, T)
+                    neighbor = condense(abstract_outputs(
+                            eft_abstractions, nx, ny), T)
                     if _compatible(neighbor, reference)
                         result[(nx, ny)] = neighbor
                         if r < r_max
@@ -977,27 +987,6 @@ end
     key::K,
     suffix...,
 ) where {K,V} = _deep_getindex(dictionary[key], suffix...)
-
-
-@inline function _majority(v::AbstractVector{T}) where {T}
-    counts = Dict{T,Int}()
-    for item in v
-        if haskey(counts, item)
-            counts[item] += 1
-        else
-            counts[item] = 1
-        end
-    end
-    result = nothing
-    max_count = 0
-    for (item, count) in counts
-        if count > max_count
-            result = item
-            max_count = count
-        end
-    end
-    return (result, max_count)
-end
 
 
 function _seltzo_string((c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int})
