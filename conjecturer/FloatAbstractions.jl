@@ -667,10 +667,10 @@ function add_case!(
 end
 
 
-############################################################### OUTPUT REDUCTION
+################################################# ABSTRACTION REPARAMETERIZATION
 
 
-export unpack, condense
+export unpack, unpack_bools, unpack_ints
 
 
 @inline unpack(x::SEAbstraction) =
@@ -678,6 +678,18 @@ export unpack, condense
 
 @inline unpack(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
     (signbit(x), unsafe_exponent(x))
+
+@inline unpack_bools(x::SEAbstraction) =
+    (signbit(x),)
+
+@inline unpack_bools(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x),)
+
+@inline unpack_ints(x::SEAbstraction) =
+    (unsafe_exponent(x),)
+
+@inline unpack_ints(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (unsafe_exponent(x),)
 
 
 @inline unpack(x::SETZAbstraction) =
@@ -692,6 +704,25 @@ export unpack, condense
     e = unsafe_exponent(x)
     f = e - ((p - 1) - mantissa_trailing_zeros(x))
     return (s, e, f)
+end
+
+@inline unpack_bools(x::SETZAbstraction) =
+    (signbit(x),)
+
+@inline unpack_bools(x::SETZAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x),)
+
+@inline unpack_ints(x::SETZAbstraction) =
+    (unsafe_exponent(x), mantissa_trailing_zeros(x))
+
+@inline function unpack_ints(
+    x::SETZAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    e = unsafe_exponent(x)
+    f = e - ((p - 1) - mantissa_trailing_zeros(x))
+    return (e, f)
 end
 
 
@@ -717,6 +748,32 @@ end
     g = e - ((p - 1) - mantissa_trailing_bits(x))
     return (s, lb, tb, e, f, g)
 end
+
+@inline unpack_bools(x::SELTZOAbstraction) =
+    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
+
+@inline unpack_bools(x::SELTZOAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
+
+@inline unpack_ints(x::SELTZOAbstraction) =
+    (unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
+
+@inline function unpack_ints(
+    x::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    e = unsafe_exponent(x)
+    f = e - (mantissa_leading_bits(x) + 1)
+    g = e - ((p - 1) - mantissa_trailing_bits(x))
+    return (e, f, g)
+end
+
+
+############################################################### OUTPUT REDUCTION
+
+
+export condense
 
 
 @inline _combine(i::Int, j::Int) =

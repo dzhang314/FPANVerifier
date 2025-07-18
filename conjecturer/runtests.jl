@@ -33,6 +33,19 @@ function verify_exhaustive(::Type{T}, ::Type{U}) where {T,U}
         @assert mantissa_trailing_bits(x) === mantissa_trailing_bits(seltzo)
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(seltzo)
         @assert mantissa_trailing_ones(x) === mantissa_trailing_ones(seltzo)
+
+        @assert unpack(se) ===
+                (unpack_bools(se)..., unpack_ints(se)...)
+        @assert unpack(se, T) ===
+                (unpack_bools(se, T)..., unpack_ints(se, T)...)
+        @assert unpack(setz) ===
+                (unpack_bools(setz)..., unpack_ints(setz)...)
+        @assert unpack(setz, T) ===
+                (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
+        @assert unpack(seltzo) ===
+                (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
+        @assert unpack(seltzo, T) ===
+                (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
     end
     return true
 end
@@ -71,6 +84,19 @@ function verify_random(::Type{T}, ::Type{U}, n::Int) where {T,U}
         @assert mantissa_trailing_bits(x) === mantissa_trailing_bits(seltzo)
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(seltzo)
         @assert mantissa_trailing_ones(x) === mantissa_trailing_ones(seltzo)
+
+        @assert unpack(se) ===
+                (unpack_bools(se)..., unpack_ints(se)...)
+        @assert unpack(se, T) ===
+                (unpack_bools(se, T)..., unpack_ints(se, T)...)
+        @assert unpack(setz) ===
+                (unpack_bools(setz)..., unpack_ints(setz)...)
+        @assert unpack(setz, T) ===
+                (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
+        @assert unpack(seltzo) ===
+                (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
+        @assert unpack(seltzo, T) ===
+                (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
     end
     return true
 end
