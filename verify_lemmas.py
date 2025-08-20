@@ -10,6 +10,7 @@ from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
 from smt_utils import (
     SMT_SOLVERS,
+    UNSUPPORTED_LOGICS,
     SMTJob,
     create_smt_job,
     count_leading_zeros,
@@ -21,12 +22,17 @@ from subprocess import run
 from time import sleep
 
 
+BVFP_SOLVERS: list[str] = [
+    solver for solver in SMT_SOLVERS if "QF_BVFP" not in UNSUPPORTED_LOGICS[solver]
+]
+
+
 def compute_job_count() -> int:
     cpu_count: int | None = os.cpu_count()
     if cpu_count is None:
         print("WARNING: Could not determine CPU core count using os.cpu_count().")
         cpu_count = 1
-    return max(cpu_count // len(SMT_SOLVERS), 1)
+    return max(cpu_count // len(BVFP_SOLVERS), 1)
 
 
 JOB_COUNT: int = compute_job_count()
@@ -279,7 +285,7 @@ def main() -> None:
         remaining_jobs += create_two_sum_jobs(19, 24, 237, "SELTZO", suffix="-F256")
 
     running_jobs: list[SMTJob] = []
-    solver_len: int = max(map(len, SMT_SOLVERS))
+    solver_len: int = max(map(len, BVFP_SOLVERS))
     filename_len: int = max(len(job.filename) for job in remaining_jobs)
 
     prefix: str = ""

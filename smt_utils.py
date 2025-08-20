@@ -57,8 +57,8 @@ def z3_If(a: z3.BoolRef, b: IntVar, c: IntVar) -> IntVar:
     )
 
 
-def detect_smt_solvers() -> list[str]:
-    result: list[str] = []
+def detect_smt_solvers() -> set[str]:
+    result: set[str] = set[str]()
 
     if "--no-alt-ergo" not in argv:
         try:
@@ -66,7 +66,7 @@ def detect_smt_solvers() -> list[str]:
                 ["alt-ergo", "--version"], text=True
             )
             print("Found Alt-Ergo:", alt_ergo_version.strip())
-            result.append("alt-ergo")
+            result.add("alt-ergo")
         except OSError:
             print("Alt-Ergo not available.")
 
@@ -76,7 +76,7 @@ def detect_smt_solvers() -> list[str]:
                 ["bitwuzla", "--version"], text=True
             )
             print("Found Bitwuzla:", bitwuzla_version.strip())
-            result.append("bitwuzla")
+            result.add("bitwuzla")
         except OSError:
             print("Bitwuzla not available.")
 
@@ -86,7 +86,7 @@ def detect_smt_solvers() -> list[str]:
                 ["cvc5", "--version"], text=True
             )
             print("Found CVC5:", cvc5_version.splitlines()[0].strip())
-            result.append("cvc5")
+            result.add("cvc5")
         except OSError:
             print("CVC5 not available.")
 
@@ -96,7 +96,7 @@ def detect_smt_solvers() -> list[str]:
                 ["mathsat", "-version"], text=True
             )
             print("Found MathSAT:", mathsat_version.strip())
-            result.append("mathsat")
+            result.add("mathsat")
         except OSError:
             print("MathSAT not available.")
 
@@ -106,7 +106,7 @@ def detect_smt_solvers() -> list[str]:
                 ["opensmt", "--version"], text=True, stderr=subprocess.STDOUT
             )
             print("Found OpenSMT:", opensmt_version.strip())
-            result.append("opensmt")
+            result.add("opensmt")
         except OSError:
             print("OpenSMT not available.")
 
@@ -116,7 +116,7 @@ def detect_smt_solvers() -> list[str]:
                 ["princess", "+version"], text=True
             )
             print("Found Princess:", princess_version.strip())
-            result.append("princess")
+            result.add("princess")
         except OSError:
             print("Princess not available.")
 
@@ -126,7 +126,7 @@ def detect_smt_solvers() -> list[str]:
                 ["smtinterpol", "-version"], text=True, stderr=subprocess.STDOUT
             )
             print("Found SMTInterpol:", smtinterpol_version.strip())
-            result.append("smtinterpol")
+            result.add("smtinterpol")
         except OSError:
             print("SMTInterpol not available.")
 
@@ -137,7 +137,7 @@ def detect_smt_solvers() -> list[str]:
                 ["smtrat", "--version"], capture_output=True, text=True
             )
             print("Found SMT-RAT:", proc.stdout.splitlines()[0].strip())
-            result.append("smtrat")
+            result.add("smtrat")
         except OSError:
             print("SMT-RAT not available.")
 
@@ -145,7 +145,7 @@ def detect_smt_solvers() -> list[str]:
         try:
             stp_version: str = subprocess.check_output(["stp", "--version"], text=True)
             print("Found STP:", stp_version.splitlines()[0].strip())
-            result.append("stp")
+            result.add("stp")
         except OSError:
             print("STP not available.")
 
@@ -155,7 +155,7 @@ def detect_smt_solvers() -> list[str]:
                 ["yices-smt2", "--version"], text=True
             )
             print("Found Yices:", yices_version.splitlines()[0].strip())
-            result.append("yices-smt2")
+            result.add("yices-smt2")
         except OSError:
             print("Yices not available.")
 
@@ -163,7 +163,7 @@ def detect_smt_solvers() -> list[str]:
         try:
             z3_version: str = subprocess.check_output(["z3", "--version"], text=True)
             print("Found Z3:", z3_version.strip())
-            result.append("z3")
+            result.add("z3")
         except OSError:
             print("Z3 not available.")
 
@@ -171,10 +171,24 @@ def detect_smt_solvers() -> list[str]:
     return result
 
 
-SMT_SOLVERS: list[str] = detect_smt_solvers()
+SMT_SOLVERS: set[str] = detect_smt_solvers()
+UNSUPPORTED_LOGICS: dict[str, set[str]] = {
+    "alt-ergo": {"QF_BVFP"},
+    "bitwuzla": set[str](),
+    "cvc5": set[str](),
+    "mathsat": set[str](),
+    "opensmt": {"QF_BVFP"},
+    "princess": {"QF_BVFP"},
+    "smtinterpol": {"QF_BVFP"},
+    "smtrat": {"QF_BVFP"},
+    "stp": {"QF_BVFP"},
+    "yices-smt2": {"QF_BVFP"},
+    "z3": set[str](),
+}
 
 
 class SMTJob(object):
+
     def __init__(self, filename: str, logic: str) -> None:
         assert os.path.isfile(filename)
         self.filename: str = filename
@@ -185,17 +199,18 @@ class SMTJob(object):
     def start(self) -> None:
         assert not self.processes
         assert self.result is None
-        shuffle(SMT_SOLVERS)
-        for smt_solver in SMT_SOLVERS:
-            if smt_solver == "bitwuzla" and self.logic == "QF_LIA":
-                continue
-            if smt_solver == "yices-smt2" and self.logic == "QF_BVFP":
-                continue
-            command: list[str] = [smt_solver]
-            if smt_solver == "cvc5":
+        solvers: list[str] = []
+        for solver in SMT_SOLVERS:
+            if self.logic not in UNSUPPORTED_LOGICS[solver]:
+                solvers.append(solver)
+        # Launch solvers in random order to prevent launch order bias.
+        shuffle(solvers)
+        for solver in solvers:
+            command: list[str] = [solver]
+            if solver == "cvc5" and self.logic == "QF_BVFP":
                 command.append("--fp-exp")
             command.append(self.filename)
-            self.processes[smt_solver] = (
+            self.processes[solver] = (
                 perf_counter_ns(),
                 subprocess.Popen(
                     command,
