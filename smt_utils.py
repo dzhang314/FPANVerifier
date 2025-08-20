@@ -175,15 +175,15 @@ SMT_SOLVERS: set[str] = detect_smt_solvers()
 UNSUPPORTED_LOGICS: dict[str, set[str]] = {
     "alt-ergo": {"QF_BVFP"},
     "bitwuzla": {"QF_LIA"},
-    "cvc5": set[str](),
-    "mathsat": set[str](),
+    "cvc5": set(),
+    "mathsat": set(),
     "opensmt": {"QF_BVFP"},
     "princess": {"QF_BVFP"},
     "smtinterpol": {"QF_BVFP"},
     "smtrat": {"QF_BVFP"},
     "stp": {"QF_BVFP", "QF_LIA"},
     "yices-smt2": {"QF_BVFP"},
-    "z3": set[str](),
+    "z3": set(),
 }
 
 
