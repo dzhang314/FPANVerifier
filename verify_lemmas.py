@@ -348,8 +348,8 @@ def main() -> None:
         for job in finished_jobs:
             running_jobs.remove(job)
 
-        # Sleep for a short time to avoid busy waiting. (Even the fastest SMT
-        # solvers take a few milliseconds, so 0.1ms is a reasonable interval.)
+        # Sleep to avoid busy waiting. Even the fastest SMT solvers
+        # take a few milliseconds, so 0.1ms is a reasonable interval.
         sleep(0.0001)
 
 

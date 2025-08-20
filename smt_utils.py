@@ -174,14 +174,14 @@ def detect_smt_solvers() -> set[str]:
 SMT_SOLVERS: set[str] = detect_smt_solvers()
 UNSUPPORTED_LOGICS: dict[str, set[str]] = {
     "alt-ergo": {"QF_BVFP"},
-    "bitwuzla": set[str](),
+    "bitwuzla": {"QF_LIA"},
     "cvc5": set[str](),
     "mathsat": set[str](),
     "opensmt": {"QF_BVFP"},
     "princess": {"QF_BVFP"},
     "smtinterpol": {"QF_BVFP"},
     "smtrat": {"QF_BVFP"},
-    "stp": {"QF_BVFP"},
+    "stp": {"QF_BVFP", "QF_LIA"},
     "yices-smt2": {"QF_BVFP"},
     "z3": set[str](),
 }
@@ -209,12 +209,18 @@ class SMTJob(object):
             command: list[str] = [solver]
             if solver == "cvc5" and self.logic == "QF_BVFP":
                 command.append("--fp-exp")
+            if solver == "princess":
+                command.append("+quiet")
+            if solver == "smtinterpol":
+                command.append("-q")
+                command.append("-no-success")
             command.append(self.filename)
             self.processes[solver] = (
                 perf_counter_ns(),
                 subprocess.Popen(
                     command,
                     stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                     text=True,
                 ),
             )
@@ -234,21 +240,35 @@ class SMTJob(object):
                 elapsed: float = (stop - start) / 1.0e9
 
                 # Verify successful termination.
-                assert process.returncode == 0
                 stdout, stderr = process.communicate()
-                assert stderr is None
+                if process.returncode != 0:
+                    raise RuntimeError(
+                        f"{smt_solver} exited with code {process.returncode} on file "
+                        + repr(self.filename)
+                        + ":\n"
+                        + stdout
+                        + "\n"
+                        + stderr
+                    )
 
                 # Parse SMT solver output.
                 if stdout == "unsat\n":
+                    assert not stderr
                     self.result = (elapsed, z3.unsat)
                 elif stdout == "sat\n":
+                    assert not stderr
                     self.result = (elapsed, z3.sat)
                 elif stdout == "unknown\n":
+                    assert not stderr
                     self.result = (elapsed, z3.unknown)
                 else:
                     raise RuntimeError(
-                        f"Unexpected output from {smt_solver} on {self.filename}:\n"
+                        f"Unexpected output from {smt_solver} on file "
+                        + repr(self.filename)
+                        + ":\n"
                         + stdout
+                        + "\n"
+                        + stderr
                     )
 
                 finished_solver = smt_solver
