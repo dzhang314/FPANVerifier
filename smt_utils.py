@@ -60,6 +60,16 @@ def z3_If(a: z3.BoolRef, b: IntVar, c: IntVar) -> IntVar:
 def detect_smt_solvers() -> list[str]:
     result: list[str] = []
 
+    if "--no-alt-ergo" not in argv:
+        try:
+            alt_ergo_version: str = subprocess.check_output(
+                ["alt-ergo", "--version"], text=True
+            )
+            print("Found Alt-Ergo:", alt_ergo_version.strip())
+            result.append("alt-ergo")
+        except OSError:
+            print("Alt-Ergo not available.")
+
     if "--no-bitwuzla" not in argv:
         try:
             bitwuzla_version: str = subprocess.check_output(
@@ -67,8 +77,8 @@ def detect_smt_solvers() -> list[str]:
             )
             print("Found Bitwuzla:", bitwuzla_version.strip())
             result.append("bitwuzla")
-        except FileNotFoundError:
-            print("Bitwuzla not found.")
+        except OSError:
+            print("Bitwuzla not available.")
 
     if "--no-cvc5" not in argv:
         try:
@@ -77,8 +87,8 @@ def detect_smt_solvers() -> list[str]:
             )
             print("Found CVC5:", cvc5_version.splitlines()[0].strip())
             result.append("cvc5")
-        except FileNotFoundError:
-            print("CVC5 not found.")
+        except OSError:
+            print("CVC5 not available.")
 
     if "--no-mathsat" not in argv:
         try:
@@ -87,8 +97,57 @@ def detect_smt_solvers() -> list[str]:
             )
             print("Found MathSAT:", mathsat_version.strip())
             result.append("mathsat")
-        except FileNotFoundError:
-            print("MathSAT not found.")
+        except OSError:
+            print("MathSAT not available.")
+
+    if "--no-opensmt" not in argv:
+        try:
+            opensmt_version: str = subprocess.check_output(
+                ["opensmt", "--version"], text=True, stderr=subprocess.STDOUT
+            )
+            print("Found OpenSMT:", opensmt_version.strip())
+            result.append("opensmt")
+        except OSError:
+            print("OpenSMT not available.")
+
+    if "--no-princess" not in argv:
+        try:
+            princess_version: str = subprocess.check_output(
+                ["princess", "+version"], text=True
+            )
+            print("Found Princess:", princess_version.strip())
+            result.append("princess")
+        except OSError:
+            print("Princess not available.")
+
+    if "--no-smtinterpol" not in argv:
+        try:
+            smtinterpol_version: str = subprocess.check_output(
+                ["smtinterpol", "-version"], text=True, stderr=subprocess.STDOUT
+            )
+            print("Found SMTInterpol:", smtinterpol_version.strip())
+            result.append("smtinterpol")
+        except OSError:
+            print("SMTInterpol not available.")
+
+    if "--no-smtrat" not in argv:
+        try:
+            # SMT-RAT returns a nonzero exit code, so check_output fails.
+            proc: subprocess.CompletedProcess[str] = subprocess.run(
+                ["smtrat", "--version"], capture_output=True, text=True
+            )
+            print("Found SMT-RAT:", proc.stdout.splitlines()[0].strip())
+            result.append("smtrat")
+        except OSError:
+            print("SMT-RAT not available.")
+
+    if "--no-stp" not in argv:
+        try:
+            stp_version: str = subprocess.check_output(["stp", "--version"], text=True)
+            print("Found STP:", stp_version.splitlines()[0].strip())
+            result.append("stp")
+        except OSError:
+            print("STP not available.")
 
     if "--no-yices" not in argv:
         try:
@@ -97,16 +156,16 @@ def detect_smt_solvers() -> list[str]:
             )
             print("Found Yices:", yices_version.splitlines()[0].strip())
             result.append("yices-smt2")
-        except FileNotFoundError:
-            print("Yices not found.")
+        except OSError:
+            print("Yices not available.")
 
     if "--no-z3" not in argv:
         try:
             z3_version: str = subprocess.check_output(["z3", "--version"], text=True)
             print("Found Z3:", z3_version.strip())
             result.append("z3")
-        except FileNotFoundError:
-            print("Z3 not found.")
+        except OSError:
+            print("Z3 not available.")
 
     print()
     return result
