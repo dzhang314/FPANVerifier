@@ -57,10 +57,25 @@ def z3_If(a: z3.BoolRef, b: IntVar, c: IntVar) -> IntVar:
     )
 
 
+def pop_flag(flag: str) -> bool:
+    assert flag != "--"
+    indices: list[int] = []
+    for i, arg in enumerate(argv):
+        if arg == "--":
+            break
+        elif arg == flag:
+            indices.append(i)
+    if indices:
+        for index in reversed(indices):
+            _ = argv.pop(index)
+        return True
+    return False
+
+
 def detect_smt_solvers() -> set[str]:
     result: set[str] = set[str]()
 
-    if "--no-alt-ergo" not in argv:
+    if not pop_flag("--no-alt-ergo"):
         try:
             alt_ergo_version: str = subprocess.check_output(
                 ["alt-ergo", "--version"], text=True
@@ -70,7 +85,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("Alt-Ergo not available.")
 
-    if "--no-bitwuzla" not in argv:
+    if not pop_flag("--no-bitwuzla"):
         try:
             bitwuzla_version: str = subprocess.check_output(
                 ["bitwuzla", "--version"], text=True
@@ -80,7 +95,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("Bitwuzla not available.")
 
-    if "--no-cvc5" not in argv:
+    if not pop_flag("--no-cvc5"):
         try:
             cvc5_version: str = subprocess.check_output(
                 ["cvc5", "--version"], text=True
@@ -90,7 +105,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("CVC5 not available.")
 
-    if "--no-mathsat" not in argv:
+    if not pop_flag("--no-mathsat"):
         try:
             mathsat_version: str = subprocess.check_output(
                 ["mathsat", "-version"], text=True
@@ -100,7 +115,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("MathSAT not available.")
 
-    if "--no-opensmt" not in argv:
+    if not pop_flag("--no-opensmt"):
         try:
             opensmt_version: str = subprocess.check_output(
                 ["opensmt", "--version"], text=True, stderr=subprocess.STDOUT
@@ -110,7 +125,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("OpenSMT not available.")
 
-    if "--no-princess" not in argv:
+    if not pop_flag("--no-princess"):
         try:
             princess_version: str = subprocess.check_output(
                 ["princess", "+version"], text=True
@@ -120,7 +135,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("Princess not available.")
 
-    if "--no-smtinterpol" not in argv:
+    if not pop_flag("--no-smtinterpol"):
         try:
             smtinterpol_version: str = subprocess.check_output(
                 ["smtinterpol", "-version"], text=True, stderr=subprocess.STDOUT
@@ -130,7 +145,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("SMTInterpol not available.")
 
-    if "--no-smtrat" not in argv:
+    if not pop_flag("--no-smtrat"):
         try:
             # SMT-RAT returns a nonzero exit code, so check_output fails.
             proc: subprocess.CompletedProcess[str] = subprocess.run(
@@ -141,7 +156,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("SMT-RAT not available.")
 
-    if "--no-stp" not in argv:
+    if not pop_flag("--no-stp"):
         try:
             stp_version: str = subprocess.check_output(["stp", "--version"], text=True)
             print("Found STP:", stp_version.splitlines()[0].strip())
@@ -149,7 +164,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("STP not available.")
 
-    if "--no-yices" not in argv:
+    if not pop_flag("--no-yices"):
         try:
             yices_version: str = subprocess.check_output(
                 ["yices-smt2", "--version"], text=True
@@ -159,7 +174,7 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("Yices not available.")
 
-    if "--no-z3" not in argv:
+    if not pop_flag("--no-z3"):
         try:
             z3_version: str = subprocess.check_output(["z3", "--version"], text=True)
             print("Found Z3:", z3_version.strip())
@@ -167,7 +182,6 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("Z3 not available.")
 
-    print()
     return result
 
 

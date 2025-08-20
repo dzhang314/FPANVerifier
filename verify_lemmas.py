@@ -5,6 +5,9 @@ import sys
 import z3
 
 from operator import eq
+from subprocess import run
+from time import sleep
+
 from se_lemmas import se_two_sum_lemmas
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
@@ -18,21 +21,39 @@ from smt_utils import (
     count_trailing_zeros,
     count_trailing_ones,
 )
-from subprocess import run
-from time import sleep
 
 
+EXIT_NO_SOLVERS: int = 1
+EXIT_BITWUZLA_COUNTEREXAMPLE: int = 2
+EXIT_CVC5_COUNTEREXAMPLE: int = 3
+EXIT_Z3_COUNTEREXAMPLE: int = 4
+EXIT_OTHER_COUNTEREXAMPLE: int = 5
 BVFP_SOLVERS: list[str] = [
     solver for solver in SMT_SOLVERS if "QF_BVFP" not in UNSUPPORTED_LOGICS[solver]
 ]
 
 
 def compute_job_count() -> int:
-    cpu_count: int | None = os.cpu_count()
-    if cpu_count is None:
-        print("WARNING: Could not determine CPU core count using os.cpu_count().")
-        cpu_count = 1
-    return max(cpu_count // len(BVFP_SOLVERS), 1)
+    if len(BVFP_SOLVERS) == 0:
+        print(
+            "ERROR: No SMT solvers supporting QF_BVFP are available on your $PATH.",
+            file=sys.stderr,
+        )
+        print(
+            "Please install at least one of the following SMT solvers:", file=sys.stderr
+        )
+        for solver, logics in UNSUPPORTED_LOGICS.items():
+            if "QF_BVFP" not in logics:
+                print("    -", solver, file=sys.stderr)
+        sys.exit(EXIT_NO_SOLVERS)
+    num_cores: int | None = os.cpu_count()
+    if num_cores is None:
+        print(
+            "WARNING: Could not determine CPU core count using os.cpu_count().",
+            file=sys.stderr,
+        )
+        num_cores = 1
+    return max(num_cores // len(BVFP_SOLVERS), 1)
 
 
 JOB_COUNT: int = compute_job_count()
@@ -238,7 +259,7 @@ def create_two_sum_jobs(
             z3.BitVecVal(3, promoted_exponent_width),
         )
     else:
-        raise ValueError(f"Unknown floating-point model: {model}")
+        raise ValueError(f"Unknown floating-point model: {repr(model)}")
 
     return [
         create_smt_job(solver, "QF_BVFP", prefix + name + suffix, lemma)
@@ -334,13 +355,17 @@ def main() -> None:
                     print("Counterexample:")
                     with open(job.filename, "a") as f:
                         _ = f.write("(get-model)\n")
-                    if solver_name == "cvc5":
-                        _ = run(["cvc5", "--fp-exp", "--produce-models", job.filename])
-                    elif solver_name == "bitwuzla":
+                    if solver_name == "bitwuzla":
                         _ = run(["bitwuzla", "--produce-models", job.filename])
+                        sys.exit(EXIT_BITWUZLA_COUNTEREXAMPLE)
+                    elif solver_name == "cvc5":
+                        _ = run(["cvc5", "--fp-exp", "--produce-models", job.filename])
+                        sys.exit(EXIT_CVC5_COUNTEREXAMPLE)
                     elif solver_name == "z3":
                         _ = run(["z3", job.filename])
-                    sys.exit(1)
+                        sys.exit(EXIT_Z3_COUNTEREXAMPLE)
+                    else:
+                        sys.exit(EXIT_OTHER_COUNTEREXAMPLE)
                 else:
                     assert False
 

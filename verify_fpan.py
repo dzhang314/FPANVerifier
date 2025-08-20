@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
+import sys
 import z3
 
-from sys import argv, stderr
+from os import cpu_count
 from time import sleep
 from typing import Self
 
 from setz_lemmas import setz_two_sum_lemmas
-from smt_utils import SMTJob, create_smt_job
+from smt_utils import SMT_SOLVERS, UNSUPPORTED_LOGICS, SMTJob, create_smt_job
 
 
 Z3_ZERO: z3.ArithRef = z3.IntVal(0)
@@ -18,6 +19,39 @@ GLOBAL_PRECISION: z3.ArithRef = z3.Int("PRECISION")
 GLOBAL_ZERO_EXPONENT: z3.ArithRef = z3.Int("ZERO_EXPONENT")
 GLOBAL_MANTISSA_WIDTH: z3.ArithRef = GLOBAL_PRECISION - 1
 INTERNAL_SEPARATOR: str = "__"
+
+
+EXIT_NO_SOLVERS: int = 1
+LIA_SOLVERS: list[str] = [
+    solver for solver in SMT_SOLVERS if "QF_LIA" not in UNSUPPORTED_LOGICS[solver]
+]
+
+
+def compute_job_count() -> int:
+    if len(LIA_SOLVERS) == 0:
+        print(
+            "ERROR: No SMT solvers supporting QF_LIA are available on your $PATH.",
+            file=sys.stderr,
+        )
+        print(
+            "Please install at least one of the following SMT solvers:", file=sys.stderr
+        )
+        for solver, logics in UNSUPPORTED_LOGICS.items():
+            if "QF_LIA" not in logics:
+                print("    -", solver, file=sys.stderr)
+        sys.exit(EXIT_NO_SOLVERS)
+    num_cores: int | None = cpu_count()
+    if num_cores is None:
+        print(
+            "WARNING: Could not determine CPU core count using os.cpu_count().",
+            file=sys.stderr,
+        )
+        num_cores = 1
+    return max(num_cores // len(LIA_SOLVERS), 1)
+
+
+JOB_COUNT: int = compute_job_count()
+print("Computing bounds with", JOB_COUNT, "parallel jobs.")
 
 
 class SELTZOVariable(object):
@@ -292,9 +326,54 @@ class VerifierContext(object):
             # take a few milliseconds, so 0.1ms is a reasonable interval.
             sleep(0.0001)
 
+    def handle_bound_command(self, arguments: list[str]) -> None:
+        assert len(arguments) == 3
+        assert arguments[1] == "/"
+        name_a: str = arguments[0]
+        name_b: str = arguments[2]
+        assert name_a in self.variables
+        assert name_b in self.variables
+        a: SELTZOVariable = self.variables[name_a][-1]
+        b: SELTZOVariable = self.variables[name_b][-1]
+        # TODO: Sanitize bound name to ensure it is a valid filename.
+        bound_name: str = f"bound_{name_a}_{name_b}"
+        job: SMTJob = create_smt_job(
+            self.solver,
+            "QF_LIA",
+            bound_name,
+            a.is_smaller_than(b, GLOBAL_PRECISION - 1024),
+        )
+        job.start()
+        while True:
+            if job.poll():
+                assert job.result is not None
+                assert len(job.processes) == 1
+                solver_name: str = job.processes.popitem()[0]
+                if job.result[1] == z3.unsat:
+                    print(
+                        solver_name,
+                        "proved",
+                        bound_name,
+                        f"in {job.result[0]:.3f} seconds.",
+                    )
+                elif job.result[1] == z3.sat:
+                    print(
+                        "ERROR:",
+                        solver_name,
+                        "REFUTED",
+                        bound_name,
+                        f"in {job.result[0]:.3f} seconds.",
+                    )
+                else:
+                    assert False
+                break
+            # Sleep to avoid busy waiting. Even the fastest SMT solvers
+            # take a few milliseconds, so 0.1ms is a reasonable interval.
+            sleep(0.0001)
+
 
 def main() -> None:
-    for path in argv[1:]:
+    for path in sys.argv[1:]:
         try:
             with open(path) as f:
                 print(f"Processing file: {repr(path)}")
@@ -317,15 +396,16 @@ def main() -> None:
                     elif command == "prove":
                         context.handle_prove_command(arguments)
                     elif command == "bound":
-                        # TODO: Implement bound command.
-                        pass
+                        context.handle_bound_command(arguments)
                     else:
-                        print(f"ERROR: Unknown command {repr(command)}.", file=stderr)
+                        print(
+                            f"ERROR: Unknown command {repr(command)}.", file=sys.stderr
+                        )
                         break
         except FileNotFoundError:
-            print(f"ERROR: File {repr(path)} not found.", file=stderr)
+            print(f"ERROR: File {repr(path)} not found.", file=sys.stderr)
         except OSError:
-            print(f"ERROR: Unable to read file {repr(path)}.", file=stderr)
+            print(f"ERROR: Unable to read file {repr(path)}.", file=sys.stderr)
 
 
 if __name__ == "__main__":
