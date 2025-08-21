@@ -326,7 +326,68 @@ class VerifierContext(object):
             # take a few milliseconds, so 0.1ms is a reasonable interval.
             sleep(0.0001)
 
-    def handle_bound_command(self, arguments: list[str]) -> None:
+    def format_bound(self, name_a: str, name_b: str, k: int, j: int) -> str:
+        if j == 0:
+            return f"|{name_a}| <= u^{k} |{name_b}|"
+        elif -20 <= j <= -1:
+            return f"|{name_a}| <= {2**-j} u^{k} |{name_b}|"
+        elif 1 <= j <= 20:
+            return f"|{name_a}| <= (1/{2**j}) u^{k} |{name_b}|"
+        else:
+            return f"|{name_a}| <= 2^{-j} u^{k} |{name_b}|"
+
+    def test_bound(
+        self,
+        a: SELTZOVariable,
+        b: SELTZOVariable,
+        name_a: str,
+        name_b: str,
+        k: int,
+        j: int,
+    ) -> bool:
+        # TODO: Sanitize bound name to ensure it is a valid filename.
+        bound_name: str = f"bound_{name_a}_{name_b}_{k}_{j}"
+        job: SMTJob = create_smt_job(
+            self.solver,
+            "QF_LIA",
+            bound_name,
+            a.is_smaller_than(b, GLOBAL_PRECISION * k + j),
+        )
+        job.start()
+        while True:
+            if job.poll():
+                assert job.result is not None
+                assert len(job.processes) == 1
+                solver_len: int = max(map(len, LIA_SOLVERS))
+                solver_name: str = job.processes.popitem()[0]
+                if job.result[1] == z3.unsat:
+                    print(
+                        f"    {solver_name.rjust(solver_len)} proved ",
+                        self.format_bound(name_a, name_b, k, j).ljust(32),
+                        f"in{job.result[0]:8.3f} seconds.",
+                    )
+                    return True
+                elif job.result[1] == z3.sat:
+                    print(
+                        f"    {solver_name.rjust(solver_len)} refuted",
+                        self.format_bound(name_a, name_b, k, j).ljust(32),
+                        f"in{job.result[0]:8.3f} seconds.",
+                    )
+                    return False
+                else:
+                    assert False
+            # Sleep to avoid busy waiting. Even the fastest SMT solvers
+            # take a few milliseconds, so 0.1ms is a reasonable interval.
+            sleep(0.0001)
+
+    def handle_bound_command(
+        self,
+        arguments: list[str],
+        origin_k: int = 0,
+        origin_j: int = -1024,
+    ) -> None:
+
+        assert origin_j <= 0
         assert len(arguments) == 3
         assert arguments[1] == "/"
         name_a: str = arguments[0]
@@ -335,41 +396,70 @@ class VerifierContext(object):
         assert name_b in self.variables
         a: SELTZOVariable = self.variables[name_a][-1]
         b: SELTZOVariable = self.variables[name_b][-1]
-        # TODO: Sanitize bound name to ensure it is a valid filename.
-        bound_name: str = f"bound_{name_a}_{name_b}"
-        job: SMTJob = create_smt_job(
-            self.solver,
-            "QF_LIA",
-            bound_name,
-            a.is_smaller_than(b, GLOBAL_PRECISION - 1024),
-        )
-        job.start()
-        while True:
-            if job.poll():
-                assert job.result is not None
-                assert len(job.processes) == 1
-                solver_name: str = job.processes.popitem()[0]
-                if job.result[1] == z3.unsat:
-                    print(
-                        solver_name,
-                        "proved",
-                        bound_name,
-                        f"in {job.result[0]:.3f} seconds.",
-                    )
-                elif job.result[1] == z3.sat:
-                    print(
-                        "ERROR:",
-                        solver_name,
-                        "REFUTED",
-                        bound_name,
-                        f"in {job.result[0]:.3f} seconds.",
-                    )
+        print(f"Bounding |{name_a}| relative to |{name_b}|.")
+
+        # Perform a linear scan to find passing and failing values of k.
+        passing_k: int | None = None
+        failing_k: int | None = None
+        if self.test_bound(a, b, name_a, name_b, origin_k, origin_j):
+            passing_k = origin_k
+            while True:
+                if self.test_bound(a, b, name_a, name_b, passing_k + 1, origin_j):
+                    passing_k += 1
                 else:
-                    assert False
+                    failing_k = passing_k + 1
+                    break
+        else:
+            failing_k = origin_k
+            while True:
+                if self.test_bound(a, b, name_a, name_b, failing_k - 1, origin_j):
+                    passing_k = failing_k - 1
+                    break
+                else:
+                    failing_k -= 1
+
+        # Assert that the linear scan succeeded.
+        assert passing_k is not None
+        assert failing_k is not None
+        assert passing_k + 1 == failing_k
+
+        # Perform an exponential scan to find a failing value of j.
+        passing_j: int = origin_j
+        failing_j: int | None = None
+        while passing_j < 0:
+            if self.test_bound(a, b, name_a, name_b, passing_k, (passing_j + 1) // 2):
+                passing_j = (passing_j + 1) // 2
+            else:
+                failing_j = (passing_j + 1) // 2
                 break
-            # Sleep to avoid busy waiting. Even the fastest SMT solvers
-            # take a few milliseconds, so 0.1ms is a reasonable interval.
-            sleep(0.0001)
+        if failing_j is None:
+            assert passing_j == 0
+            if self.test_bound(a, b, name_a, name_b, passing_k, 1):
+                passing_j = 1
+                while True:
+                    if self.test_bound(a, b, name_a, name_b, passing_k, passing_j * 2):
+                        passing_j *= 2
+                    else:
+                        failing_j = passing_j * 2
+                        break
+            else:
+                failing_j = 1
+
+        # Assert that the exponential scan succeeded.
+        assert failing_j is not None
+        assert passing_j < failing_j
+
+        # Perform a binary search to tighten the bounds on j.
+        while passing_j + 1 < failing_j:
+            trial_j: int = (passing_j + failing_j) // 2
+            if self.test_bound(a, b, name_a, name_b, passing_k, trial_j):
+                passing_j = trial_j
+            else:
+                failing_j = trial_j
+
+        # Assert that the binary search succeeded.
+        assert passing_j + 1 == failing_j
+        print("Optimal bound:", self.format_bound(name_a, name_b, passing_k, passing_j))
 
 
 def main() -> None:

@@ -12,7 +12,9 @@ two_sum a c
 two_sum b d
 two_sum b c
 two_sum a b
+two_sum c d
 
 prove a strongly_dominates b
+bound b / a
 bound c / a
 bound d / a
