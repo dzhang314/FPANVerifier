@@ -310,9 +310,8 @@ def create_smt_job(
     contents: str = f"(set-logic {logic})\n" + solver.to_smt2()
     solver.pop()
 
-    # Write SMT-LIB 2 file in tmp subdirectory.
-    os.makedirs("tmp", exist_ok=True)
-    filename: str = os.path.join("tmp", name + ".smt2")
+    os.makedirs("smt2", exist_ok=True)
+    filename: str = os.path.join("smt2", name + ".smt2")
     with open(filename, "w") as f:
         _ = f.write(contents)
 
