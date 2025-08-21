@@ -73,17 +73,18 @@ def pop_flag(flag: str) -> bool:
 
 
 def detect_smt_solvers() -> set[str]:
+
     result: set[str] = set[str]()
 
-    if not pop_flag("--no-alt-ergo"):
-        try:
-            alt_ergo_version: str = subprocess.check_output(
-                ["alt-ergo", "--version"], text=True
-            )
-            print("Found Alt-Ergo:", alt_ergo_version.strip())
-            result.add("alt-ergo")
-        except OSError:
-            print("Alt-Ergo not available.")
+    # if not pop_flag("--no-alt-ergo"):
+    #     try:
+    #         alt_ergo_version: str = subprocess.check_output(
+    #             ["alt-ergo", "--version"], text=True
+    #         )
+    #         print("Found Alt-Ergo:", alt_ergo_version.strip())
+    #         result.add("alt-ergo")
+    #     except OSError:
+    #         print("Alt-Ergo not available.")
 
     if not pop_flag("--no-bitwuzla"):
         try:
@@ -125,15 +126,15 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("OpenSMT not available.")
 
-    if not pop_flag("--no-princess"):
-        try:
-            princess_version: str = subprocess.check_output(
-                ["princess", "+version"], text=True
-            )
-            print("Found Princess:", princess_version.strip())
-            result.add("princess")
-        except OSError:
-            print("Princess not available.")
+    # if not pop_flag("--no-princess"):
+    #     try:
+    #         princess_version: str = subprocess.check_output(
+    #             ["princess", "+version"], text=True
+    #         )
+    #         print("Found Princess:", princess_version.strip())
+    #         result.add("princess")
+    #     except OSError:
+    #         print("Princess not available.")
 
     if not pop_flag("--no-smtinterpol"):
         try:
@@ -145,24 +146,26 @@ def detect_smt_solvers() -> set[str]:
         except OSError:
             print("SMTInterpol not available.")
 
-    if not pop_flag("--no-smtrat"):
-        try:
-            # SMT-RAT returns a nonzero exit code, so check_output fails.
-            proc: subprocess.CompletedProcess[str] = subprocess.run(
-                ["smtrat", "--version"], capture_output=True, text=True
-            )
-            print("Found SMT-RAT:", proc.stdout.splitlines()[0].strip())
-            result.add("smtrat")
-        except OSError:
-            print("SMT-RAT not available.")
+    # if not pop_flag("--no-smtrat"):
+    #     try:
+    #         # SMT-RAT returns a nonzero exit code, so check_output fails.
+    #         proc: subprocess.CompletedProcess[str] = subprocess.run(
+    #             ["smtrat", "--version"], capture_output=True, text=True
+    #         )
+    #         print("Found SMT-RAT:", proc.stdout.splitlines()[0].strip())
+    #         result.add("smtrat")
+    #     except OSError:
+    #         print("SMT-RAT not available.")
 
-    if not pop_flag("--no-stp"):
-        try:
-            stp_version: str = subprocess.check_output(["stp", "--version"], text=True)
-            print("Found STP:", stp_version.splitlines()[0].strip())
-            result.add("stp")
-        except OSError:
-            print("STP not available.")
+    # if not pop_flag("--no-stp"):
+    #     try:
+    #         stp_version: str = subprocess.check_output(
+    #             ["stp", "--version"], text=True
+    #         )
+    #         print("Found STP:", stp_version.splitlines()[0].strip())
+    #         result.add("stp")
+    #     except OSError:
+    #         print("STP not available.")
 
     if not pop_flag("--no-yices"):
         try:
@@ -187,15 +190,15 @@ def detect_smt_solvers() -> set[str]:
 
 SMT_SOLVERS: set[str] = detect_smt_solvers()
 UNSUPPORTED_LOGICS: dict[str, set[str]] = {
-    "alt-ergo": {"QF_BVFP"},
+    # "alt-ergo": {"QF_BVFP"},
     "bitwuzla": {"QF_LIA"},
     "cvc5": set(),
     "mathsat": set(),
     "opensmt": {"QF_BVFP"},
-    "princess": {"QF_BVFP"},
+    # "princess": {"QF_BVFP"},
     "smtinterpol": {"QF_BVFP"},
-    "smtrat": {"QF_BVFP"},
-    "stp": {"QF_BVFP", "QF_LIA"},
+    # "smtrat": {"QF_BVFP"},
+    # "stp": {"QF_BVFP", "QF_LIA"},
     "yices-smt2": {"QF_BVFP"},
     "z3": set(),
 }
