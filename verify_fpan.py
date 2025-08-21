@@ -5,7 +5,7 @@ import z3
 
 from os import cpu_count
 from time import sleep
-from typing import Self, cast
+from typing import cast
 
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
@@ -124,7 +124,7 @@ class SELTZOVariable(object):
             )
         )
 
-    def can_equal(self, other: Self) -> z3.BoolRef:
+    def can_equal(self, other: "SELTZOVariable") -> z3.BoolRef:
         return z3.Or(
             z3.And(self.is_zero, other.is_zero),
             z3.And(
@@ -146,7 +146,7 @@ class SELTZOVariable(object):
             self.num_trailing_bits == GLOBAL_MANTISSA_WIDTH,
         )
 
-    def s_dominates(self, other: Self) -> z3.BoolRef:
+    def s_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
         ntz: z3.ArithRef = z3.If(
             self.trailing_bit, z3.IntVal(0), self.num_trailing_bits
         )
@@ -155,13 +155,13 @@ class SELTZOVariable(object):
             self.exponent >= other.exponent + (GLOBAL_PRECISION - ntz),
         )
 
-    def p_dominates(self, other: Self) -> z3.BoolRef:
+    def p_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
         return z3.Or(
             other.is_zero,
             self.exponent >= other.exponent + GLOBAL_PRECISION,
         )
 
-    def ulp_dominates(self, other: Self) -> z3.BoolRef:
+    def ulp_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
         return z3.Or(
             other.is_zero,
             self.exponent > other.exponent + (GLOBAL_PRECISION - 1),
@@ -171,7 +171,7 @@ class SELTZOVariable(object):
             ),
         )
 
-    def qd_dominates(self, other: Self) -> z3.BoolRef:
+    def qd_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
         return z3.Or(
             other.is_zero,
             self.exponent > other.exponent + GLOBAL_PRECISION,
@@ -181,7 +181,7 @@ class SELTZOVariable(object):
             ),
         )
 
-    def strongly_dominates(self, other: Self) -> z3.BoolRef:
+    def strongly_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
         return z3.Or(
             other.is_zero,
             self.exponent > other.exponent + (GLOBAL_PRECISION + 1),
@@ -201,7 +201,11 @@ class SELTZOVariable(object):
             ),
         )
 
-    def is_smaller_than(self, other: Self, magnitude: int | z3.ArithRef) -> z3.BoolRef:
+    def is_smaller_than(
+        self,
+        other: "SELTZOVariable",
+        magnitude: int | z3.ArithRef,
+    ) -> z3.BoolRef:
         return z3.Or(self.is_zero, self.exponent + magnitude < other.exponent)
 
 
