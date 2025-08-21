@@ -5,9 +5,10 @@ import z3
 
 from os import cpu_count
 from time import sleep
-from typing import Self
+from typing import Self, cast
 
 from setz_lemmas import setz_two_sum_lemmas
+from seltzo_lemmas import seltzo_two_sum_lemmas
 from smt_utils import SMT_SOLVERS, UNSUPPORTED_LOGICS, SMTJob, create_smt_job
 
 
@@ -71,7 +72,7 @@ class SELTZOVariable(object):
 
         # We model a hypothetical floating-point datatype with infinite
         # exponent range, eliminating the possibility of overflow or underflow.
-        # This means that all results proven in this model assume that no
+        # This means that all results proved in this model assume that no
         # overflow or underflow occurs when performing the actual computation.
 
         # We do not consider infinities or NaNs in this model, so all
@@ -239,7 +240,7 @@ class VerifierContext(object):
         )
         list_a.append(new_a)
         list_b.append(new_b)
-        lemmas: dict[str, z3.BoolRef] = setz_two_sum_lemmas(
+        for claim in setz_two_sum_lemmas(
             old_a,
             old_b,
             new_a,
@@ -264,8 +265,46 @@ class VerifierContext(object):
             Z3_ONE,
             Z3_TWO,
             Z3_THREE,
-        )
-        for claim in lemmas.values():
+        ).values():
+            self.solver.add(claim)
+        for claim in seltzo_two_sum_lemmas(
+            old_a,
+            old_b,
+            new_a,
+            new_b,
+            old_a.sign_bit,
+            old_b.sign_bit,
+            new_a.sign_bit,
+            new_b.sign_bit,
+            old_a.leading_bit,
+            old_b.leading_bit,
+            new_a.leading_bit,
+            new_b.leading_bit,
+            old_a.trailing_bit,
+            old_b.trailing_bit,
+            new_a.trailing_bit,
+            new_b.trailing_bit,
+            old_a.exponent,
+            old_b.exponent,
+            new_a.exponent,
+            new_b.exponent,
+            old_a.num_leading_bits,
+            old_b.num_leading_bits,
+            new_a.num_leading_bits,
+            new_b.num_leading_bits,
+            old_a.num_trailing_bits,
+            old_b.num_trailing_bits,
+            new_a.num_trailing_bits,
+            new_b.num_trailing_bits,
+            lambda v: v.is_zero,
+            lambda v: z3.Not(v.sign_bit),
+            lambda v: v.sign_bit,
+            lambda v, w: v.can_equal(w),
+            GLOBAL_PRECISION,
+            Z3_ONE,
+            Z3_TWO,
+            Z3_THREE,
+        ).values():
             self.solver.add(claim)
 
     def extract_logical_condition(self, arguments: list[str]) -> z3.BoolRef:
@@ -338,13 +377,16 @@ class VerifierContext(object):
 
     def test_bound(
         self,
-        a: SELTZOVariable,
-        b: SELTZOVariable,
         name_a: str,
         name_b: str,
         k: int,
         j: int,
-    ) -> bool:
+        verbose: bool,
+    ) -> tuple[bool, str, float]:
+        assert name_a in self.variables
+        assert name_b in self.variables
+        a: SELTZOVariable = self.variables[name_a][-1]
+        b: SELTZOVariable = self.variables[name_b][-1]
         # TODO: Sanitize bound name to ensure it is a valid filename.
         bound_name: str = f"bound_{name_a}_{name_b}_{k}_{j}"
         job: SMTJob = create_smt_job(
@@ -360,20 +402,25 @@ class VerifierContext(object):
                 assert len(job.processes) == 1
                 solver_len: int = max(map(len, LIA_SOLVERS))
                 solver_name: str = job.processes.popitem()[0]
+                solver_time: float = job.result[0]
                 if job.result[1] == z3.unsat:
-                    print(
-                        f"    {solver_name.rjust(solver_len)} proved ",
-                        self.format_bound(name_a, name_b, k, j).ljust(32),
-                        f"in{job.result[0]:8.3f} seconds.",
-                    )
-                    return True
+                    if verbose:
+                        print(
+                            f"\x1b[2K    {solver_name.rjust(solver_len)} proved ",
+                            self.format_bound(name_a, name_b, k, j).ljust(30),
+                            f"in{solver_time:8.3f} seconds.",
+                            end="\r",
+                        )
+                    return (True, solver_name, solver_time)
                 elif job.result[1] == z3.sat:
-                    print(
-                        f"    {solver_name.rjust(solver_len)} refuted",
-                        self.format_bound(name_a, name_b, k, j).ljust(32),
-                        f"in{job.result[0]:8.3f} seconds.",
-                    )
-                    return False
+                    if verbose:
+                        print(
+                            f"\x1b[2K    {solver_name.rjust(solver_len)} refuted",
+                            self.format_bound(name_a, name_b, k, j).ljust(30),
+                            f"in{solver_time:8.3f} seconds.",
+                            end="\r",
+                        )
+                    return (False, solver_name, solver_time)
                 else:
                     assert False
             # Sleep to avoid busy waiting. Even the fastest SMT solvers
@@ -385,6 +432,7 @@ class VerifierContext(object):
         arguments: list[str],
         origin_k: int = 0,
         origin_j: int = -1024,
+        verbose: bool = True,
     ) -> None:
 
         assert origin_j <= 0
@@ -394,29 +442,44 @@ class VerifierContext(object):
         name_b: str = arguments[2]
         assert name_a in self.variables
         assert name_b in self.variables
-        a: SELTZOVariable = self.variables[name_a][-1]
-        b: SELTZOVariable = self.variables[name_b][-1]
-        print(f"Bounding |{name_a}| relative to |{name_b}|.")
+        print(f"Bounding |{name_a}| relative to |{name_b}|.", end="\r")
+
+        last_passing_name: str | None = None
+        last_passing_time: float | None = None
+
+        def test_bound(k: int, j: int) -> bool:
+            nonlocal last_passing_name
+            nonlocal last_passing_time
+            result: tuple[bool, str, float] = self.test_bound(
+                name_a, name_b, k, j, verbose
+            )
+            if result[0]:
+                last_passing_name = result[1]
+                last_passing_time = result[2]
+            return result[0]
 
         # Perform a linear scan to find passing and failing values of k.
         passing_k: int | None = None
         failing_k: int | None = None
-        if self.test_bound(a, b, name_a, name_b, origin_k, origin_j):
+        trial_k: int
+        if test_bound(origin_k, origin_j):
             passing_k = origin_k
             while True:
-                if self.test_bound(a, b, name_a, name_b, passing_k + 1, origin_j):
-                    passing_k += 1
+                trial_k = passing_k + 1
+                if test_bound(trial_k, origin_j):
+                    passing_k = trial_k
                 else:
-                    failing_k = passing_k + 1
+                    failing_k = trial_k
                     break
         else:
             failing_k = origin_k
             while True:
-                if self.test_bound(a, b, name_a, name_b, failing_k - 1, origin_j):
-                    passing_k = failing_k - 1
+                trial_k = failing_k - 1
+                if test_bound(trial_k, origin_j):
+                    passing_k = trial_k
                     break
                 else:
-                    failing_k -= 1
+                    failing_k = trial_k
 
         # Assert that the linear scan succeeded.
         assert passing_k is not None
@@ -426,21 +489,24 @@ class VerifierContext(object):
         # Perform an exponential scan to find a failing value of j.
         passing_j: int = origin_j
         failing_j: int | None = None
+        trial_j: int
         while passing_j < 0:
-            if self.test_bound(a, b, name_a, name_b, passing_k, (passing_j + 1) // 2):
-                passing_j = (passing_j + 1) // 2
+            trial_j = (passing_j + 1) // 2
+            if test_bound(passing_k, trial_j):
+                passing_j = trial_j
             else:
-                failing_j = (passing_j + 1) // 2
+                failing_j = trial_j
                 break
         if failing_j is None:
             assert passing_j == 0
-            if self.test_bound(a, b, name_a, name_b, passing_k, 1):
+            if test_bound(passing_k, 1):
                 passing_j = 1
                 while True:
-                    if self.test_bound(a, b, name_a, name_b, passing_k, passing_j * 2):
-                        passing_j *= 2
+                    trial_j = passing_j * 2
+                    if test_bound(passing_k, trial_j):
+                        passing_j = trial_j
                     else:
-                        failing_j = passing_j * 2
+                        failing_j = trial_j
                         break
             else:
                 failing_j = 1
@@ -451,15 +517,26 @@ class VerifierContext(object):
 
         # Perform a binary search to tighten the bounds on j.
         while passing_j + 1 < failing_j:
-            trial_j: int = (passing_j + failing_j) // 2
-            if self.test_bound(a, b, name_a, name_b, passing_k, trial_j):
+            trial_j = (passing_j + failing_j) // 2
+            if test_bound(passing_k, trial_j):
                 passing_j = trial_j
             else:
                 failing_j = trial_j
 
         # Assert that the binary search succeeded.
         assert passing_j + 1 == failing_j
-        print("Optimal bound:", self.format_bound(name_a, name_b, passing_k, passing_j))
+
+        last_passing_name = cast(str, cast(object, last_passing_name))
+        assert last_passing_name is not None
+        last_passing_time = cast(float, cast(object, last_passing_time))
+        assert last_passing_time is not None
+        solver_len: int = max(map(len, LIA_SOLVERS))
+        print(
+            "\x1b[2KOptimal bound:",
+            self.format_bound(name_a, name_b, passing_k, passing_j).ljust(30),
+            f"proved by {last_passing_name.rjust(solver_len)}",
+            f"in{last_passing_time:8.3f} seconds.",
+        )
 
 
 def main() -> None:
