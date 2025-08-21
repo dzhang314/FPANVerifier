@@ -28,24 +28,26 @@ EXIT_BITWUZLA_COUNTEREXAMPLE: int = 2
 EXIT_CVC5_COUNTEREXAMPLE: int = 3
 EXIT_Z3_COUNTEREXAMPLE: int = 4
 EXIT_OTHER_COUNTEREXAMPLE: int = 5
+
+
 BVFP_SOLVERS: list[str] = [
     solver for solver in SMT_SOLVERS if "QF_BVFP" not in UNSUPPORTED_LOGICS[solver]
 ]
+if not BVFP_SOLVERS:
+    print(
+        "ERROR: No SMT solvers available on your $PATH support QF_BVFP.",
+        file=sys.stderr,
+    )
+    print("Please install at least one of the following SMT solvers:", file=sys.stderr)
+    for solver, logics in UNSUPPORTED_LOGICS.items():
+        if "QF_BVFP" not in logics:
+            print("    -", solver, file=sys.stderr)
+    sys.exit(EXIT_NO_SOLVERS)
+SOLVER_LEN: int = max(map(len, BVFP_SOLVERS))
 
 
 def compute_job_count() -> int:
-    if len(BVFP_SOLVERS) == 0:
-        print(
-            "ERROR: No SMT solvers supporting QF_BVFP are available on your $PATH.",
-            file=sys.stderr,
-        )
-        print(
-            "Please install at least one of the following SMT solvers:", file=sys.stderr
-        )
-        for solver, logics in UNSUPPORTED_LOGICS.items():
-            if "QF_BVFP" not in logics:
-                print("    -", solver, file=sys.stderr)
-        sys.exit(EXIT_NO_SOLVERS)
+    assert BVFP_SOLVERS
     num_cores: int | None = os.cpu_count()
     if num_cores is None:
         print(
@@ -306,7 +308,6 @@ def main() -> None:
         remaining_jobs += create_two_sum_jobs(19, 24, 237, "SELTZO", suffix="-F256")
 
     running_jobs: list[SMTJob] = []
-    solver_len: int = max(map(len, BVFP_SOLVERS))
     filename_len: int = max(len(job.filename) for job in remaining_jobs)
 
     prefix: str = ""
@@ -340,14 +341,14 @@ def main() -> None:
 
                 if job.result[1] == z3.unsat:
                     print(
-                        solver_name.rjust(solver_len),
+                        solver_name.rjust(SOLVER_LEN),
                         "proved",
                         job.filename.ljust(filename_len),
                         f"in{job.result[0]:8.3f} seconds.",
                     )
                 elif job.result[1] == z3.sat:
                     print(
-                        solver_name.rjust(solver_len),
+                        solver_name.rjust(SOLVER_LEN),
                         "refuted",
                         job.filename.ljust(filename_len),
                         f"in{job.result[0]:8.3f} seconds.",

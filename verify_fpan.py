@@ -12,6 +12,25 @@ from seltzo_lemmas import seltzo_two_sum_lemmas
 from smt_utils import SMT_SOLVERS, UNSUPPORTED_LOGICS, SMTJob, create_smt_job
 
 
+EXIT_NO_SOLVERS: int = 1
+
+
+LIA_SOLVERS: list[str] = [
+    solver for solver in SMT_SOLVERS if "QF_LIA" not in UNSUPPORTED_LOGICS[solver]
+]
+if not LIA_SOLVERS:
+    print(
+        "ERROR: No SMT solvers available on your $PATH support QF_LIA.",
+        file=sys.stderr,
+    )
+    print("Please install at least one of the following SMT solvers:", file=sys.stderr)
+    for solver, logics in UNSUPPORTED_LOGICS.items():
+        if "QF_LIA" not in logics:
+            print("    -", solver, file=sys.stderr)
+    sys.exit(EXIT_NO_SOLVERS)
+SOLVER_LEN: int = max(map(len, LIA_SOLVERS))
+
+
 Z3_ZERO: z3.ArithRef = z3.IntVal(0)
 Z3_ONE: z3.ArithRef = z3.IntVal(1)
 Z3_TWO: z3.ArithRef = z3.IntVal(2)
@@ -22,25 +41,8 @@ GLOBAL_MANTISSA_WIDTH: z3.ArithRef = GLOBAL_PRECISION - 1
 INTERNAL_SEPARATOR: str = "__"
 
 
-EXIT_NO_SOLVERS: int = 1
-LIA_SOLVERS: list[str] = [
-    solver for solver in SMT_SOLVERS if "QF_LIA" not in UNSUPPORTED_LOGICS[solver]
-]
-
-
 def compute_job_count() -> int:
-    if len(LIA_SOLVERS) == 0:
-        print(
-            "ERROR: No SMT solvers supporting QF_LIA are available on your $PATH.",
-            file=sys.stderr,
-        )
-        print(
-            "Please install at least one of the following SMT solvers:", file=sys.stderr
-        )
-        for solver, logics in UNSUPPORTED_LOGICS.items():
-            if "QF_LIA" not in logics:
-                print("    -", solver, file=sys.stderr)
-        sys.exit(EXIT_NO_SOLVERS)
+    assert LIA_SOLVERS
     num_cores: int | None = cpu_count()
     if num_cores is None:
         print(
@@ -345,18 +347,18 @@ class VerifierContext(object):
                 solver_name: str = job.processes.popitem()[0]
                 if job.result[1] == z3.unsat:
                     print(
-                        solver_name,
-                        "proved",
-                        claim_name,
-                        f"in {job.result[0]:.3f} seconds.",
+                        " ".join(arguments).ljust(29),
+                        "proved by",
+                        solver_name.ljust(SOLVER_LEN),
+                        f"in{job.result[0]:8.3f} seconds.",
                     )
                 elif job.result[1] == z3.sat:
                     print(
                         "ERROR:",
-                        solver_name,
-                        "REFUTED",
-                        claim_name,
-                        f"in {job.result[0]:.3f} seconds.",
+                        " ".join(arguments).ljust(29),
+                        "REFUTED by",
+                        solver_name.ljust(SOLVER_LEN),
+                        f"in{job.result[0]:8.3f} seconds.",
                     )
                 else:
                     assert False
@@ -400,14 +402,13 @@ class VerifierContext(object):
             if job.poll():
                 assert job.result is not None
                 assert len(job.processes) == 1
-                solver_len: int = max(map(len, LIA_SOLVERS))
                 solver_name: str = job.processes.popitem()[0]
                 solver_time: float = job.result[0]
                 if job.result[1] == z3.unsat:
                     if verbose:
                         print(
-                            f"\x1b[2K    {solver_name.rjust(solver_len)} proved ",
-                            self.format_bound(name_a, name_b, k, j).ljust(30),
+                            f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} proved ",
+                            self.format_bound(name_a, name_b, k, j).ljust(29),
                             f"in{solver_time:8.3f} seconds.",
                             end="\r",
                         )
@@ -415,8 +416,8 @@ class VerifierContext(object):
                 elif job.result[1] == z3.sat:
                     if verbose:
                         print(
-                            f"\x1b[2K    {solver_name.rjust(solver_len)} refuted",
-                            self.format_bound(name_a, name_b, k, j).ljust(30),
+                            f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} refuted",
+                            self.format_bound(name_a, name_b, k, j).ljust(29),
                             f"in{solver_time:8.3f} seconds.",
                             end="\r",
                         )
@@ -530,11 +531,10 @@ class VerifierContext(object):
         assert last_passing_name is not None
         last_passing_time = cast(float, cast(object, last_passing_time))
         assert last_passing_time is not None
-        solver_len: int = max(map(len, LIA_SOLVERS))
         print(
-            "\x1b[2KOptimal bound:",
-            self.format_bound(name_a, name_b, passing_k, passing_j).ljust(30),
-            f"proved by {last_passing_name.rjust(solver_len)}",
+            "\x1b[2K"
+            + self.format_bound(name_a, name_b, passing_k, passing_j).ljust(29),
+            f"proved by {last_passing_name.ljust(SOLVER_LEN)}",
             f"in{last_passing_time:8.3f} seconds.",
         )
 
