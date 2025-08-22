@@ -278,10 +278,11 @@ def main() -> None:
     remaining_jobs += create_two_sum_jobs(5, 8, 11, "SETZ", suffix="-F16")
     remaining_jobs += create_two_sum_jobs(5, 8, 11, "SELTZO", suffix="-F16")
 
-    print("Constructing bf16 lemmas...")
-    remaining_jobs += create_two_sum_jobs(8, 12, 8, "SE", suffix="-BF16")
-    remaining_jobs += create_two_sum_jobs(8, 12, 8, "SETZ", suffix="-BF16")
-    remaining_jobs += create_two_sum_jobs(8, 12, 8, "SELTZO", suffix="-BF16")
+    if "--verify-bf16" in sys.argv:
+        print("Constructing bf16 lemmas...")
+        remaining_jobs += create_two_sum_jobs(8, 12, 8, "SE", suffix="-BF16")
+        remaining_jobs += create_two_sum_jobs(8, 12, 8, "SETZ", suffix="-BF16")
+        remaining_jobs += create_two_sum_jobs(8, 12, 8, "SELTZO", suffix="-BF16")
 
     if "--verify-f32" in sys.argv:
         print("Constructing f32 lemmas...")
