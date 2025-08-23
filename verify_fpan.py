@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import struct
 import sys
 import z3
 
@@ -57,9 +58,9 @@ JOB_COUNT: int = compute_job_count()
 print("Computing bounds with", JOB_COUNT, "parallel jobs.")
 
 
-def try_open(path: str, mode: str):
+def try_open(path: str):
     try:
-        return open(path, mode)
+        return open(path, "rb")
     except:
         return None
 
@@ -69,7 +70,16 @@ DATA_PATH: str = os.path.join(
     "conjecturer",
     "SELTZO-TwoSum-Float16.bin",
 )
-DATA_FILE = try_open(DATA_PATH, "rb")
+DATA_FILE = try_open(DATA_PATH)
+if DATA_FILE is not None:
+    print(f"Successfully opened {repr(DATA_PATH)}.")
+    DATA_SIZE: int = DATA_FILE.seek(0, os.SEEK_END)
+    _ = DATA_FILE.seek(0, os.SEEK_SET)
+    RECORD_FORMAT: str = "<IIII"
+    RECORD_SIZE: int = struct.calcsize(RECORD_FORMAT)
+    assert DATA_SIZE % RECORD_SIZE == 0
+    NUM_RECORDS: int = DATA_SIZE // RECORD_SIZE
+    print(f"Found {NUM_RECORDS} SELTZO records.")
 
 
 class SELTZOVariable(object):
@@ -225,17 +235,6 @@ class SELTZOVariable(object):
 # replaced by informative user-facing error messages.
 
 
-def format_bound(name_a: str, name_b: str, k: int, j: int) -> str:
-    if j == 0:
-        return f"|{name_a}| <= u^{k} |{name_b}|"
-    elif -20 <= j <= -1:
-        return f"|{name_a}| <= {2**-j} u^{k} |{name_b}|"
-    elif 1 <= j <= 20:
-        return f"|{name_a}| <= (1/{2**j}) u^{k} |{name_b}|"
-    else:
-        return f"|{name_a}| <= 2^{-j} u^{k} |{name_b}|"
-
-
 def to_bool(expr: z3.BoolRef) -> bool:
     if z3.is_true(expr):
         return True
@@ -334,6 +333,88 @@ def display_two_sum(
         print(prefix + "-" * 2)
         print(prefix + s_sign + "0")
         print(prefix + e_sign + "0")
+
+
+def seltzo_key(
+    counterexample: z3.ModelRef,
+    variable: SELTZOVariable,
+    exponent_offset: int,
+) -> int:
+    # For now, we only support lookup from Float16 data files.
+    assert counterexample[GLOBAL_PRECISION].as_long() == 11
+    zero_exponent: int = counterexample[GLOBAL_ZERO_EXPONENT].as_long()
+    s: bool = to_bool(counterexample[variable.sign_bit])
+    lb: bool = to_bool(counterexample[variable.leading_bit])
+    tb: bool = to_bool(counterexample[variable.trailing_bit])
+    e: int = counterexample[variable.exponent].as_long()
+    if e == zero_exponent:
+        e = -15
+    else:
+        assert e > zero_exponent
+        e += exponent_offset
+    assert -16383 <= e <= 16384
+    nlb: int = counterexample[variable.num_leading_bits].as_long()
+    assert 0 <= nlb <= 127
+    ntb: int = counterexample[variable.num_trailing_bits].as_long()
+    assert 0 <= ntb <= 127
+    return (
+        (int(s) << 31)
+        | (int(lb) << 30)
+        | (int(tb) << 29)
+        | ((e + 16383) << 14)
+        | (nlb << 7)
+        | ntb
+    )
+
+
+def seltzo_keys(
+    counterexample: z3.ModelRef,
+    variables: list[SELTZOVariable],
+) -> list[int]:
+    # For now, we only support lookup from Float16 data files.
+    assert counterexample[GLOBAL_PRECISION].as_long() == 11
+    zero_exponent: int = counterexample[GLOBAL_ZERO_EXPONENT].as_long()
+    nonzero_exponents: list[int] = []
+    for variable in variables:
+        exponent: int = counterexample[variable.exponent].as_long()
+        if exponent != zero_exponent:
+            assert exponent > zero_exponent
+            nonzero_exponents.append(exponent)
+    min_exponent: int = min(nonzero_exponents, default=0)
+    return [
+        seltzo_key(counterexample, variable, -14 - min_exponent)
+        for variable in variables
+    ]
+
+
+def exists_in_data(key_x: int, key_y: int, key_s: int, key_e: int) -> bool:
+    assert DATA_FILE is not None
+    target: tuple[int, int, int, int] = (key_x, key_y, key_s, key_e)
+    lo: int = 0
+    hi: int = NUM_RECORDS - 1
+    while lo <= hi:
+        mid: int = (lo + hi) // 2
+        _ = DATA_FILE.seek(mid * RECORD_SIZE)
+        data: bytes = DATA_FILE.read(RECORD_SIZE)
+        record: tuple[int, int, int, int] = struct.unpack(RECORD_FORMAT, data)
+        if record < target:
+            lo = mid + 1
+        elif record > target:
+            hi = mid - 1
+        else:
+            return True
+    return False
+
+
+def format_bound(name_a: str, name_b: str, k: int, j: int) -> str:
+    if j == 0:
+        return f"|{name_a}| <= u^{k} |{name_b}|"
+    elif -20 <= j <= -1:
+        return f"|{name_a}| <= {2**-j} u^{k} |{name_b}|"
+    elif 1 <= j <= 20:
+        return f"|{name_a}| <= (1/{2**j}) u^{k} |{name_b}|"
+    else:
+        return f"|{name_a}| <= 2^{-j} u^{k} |{name_b}|"
 
 
 class VerifierContext(object):
@@ -567,8 +648,9 @@ class VerifierContext(object):
         if self.solver.check() == z3.sat:
             counterexample: z3.ModelRef = self.solver.model()
             for s, e, x, y in self.two_sum_operands:
-                print()
-                display_two_sum(counterexample, s, e, x, y, prefix="  ")
+                if not exists_in_data(*seltzo_keys(counterexample, [x, y, s, e])):
+                    print()
+                    display_two_sum(counterexample, s, e, x, y, prefix="  ")
             print()
         else:
             print(f"WARNING: No counterexample found with precision p = {precision}.")
