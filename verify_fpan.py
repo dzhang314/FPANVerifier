@@ -65,6 +65,9 @@ def try_open(path: str):
         return None
 
 
+FLOAT16_PRECISION: int = 11
+FLOAT16_ZERO_EXPONENT: int = -15
+FLOAT16_MIN_EXPONENT: int = FLOAT16_ZERO_EXPONENT + 1
 DATA_PATH: str = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "conjecturer",
@@ -254,24 +257,24 @@ def set_digit(digit_dict: dict[int, str], index: int, digit: str) -> None:
 
 
 def extract_digits(
-    counterexample: z3.ModelRef,
+    model: z3.ModelRef,
     variable: SELTZOVariable,
 ) -> dict[int, str]:
 
-    zero_exponent: int = counterexample[GLOBAL_ZERO_EXPONENT].as_long()
-    exponent: int = counterexample[variable.exponent].as_long()
+    zero_exponent: int = model[GLOBAL_ZERO_EXPONENT].as_long()
+    exponent: int = model[variable.exponent].as_long()
     assert zero_exponent <= exponent
 
     digit_dict: dict[int, str] = {}
     if exponent > zero_exponent:
 
-        precision: int = counterexample[GLOBAL_PRECISION].as_long()
+        precision: int = model[GLOBAL_PRECISION].as_long()
         for k in range(precision):
             digit_dict[exponent - k] = "?"
         set_digit(digit_dict, exponent, "1")
 
-        leading_bit: bool = to_bool(counterexample[variable.leading_bit])
-        num_leading_bits: int = counterexample[variable.num_leading_bits].as_long()
+        leading_bit: bool = to_bool(model[variable.leading_bit])
+        num_leading_bits: int = model[variable.num_leading_bits].as_long()
         for k in range(1, num_leading_bits + 1):
             set_digit(digit_dict, exponent - k, to_digit(leading_bit))
         if num_leading_bits < precision - 1:
@@ -279,8 +282,8 @@ def extract_digits(
                 digit_dict, exponent - (num_leading_bits + 1), to_digit(not leading_bit)
             )
 
-        trailing_bit: bool = to_bool(counterexample[variable.trailing_bit])
-        num_trailing_bits: int = counterexample[variable.num_trailing_bits].as_long()
+        trailing_bit: bool = to_bool(model[variable.trailing_bit])
+        num_trailing_bits: int = model[variable.num_trailing_bits].as_long()
         for k in range(1, num_trailing_bits + 1):
             set_digit(digit_dict, exponent - (precision - k), to_digit(trailing_bit))
         if num_trailing_bits < precision - 1:
@@ -294,21 +297,21 @@ def extract_digits(
 
 
 def display_two_sum(
-    counterexample: z3.ModelRef,
+    model: z3.ModelRef,
     s: SELTZOVariable,
     e: SELTZOVariable,
     x: SELTZOVariable,
     y: SELTZOVariable,
     prefix: str = "",
 ) -> None:
-    s_sign: str = "+" if to_bool(counterexample[s.sign_bit]) else "-"
-    e_sign: str = "+" if to_bool(counterexample[e.sign_bit]) else "-"
-    x_sign: str = "+" if to_bool(counterexample[x.sign_bit]) else "-"
-    y_sign: str = "+" if to_bool(counterexample[y.sign_bit]) else "-"
-    s_digits: dict[int, str] = extract_digits(counterexample, s)
-    e_digits: dict[int, str] = extract_digits(counterexample, e)
-    x_digits: dict[int, str] = extract_digits(counterexample, x)
-    y_digits: dict[int, str] = extract_digits(counterexample, y)
+    s_sign: str = "+" if to_bool(model[s.sign_bit]) else "-"
+    e_sign: str = "+" if to_bool(model[e.sign_bit]) else "-"
+    x_sign: str = "+" if to_bool(model[x.sign_bit]) else "-"
+    y_sign: str = "+" if to_bool(model[y.sign_bit]) else "-"
+    s_digits: dict[int, str] = extract_digits(model, s)
+    e_digits: dict[int, str] = extract_digits(model, e)
+    x_digits: dict[int, str] = extract_digits(model, x)
+    y_digits: dict[int, str] = extract_digits(model, y)
     keys: set[int] = set()
     keys.update(s_digits.keys())
     keys.update(e_digits.keys())
@@ -336,26 +339,26 @@ def display_two_sum(
 
 
 def seltzo_key(
-    counterexample: z3.ModelRef,
+    model: z3.ModelRef,
     variable: SELTZOVariable,
     exponent_offset: int,
 ) -> int:
     # For now, we only support lookup from Float16 data files.
-    assert counterexample[GLOBAL_PRECISION].as_long() == 11
-    zero_exponent: int = counterexample[GLOBAL_ZERO_EXPONENT].as_long()
-    s: bool = to_bool(counterexample[variable.sign_bit])
-    lb: bool = to_bool(counterexample[variable.leading_bit])
-    tb: bool = to_bool(counterexample[variable.trailing_bit])
-    e: int = counterexample[variable.exponent].as_long()
+    assert model[GLOBAL_PRECISION].as_long() == FLOAT16_PRECISION
+    zero_exponent: int = model[GLOBAL_ZERO_EXPONENT].as_long()
+    s: bool = to_bool(model[variable.sign_bit])
+    lb: bool = to_bool(model[variable.leading_bit])
+    tb: bool = to_bool(model[variable.trailing_bit])
+    e: int = model[variable.exponent].as_long()
     if e == zero_exponent:
-        e = -15
+        e = FLOAT16_ZERO_EXPONENT
     else:
         assert e > zero_exponent
         e += exponent_offset
     assert -16383 <= e <= 16384
-    nlb: int = counterexample[variable.num_leading_bits].as_long()
+    nlb: int = model[variable.num_leading_bits].as_long()
     assert 0 <= nlb <= 127
-    ntb: int = counterexample[variable.num_trailing_bits].as_long()
+    ntb: int = model[variable.num_trailing_bits].as_long()
     assert 0 <= ntb <= 127
     return (
         (int(s) << 31)
@@ -368,21 +371,21 @@ def seltzo_key(
 
 
 def seltzo_keys(
-    counterexample: z3.ModelRef,
+    model: z3.ModelRef,
     variables: list[SELTZOVariable],
 ) -> list[int]:
     # For now, we only support lookup from Float16 data files.
-    assert counterexample[GLOBAL_PRECISION].as_long() == 11
-    zero_exponent: int = counterexample[GLOBAL_ZERO_EXPONENT].as_long()
+    assert model[GLOBAL_PRECISION].as_long() == FLOAT16_PRECISION
+    zero_exponent: int = model[GLOBAL_ZERO_EXPONENT].as_long()
     nonzero_exponents: list[int] = []
     for variable in variables:
-        exponent: int = counterexample[variable.exponent].as_long()
+        exponent: int = model[variable.exponent].as_long()
         if exponent != zero_exponent:
             assert exponent > zero_exponent
             nonzero_exponents.append(exponent)
     min_exponent: int = min(nonzero_exponents, default=0)
     return [
-        seltzo_key(counterexample, variable, -14 - min_exponent)
+        seltzo_key(model, variable, FLOAT16_MIN_EXPONENT - min_exponent)
         for variable in variables
     ]
 
@@ -765,7 +768,9 @@ class VerifierContext(object):
             f"proved by {last_passing_name.ljust(SOLVER_LEN)}",
             f"in{last_passing_time:8.3f} seconds.",
         )
-        self.display_counterexample(name_a, name_b, passing_k, failing_j, 11)
+        self.display_counterexample(
+            name_a, name_b, passing_k, failing_j, FLOAT16_PRECISION
+        )
 
 
 def main() -> None:
