@@ -429,6 +429,28 @@ def seltzo_two_sum_lemmas(
         z3.And(s_pow2, e_pow2, ss != se, es < ee + (p + one))
     )
 
+    # Lemma P10A: Adding a small number cannot destroy leading zeros past its
+    # exponent.
+    result["SELTZO-TwoSum-P10A-X"] = z3.Implies(
+        z3.And(same_sign, ex > ey + one, ey + one > f1x),
+        z3.And(ss == sx, es == ex, f1s <= ey + one),
+    )
+    result["SELTZO-TwoSum-P10A-Y"] = z3.Implies(
+        z3.And(same_sign, ey > ex + one, ex + one > f1y),
+        z3.And(ss == sy, es == ey, f1s <= ex + one),
+    )
+
+    # Lemma P10B: Subtracting a small number cannot destroy leading ones past
+    # its exponent.
+    result["SELTZO-TwoSum-P10B-X"] = z3.Implies(
+        z3.And(diff_sign, ex > ey + one, ey + one > f0x),
+        z3.And(ss == sx, es == ex, f0s <= ey + one),
+    )
+    result["SELTZO-TwoSum-P10B-Y"] = z3.Implies(
+        z3.And(diff_sign, ey > ex + one, ex + one > f0y),
+        z3.And(ss == sy, es == ey, f0s <= ex + one),
+    )
+
     """
     # Lemma 2A: Zeros insulate the exponent from increasing.
     result["SELTZO-TwoSum-2A-X"] = z3.Implies(
