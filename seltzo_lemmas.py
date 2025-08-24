@@ -165,36 +165,36 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    ########################################################### HEURISTIC LEMMAS
+    ############################################################# PARTIAL LEMMAS
 
-    # Lemma H1A: If the exponent increases, then the sum must have a number of
+    # Lemma P1A: If the exponent increases, then the sum must have a number of
     # leading zeros proportional to the exponent gap.
-    result["SELTZO-TwoSum-H1A-X"] = z3.Implies(es > ex, f1s <= ey + one)
-    result["SELTZO-TwoSum-H1A-Y"] = z3.Implies(es > ey, f1s <= ex + one)
+    result["SELTZO-TwoSum-P1A-X"] = z3.Implies(es > ex, f1s <= ey + one)
+    result["SELTZO-TwoSum-P1A-Y"] = z3.Implies(es > ey, f1s <= ex + one)
 
-    # Lemma H1B: If the exponent decreases, then the difference must have a
+    # Lemma P1B: If the exponent decreases, then the difference must have a
     # number of leading ones proportional to the exponent gap.
-    result["SELTZO-TwoSum-H1B-X"] = z3.Implies(es < ex, f0s <= ey)
-    result["SELTZO-TwoSum-H1B-Y"] = z3.Implies(es < ey, f0s <= ex)
+    result["SELTZO-TwoSum-P1B-X"] = z3.Implies(es < ex, f0s <= ey)
+    result["SELTZO-TwoSum-P1B-Y"] = z3.Implies(es < ey, f0s <= ex)
 
-    # Lemma H2A: The exponent can only increase if the addends have the same
+    # Lemma P2A: The exponent can only increase if the addends have the same
     # sign and one touches the other's leading ones.
-    result["SELTZO-TwoSum-H2A-X"] = z3.Implies(
+    result["SELTZO-TwoSum-P2A-X"] = z3.Implies(
         z3.And(es > ex, ex + one > ey),
         z3.And(same_sign, ey >= f0x),
     )
-    result["SELTZO-TwoSum-H2A-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-P2A-Y"] = z3.Implies(
         z3.And(es > ey, ey + one > ex),
         z3.And(same_sign, ex >= f0y),
     )
 
-    # Lemma H2B: The exponent can only decrease if the addends have different
+    # Lemma P2B: The exponent can only decrease if the addends have different
     # signs and one touches the other's leading zeros.
-    result["SELTZO-TwoSum-H2B-X"] = z3.Implies(
+    result["SELTZO-TwoSum-P2B-X"] = z3.Implies(
         es < ex,
         z3.And(diff_sign, ey + one >= f1x),
     )
-    result["SELTZO-TwoSum-H2B-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-P2B-Y"] = z3.Implies(
         es < ey,
         z3.And(diff_sign, ex + one >= f1y),
     )
