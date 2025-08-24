@@ -451,15 +451,26 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey, f0s <= ex + one),
     )
 
-    # Lemma P11: Adding just past the end of an all-1 mantissa increments the
+    # Lemma P11A: Adding just past the end of an all-1 mantissa increments the
     # sum to the following power of 2.
-    result["SELTZO-TwoSum-P11-X"] = z3.Implies(
-        z3.And(x_all1, y_nonzero, same_sign, ex == ey + p),
+    result["SELTZO-TwoSum-P11A-X"] = z3.Implies(
+        z3.And(same_sign, x_all1, y_nonzero, ex == ey + p),
         z3.And(s_pow2, ss == sx, es == ex + one),
     )
-    result["SELTZO-TwoSum-P11-Y"] = z3.Implies(
-        z3.And(y_all1, x_nonzero, same_sign, ey == ex + p),
+    result["SELTZO-TwoSum-P11A-Y"] = z3.Implies(
+        z3.And(same_sign, y_all1, x_nonzero, ey == ex + p),
         z3.And(s_pow2, ss == sy, es == ey + one),
+    )
+
+    # Lemma P11B: Subtracting just past the end of a power of 2 decrements the
+    # sum to the previous all-1 number.
+    result["SELTZO-TwoSum-P11B-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_nonzero, z3.Not(lby), ex == ey + p),
+        z3.And(s_all1, ss == sx, es == ex - one),
+    )
+    result["SELTZO-TwoSum-P11B-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_nonzero, z3.Not(lbx), ey == ex + p),
+        z3.And(s_all1, ss == sy, es == ey - one),
     )
 
     """
