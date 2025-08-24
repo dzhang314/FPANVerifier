@@ -104,7 +104,7 @@ def seltzo_two_sum_lemmas(
         e_nonzero, z3.Not(lbe), z3.Not(tbe), nlbe == p - one, ntbe == p - one
     )
 
-    ############################################################################'
+    ############################################################ COMPLETE LEMMAS
 
     result["SELTZO-TwoSum-C1-X"] = z3.Implies(
         z3.And(y_nonzero, same_sign, tbx, ex > ey + one, g1y > f1x + one),
@@ -130,6 +130,33 @@ def seltzo_two_sum_lemmas(
             e_pos_zero,
         ),
     )
+
+    result["SELTZO-TwoSum-C1A-X"] = z3.Implies(
+        z3.And(y_nonzero, same_sign, tbx, ex == ey + one, g1y > f1x + one),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex,
+            fs == f0y,
+            gs == gx,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C1A-Y"] = z3.Implies(
+        z3.And(x_nonzero, same_sign, tby, ey == ex + one, g1x > f1y + one),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey,
+            fs == f0x,
+            gs == gy,
+            e_pos_zero,
+        ),
+    )
+
+    ########################################################### HEURISTIC LEMMAS
 
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
