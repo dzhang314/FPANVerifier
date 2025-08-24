@@ -192,6 +192,96 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C2: Sum of powers of two (general case).
+    result["SELTZO-TwoSum-C2-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ey > ex - (p - one)),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            z3.Not(tbs),
+            es == ex,
+            nlbs == (ex - ey) - one,
+            ntbs == (p - one) - (ex - ey),
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C2-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey > ex + one, ex > ey - (p - one)),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            z3.Not(tbs),
+            es == ey,
+            nlbs == (ey - ex) - one,
+            ntbs == (p - one) - (ey - ex),
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C2A: Sum of two powers of two (adjacent case).
+    result["SELTZO-TwoSum-C2A-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey + one),
+        z3.And(
+            ss == sx,
+            lbs,
+            z3.Not(tbs),
+            es == ex,
+            nlbs == one,
+            ntbs == p - two,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C2A-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey == ex + one),
+        z3.And(
+            ss == sy,
+            lbs,
+            z3.Not(tbs),
+            es == ey,
+            nlbs == one,
+            ntbs == p - two,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C2B: Sum of two powers of two (boundary case).
+    result["SELTZO-TwoSum-C2B-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey + (p - one)),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            tbs,
+            es == ex,
+            nlbs == p - two,
+            ntbs == one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C2B-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey == ex + (p - one)),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            tbs,
+            es == ey,
+            nlbs == p - two,
+            ntbs == one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C2S: Sum of two powers of two (identical case).
+    result["SELTZO-TwoSum-C2S"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey),
+        z3.And(
+            ss == sx,
+            s_pow2,
+            es == ex + one,
+            es == ey + one,
+            e_pos_zero,
+        ),
+    )
+
     ############################################################# PARTIAL LEMMAS
 
     # Lemma P1A: If the exponent increases, then the sum must have a number of
