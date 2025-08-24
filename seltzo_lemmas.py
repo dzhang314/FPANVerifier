@@ -165,6 +165,33 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C1AB: Sum where one number fits entirely into the other's leading
+    # zeros, with no padding on either side.
+    result["SELTZO-TwoSum-C1AB-X"] = z3.Implies(
+        z3.And(y_nonzero, same_sign, tbx, ex == ey + one, g1y == f1x + one),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex,
+            fs + one <= ey,  # TODO: This bound is not complete.
+            gs >= g0y + two,  # TODO: This bound is not complete.
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C1AB-Y"] = z3.Implies(
+        z3.And(x_nonzero, same_sign, tby, ey == ex + one, g1x == f1y + one),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey,
+            fs + one <= ex,  # TODO: This bound is not complete.
+            gs >= g0x + two,  # TODO: This bound is not complete.
+            e_pos_zero,
+        ),
+    )
+
     ############################################################# PARTIAL LEMMAS
 
     # Lemma P1A: If the exponent increases, then the sum must have a number of
