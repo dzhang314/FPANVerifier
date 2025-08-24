@@ -413,6 +413,22 @@ def seltzo_two_sum_lemmas(
         es <= ey - one,
     )
 
+    # Lemma P8: Adding a number to a power of two cannot increase the exponent
+    # as long as it contains a zero not too far away.
+    result["SELTZO-TwoSum-P8-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_nonzero, ex > ey, f0y + (p + one) > ex),
+        z3.And(ss == sx, es == ex, f1s == ey),
+    )
+    result["SELTZO-TwoSum-P8-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_nonzero, ey > ex, f0x + (p + one) > ey),
+        z3.And(ss == sy, es == ey, f1s == ex),
+    )
+
+    # Lemma P9: One specific output is impossible.
+    result["SELTZO-TwoSum-P9"] = z3.Not(
+        z3.And(s_pow2, e_pow2, ss != se, es < ee + (p + one))
+    )
+
     """
     # Lemma 2A: Zeros insulate the exponent from increasing.
     result["SELTZO-TwoSum-2A-X"] = z3.Implies(
