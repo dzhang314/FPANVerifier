@@ -270,6 +270,28 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey, f1s <= f1y),
     )
 
+    # Lemma P5A: Less-significant zeros in the mantissa shield more-significant
+    # zeros from being affected by addition.
+    result["SELTZO-TwoSum-P5A-X"] = z3.Implies(
+        z3.And(same_sign, f0x > g0x, g0x > ey),
+        z3.And(ss == sx, es == ex, f0s == f0x),
+    )
+    result["SELTZO-TwoSum-P5A-Y"] = z3.Implies(
+        z3.And(same_sign, f0y > g0y, g0y > ex),
+        z3.And(ss == sy, es == ey, f0s == f0y),
+    )
+
+    # Lemma P5B: Less-significant ones in the mantissa shield more-significant
+    # ones from being subtracted off.
+    result["SELTZO-TwoSum-P5B-X"] = z3.Implies(
+        z3.And(diff_sign, f1x > g1x, g1x > ey),
+        z3.And(ss == sx, es == ex, f1s == f1x),
+    )
+    result["SELTZO-TwoSum-P5B-Y"] = z3.Implies(
+        z3.And(diff_sign, f1y > g1y, g1y > ex),
+        z3.And(ss == sy, es == ey, f1s == f1y),
+    )
+
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
     result["SELTZO-TwoSum-1A-X"] = z3.Implies(
