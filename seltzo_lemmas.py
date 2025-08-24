@@ -111,6 +111,8 @@ def seltzo_two_sum_lemmas(
 
     ############################################################ COMPLETE LEMMAS
 
+    # Lemma C1: Sum where one number fits entirely into the other's leading
+    # zeros, with padding on both sides.
     result["SELTZO-TwoSum-C1-X"] = z3.Implies(
         z3.And(y_nonzero, same_sign, tbx, ex > ey + one, g1y > f1x + one),
         z3.And(
@@ -136,6 +138,8 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C1A: Sum where one number fits entirely into the other's leading
+    # zeros, with padding only on the right.
     result["SELTZO-TwoSum-C1A-X"] = z3.Implies(
         z3.And(y_nonzero, same_sign, tbx, ex == ey + one, g1y > f1x + one),
         z3.And(
@@ -162,6 +166,38 @@ def seltzo_two_sum_lemmas(
     )
 
     ########################################################### HEURISTIC LEMMAS
+
+    # Lemma H1A: If the exponent increases, then the sum must have a number of
+    # leading zeros proportional to the exponent gap.
+    result["SELTZO-TwoSum-H1A-X"] = z3.Implies(es > ex, f1s <= ey + one)
+    result["SELTZO-TwoSum-H1A-Y"] = z3.Implies(es > ey, f1s <= ex + one)
+
+    # Lemma H1B: If the exponent decreases, then the difference must have a
+    # number of leading ones proportional to the exponent gap.
+    result["SELTZO-TwoSum-H1B-X"] = z3.Implies(es < ex, f0s <= ey)
+    result["SELTZO-TwoSum-H1B-Y"] = z3.Implies(es < ey, f0s <= ex)
+
+    # Lemma H2A: The exponent can only increase if the addends have the same
+    # sign and one touches the other's leading ones.
+    result["SELTZO-TwoSum-H2A-X"] = z3.Implies(
+        z3.And(es > ex, ex + one > ey),
+        z3.And(same_sign, ey >= f0x),
+    )
+    result["SELTZO-TwoSum-H2A-Y"] = z3.Implies(
+        z3.And(es > ey, ey + one > ex),
+        z3.And(same_sign, ex >= f0y),
+    )
+
+    # Lemma H2B: The exponent can only decrease if the addends have different
+    # signs and one touches the other's leading zeros.
+    result["SELTZO-TwoSum-H2B-X"] = z3.Implies(
+        es < ex,
+        z3.And(diff_sign, ey + one >= f1x),
+    )
+    result["SELTZO-TwoSum-H2B-Y"] = z3.Implies(
+        es < ey,
+        z3.And(diff_sign, ex + one >= f1y),
+    )
 
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
@@ -274,16 +310,6 @@ def seltzo_two_sum_lemmas(
     # Lemma SELTZO-4: Addition preserves leading ones or increases the exponent.
     result["SELTZO-TwoSum-4-X"] = z3.Implies(same_sign, z3.Or(es > ex, f0s <= f0x))
     result["SELTZO-TwoSum-4-Y"] = z3.Implies(same_sign, z3.Or(es > ey, f0s <= f0y))
-
-    # Lemma SELTZO-5A: If the difference has a smaller exponent,
-    # then it must have a lot of leading ones.
-    result["SELTZO-TwoSum-5A-X"] = z3.Implies(es < ex, f0s <= ey)
-    result["SELTZO-TwoSum-5A-Y"] = z3.Implies(es < ey, f0s <= ex)
-
-    # Lemma SELTZO-5B: If the sum has a larger exponent,
-    # then it must have a lot of leading zeros.
-    result["SELTZO-TwoSum-5B-X"] = z3.Implies(es > ex, f1s <= ey + one)
-    result["SELTZO-TwoSum-5B-Y"] = z3.Implies(es > ey, f1s <= ex + one)
 
     result["SELTZO-TwoSum-6-X"] = z3.Implies(z3.And(es < ex, ex > ey + one), f1s >= f0y)
     result["SELTZO-TwoSum-6-Y"] = z3.Implies(z3.And(es < ey, ey > ex + one), f1s >= f0x)
