@@ -61,6 +61,11 @@ def seltzo_two_sum_lemmas(
     xy_nonzero: z3.BoolRef = z3.And(x_nonzero, y_nonzero)
     e_pos_zero: z3.BoolRef = z3.And(is_positive(e), e_zero)
 
+    fx: IntVar = ex - (nlbx + one)
+    fy: IntVar = ey - (nlby + one)
+    fs: IntVar = es - (nlbs + one)
+    fe: IntVar = ee - (nlbe + one)
+
     f0x: IntVar = ex - z3_If(lbx, nlbx + one, one)
     f0y: IntVar = ey - z3_If(lby, nlby + one, one)
     f0s: IntVar = es - z3_If(lbs, nlbs + one, one)
@@ -70,6 +75,11 @@ def seltzo_two_sum_lemmas(
     f1y: IntVar = ey - z3_If(lby, one, nlby + one)
     f1s: IntVar = es - z3_If(lbs, one, nlbs + one)
     f1e: IntVar = ee - z3_If(lbe, one, nlbe + one)
+
+    gx: IntVar = ex - (p - (ntbx + one))
+    gy: IntVar = ey - (p - (ntby + one))
+    gs: IntVar = es - (p - (ntbs + one))
+    ge: IntVar = ee - (p - (ntbe + one))
 
     g0x: IntVar = ex - (p - z3_If(tbx, ntbx + one, one))
     g0y: IntVar = ey - (p - z3_If(tby, ntby + one, one))
@@ -95,6 +105,31 @@ def seltzo_two_sum_lemmas(
     )
 
     ############################################################################'
+
+    result["SELTZO-TwoSum-C1-X"] = z3.Implies(
+        z3.And(y_nonzero, same_sign, tbx, ex > ey + one, g1y > f1x + one),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            tbs,
+            es == ex,
+            fs == ey,
+            gs == gx,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C1-Y"] = z3.Implies(
+        z3.And(x_nonzero, same_sign, tby, ey > ex + one, g1x > f1y + one),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            tbs,
+            es == ey,
+            fs == ex,
+            gs == gy,
+            e_pos_zero,
+        ),
+    )
 
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
