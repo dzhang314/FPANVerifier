@@ -221,6 +221,28 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, f0s <= f0y + one),
     )
 
+    # Lemma P4A: Zeros in the mantissa shield the exponent from increasing and
+    # leading ones from being destroyed.
+    result["SELTZO-TwoSum-P4A-X"] = z3.Implies(
+        z3.And(same_sign, f0x > ey),
+        z3.And(ss == sx, es == ex, f0s <= f0x),
+    )
+    result["SELTZO-TwoSum-P4A-Y"] = z3.Implies(
+        z3.And(same_sign, f0y > ex),
+        z3.And(ss == sy, es == ey, f0s <= f0y),
+    )
+
+    # Lemma P4B: Ones in the mantissa shield the exponent from decreasing and
+    # leading zeros from being destroyed.
+    result["SELTZO-TwoSum-P4B-X"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(x_pow2), f1x > ey),
+        z3.And(ss == sx, es == ex, f1s <= f1x),
+    )
+    result["SELTZO-TwoSum-P4B-Y"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(y_pow2), f1y > ex),
+        z3.And(ss == sy, es == ey, f1s <= f1y),
+    )
+
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
     result["SELTZO-TwoSum-1A-X"] = z3.Implies(
