@@ -473,6 +473,56 @@ def seltzo_two_sum_lemmas(
         z3.And(s_all1, ss == sy, es == ey - one),
     )
 
+    # Lemma P12: Adding a small number flips the parity of the mantissa.
+    result["SELTZO-TwoSum-P12-X"] = z3.Implies(
+        z3.And(
+            z3.Not(x_pow2),
+            y_nonzero,
+            z3.Not(tbx),
+            z3.Not(lby),
+            ex == ey + (p - one),
+        ),
+        z3.And(ss == sx, es == ex, tbs),
+    )
+    result["SELTZO-TwoSum-P12-Y"] = z3.Implies(
+        z3.And(
+            z3.Not(y_pow2),
+            x_nonzero,
+            z3.Not(tby),
+            z3.Not(lbx),
+            ey == ex + (p - one),
+        ),
+        z3.And(ss == sy, es == ey, tbs),
+    )
+
+    # Lemma P13: Another case of subtracting just past the end of a power of 2.
+    result["SELTZO-TwoSum-P13-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, lby, ex == ey + p),
+        z3.And(
+            ss == sx,
+            lbs,
+            z3.Not(tbs),
+            es == ex - one,
+            nlbs == p - two,
+            ntbs == one,
+            ee <= ey - nlby,
+            ee >= ey - (nlby + one),
+        ),
+    )
+    result["SELTZO-TwoSum-P13-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, lbx, ey == ex + p),
+        z3.And(
+            ss == sy,
+            lbs,
+            z3.Not(tbs),
+            es == ey - one,
+            nlbs == p - two,
+            ntbs == one,
+            ee <= ex - nlbx,
+            ee >= ex - (nlbx + one),
+        ),
+    )
+
     """
     # Lemma 2A: Zeros insulate the exponent from increasing.
     result["SELTZO-TwoSum-2A-X"] = z3.Implies(
