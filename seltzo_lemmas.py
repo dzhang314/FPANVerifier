@@ -199,6 +199,28 @@ def seltzo_two_sum_lemmas(
         z3.And(diff_sign, ex + one >= f1y),
     )
 
+    # Lemma P3A: If one addend has leading zeros that the other does not touch,
+    # then the sum must have as many leading zeros.
+    result["SELTZO-TwoSum-P3A-X"] = z3.Implies(
+        z3.And(same_sign, f1x + one > ey),
+        z3.And(ss == sx, f1s <= f1x + one),
+    )
+    result["SELTZO-TwoSum-P3A-Y"] = z3.Implies(
+        z3.And(same_sign, f1y + one > ex),
+        z3.And(ss == sy, f1s <= f1y + one),
+    )
+
+    # Lemma P3B: If the minuend has leading ones that the subtrahend does not
+    # touch, then the difference must have as many leading ones.
+    result["SELTZO-TwoSum-P3B-X"] = z3.Implies(
+        z3.And(diff_sign, f0x + one > ey),
+        z3.And(ss == sx, f0s <= f0x + one),
+    )
+    result["SELTZO-TwoSum-P3B-Y"] = z3.Implies(
+        z3.And(diff_sign, f0y + one > ex),
+        z3.And(ss == sy, f0s <= f0y + one),
+    )
+
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
     result["SELTZO-TwoSum-1A-X"] = z3.Implies(
