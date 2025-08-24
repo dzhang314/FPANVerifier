@@ -296,48 +296,6 @@ def extract_digits(
     return digit_dict
 
 
-def display_two_sum(
-    model: z3.ModelRef,
-    s: SELTZOVariable,
-    e: SELTZOVariable,
-    x: SELTZOVariable,
-    y: SELTZOVariable,
-    prefix: str = "",
-) -> None:
-    s_sign: str = "+" if to_bool(model[s.sign_bit]) else "-"
-    e_sign: str = "+" if to_bool(model[e.sign_bit]) else "-"
-    x_sign: str = "+" if to_bool(model[x.sign_bit]) else "-"
-    y_sign: str = "+" if to_bool(model[y.sign_bit]) else "-"
-    s_digits: dict[int, str] = extract_digits(model, s)
-    e_digits: dict[int, str] = extract_digits(model, e)
-    x_digits: dict[int, str] = extract_digits(model, x)
-    y_digits: dict[int, str] = extract_digits(model, y)
-    keys: set[int] = set()
-    keys.update(s_digits.keys())
-    keys.update(e_digits.keys())
-    keys.update(x_digits.keys())
-    keys.update(y_digits.keys())
-    if keys:  # at least one number is nonzero
-        max_key: int = max(keys)
-        min_key: int = min(keys)
-        key_range: Callable[[], range] = lambda: range(max_key, min_key - 1, -1)
-        s_str: str = "".join(s_digits.get(k, ".") for k in key_range())
-        e_str: str = "".join(e_digits.get(k, ".") for k in key_range())
-        x_str: str = "".join(x_digits.get(k, ".") for k in key_range())
-        y_str: str = "".join(y_digits.get(k, ".") for k in key_range())
-        print(prefix + x_sign + x_str)
-        print(prefix + y_sign + y_str)
-        print(prefix + "-" * (max_key - min_key + 2))
-        print(prefix + s_sign + s_str)
-        print(prefix + e_sign + e_str)
-    else:  # all numbers are zero
-        print(prefix + x_sign + "0")
-        print(prefix + y_sign + "0")
-        print(prefix + "-" * 2)
-        print(prefix + s_sign + "0")
-        print(prefix + e_sign + "0")
-
-
 def seltzo_key(
     model: z3.ModelRef,
     variable: SELTZOVariable,
@@ -388,6 +346,49 @@ def seltzo_keys(
         seltzo_key(model, variable, FLOAT16_MIN_EXPONENT - min_exponent)
         for variable in variables
     ]
+
+
+def display_two_sum(
+    model: z3.ModelRef,
+    s: SELTZOVariable,
+    e: SELTZOVariable,
+    x: SELTZOVariable,
+    y: SELTZOVariable,
+    prefix: str = "",
+) -> None:
+    s_sign: str = "+" if to_bool(model[s.sign_bit]) else "-"
+    e_sign: str = "+" if to_bool(model[e.sign_bit]) else "-"
+    x_sign: str = "+" if to_bool(model[x.sign_bit]) else "-"
+    y_sign: str = "+" if to_bool(model[y.sign_bit]) else "-"
+    s_digits: dict[int, str] = extract_digits(model, s)
+    e_digits: dict[int, str] = extract_digits(model, e)
+    x_digits: dict[int, str] = extract_digits(model, x)
+    y_digits: dict[int, str] = extract_digits(model, y)
+    keys: set[int] = set()
+    keys.update(s_digits.keys())
+    keys.update(e_digits.keys())
+    keys.update(x_digits.keys())
+    keys.update(y_digits.keys())
+    s_seltzo, e_seltzo, x_seltzo, y_seltzo = seltzo_keys(model, [s, e, x, y])
+    if keys:  # at least one number is nonzero
+        max_key: int = max(keys)
+        min_key: int = min(keys)
+        key_range: Callable[[], range] = lambda: range(max_key, min_key - 1, -1)
+        s_str: str = "".join(s_digits.get(k, ".") for k in key_range())
+        e_str: str = "".join(e_digits.get(k, ".") for k in key_range())
+        x_str: str = "".join(x_digits.get(k, ".") for k in key_range())
+        y_str: str = "".join(y_digits.get(k, ".") for k in key_range())
+        print(f"{prefix}{x_sign}{x_str} (0x{x_seltzo:08X})")
+        print(f"{prefix}{y_sign}{y_str} (0x{y_seltzo:08X})")
+        print(prefix + "-" * (max_key - min_key + 2))
+        print(f"{prefix}{s_sign}{s_str} (0x{s_seltzo:08X})")
+        print(f"{prefix}{e_sign}{e_str} (0x{e_seltzo:08X})")
+    else:  # all numbers are zero
+        print(f"{prefix}{x_sign}0 (0x{x_seltzo:08X})")
+        print(f"{prefix}{y_sign}0 (0x{y_seltzo:08X})")
+        print(prefix + "-" * 2)
+        print(f"{prefix}{s_sign}0 (0x{s_seltzo:08X})")
+        print(f"{prefix}{e_sign}0 (0x{e_seltzo:08X})")
 
 
 def exists_in_data(key_x: int, key_y: int, key_s: int, key_e: int) -> bool:
