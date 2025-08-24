@@ -562,28 +562,6 @@ def seltzo_two_sum_lemmas(
     )
 
     """
-    # Lemma 2A: Zeros insulate the exponent from increasing.
-    result["SELTZO-TwoSum-2A-X"] = z3.Implies(
-        z3.And(same_sign, ey < f0x),
-        es == ex,
-    )
-    result["SELTZO-TwoSum-2A-Y"] = z3.Implies(
-        z3.And(same_sign, ex < f0y),
-        es == ey,
-    )
-
-    # Lemma 2B: Ones insulate the exponent from decreasing.
-    result["SELTZO-TwoSum-2B-X"] = z3.Implies(
-        z3.And(diff_sign, z3.Not(x_pow2), ey < f1x),
-        es == ex,
-    )
-    result["SELTZO-TwoSum-2B-Y"] = z3.Implies(
-        z3.And(diff_sign, z3.Not(y_pow2), ex < f1y),
-        es == ey,
-    )
-    """
-
-    """
     # Lemma SELTZO-1A: Adding a small number to a number with multiple
     # leading zeros destroys at most one of its leading zeros.
     result["SELTZO-TwoSum-1A-X"] = z3.Implies(
@@ -652,6 +630,26 @@ def seltzo_two_sum_lemmas(
     # Lemma SELTZO-4: Addition preserves leading ones or increases the exponent.
     result["SELTZO-TwoSum-4-X"] = z3.Implies(same_sign, z3.Or(es > ex, f0s <= f0x))
     result["SELTZO-TwoSum-4-Y"] = z3.Implies(same_sign, z3.Or(es > ey, f0s <= f0y))
+
+    # Lemma 5A: Zeros insulate the exponent from increasing.
+    result["SELTZO-TwoSum-5A-X"] = z3.Implies(
+        z3.And(same_sign, ey < f0x),
+        es == ex,
+    )
+    result["SELTZO-TwoSum-5A-Y"] = z3.Implies(
+        z3.And(same_sign, ex < f0y),
+        es == ey,
+    )
+
+    # Lemma 5B: Ones insulate the exponent from decreasing.
+    result["SELTZO-TwoSum-5B-X"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(x_pow2), ey < f1x),
+        es == ex,
+    )
+    result["SELTZO-TwoSum-5B-Y"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(y_pow2), ex < f1y),
+        es == ey,
+    )
 
     result["SELTZO-TwoSum-6-X"] = z3.Implies(z3.And(es < ex, ex > ey + one), f1s >= f0y)
     result["SELTZO-TwoSum-6-Y"] = z3.Implies(z3.And(es < ey, ey > ex + one), f1s >= f0x)
