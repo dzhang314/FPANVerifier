@@ -393,27 +393,27 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey, f0s >= f0y - one, f1s >= f1y - one),
     )
 
-    """
-    # Lemma 1A: Adding into leading ones increases the exponent.
-    result["SELTZO-TwoSum-1A-X"] = z3.Implies(
+    # Lemma P7A: Adding into leading ones increases the exponent.
+    result["SELTZO-TwoSum-P7A-X"] = z3.Implies(
         z3.And(y_nonzero, same_sign, ey > f0x),
-        es > ex,
+        es >= ex + one,
     )
-    result["SELTZO-TwoSum-1A-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-P7A-Y"] = z3.Implies(
         z3.And(x_nonzero, same_sign, ex > f0y),
-        es > ey,
+        es >= ey + one,
     )
 
-    # Lemma 1B: Subtracting from leading zeros decreases the exponent.
-    result["SELTZO-TwoSum-1B-X"] = z3.Implies(
-        z3.And(y_nonzero, diff_sign, ex >= ey, ey > f1x),
-        es < ex,
+    # Lemma P7B: Subtracting from leading zeros decreases the exponent.
+    result["SELTZO-TwoSum-P7B-X"] = z3.Implies(
+        z3.And(y_nonzero, diff_sign, ex + one > ey, ey > f1x),
+        es <= ex - one,
     )
-    result["SELTZO-TwoSum-1B-Y"] = z3.Implies(
-        z3.And(x_nonzero, diff_sign, ey >= ex, ex > f1y),
-        es < ey,
+    result["SELTZO-TwoSum-P7B-Y"] = z3.Implies(
+        z3.And(x_nonzero, diff_sign, ey + one > ex, ex > f1y),
+        es <= ey - one,
     )
 
+    """
     # Lemma 2A: Zeros insulate the exponent from increasing.
     result["SELTZO-TwoSum-2A-X"] = z3.Implies(
         z3.And(same_sign, ey < f0x),
