@@ -652,9 +652,16 @@ class VerifierContext(object):
         if self.solver.check() == z3.sat:
             counterexample: z3.ModelRef = self.solver.model()
             for s, e, x, y in self.two_sum_operands:
-                if not exists_in_data(*seltzo_keys(counterexample, [x, y, s, e])):
-                    print()
-                    display_two_sum(counterexample, s, e, x, y, prefix="  ")
+                print()
+                print(
+                    f"({s.name}, {e.name}) = TwoSum({x.name}, {y.name})",
+                    (
+                        "(valid):"
+                        if exists_in_data(*seltzo_keys(counterexample, [x, y, s, e]))
+                        else "(invalid):"
+                    ),
+                )
+                display_two_sum(counterexample, s, e, x, y, prefix="  ")
             print()
         else:
             print(f"WARNING: No counterexample found with precision p = {precision}.")
