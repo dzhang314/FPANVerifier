@@ -109,6 +109,16 @@ def seltzo_two_sum_lemmas(
     s_all1: z3.BoolRef = z3.And(lbs, tbs, nlbs == p - one, ntbs == p - one)
     e_all1: z3.BoolRef = z3.And(lbe, tbe, nlbe == p - one, ntbe == p - one)
 
+    x_r0r1: z3.BoolRef = z3.And(z3.Not(lbx), tbx, nlbx + ntbx == p - one)
+    y_r0r1: z3.BoolRef = z3.And(z3.Not(lby), tby, nlby + ntby == p - one)
+    s_r0r1: z3.BoolRef = z3.And(z3.Not(lbs), tbs, nlbs + ntbs == p - one)
+    e_r0r1: z3.BoolRef = z3.And(z3.Not(lbe), tbe, nlbe + ntbe == p - one)
+
+    x_r1r0: z3.BoolRef = z3.And(lbx, z3.Not(tbx), nlbx + ntbx == p - one)
+    y_r1r0: z3.BoolRef = z3.And(lby, z3.Not(tby), nlby + ntby == p - one)
+    s_r1r0: z3.BoolRef = z3.And(lbs, z3.Not(tbs), nlbs + ntbs == p - one)
+    e_r1r0: z3.BoolRef = z3.And(lbe, z3.Not(tbe), nlbe + ntbe == p - one)
+
     ############################################################ COMPLETE LEMMAS
 
     # Lemma C1: Sum where one number fits entirely into the other's leading
@@ -282,16 +292,12 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    # Lemma C3: Sum of two adjacent numbers of the form 1...10...0.
-    result["SELTZO-TwoSum-C3"] = z3.Implies(
+    # Lemma C3: Sum of two adjacent r1r0 numbers.
+    result["SELTZO-TwoSum-C3-X"] = z3.Implies(
         z3.And(
             same_sign,
-            lbx,
-            z3.Not(tbx),
-            nlbx + ntbx == p - one,
-            lby,
-            z3.Not(tby),
-            nlby + ntby == p - one,
+            x_r1r0,
+            y_r1r0,
             ey == f0x,
             ex > f0y + p,
         ),
@@ -302,6 +308,23 @@ def seltzo_two_sum_lemmas(
             e_pow2,
             se != sx,
             ee == f0y + one,
+        ),
+    )
+    result["SELTZO-TwoSum-C3-Y"] = z3.Implies(
+        z3.And(
+            same_sign,
+            y_r1r0,
+            x_r1r0,
+            ex == f0y,
+            ey > f0x + p,
+        ),
+        z3.And(
+            s_pow2,
+            ss == sx,
+            es == ey + one,
+            e_pow2,
+            se != sx,
+            ee == f0x + one,
         ),
     )
 
