@@ -451,6 +451,17 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey, f0s <= ex + one),
     )
 
+    # Lemma P11: Adding just past the end of an all-1 mantissa increments the
+    # sum to the following power of 2.
+    result["SELTZO-TwoSum-P11-X"] = z3.Implies(
+        z3.And(x_all1, y_nonzero, same_sign, ex == ey + p),
+        z3.And(s_pow2, ss == sx, es == ex + one),
+    )
+    result["SELTZO-TwoSum-P11-Y"] = z3.Implies(
+        z3.And(y_all1, x_nonzero, same_sign, ey == ex + p),
+        z3.And(s_pow2, ss == sy, es == ey + one),
+    )
+
     """
     # Lemma 2A: Zeros insulate the exponent from increasing.
     result["SELTZO-TwoSum-2A-X"] = z3.Implies(
