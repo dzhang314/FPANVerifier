@@ -546,6 +546,21 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma P14: The leading zeros of the smaller addend straddle the boundary
+    # of the mantissa of the larger addend.
+    result["SELTZO-TwoSum-P14-X"] = z3.Implies(
+        z3.And(
+            y_nonzero, same_sign, g1x > ey, ey + p > ex, z3.Not(y_pow2), f1y + p < ex
+        ),
+        z3.And(ss == sx, es == ex, se == sx, ee == f1y),
+    )
+    result["SELTZO-TwoSum-P14-Y"] = z3.Implies(
+        z3.And(
+            x_nonzero, same_sign, g1y > ex, ex + p > ey, z3.Not(x_pow2), f1x + p < ey
+        ),
+        z3.And(ss == sy, es == ey, se == sy, ee == f1x),
+    )
+
     """
     # Lemma 2A: Zeros insulate the exponent from increasing.
     result["SELTZO-TwoSum-2A-X"] = z3.Implies(
