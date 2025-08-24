@@ -380,13 +380,13 @@ def display_two_sum(
         y_str: str = "".join(y_digits.get(k, ".") for k in key_range())
         print(f"{prefix}{x_sign}{x_str} (0x{x_seltzo:08X})")
         print(f"{prefix}{y_sign}{y_str} (0x{y_seltzo:08X})")
-        print(prefix + "-" * (max_key - min_key + 2))
+        print(prefix + "=" * (max_key - min_key + 2))
         print(f"{prefix}{s_sign}{s_str} (0x{s_seltzo:08X})")
         print(f"{prefix}{e_sign}{e_str} (0x{e_seltzo:08X})")
     else:  # all numbers are zero
         print(f"{prefix}{x_sign}0 (0x{x_seltzo:08X})")
         print(f"{prefix}{y_sign}0 (0x{y_seltzo:08X})")
-        print(prefix + "-" * 2)
+        print(prefix + "=" * 2)
         print(f"{prefix}{s_sign}0 (0x{s_seltzo:08X})")
         print(f"{prefix}{e_sign}0 (0x{e_seltzo:08X})")
 

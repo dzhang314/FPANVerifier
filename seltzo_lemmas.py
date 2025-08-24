@@ -104,6 +104,11 @@ def seltzo_two_sum_lemmas(
         e_nonzero, z3.Not(lbe), z3.Not(tbe), nlbe == p - one, ntbe == p - one
     )
 
+    x_all1: z3.BoolRef = z3.And(lbx, tbx, nlbx == p - one, ntbx == p - one)
+    y_all1: z3.BoolRef = z3.And(lby, tby, nlby == p - one, ntby == p - one)
+    s_all1: z3.BoolRef = z3.And(lbs, tbs, nlbs == p - one, ntbs == p - one)
+    e_all1: z3.BoolRef = z3.And(lbe, tbe, nlbe == p - one, ntbe == p - one)
+
     ############################################################ COMPLETE LEMMAS
 
     result["SELTZO-TwoSum-C1-X"] = z3.Implies(
