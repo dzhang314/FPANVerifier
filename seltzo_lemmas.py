@@ -292,6 +292,17 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey, f1s == f1y),
     )
 
+    # Lemma P6: If there is a gap between the addends, then the exponent cannot
+    # change, and at most one leading bit can be destroyed.
+    result["SELTZO-TwoSum-P6-X"] = z3.Implies(
+        z3.And(z3.Not(x_pow2), ey + one < g1x),
+        z3.And(ss == sx, es == ex, f0s >= f0x - one, f1s >= f1x - one),
+    )
+    result["SELTZO-TwoSum-P6-Y"] = z3.Implies(
+        z3.And(z3.Not(y_pow2), ex + one < g1y),
+        z3.And(ss == sy, es == ey, f0s >= f0y - one, f1s >= f1y - one),
+    )
+
     """
     # Lemma 1A: Adding into leading ones increases the exponent.
     result["SELTZO-TwoSum-1A-X"] = z3.Implies(
