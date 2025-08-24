@@ -45,12 +45,21 @@ def seltzo_two_sum_lemmas(
 
     result: dict[str, z3.BoolRef] = {}
 
+    same_sign: z3.BoolRef = sx == sy
+    diff_sign: z3.BoolRef = sx != sy
+
     x_zero: z3.BoolRef = is_zero(x)
     y_zero: z3.BoolRef = is_zero(y)
-    xy_nonzero: z3.BoolRef = z3.And(z3.Not(x_zero), z3.Not(y_zero))
-    s_nonzero: z3.BoolRef = z3.Not(is_zero(s))
-    e_nonzero: z3.BoolRef = z3.Not(is_zero(e))
-    e_pos_zero: z3.BoolRef = z3.And(is_positive(e), is_zero(e))
+    s_zero: z3.BoolRef = is_zero(s)
+    e_zero: z3.BoolRef = is_zero(e)
+
+    x_nonzero: z3.BoolRef = z3.Not(x_zero)
+    y_nonzero: z3.BoolRef = z3.Not(y_zero)
+    s_nonzero: z3.BoolRef = z3.Not(s_zero)
+    e_nonzero: z3.BoolRef = z3.Not(e_zero)
+
+    xy_nonzero: z3.BoolRef = z3.And(x_nonzero, y_nonzero)
+    e_pos_zero: z3.BoolRef = z3.And(is_positive(e), e_zero)
 
     f0x: IntVar = ex - z3_If(lbx, nlbx + one, one)
     f0y: IntVar = ey - z3_If(lby, nlby + one, one)
@@ -72,11 +81,64 @@ def seltzo_two_sum_lemmas(
     g1s: IntVar = es - (p - z3_If(tbs, one, ntbs + one))
     g1e: IntVar = ee - (p - z3_If(tbe, one, ntbe + one))
 
-    same_sign: z3.BoolRef = sx == sy
-    diff_sign: z3.BoolRef = sx != sy
+    x_pow2: z3.BoolRef = z3.And(
+        x_nonzero, z3.Not(lbx), z3.Not(tbx), nlbx == p - one, ntbx == p - one
+    )
+    y_pow2: z3.BoolRef = z3.And(
+        y_nonzero, z3.Not(lby), z3.Not(tby), nlby == p - one, ntby == p - one
+    )
+    s_pow2: z3.BoolRef = z3.And(
+        s_nonzero, z3.Not(lbs), z3.Not(tbs), nlbs == p - one, ntbs == p - one
+    )
+    e_pow2: z3.BoolRef = z3.And(
+        e_nonzero, z3.Not(lbe), z3.Not(tbe), nlbe == p - one, ntbe == p - one
+    )
 
-    ############################################################################
+    ############################################################################'
 
+    """
+    # Lemma 1A: Adding into leading ones increases the exponent.
+    result["SELTZO-TwoSum-1A-X"] = z3.Implies(
+        z3.And(y_nonzero, same_sign, ey > f0x),
+        es > ex,
+    )
+    result["SELTZO-TwoSum-1A-Y"] = z3.Implies(
+        z3.And(x_nonzero, same_sign, ex > f0y),
+        es > ey,
+    )
+
+    # Lemma 1B: Subtracting from leading zeros decreases the exponent.
+    result["SELTZO-TwoSum-1B-X"] = z3.Implies(
+        z3.And(y_nonzero, diff_sign, ex >= ey, ey > f1x),
+        es < ex,
+    )
+    result["SELTZO-TwoSum-1B-Y"] = z3.Implies(
+        z3.And(x_nonzero, diff_sign, ey >= ex, ex > f1y),
+        es < ey,
+    )
+
+    # Lemma 2A: Zeros insulate the exponent from increasing.
+    result["SELTZO-TwoSum-2A-X"] = z3.Implies(
+        z3.And(same_sign, ey < f0x),
+        es == ex,
+    )
+    result["SELTZO-TwoSum-2A-Y"] = z3.Implies(
+        z3.And(same_sign, ex < f0y),
+        es == ey,
+    )
+
+    # Lemma 2B: Ones insulate the exponent from decreasing.
+    result["SELTZO-TwoSum-2B-X"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(x_pow2), ey < f1x),
+        es == ex,
+    )
+    result["SELTZO-TwoSum-2B-Y"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(y_pow2), ex < f1y),
+        es == ey,
+    )
+    """
+
+    """
     # Lemma SELTZO-1A: Adding a small number to a number with multiple
     # leading zeros destroys at most one of its leading zeros.
     result["SELTZO-TwoSum-1A-X"] = z3.Implies(
@@ -198,5 +260,6 @@ def seltzo_two_sum_lemmas(
         z3.And(diff_sign, ey == f0y + two, f0y > ex),
         z3.And(ss == sy, es == ey, f1s >= f0y),
     )
+    """
 
     return result

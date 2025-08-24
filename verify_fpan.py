@@ -664,7 +664,7 @@ class VerifierContext(object):
         self,
         arguments: list[str],
         origin_k: int = 0,
-        origin_j: int = -1024,
+        origin_j: int = -64,
         verbose: bool = True,
     ) -> None:
 
