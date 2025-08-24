@@ -282,6 +282,29 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C3: Sum of two adjacent numbers of the form 1...10...0.
+    result["SELTZO-TwoSum-C3"] = z3.Implies(
+        z3.And(
+            same_sign,
+            lbx,
+            z3.Not(tbx),
+            nlbx + ntbx == p - one,
+            lby,
+            z3.Not(tby),
+            nlby + ntby == p - one,
+            ey == f0x,
+            ex > f0y + p,
+        ),
+        z3.And(
+            s_pow2,
+            ss == sx,
+            es == ex + one,
+            e_pow2,
+            se != sx,
+            ee == f0y + one,
+        ),
+    )
+
     ############################################################# PARTIAL LEMMAS
 
     # Lemma P1A: If the exponent increases, then the sum must have a number of
