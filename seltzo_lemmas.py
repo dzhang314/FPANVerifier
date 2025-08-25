@@ -660,6 +660,28 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey, se == sy, ee == f1x),
     )
 
+    # Lemma P15: Adding leading ones to the end of an r1r0 number pushes it up
+    # to the next power of two.
+    result["SELTZO-TwoSum-P15-X"] = z3.Implies(
+        z3.And(same_sign, x_r1r0, ey == f0x, ex > f0y + p),
+        z3.And(s_pow2, ss == sx, es == ex + one),
+    )
+    result["SELTZO-TwoSum-P15-Y"] = z3.Implies(
+        z3.And(same_sign, y_r1r0, ex == f0y, ey > f0x + p),
+        z3.And(s_pow2, ss == sy, es == ey + one),
+    )
+
+    # Lemma P16: If addition does not change the exponent, then it must
+    # preserve the number of leading ones.
+    result["SELTZO-TwoSum-P16-X"] = z3.Implies(
+        z3.And(same_sign, es == ex, lbx),
+        z3.And(ss == sx, lbs, nlbs >= nlbx),
+    )
+    result["SELTZO-TwoSum-P16-Y"] = z3.Implies(
+        z3.And(same_sign, es == ey, lby),
+        z3.And(ss == sy, lbs, nlbs >= nlby),
+    )
+
     """
     # Lemma SELTZO-1A: Adding a small number to a number with multiple
     # leading zeros destroys at most one of its leading zeros.
