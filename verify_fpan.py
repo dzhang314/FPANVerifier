@@ -231,7 +231,15 @@ class SELTZOVariable(object):
         other: "SELTZOVariable",
         magnitude: int | z3.ArithRef,
     ) -> z3.BoolRef:
-        return z3.Or(self.is_zero, self.exponent + magnitude < other.exponent)
+        return z3.Or(
+            self.is_zero,
+            self.exponent + magnitude < other.exponent,
+            z3.And(
+                self.exponent + magnitude == other.exponent,
+                z3.Not(self.leading_bit),
+                other.leading_bit,
+            ),
+        )
 
 
 # TODO: Eventually, all `assert` statements should be
