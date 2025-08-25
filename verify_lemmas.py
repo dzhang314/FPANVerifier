@@ -12,9 +12,9 @@ from se_lemmas import se_two_sum_lemmas
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
 from smt_utils import (
-    SMT_SOLVERS,
-    UNSUPPORTED_LOGICS,
     SMTJob,
+    detect_smt_solvers,
+    compute_job_count,
     create_smt_job,
     count_leading_zeros,
     count_leading_ones,
@@ -30,36 +30,12 @@ EXIT_Z3_COUNTEREXAMPLE: int = 4
 EXIT_OTHER_COUNTEREXAMPLE: int = 5
 
 
-BVFP_SOLVERS: list[str] = [
-    solver for solver in SMT_SOLVERS if "QF_BVFP" not in UNSUPPORTED_LOGICS[solver]
-]
-if not BVFP_SOLVERS:
-    print(
-        "ERROR: No SMT solvers available on your $PATH support QF_BVFP.",
-        file=sys.stderr,
-    )
-    print("Please install at least one of the following SMT solvers:", file=sys.stderr)
-    for solver, logics in UNSUPPORTED_LOGICS.items():
-        if "QF_BVFP" not in logics:
-            print("    -", solver, file=sys.stderr)
-    sys.exit(EXIT_NO_SOLVERS)
-SOLVER_LEN: int = max(map(len, BVFP_SOLVERS))
-
-
-def compute_job_count() -> int:
-    assert BVFP_SOLVERS
-    num_cores: int | None = os.cpu_count()
-    if num_cores is None:
-        print(
-            "WARNING: Could not determine CPU core count using os.cpu_count().",
-            file=sys.stderr,
-        )
-        num_cores = 1
-    return max(num_cores // len(BVFP_SOLVERS), 1)
-
-
-JOB_COUNT: int = compute_job_count()
+BVFP_SOLVERS: set[str] = detect_smt_solvers("QF_BVFP", EXIT_NO_SOLVERS)
+JOB_COUNT: int = compute_job_count(BVFP_SOLVERS, EXIT_NO_SOLVERS)
 print("Verifying lemmas with", JOB_COUNT, "parallel jobs.")
+
+
+SOLVER_LEN: int = max(map(len, BVFP_SOLVERS))
 ONE: z3.BitVecNumRef = z3.BitVecVal(1, 1)
 RNE: z3.FPRMRef = z3.RoundNearestTiesToEven()
 
@@ -326,7 +302,7 @@ def main() -> None:
         while remaining_jobs and (len(running_jobs) < JOB_COUNT):
             next_job: SMTJob = remaining_jobs.pop(0)
             if os.path.basename(next_job.filename).startswith(prefix):
-                next_job.start()
+                next_job.start(BVFP_SOLVERS)
                 running_jobs.append(next_job)
 
         # Check status of all running jobs.

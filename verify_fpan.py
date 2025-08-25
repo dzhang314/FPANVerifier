@@ -10,28 +10,19 @@ from typing import Callable, cast
 
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
-from smt_utils import SMT_SOLVERS, UNSUPPORTED_LOGICS, SMTJob, create_smt_job
+from smt_utils import SMTJob, detect_smt_solvers, create_smt_job, pop_flag
 
 
 EXIT_NO_SOLVERS: int = 1
 
 
-LIA_SOLVERS: list[str] = [
-    solver for solver in SMT_SOLVERS if "QF_LIA" not in UNSUPPORTED_LOGICS[solver]
-]
-if not LIA_SOLVERS:
-    print(
-        "ERROR: No SMT solvers available on your $PATH support QF_LIA.",
-        file=sys.stderr,
-    )
-    print("Please install at least one of the following SMT solvers:", file=sys.stderr)
-    for solver, logics in UNSUPPORTED_LOGICS.items():
-        if "QF_LIA" not in logics:
-            print("    -", solver, file=sys.stderr)
-    sys.exit(EXIT_NO_SOLVERS)
+LIA_SOLVERS: set[str] = detect_smt_solvers("QF_LIA", EXIT_NO_SOLVERS)
 SOLVER_LEN: int = max(map(len, LIA_SOLVERS))
-
-
+SHOW_COUNTEREXAMPLES: bool = pop_flag("--show-counterexamples")
+INTERNAL_SEPARATOR: str = "__"
+FLOAT16_PRECISION: int = 11
+FLOAT16_ZERO_EXPONENT: int = -15
+FLOAT16_MIN_EXPONENT: int = FLOAT16_ZERO_EXPONENT + 1
 Z3_ZERO: z3.ArithRef = z3.IntVal(0)
 Z3_ONE: z3.ArithRef = z3.IntVal(1)
 Z3_TWO: z3.ArithRef = z3.IntVal(2)
@@ -39,23 +30,6 @@ Z3_THREE: z3.ArithRef = z3.IntVal(3)
 GLOBAL_PRECISION: z3.ArithRef = z3.Int("PRECISION")
 GLOBAL_ZERO_EXPONENT: z3.ArithRef = z3.Int("ZERO_EXPONENT")
 GLOBAL_MANTISSA_WIDTH: z3.ArithRef = GLOBAL_PRECISION - 1
-INTERNAL_SEPARATOR: str = "__"
-
-
-def compute_job_count() -> int:
-    assert LIA_SOLVERS
-    num_cores: int | None = os.cpu_count()
-    if num_cores is None:
-        print(
-            "WARNING: Could not determine CPU core count using os.cpu_count().",
-            file=sys.stderr,
-        )
-        num_cores = 1
-    return max(num_cores // len(LIA_SOLVERS), 1)
-
-
-JOB_COUNT: int = compute_job_count()
-print("Computing bounds with", JOB_COUNT, "parallel jobs.")
 
 
 def try_open(path: str):
@@ -65,16 +39,15 @@ def try_open(path: str):
         return None
 
 
-FLOAT16_PRECISION: int = 11
-FLOAT16_ZERO_EXPONENT: int = -15
-FLOAT16_MIN_EXPONENT: int = FLOAT16_ZERO_EXPONENT + 1
 DATA_PATH: str = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "conjecturer",
     "SELTZO-TwoSum-Float16.bin",
 )
 DATA_FILE = try_open(DATA_PATH)
-if DATA_FILE is not None:
+if DATA_FILE is None:
+    print(f"File {repr(DATA_PATH)} not found.")
+else:
     print(f"Successfully opened {repr(DATA_PATH)}.")
     DATA_SIZE: int = DATA_FILE.seek(0, os.SEEK_END)
     _ = DATA_FILE.seek(0, os.SEEK_SET)
@@ -82,7 +55,7 @@ if DATA_FILE is not None:
     RECORD_SIZE: int = struct.calcsize(RECORD_FORMAT)
     assert DATA_SIZE % RECORD_SIZE == 0
     NUM_RECORDS: int = DATA_SIZE // RECORD_SIZE
-    print(f"Found {NUM_RECORDS} SELTZO records.")
+    print(f"Found {NUM_RECORDS} SELTZO-TwoSum records.")
 
 
 class SELTZOVariable(object):
@@ -92,13 +65,27 @@ class SELTZOVariable(object):
         solver: z3.Solver,
         name: str,
     ) -> None:
+
         self.name: str = name
-        self.sign_bit: z3.BoolRef = z3.Bool(name + "_sign_bit")
-        self.leading_bit: z3.BoolRef = z3.Bool(name + "_leading_bit")
-        self.trailing_bit: z3.BoolRef = z3.Bool(name + "_trailing_bit")
-        self.exponent: z3.ArithRef = z3.Int(name + "_exponent")
-        self.num_leading_bits: z3.ArithRef = z3.Int(name + "_num_leading_bits")
-        self.num_trailing_bits: z3.ArithRef = z3.Int(name + "_num_trailing_bits")
+
+        self.sign_bit: z3.BoolRef = z3.Bool(
+            name + INTERNAL_SEPARATOR + "sign_bit",
+        )
+        self.leading_bit: z3.BoolRef = z3.Bool(
+            name + INTERNAL_SEPARATOR + "leading_bit",
+        )
+        self.trailing_bit: z3.BoolRef = z3.Bool(
+            name + INTERNAL_SEPARATOR + "trailing_bit",
+        )
+        self.exponent: z3.ArithRef = z3.Int(
+            name + INTERNAL_SEPARATOR + "exponent",
+        )
+        self.num_leading_bits: z3.ArithRef = z3.Int(
+            name + INTERNAL_SEPARATOR + "num_leading_bits",
+        )
+        self.num_trailing_bits: z3.ArithRef = z3.Int(
+            name + INTERNAL_SEPARATOR + "num_trailing_bits",
+        )
 
         # We model a hypothetical floating-point datatype with infinite
         # exponent range, eliminating the possibility of overflow or underflow.
@@ -222,7 +209,10 @@ class SELTZOVariable(object):
                 self.exponent == other.exponent + GLOBAL_PRECISION,
                 other.is_power_of_two(),
                 z3.Not(self.trailing_bit),
-                z3.Or(self.sign_bit == other.sign_bit, z3.Not(self.is_power_of_two())),
+                z3.Or(
+                    self.sign_bit == other.sign_bit,
+                    z3.Not(self.is_power_of_two()),
+                ),
             ),
         )
 
@@ -287,7 +277,9 @@ def extract_digits(
             set_digit(digit_dict, exponent - k, to_digit(leading_bit))
         if num_leading_bits < precision - 1:
             set_digit(
-                digit_dict, exponent - (num_leading_bits + 1), to_digit(not leading_bit)
+                digit_dict,
+                exponent - (num_leading_bits + 1),
+                to_digit(not leading_bit),
             )
 
         trailing_bit: bool = to_bool(model[variable.trailing_bit])
@@ -356,36 +348,36 @@ def seltzo_keys(
     ]
 
 
-def display_two_sum(
+def show_two_sum(
     model: z3.ModelRef,
-    s: SELTZOVariable,
-    e: SELTZOVariable,
     x: SELTZOVariable,
     y: SELTZOVariable,
+    s: SELTZOVariable,
+    e: SELTZOVariable,
     prefix: str = "",
 ) -> None:
-    s_sign: str = "+" if to_bool(model[s.sign_bit]) else "-"
-    e_sign: str = "+" if to_bool(model[e.sign_bit]) else "-"
     x_sign: str = "+" if to_bool(model[x.sign_bit]) else "-"
     y_sign: str = "+" if to_bool(model[y.sign_bit]) else "-"
-    s_digits: dict[int, str] = extract_digits(model, s)
-    e_digits: dict[int, str] = extract_digits(model, e)
+    s_sign: str = "+" if to_bool(model[s.sign_bit]) else "-"
+    e_sign: str = "+" if to_bool(model[e.sign_bit]) else "-"
     x_digits: dict[int, str] = extract_digits(model, x)
     y_digits: dict[int, str] = extract_digits(model, y)
+    s_digits: dict[int, str] = extract_digits(model, s)
+    e_digits: dict[int, str] = extract_digits(model, e)
     keys: set[int] = set()
-    keys.update(s_digits.keys())
-    keys.update(e_digits.keys())
     keys.update(x_digits.keys())
     keys.update(y_digits.keys())
-    s_seltzo, e_seltzo, x_seltzo, y_seltzo = seltzo_keys(model, [s, e, x, y])
+    keys.update(s_digits.keys())
+    keys.update(e_digits.keys())
+    x_seltzo, y_seltzo, s_seltzo, e_seltzo = seltzo_keys(model, [x, y, s, e])
     if keys:  # at least one number is nonzero
         max_key: int = max(keys)
         min_key: int = min(keys)
         key_range: Callable[[], range] = lambda: range(max_key, min_key - 1, -1)
-        s_str: str = "".join(s_digits.get(k, ".") for k in key_range())
-        e_str: str = "".join(e_digits.get(k, ".") for k in key_range())
         x_str: str = "".join(x_digits.get(k, ".") for k in key_range())
         y_str: str = "".join(y_digits.get(k, ".") for k in key_range())
+        s_str: str = "".join(s_digits.get(k, ".") for k in key_range())
+        e_str: str = "".join(e_digits.get(k, ".") for k in key_range())
         print(f"{prefix}{x_sign}{x_str} (0x{x_seltzo:08X})")
         print(f"{prefix}{y_sign}{y_str} (0x{y_seltzo:08X})")
         print(prefix + "=" * (max_key - min_key + 2))
@@ -557,13 +549,39 @@ class VerifierContext(object):
     def handle_assume_command(self, arguments: list[str]) -> None:
         self.solver.add(self.extract_logical_condition(arguments))
 
+    def show_counterexample(
+        self,
+        claim: z3.BoolRef,
+        precision: int = FLOAT16_PRECISION,
+    ) -> None:
+        self.solver.push()
+        self.solver.add(GLOBAL_PRECISION == precision)
+        self.solver.add(z3.Not(claim))
+        if self.solver.check() == z3.sat:
+            counterexample: z3.ModelRef = self.solver.model()
+            for s, e, x, y in self.two_sum_operands:
+                print()
+                if DATA_FILE is None:
+                    print(f"({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
+                else:
+                    keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
+                    is_valid: bool = exists_in_data(*keys)
+                    print(
+                        f"({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
+                        "(valid):" if is_valid else "(invalid):",
+                    )
+                show_two_sum(counterexample, x, y, s, e, prefix="  ")
+            print()
+        else:
+            print(f"WARNING: No counterexample found with precision p = {precision}.")
+        self.solver.pop()
+
     def handle_prove_command(self, arguments: list[str]) -> None:
+        claim: z3.BoolRef = self.extract_logical_condition(arguments)
         # TODO: Sanitize claim_name to ensure it is a valid filename.
         claim_name: str = "_".join(arguments)
-        job: SMTJob = create_smt_job(
-            self.solver, "QF_LIA", claim_name, self.extract_logical_condition(arguments)
-        )
-        job.start()
+        job: SMTJob = create_smt_job(self.solver, "QF_LIA", claim_name, claim)
+        job.start(LIA_SOLVERS)
         while True:
             if job.poll():
                 assert job.result is not None
@@ -571,7 +589,7 @@ class VerifierContext(object):
                 solver_name: str = job.processes.popitem()[0]
                 if job.result[1] == z3.unsat:
                     print(
-                        " ".join(arguments).ljust(29),
+                        " ".join(arguments).ljust(30),
                         "proved by",
                         solver_name.ljust(SOLVER_LEN),
                         f"in{job.result[0]:8.3f} seconds.",
@@ -579,11 +597,13 @@ class VerifierContext(object):
                 elif job.result[1] == z3.sat:
                     print(
                         "ERROR:",
-                        " ".join(arguments).ljust(29),
+                        " ".join(arguments).ljust(22),
                         "REFUTED by",
                         solver_name.ljust(SOLVER_LEN),
                         f"in{job.result[0]:8.3f} seconds.",
                     )
+                    if SHOW_COUNTEREXAMPLES:
+                        self.show_counterexample(claim)
                 else:
                     assert False
                 break
@@ -595,14 +615,12 @@ class VerifierContext(object):
         self,
         name_a: str,
         name_b: str,
+        a: SELTZOVariable,
+        b: SELTZOVariable,
         k: int,
         j: int,
         verbose: bool,
     ) -> tuple[bool, str, float]:
-        assert name_a in self.variables
-        assert name_b in self.variables
-        a: SELTZOVariable = self.variables[name_a][-1]
-        b: SELTZOVariable = self.variables[name_b][-1]
         # TODO: Sanitize bound name to ensure it is a valid filename.
         bound_name: str = f"bound_{name_a}_{name_b}_{k}_{j}"
         job: SMTJob = create_smt_job(
@@ -611,7 +629,7 @@ class VerifierContext(object):
             bound_name,
             a.is_smaller_than(b, GLOBAL_PRECISION * k + j),
         )
-        job.start()
+        job.start(LIA_SOLVERS)
         while True:
             if job.poll():
                 assert job.result is not None
@@ -622,7 +640,7 @@ class VerifierContext(object):
                     if verbose:
                         print(
                             f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} proved ",
-                            format_bound(name_a, name_b, k, j).ljust(29),
+                            format_bound(name_a, name_b, k, j).ljust(30),
                             f"in{solver_time:8.3f} seconds.",
                             end="\r",
                         )
@@ -631,7 +649,7 @@ class VerifierContext(object):
                     if verbose:
                         print(
                             f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} refuted",
-                            format_bound(name_a, name_b, k, j).ljust(29),
+                            format_bound(name_a, name_b, k, j).ljust(30),
                             f"in{solver_time:8.3f} seconds.",
                             end="\r",
                         )
@@ -641,39 +659,6 @@ class VerifierContext(object):
             # Sleep to avoid busy waiting. Even the fastest SMT solvers
             # take a few milliseconds, so 0.1ms is a reasonable interval.
             sleep(0.0001)
-
-    def display_counterexample(
-        self,
-        name_a: str,
-        name_b: str,
-        k: int,
-        j: int,
-        precision: int,
-    ) -> None:
-        assert name_a in self.variables
-        assert name_b in self.variables
-        a: SELTZOVariable = self.variables[name_a][-1]
-        b: SELTZOVariable = self.variables[name_b][-1]
-        self.solver.push()
-        self.solver.add(GLOBAL_PRECISION == precision)
-        self.solver.add(z3.Not(a.is_smaller_than(b, precision * k + j)))
-        if self.solver.check() == z3.sat:
-            counterexample: z3.ModelRef = self.solver.model()
-            for s, e, x, y in self.two_sum_operands:
-                print()
-                print(
-                    f"({s.name}, {e.name}) = TwoSum({x.name}, {y.name})",
-                    (
-                        "(valid):"
-                        if exists_in_data(*seltzo_keys(counterexample, [x, y, s, e]))
-                        else "(invalid):"
-                    ),
-                )
-                display_two_sum(counterexample, s, e, x, y, prefix="  ")
-            print()
-        else:
-            print(f"WARNING: No counterexample found with precision p = {precision}.")
-        self.solver.pop()
 
     def handle_bound_command(
         self,
@@ -690,16 +675,18 @@ class VerifierContext(object):
         name_b: str = arguments[2]
         assert name_a in self.variables
         assert name_b in self.variables
+        a: SELTZOVariable = self.variables[name_a][-1]
+        b: SELTZOVariable = self.variables[name_b][-1]
         print(f"Bounding |{name_a}| relative to |{name_b}|.", end="\r")
 
         last_passing_name: str | None = None
         last_passing_time: float | None = None
 
-        def test_bound(k: int, j: int) -> bool:
+        def local_test_bound(k: int, j: int) -> bool:
             nonlocal last_passing_name
             nonlocal last_passing_time
             result: tuple[bool, str, float] = self.test_bound(
-                name_a, name_b, k, j, verbose
+                name_a, name_b, a, b, k, j, verbose
             )
             if result[0]:
                 last_passing_name = result[1]
@@ -710,11 +697,11 @@ class VerifierContext(object):
         passing_k: int | None = None
         failing_k: int | None = None
         trial_k: int
-        if test_bound(origin_k, origin_j):
+        if local_test_bound(origin_k, origin_j):
             passing_k = origin_k
             while True:
                 trial_k = passing_k + 1
-                if test_bound(trial_k, origin_j):
+                if local_test_bound(trial_k, origin_j):
                     passing_k = trial_k
                 else:
                     failing_k = trial_k
@@ -723,7 +710,7 @@ class VerifierContext(object):
             failing_k = origin_k
             while True:
                 trial_k = failing_k - 1
-                if test_bound(trial_k, origin_j):
+                if local_test_bound(trial_k, origin_j):
                     passing_k = trial_k
                     break
                 else:
@@ -740,18 +727,18 @@ class VerifierContext(object):
         trial_j: int
         while passing_j < 0:
             trial_j = (passing_j + 1) // 2
-            if test_bound(passing_k, trial_j):
+            if local_test_bound(passing_k, trial_j):
                 passing_j = trial_j
             else:
                 failing_j = trial_j
                 break
         if failing_j is None:
             assert passing_j == 0
-            if test_bound(passing_k, 1):
+            if local_test_bound(passing_k, 1):
                 passing_j = 1
                 while True:
                     trial_j = passing_j * 2
-                    if test_bound(passing_k, trial_j):
+                    if local_test_bound(passing_k, trial_j):
                         passing_j = trial_j
                     else:
                         failing_j = trial_j
@@ -766,7 +753,7 @@ class VerifierContext(object):
         # Perform a binary search to tighten the bounds on j.
         while passing_j + 1 < failing_j:
             trial_j = (passing_j + failing_j) // 2
-            if test_bound(passing_k, trial_j):
+            if local_test_bound(passing_k, trial_j):
                 passing_j = trial_j
             else:
                 failing_j = trial_j
@@ -780,13 +767,14 @@ class VerifierContext(object):
         last_passing_time = cast(float, cast(object, last_passing_time))
         assert last_passing_time is not None
         print(
-            "\x1b[2K" + format_bound(name_a, name_b, passing_k, passing_j).ljust(29),
+            "\x1b[2K" + format_bound(name_a, name_b, passing_k, passing_j).ljust(30),
             f"proved by {last_passing_name.ljust(SOLVER_LEN)}",
             f"in{last_passing_time:8.3f} seconds.",
         )
-        self.display_counterexample(
-            name_a, name_b, passing_k, failing_j, FLOAT16_PRECISION
-        )
+        if SHOW_COUNTEREXAMPLES:
+            self.show_counterexample(
+                a.is_smaller_than(b, GLOBAL_PRECISION * passing_k + failing_j)
+            )
 
 
 def main() -> None:

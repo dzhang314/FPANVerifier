@@ -6,6 +6,7 @@
         "deinterleave",
         "dnlb",
         "dntb",
+        "fpan",
         "FPRM",
         "getfield",
         "ints",
