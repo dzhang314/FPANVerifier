@@ -784,11 +784,9 @@ def main() -> None:
                 print(f"Processing file: {repr(path)}")
                 context: VerifierContext = VerifierContext()
                 for line in f:
-                    parts: list[str] = []
-                    for part in line.split():
-                        if part.startswith("#"):
-                            break
-                        parts.append(part)
+                    if "#" in line:
+                        line = line[: line.index("#")]
+                    parts: list[str] = line.split()
                     if not parts:
                         continue
                     command, *arguments = parts
