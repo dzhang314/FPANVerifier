@@ -405,6 +405,40 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C7: Difference of aligned r1r0 and pow2.
+    result["SELTZO-TwoSum-C7-X"] = z3.Implies(
+        z3.And(
+            diff_sign,
+            x_r1r0,
+            y_pow2,
+            ex == ey,
+            g1x < ey - one,
+        ),
+        z3.And(
+            s_r1r0,
+            ss == sx,
+            es == ex - one,
+            g1s == g1x,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C7-Y"] = z3.Implies(
+        z3.And(
+            diff_sign,
+            y_r1r0,
+            x_pow2,
+            ey == ex,
+            g1y < ex - one,
+        ),
+        z3.And(
+            s_r1r0,
+            ss == sy,
+            es == ey - one,
+            g1s == g1y,
+            e_pos_zero,
+        ),
+    )
+
     ############################################################# PARTIAL LEMMAS
 
     # Lemma P1A: If the exponent increases, then the sum must have a number of
