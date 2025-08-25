@@ -781,7 +781,7 @@ def main() -> None:
     for path in sys.argv[1:]:
         try:
             with open(path) as f:
-                print(f"Processing file: {repr(path)}")
+                print(f"Processing file {repr(path)}.")
                 context: VerifierContext = VerifierContext()
                 for line in f:
                     if "#" in line:

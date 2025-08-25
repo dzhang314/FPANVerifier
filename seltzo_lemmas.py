@@ -59,6 +59,7 @@ def seltzo_two_sum_lemmas(
     e_nonzero: z3.BoolRef = z3.Not(e_zero)
 
     xy_nonzero: z3.BoolRef = z3.And(x_nonzero, y_nonzero)
+    s_pos_zero: z3.BoolRef = z3.And(is_positive(s), s_zero)
     e_pos_zero: z3.BoolRef = z3.And(is_positive(e), e_zero)
 
     fx: IntVar = ex - (nlbx + one)
@@ -680,6 +681,70 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-P16-Y"] = z3.Implies(
         z3.And(same_sign, es == ey, lby),
         z3.And(ss == sy, lbs, nlbs >= nlby),
+    )
+
+    # Lemma P17: Adding a non-power-of-two just past the end of a power of two
+    # increments the final bit and creates an error term with leading ones.
+    result["SELTZO-TwoSum-P17-X"] = z3.Implies(
+        z3.And(
+            same_sign,
+            x_pow2,
+            ex == ey + p,
+            y_nonzero,
+            z3.Not(y_pow2),
+            z3.Not(lby),
+            nlby > one,
+        ),
+        z3.And(
+            s_r0r1,
+            ss == sx,
+            es == ex,
+            ntbs == one,
+            se != sx,
+            ee == ey - one,
+            lbe,
+            nlbe >= nlby - one,
+        ),
+    )
+    result["SELTZO-TwoSum-P17-Y"] = z3.Implies(
+        z3.And(
+            same_sign,
+            y_pow2,
+            ey == ex + p,
+            x_nonzero,
+            z3.Not(x_pow2),
+            z3.Not(lbx),
+            nlbx > one,
+        ),
+        z3.And(
+            s_r0r1,
+            ss == sy,
+            es == ey,
+            ntbs == one,
+            se != sy,
+            ee == ex - one,
+            lbe,
+            nlbe >= nlbx - one,
+        ),
+    )
+
+    # Lemma P18: When cancellation occurs, the exponent of the difference is
+    # bounded above by the number of common leading bits.
+    result["SELTZO-TwoSum-P18"] = z3.Implies(
+        z3.And(diff_sign, ex == ey),
+        z3.Or(
+            s_pos_zero,
+            z3.And(
+                z3.Or(es <= f0x, es <= f0y),
+                z3.Or(es <= f1x, es <= f1y),
+            ),
+        ),
+    )
+
+    # Lemma P19: If the inputs are different, then the result cannot be zero.
+    result["SELTZO-TwoSum-P19"] = z3.Implies(
+        z3.Or(ex != ey, f0x != f0y, f1x != f1y, g0x != g0y, g1x != g1y),
+        z3.Not(s_zero),
     )
 
     return result
