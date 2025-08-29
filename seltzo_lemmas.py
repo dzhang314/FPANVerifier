@@ -141,8 +141,8 @@ def seltzo_two_sum_lemmas(
             z3.Not(lbs),
             tbs,
             es == ex,
-            fs == ey,
-            gs == gx,
+            nlbs == ex - ey - one,
+            ntbs == ntbx,
             e_pos_zero,
         ),
     )
@@ -153,8 +153,8 @@ def seltzo_two_sum_lemmas(
             z3.Not(lbs),
             tbs,
             es == ey,
-            fs == ex,
-            gs == gy,
+            nlbs == ey - ex - one,
+            ntbs == ntby,
             e_pos_zero,
         ),
     )
@@ -168,8 +168,8 @@ def seltzo_two_sum_lemmas(
             lbs,
             tbs,
             es == ex,
-            fs == f0y,
-            gs == gx,
+            nlbs == es - f0y - one,
+            ntbs == ntbx,
             e_pos_zero,
         ),
     )
@@ -180,12 +180,13 @@ def seltzo_two_sum_lemmas(
             lbs,
             tbs,
             es == ey,
-            fs == f0x,
-            gs == gy,
+            nlbs == es - f0x - one,
+            ntbs == ntby,
             e_pos_zero,
         ),
     )
 
+    """
     # Lemma C1AB: Sum where one number fits entirely into the other's leading
     # zeros, with no padding on either side.
     result["SELTZO-TwoSum-C1AB-X"] = z3.Implies(
@@ -212,6 +213,7 @@ def seltzo_two_sum_lemmas(
             e_pos_zero,
         ),
     )
+    """
 
     # Lemma C2: Sum of powers of two (general case).
     result["SELTZO-TwoSum-C2-X"] = z3.Implies(
@@ -296,9 +298,12 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_pow2, ex == ey),
         z3.And(
             ss == sx,
-            s_pow2,
+            z3.Not(lbs),
+            z3.Not(tbs),
             es == ex + one,
             es == ey + one,
+            nlbs == p - one,
+            ntbs == p - one,
             e_pos_zero,
         ),
     )
@@ -313,12 +318,18 @@ def seltzo_two_sum_lemmas(
             ex > f0y + p,
         ),
         z3.And(
-            s_pow2,
             ss == sx,
+            z3.Not(lbs),
+            z3.Not(tbs),
             es == ex + one,
-            e_pow2,
+            nlbs == p - one,
+            ntbs == p - one,
             se != sx,
+            z3.Not(lbe),
+            z3.Not(tbe),
             ee == f0y + one,
+            nlbe == p - one,
+            ntbe == p - one,
         ),
     )
     result["SELTZO-TwoSum-C3-Y"] = z3.Implies(
@@ -330,12 +341,18 @@ def seltzo_two_sum_lemmas(
             ey > f0x + p,
         ),
         z3.And(
-            s_pow2,
-            ss == sx,
+            ss == sy,
+            z3.Not(lbs),
+            z3.Not(tbs),
             es == ey + one,
-            e_pow2,
-            se != sx,
+            nlbs == p - one,
+            ntbs == p - one,
+            se != sy,
+            z3.Not(lbe),
+            z3.Not(tbe),
             ee == f0x + one,
+            nlbe == p - one,
+            ntbe == p - one,
         ),
     )
 
@@ -438,6 +455,8 @@ def seltzo_two_sum_lemmas(
             e_pos_zero,
         ),
     )
+
+    """
 
     ############################################################# PARTIAL LEMMAS
 
@@ -802,5 +821,7 @@ def seltzo_two_sum_lemmas(
         z3.And(x_nonzero, diff_sign, y_pow2, ey == ex + one),
         z3.And(ss == sy, z3.Or(es == f0x, es == f0x + one), e_pos_zero),
     )
+
+    """
 
     return result
