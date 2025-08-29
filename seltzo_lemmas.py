@@ -781,4 +781,26 @@ def seltzo_two_sum_lemmas(
         z3.Not(s_zero),
     )
 
+    # Lemma P20: The amount of cancellation is limited if the subtrahend has
+    # leading zeros.
+    result["SELTZO-TwoSum-P20-X"] = z3.Implies(
+        z3.And(diff_sign, ex > ey, z3.Not(lby)),
+        z3.And(ss == sx, es >= ey - one),
+    )
+    result["SELTZO-TwoSum-P20-Y"] = z3.Implies(
+        z3.And(diff_sign, ey > ex, z3.Not(lbx)),
+        z3.And(ss == sy, es >= ex - one),
+    )
+
+    # Lemma P21: When subtracting an adjacent number from from a power of 2,
+    # cancellation is determined by leading ones in the subtrahend.
+    result["SELTZO-TwoSum-P21-X"] = z3.Implies(
+        z3.And(y_nonzero, diff_sign, x_pow2, ex == ey + one),
+        z3.And(ss == sx, z3.Or(es == f0y, es == f0y + one), e_pos_zero),
+    )
+    result["SELTZO-TwoSum-P21-Y"] = z3.Implies(
+        z3.And(x_nonzero, diff_sign, y_pow2, ey == ex + one),
+        z3.And(ss == sy, z3.Or(es == f0x, es == f0x + one), e_pos_zero),
+    )
+
     return result
