@@ -250,13 +250,7 @@ def seltzo_two_sum_lemmas(
 
     # Lemma C03: Sum of two adjacent r1r0 numbers.
     result["SELTZO-TwoSum-C03-X"] = z3.Implies(
-        z3.And(
-            same_sign,
-            x_r1r0,
-            y_r1r0,
-            ey == fx,
-            ex > fy + p,
-        ),
+        z3.And(same_sign, x_r1r0, y_r1r0, ey == fx, ex > fy + p),
         z3.And(
             ss == sx,
             z3.Not(lbs),
@@ -273,13 +267,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-C03-Y"] = z3.Implies(
-        z3.And(
-            same_sign,
-            y_r1r0,
-            x_r1r0,
-            ex == fy,
-            ey > fx + p,
-        ),
+        z3.And(same_sign, y_r1r0, x_r1r0, ex == fy, ey > fx + p),
         z3.And(
             ss == sy,
             z3.Not(lbs),
@@ -406,13 +394,7 @@ def seltzo_two_sum_lemmas(
 
     # Lemma C07: Difference of aligned r1r0 and pow2.
     result["SELTZO-TwoSum-C07-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            x_r1r0,
-            y_pow2,
-            ex == ey,
-            gx < ey - one,
-        ),
+        z3.And(diff_sign, x_r1r0, y_pow2, ex == ey, gx < ey - one),
         z3.And(
             ss == sx,
             lbs,
@@ -424,13 +406,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-C07-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            y_r1r0,
-            x_pow2,
-            ey == ex,
-            gy < ex - one,
-        ),
+        z3.And(diff_sign, y_r1r0, x_pow2, ey == ex, gy < ex - one),
         z3.And(
             ss == sy,
             lbs,
@@ -511,6 +487,84 @@ def seltzo_two_sum_lemmas(
             ee == gx,
             nlbe == p - one,
             ntbe == p - one,
+        ),
+    )
+
+    # Lemma C10: Sum of a pow2 just before the end of an r1r0 (general case).
+    result["SELTZO-TwoSum-C10-X"] = z3.Implies(
+        z3.And(same_sign, x_r1r0, y_pow2, ex == ey + (p - one), ntbx > one),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex,
+            nlbs == nlbx,
+            ntbs == one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C10-Y"] = z3.Implies(
+        z3.And(same_sign, y_r1r0, x_pow2, ey == ex + (p - one), ntby > one),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey,
+            nlbs == nlby,
+            ntbs == one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C10A: Sum of a pow2 just before the end of an r1r0 (boundary case).
+    result["SELTZO-TwoSum-C10A-X"] = z3.Implies(
+        z3.And(same_sign, x_r1r0, y_pow2, ex == ey + (p - one), ntbx == one),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C10A-Y"] = z3.Implies(
+        z3.And(same_sign, y_r1r0, x_pow2, ey == ex + (p - one), ntby == one),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C11: Sum of an r1r0 inside the zeros of an r0r1.
+    result["SELTZO-TwoSum-C11-X"] = z3.Implies(
+        z3.And(same_sign, x_r0r1, y_r1r0, ex > ey + one, fx + one == gy),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            tbs,
+            es == ex,
+            ntbs == ntbx + nlby + one,
+            nlbs == p - (ntbx + nlby + two),
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C11-Y"] = z3.Implies(
+        z3.And(same_sign, y_r0r1, x_r1r0, ey > ex + one, fy + one == gx),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            tbs,
+            es == ey,
+            ntbs == ntby + nlbx + one,
+            nlbs == p - (ntby + nlbx + two),
+            e_pos_zero,
         ),
     )
 
