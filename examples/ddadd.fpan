@@ -12,6 +12,11 @@ two_sum b c
 two_sum a b
 two_sum b d
 two_sum a b
+
+prove a strongly_dominates b
+
 two_sum c d
 
+bound b / a
 bound c / a
+bound d / a
