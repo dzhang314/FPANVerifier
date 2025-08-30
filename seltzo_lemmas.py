@@ -155,6 +155,47 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C01B: Sum where one number fits entirely into the other's leading
+    # zeros, with padding only on the left.
+    result["SELTZO-TwoSum-C01B-X"] = z3.Implies(
+        z3.And(
+            y_nonzero,
+            same_sign,
+            tbx,
+            nlbx + ntbx < p - one,
+            ex > ey + one,
+            g1y == f1x + one,
+        ),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            tbs,
+            es == ex,
+            nlbs == ex - ey - one,
+            ntbs == ntbx,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C01B-Y"] = z3.Implies(
+        z3.And(
+            x_nonzero,
+            same_sign,
+            tby,
+            nlby + ntby < p - one,
+            ey > ex + one,
+            g1x == f1y + one,
+        ),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            tbs,
+            es == ey,
+            nlbs == ey - ex - one,
+            ntbs == ntby,
+            e_pos_zero,
+        ),
+    )
+
     # Lemma C02: Sum of powers of two (general case).
     result["SELTZO-TwoSum-C02-X"] = z3.Implies(
         z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ey > ex - (p - one)),
@@ -564,6 +605,46 @@ def seltzo_two_sum_lemmas(
             es == ey,
             ntbs == ntby + nlbx + one,
             nlbs == p - (ntby + nlbx + two),
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C12: Sum of a pow2 and a number that fits inside its zeros.
+    result["SELTZO-TwoSum-C12-X"] = z3.Implies(
+        z3.And(
+            same_sign,
+            x_pow2,
+            y_nonzero,
+            z3.Not(tby),
+            ex > ey + one,
+            gy > ex - (p - one),
+        ),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            z3.Not(tbs),
+            es == ex,
+            nlbs == (ex - ey) - one,
+            ntbs == (p - one) - (ex - gy),
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C12-Y"] = z3.Implies(
+        z3.And(
+            same_sign,
+            y_pow2,
+            x_nonzero,
+            z3.Not(tbx),
+            ey > ex + one,
+            gx > ey - (p - one),
+        ),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            z3.Not(tbs),
+            es == ey,
+            nlbs == (ey - ex) - one,
+            ntbs == (p - one) - (ey - gx),
             e_pos_zero,
         ),
     )
