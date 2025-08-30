@@ -723,6 +723,42 @@ def seltzo_two_sum_lemmas(
         z3.And(s_pos_zero, e_pos_zero),
     )
 
+    # Lemma C14: Sum of an one1 that just overlaps the end of an all1.
+    result["SELTZO-TwoSum-C14-X"] = z3.Implies(
+        z3.And(same_sign, x_all1, y_one1, ex == ey + (p - one)),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex + one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se == sx,
+            ~lbe,
+            ~tbe,
+            ee == fy,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C14-Y"] = z3.Implies(
+        z3.And(same_sign, y_all1, x_one1, ey == ex + (p - one)),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey + one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se == sy,
+            ~lbe,
+            ~tbe,
+            ee == fx,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
