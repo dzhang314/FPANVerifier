@@ -29,7 +29,6 @@ Z3_TWO: z3.ArithRef = z3.IntVal(2)
 Z3_THREE: z3.ArithRef = z3.IntVal(3)
 GLOBAL_PRECISION: z3.ArithRef = z3.Int("PRECISION")
 GLOBAL_ZERO_EXPONENT: z3.ArithRef = z3.Int("ZERO_EXPONENT")
-GLOBAL_MANTISSA_WIDTH: z3.ArithRef = GLOBAL_PRECISION - 1
 
 
 def try_open(path: str):
@@ -109,8 +108,8 @@ class SELTZOVariable(object):
                 z3.And(
                     z3.Not(self.leading_bit),
                     z3.Not(self.trailing_bit),
-                    self.num_leading_bits == GLOBAL_MANTISSA_WIDTH,
-                    self.num_trailing_bits == GLOBAL_MANTISSA_WIDTH,
+                    self.num_leading_bits == GLOBAL_PRECISION - 1,
+                    self.num_trailing_bits == GLOBAL_PRECISION - 1,
                 ),
             )
         )
@@ -119,10 +118,10 @@ class SELTZOVariable(object):
                 self.leading_bit == self.trailing_bit,
                 z3.Or(
                     self.num_leading_bits + self.num_trailing_bits
-                    < GLOBAL_MANTISSA_WIDTH,
+                    <= GLOBAL_PRECISION - 2,
                     z3.And(
-                        self.num_leading_bits == GLOBAL_MANTISSA_WIDTH,
-                        self.num_trailing_bits == GLOBAL_MANTISSA_WIDTH,
+                        self.num_leading_bits == GLOBAL_PRECISION - 1,
+                        self.num_trailing_bits == GLOBAL_PRECISION - 1,
                     ),
                 ),
             )
@@ -132,9 +131,9 @@ class SELTZOVariable(object):
                 self.leading_bit != self.trailing_bit,
                 z3.Or(
                     self.num_leading_bits + self.num_trailing_bits
-                    < GLOBAL_MANTISSA_WIDTH - 1,
+                    <= GLOBAL_PRECISION - 3,
                     self.num_leading_bits + self.num_trailing_bits
-                    == GLOBAL_MANTISSA_WIDTH,
+                    == GLOBAL_PRECISION - 1,
                 ),
             )
         )
@@ -154,8 +153,8 @@ class SELTZOVariable(object):
             z3.Not(self.is_zero),
             z3.Not(self.leading_bit),
             z3.Not(self.trailing_bit),
-            self.num_leading_bits == GLOBAL_MANTISSA_WIDTH,
-            self.num_trailing_bits == GLOBAL_MANTISSA_WIDTH,
+            self.num_leading_bits == GLOBAL_PRECISION - 1,
+            self.num_trailing_bits == GLOBAL_PRECISION - 1,
         )
 
     def s_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
@@ -226,8 +225,20 @@ class SELTZOVariable(object):
             self.exponent + magnitude < other.exponent,
             z3.And(
                 self.exponent + magnitude == other.exponent,
-                z3.Not(self.leading_bit),
-                other.leading_bit,
+                z3.Or(
+                    self.is_power_of_two(),
+                    z3.And(z3.Not(self.leading_bit), other.leading_bit),
+                    z3.And(
+                        self.leading_bit,
+                        other.leading_bit,
+                        self.num_leading_bits < other.num_leading_bits,
+                    ),
+                    z3.And(
+                        z3.Not(self.leading_bit),
+                        z3.Not(other.leading_bit),
+                        self.num_leading_bits > other.num_leading_bits,
+                    ),
+                ),
             ),
         )
 
