@@ -222,7 +222,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    # Lemma C02A: Sum of two powers of two (adjacent case).
+    # Lemma C02A: Sum of powers of two (adjacent case).
     result["SELTZO-TwoSum-C02A-X"] = z3.Implies(
         z3.And(same_sign, x_pow2, y_pow2, ex == ey + one),
         z3.And(
@@ -248,7 +248,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    # Lemma C02B: Sum of two powers of two (boundary case).
+    # Lemma C02B: Sum of powers of two (boundary case).
     result["SELTZO-TwoSum-C02B-X"] = z3.Implies(
         z3.And(same_sign, x_pow2, y_pow2, ex == ey + (p - one)),
         z3.And(
@@ -274,7 +274,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    # Lemma C02S: Sum of two powers of two (identical case).
+    # Lemma C02S: Sum of powers of two (identical case).
     result["SELTZO-TwoSum-C02S"] = z3.Implies(
         z3.And(same_sign, x_pow2, y_pow2, ex == ey),
         z3.And(
@@ -647,6 +647,90 @@ def seltzo_two_sum_lemmas(
             ntbs == (p - one) - (ey - gx),
             e_pos_zero,
         ),
+    )
+
+    # Lemma C13: Difference of powers of two (general case).
+    result["SELTZO-TwoSum-C13-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex > ey + one, ex < ey + p),
+        z3.And(
+            ss == sx,
+            lbs,
+            z3.Not(tbs),
+            es == ex - one,
+            nlbs == (ex - ey) - one,
+            ntbs == p - (ex - ey),
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C13-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey > ex + one, ey < ex + p),
+        z3.And(
+            ss == sy,
+            lbs,
+            z3.Not(tbs),
+            es == ey - one,
+            nlbs == (ey - ex) - one,
+            ntbs == p - (ey - ex),
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C13A: Difference of powers of two (adjacent case).
+    result["SELTZO-TwoSum-C13A-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex == ey + one),
+        z3.And(
+            ss == sx,
+            z3.Not(lbs),
+            z3.Not(tbs),
+            es == ex - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C13A-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey == ex + one),
+        z3.And(
+            ss == sy,
+            z3.Not(lbs),
+            z3.Not(tbs),
+            es == ey - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C13B: Difference of powers of two (boundary case).
+    result["SELTZO-TwoSum-C13B-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex == ey + p),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C13B-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey == ex + p),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C13S: Difference of powers of two (identical case).
+    result["SELTZO-TwoSum-C13S"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex == ey),
+        z3.And(s_pos_zero, e_pos_zero),
     )
 
     ############################################################################
