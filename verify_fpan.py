@@ -106,8 +106,8 @@ class SELTZOVariable(object):
             z3.Implies(
                 self.is_zero,
                 z3.And(
-                    z3.Not(self.leading_bit),
-                    z3.Not(self.trailing_bit),
+                    ~self.leading_bit,
+                    ~self.trailing_bit,
                     self.num_leading_bits == GLOBAL_PRECISION - 1,
                     self.num_trailing_bits == GLOBAL_PRECISION - 1,
                 ),
@@ -150,9 +150,9 @@ class SELTZOVariable(object):
 
     def is_power_of_two(self) -> z3.BoolRef:
         return z3.And(
-            z3.Not(self.is_zero),
-            z3.Not(self.leading_bit),
-            z3.Not(self.trailing_bit),
+            ~self.is_zero,
+            ~self.leading_bit,
+            ~self.trailing_bit,
             self.num_leading_bits == GLOBAL_PRECISION - 1,
             self.num_trailing_bits == GLOBAL_PRECISION - 1,
         )
@@ -200,17 +200,17 @@ class SELTZOVariable(object):
                 self.exponent == other.exponent + (GLOBAL_PRECISION + 1),
                 z3.Or(
                     self.sign_bit == other.sign_bit,
-                    z3.Not(self.is_power_of_two()),
+                    ~self.is_power_of_two(),
                     other.is_power_of_two(),
                 ),
             ),
             z3.And(
                 self.exponent == other.exponent + GLOBAL_PRECISION,
                 other.is_power_of_two(),
-                z3.Not(self.trailing_bit),
+                ~self.trailing_bit,
                 z3.Or(
                     self.sign_bit == other.sign_bit,
-                    z3.Not(self.is_power_of_two()),
+                    ~self.is_power_of_two(),
                 ),
             ),
         )
@@ -227,15 +227,15 @@ class SELTZOVariable(object):
                 self.exponent + magnitude == other.exponent,
                 z3.Or(
                     self.is_power_of_two(),
-                    z3.And(z3.Not(self.leading_bit), other.leading_bit),
+                    z3.And(~self.leading_bit, other.leading_bit),
                     z3.And(
                         self.leading_bit,
                         other.leading_bit,
                         self.num_leading_bits < other.num_leading_bits,
                     ),
                     z3.And(
-                        z3.Not(self.leading_bit),
-                        z3.Not(other.leading_bit),
+                        ~self.leading_bit,
+                        ~other.leading_bit,
                         self.num_leading_bits > other.num_leading_bits,
                     ),
                 ),
@@ -487,7 +487,7 @@ class VerifierContext(object):
             z3.If(new_a.trailing_bit, Z3_ZERO, new_a.num_trailing_bits),
             z3.If(new_b.trailing_bit, Z3_ZERO, new_b.num_trailing_bits),
             lambda v: v.is_zero,
-            lambda v: z3.Not(v.sign_bit),
+            lambda v: ~v.sign_bit,
             lambda v: v.sign_bit,
             lambda v, w: v.can_equal(w),
             GLOBAL_PRECISION,
@@ -526,7 +526,7 @@ class VerifierContext(object):
             new_a.num_trailing_bits,
             new_b.num_trailing_bits,
             lambda v: v.is_zero,
-            lambda v: z3.Not(v.sign_bit),
+            lambda v: ~v.sign_bit,
             lambda v: v.sign_bit,
             lambda v, w: v.can_equal(w),
             GLOBAL_PRECISION,
@@ -567,7 +567,7 @@ class VerifierContext(object):
     ) -> None:
         self.solver.push()
         self.solver.add(GLOBAL_PRECISION == precision)
-        self.solver.add(z3.Not(claim))
+        self.solver.add(~claim)
         if self.solver.check() == z3.sat:
             counterexample: z3.ModelRef = self.solver.model()
             for s, e, x, y in self.two_sum_operands:

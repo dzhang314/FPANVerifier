@@ -350,7 +350,7 @@ def create_smt_job(
 
     # Obtain current solver state and claim in SMT-LIB 2 format.
     solver.push()
-    solver.add(z3.Not(claim))
+    solver.add(~claim)
     contents: str = f"(set-logic {logic})\n" + solver.to_smt2()
     solver.pop()
 

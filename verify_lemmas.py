@@ -81,21 +81,21 @@ def create_two_sum_jobs(
 
     solver: z3.Solver = z3.SolverFor("QF_BVFP")
 
-    solver.add(z3.Not(z3.fpIsInf(x)))
-    solver.add(z3.Not(z3.fpIsNaN(x)))
-    solver.add(z3.Not(z3.fpIsSubnormal(x)))
+    solver.add(~z3.fpIsInf(x))
+    solver.add(~z3.fpIsNaN(x))
+    solver.add(~z3.fpIsSubnormal(x))
 
-    solver.add(z3.Not(z3.fpIsInf(y)))
-    solver.add(z3.Not(z3.fpIsNaN(y)))
-    solver.add(z3.Not(z3.fpIsSubnormal(y)))
+    solver.add(~z3.fpIsInf(y))
+    solver.add(~z3.fpIsNaN(y))
+    solver.add(~z3.fpIsSubnormal(y))
 
-    solver.add(z3.Not(z3.fpIsInf(s)))
-    solver.add(z3.Not(z3.fpIsNaN(s)))
-    solver.add(z3.Not(z3.fpIsSubnormal(s)))
+    solver.add(~z3.fpIsInf(s))
+    solver.add(~z3.fpIsNaN(s))
+    solver.add(~z3.fpIsSubnormal(s))
 
-    solver.add(z3.Not(z3.fpIsInf(e)))
-    solver.add(z3.Not(z3.fpIsNaN(e)))
-    solver.add(z3.Not(z3.fpIsSubnormal(e)))
+    solver.add(~z3.fpIsInf(e))
+    solver.add(~z3.fpIsNaN(e))
+    solver.add(~z3.fpIsSubnormal(e))
 
     solver.add(s == z3.fpAdd(RNE, x, y))
     x_prime: z3.FPRef = z3.fpSub(RNE, s, y)

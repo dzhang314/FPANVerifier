@@ -53,12 +53,6 @@ def seltzo_two_sum_lemmas(
     s_zero: z3.BoolRef = is_zero(s)
     e_zero: z3.BoolRef = is_zero(e)
 
-    x_nonzero: z3.BoolRef = z3.Not(x_zero)
-    y_nonzero: z3.BoolRef = z3.Not(y_zero)
-    s_nonzero: z3.BoolRef = z3.Not(s_zero)
-    e_nonzero: z3.BoolRef = z3.Not(e_zero)
-
-    xy_nonzero: z3.BoolRef = z3.And(x_nonzero, y_nonzero)
     s_pos_zero: z3.BoolRef = z3.And(is_positive(s), s_zero)
     e_pos_zero: z3.BoolRef = z3.And(is_positive(e), e_zero)
 
@@ -80,34 +74,30 @@ def seltzo_two_sum_lemmas(
     g1x: IntVar = ex - (p - z3_If(tbx, one, ntbx + one))
     g1y: IntVar = ey - (p - z3_If(tby, one, ntby + one))
 
-    x_pow2: z3.BoolRef = z3.And(
-        x_nonzero, z3.Not(lbx), z3.Not(tbx), nlbx == p - one, ntbx == p - one
-    )
-    y_pow2: z3.BoolRef = z3.And(
-        y_nonzero, z3.Not(lby), z3.Not(tby), nlby == p - one, ntby == p - one
-    )
+    x_pow2: z3.BoolRef = z3.And(~x_zero, ~lbx, ~tbx, nlbx == p - one, ntbx == p - one)
+    y_pow2: z3.BoolRef = z3.And(~y_zero, ~lby, ~tby, nlby == p - one, ntby == p - one)
 
     x_all1: z3.BoolRef = z3.And(lbx, tbx, nlbx == p - one, ntbx == p - one)
     y_all1: z3.BoolRef = z3.And(lby, tby, nlby == p - one, ntby == p - one)
 
-    x_one1: z3.BoolRef = z3.And(z3.Not(lbx), z3.Not(tbx), nlbx + ntbx == p - two)
-    y_one1: z3.BoolRef = z3.And(z3.Not(lby), z3.Not(tby), nlby + ntby == p - two)
+    x_one1: z3.BoolRef = z3.And(~lbx, ~tbx, nlbx + ntbx == p - two)
+    y_one1: z3.BoolRef = z3.And(~lby, ~tby, nlby + ntby == p - two)
 
-    x_r0r1: z3.BoolRef = z3.And(z3.Not(lbx), tbx, nlbx + ntbx == p - one)
-    y_r0r1: z3.BoolRef = z3.And(z3.Not(lby), tby, nlby + ntby == p - one)
+    x_r0r1: z3.BoolRef = z3.And(~lbx, tbx, nlbx + ntbx == p - one)
+    y_r0r1: z3.BoolRef = z3.And(~lby, tby, nlby + ntby == p - one)
 
-    x_r1r0: z3.BoolRef = z3.And(lbx, z3.Not(tbx), nlbx + ntbx == p - one)
-    y_r1r0: z3.BoolRef = z3.And(lby, z3.Not(tby), nlby + ntby == p - one)
+    x_r1r0: z3.BoolRef = z3.And(lbx, ~tbx, nlbx + ntbx == p - one)
+    y_r1r0: z3.BoolRef = z3.And(lby, ~tby, nlby + ntby == p - one)
 
     ############################################################ COMPLETE LEMMAS
 
     # Lemma C01: Sum where one number fits entirely into the other's leading
     # zeros, with padding on both sides.
     result["SELTZO-TwoSum-C01-X"] = z3.Implies(
-        z3.And(y_nonzero, same_sign, tbx, ex > ey + one, g1y > f1x + one),
+        z3.And(~y_zero, same_sign, tbx, ex > ey + one, g1y > f1x + one),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ex,
             nlbs == ex - ey - one,
@@ -116,10 +106,10 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-C01-Y"] = z3.Implies(
-        z3.And(x_nonzero, same_sign, tby, ey > ex + one, g1x > f1y + one),
+        z3.And(~x_zero, same_sign, tby, ey > ex + one, g1x > f1y + one),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ey,
             nlbs == ey - ex - one,
@@ -131,7 +121,7 @@ def seltzo_two_sum_lemmas(
     # Lemma C01A: Sum where one number fits entirely into the other's leading
     # zeros, with padding only on the right.
     result["SELTZO-TwoSum-C01A-X"] = z3.Implies(
-        z3.And(y_nonzero, same_sign, tbx, ex == ey + one, g1y > f1x + one),
+        z3.And(~y_zero, same_sign, tbx, ex == ey + one, g1y > f1x + one),
         z3.And(
             ss == sx,
             lbs,
@@ -143,7 +133,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-C01A-Y"] = z3.Implies(
-        z3.And(x_nonzero, same_sign, tby, ey == ex + one, g1x > f1y + one),
+        z3.And(~x_zero, same_sign, tby, ey == ex + one, g1x > f1y + one),
         z3.And(
             ss == sy,
             lbs,
@@ -159,7 +149,7 @@ def seltzo_two_sum_lemmas(
     # zeros, with padding only on the left.
     result["SELTZO-TwoSum-C01B-X"] = z3.Implies(
         z3.And(
-            y_nonzero,
+            ~y_zero,
             same_sign,
             tbx,
             nlbx + ntbx < p - one,
@@ -168,7 +158,7 @@ def seltzo_two_sum_lemmas(
         ),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ex,
             nlbs == ex - ey - one,
@@ -178,7 +168,7 @@ def seltzo_two_sum_lemmas(
     )
     result["SELTZO-TwoSum-C01B-Y"] = z3.Implies(
         z3.And(
-            x_nonzero,
+            ~x_zero,
             same_sign,
             tby,
             nlby + ntby < p - one,
@@ -187,7 +177,7 @@ def seltzo_two_sum_lemmas(
         ),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ey,
             nlbs == ey - ex - one,
@@ -201,8 +191,8 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ey > ex - (p - one)),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex,
             nlbs == (ex - ey) - one,
             ntbs == (p - one) - (ex - ey),
@@ -213,8 +203,8 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_pow2, ey > ex + one, ex > ey - (p - one)),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ey,
             nlbs == (ey - ex) - one,
             ntbs == (p - one) - (ey - ex),
@@ -228,7 +218,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sx,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ex,
             nlbs == one,
             ntbs == p - two,
@@ -240,7 +230,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sy,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ey,
             nlbs == one,
             ntbs == p - two,
@@ -253,7 +243,7 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_pow2, ex == ey + (p - one)),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ex,
             nlbs == p - two,
@@ -265,7 +255,7 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_pow2, ey == ex + (p - one)),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ey,
             nlbs == p - two,
@@ -279,8 +269,8 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_pow2, ex == ey),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex + one,
             es == ey + one,
             nlbs == p - one,
@@ -294,14 +284,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_r1r0, y_r1r0, ey == fx, ex > fy + p),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex + one,
             nlbs == p - one,
             ntbs == p - one,
             se != sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == f0y + one,
             nlbe == p - one,
             ntbe == p - one,
@@ -311,14 +301,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, y_r1r0, x_r1r0, ex == fy, ey > fx + p),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ey + one,
             nlbs == p - one,
             ntbs == p - one,
             se != sy,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == f0x + one,
             nlbe == p - one,
             ntbe == p - one,
@@ -330,14 +320,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_all1, y_pow2, ex > ey, ex < ey + (p - two)),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex + one,
             nlbs == ex - ey,
             ntbs == (p - two) - (ex - ey),
             se != sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == ex - (p - one),
             nlbe == p - one,
             ntbe == p - one,
@@ -347,14 +337,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, y_all1, x_pow2, ey > ex, ey < ex + (p - two)),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ey + one,
             nlbs == ey - ex,
             ntbs == (p - two) - (ey - ex),
             se != sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == ey - (p - one),
             nlbe == p - one,
             ntbe == p - one,
@@ -372,8 +362,8 @@ def seltzo_two_sum_lemmas(
             nlbs == p - one,
             ntbs == p - one,
             se == sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == f1y,
             nlbe == p - one,
             ntbe == p - one,
@@ -389,8 +379,8 @@ def seltzo_two_sum_lemmas(
             nlbs == p - one,
             ntbs == p - one,
             se == sy,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == f1x,
             nlbe == p - one,
             ntbe == p - one,
@@ -402,14 +392,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_all1, y_one1, ex > ey, gy > ex - (p - two)),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex + one,
             nlbs == ex - ey,
             ntbs == gy - (ex - (p - two)),
             se != sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == ex - (p - one),
             nlbe == p - one,
             ntbe == p - one,
@@ -419,14 +409,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, y_all1, x_one1, ey > ex, gx > ey - (p - two)),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ey + one,
             nlbs == ey - ex,
             ntbs == gx - (ey - (p - two)),
             se != sy,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == ey - (p - one),
             nlbe == p - one,
             ntbe == p - one,
@@ -439,7 +429,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sx,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ex - one,
             nlbs == nlbx - one,
             ntbs == ntbx + one,
@@ -451,7 +441,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sy,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ey - one,
             nlbs == nlby - one,
             ntbs == ntby + one,
@@ -470,8 +460,8 @@ def seltzo_two_sum_lemmas(
             nlbs == p - one,
             ntbs == p - one,
             se == sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == gy,
             nlbe == p - one,
             ntbe == p - one,
@@ -487,8 +477,8 @@ def seltzo_two_sum_lemmas(
             nlbs == p - one,
             ntbs == p - one,
             se == sy,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == gx,
             nlbe == p - one,
             ntbe == p - one,
@@ -500,14 +490,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_pow2, y_r1r0, ex == ey + p),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ex,
             nlbs == p - two,
             ntbs == one,
             se != sx,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == gy,
             nlbe == p - one,
             ntbe == p - one,
@@ -517,14 +507,14 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, y_pow2, x_r1r0, ey == ex + p),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ey,
             nlbs == p - two,
             ntbs == one,
             se != sy,
-            z3.Not(lbe),
-            z3.Not(tbe),
+            ~lbe,
+            ~tbe,
             ee == gx,
             nlbe == p - one,
             ntbe == p - one,
@@ -588,7 +578,7 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_r0r1, y_r1r0, ex > ey + one, fx + one == gy),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ex,
             ntbs == ntbx + nlby + one,
@@ -600,7 +590,7 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, y_r0r1, x_r1r0, ey > ex + one, fy + one == gx),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
+            ~lbs,
             tbs,
             es == ey,
             ntbs == ntby + nlbx + one,
@@ -614,15 +604,15 @@ def seltzo_two_sum_lemmas(
         z3.And(
             same_sign,
             x_pow2,
-            y_nonzero,
-            z3.Not(tby),
+            ~y_zero,
+            ~tby,
             ex > ey + one,
             gy > ex - (p - one),
         ),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex,
             nlbs == (ex - ey) - one,
             ntbs == (p - one) - (ex - gy),
@@ -633,15 +623,15 @@ def seltzo_two_sum_lemmas(
         z3.And(
             same_sign,
             y_pow2,
-            x_nonzero,
-            z3.Not(tbx),
+            ~x_zero,
+            ~tbx,
             ey > ex + one,
             gx > ey - (p - one),
         ),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ey,
             nlbs == (ey - ex) - one,
             ntbs == (p - one) - (ey - gx),
@@ -655,7 +645,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sx,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ex - one,
             nlbs == (ex - ey) - one,
             ntbs == p - (ex - ey),
@@ -667,7 +657,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sy,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ey - one,
             nlbs == (ey - ex) - one,
             ntbs == p - (ey - ex),
@@ -680,8 +670,8 @@ def seltzo_two_sum_lemmas(
         z3.And(diff_sign, x_pow2, y_pow2, ex == ey + one),
         z3.And(
             ss == sx,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ex - one,
             nlbs == p - one,
             ntbs == p - one,
@@ -692,8 +682,8 @@ def seltzo_two_sum_lemmas(
         z3.And(diff_sign, y_pow2, x_pow2, ey == ex + one),
         z3.And(
             ss == sy,
-            z3.Not(lbs),
-            z3.Not(tbs),
+            ~lbs,
+            ~tbs,
             es == ey - one,
             nlbs == p - one,
             ntbs == p - one,
@@ -753,34 +743,30 @@ def seltzo_two_sum_lemmas(
     g1s: IntVar = es - (p - z3_If(tbs, one, ntbs + one))
     g1e: IntVar = ee - (p - z3_If(tbe, one, ntbe + one))
 
-    s_pow2: z3.BoolRef = z3.And(
-        s_nonzero, z3.Not(lbs), z3.Not(tbs), nlbs == p - one, ntbs == p - one
-    )
-    e_pow2: z3.BoolRef = z3.And(
-        e_nonzero, z3.Not(lbe), z3.Not(tbe), nlbe == p - one, ntbe == p - one
-    )
+    s_pow2: z3.BoolRef = z3.And(~s_zero, ~lbs, ~tbs, nlbs == p - one, ntbs == p - one)
+    e_pow2: z3.BoolRef = z3.And(~e_zero, ~lbe, ~tbe, nlbe == p - one, ntbe == p - one)
 
     s_all1: z3.BoolRef = z3.And(lbs, tbs, nlbs == p - one, ntbs == p - one)
     e_all1: z3.BoolRef = z3.And(lbe, tbe, nlbe == p - one, ntbe == p - one)
 
-    s_one1: z3.BoolRef = z3.And(z3.Not(lbs), z3.Not(tbs), nlbs + ntbs == p - two)
-    e_one1: z3.BoolRef = z3.And(z3.Not(lbe), z3.Not(tbe), nlbe + ntbe == p - two)
+    s_one1: z3.BoolRef = z3.And(~lbs, ~tbs, nlbs + ntbs == p - two)
+    e_one1: z3.BoolRef = z3.And(~lbe, ~tbe, nlbe + ntbe == p - two)
 
-    s_r0r1: z3.BoolRef = z3.And(z3.Not(lbs), tbs, nlbs + ntbs == p - one)
-    e_r0r1: z3.BoolRef = z3.And(z3.Not(lbe), tbe, nlbe + ntbe == p - one)
+    s_r0r1: z3.BoolRef = z3.And(~lbs, tbs, nlbs + ntbs == p - one)
+    e_r0r1: z3.BoolRef = z3.And(~lbe, tbe, nlbe + ntbe == p - one)
 
-    s_r1r0: z3.BoolRef = z3.And(lbs, z3.Not(tbs), nlbs + ntbs == p - one)
-    e_r1r0: z3.BoolRef = z3.And(lbe, z3.Not(tbe), nlbe + ntbe == p - one)
+    s_r1r0: z3.BoolRef = z3.And(lbs, ~tbs, nlbs + ntbs == p - one)
+    e_r1r0: z3.BoolRef = z3.And(lbe, ~tbe, nlbe + ntbe == p - one)
 
-    x_mm01: z3.BoolRef = z3.And(lbx, z3.Not(tbx), nlbx + ntbx == p - three)
-    y_mm01: z3.BoolRef = z3.And(lby, z3.Not(tby), nlby + ntby == p - three)
-    s_mm01: z3.BoolRef = z3.And(lbs, z3.Not(tbs), nlbs + ntbs == p - three)
-    e_mm01: z3.BoolRef = z3.And(lbe, z3.Not(tbe), nlbe + ntbe == p - three)
+    x_mm01: z3.BoolRef = z3.And(lbx, ~tbx, nlbx + ntbx == p - three)
+    y_mm01: z3.BoolRef = z3.And(lby, ~tby, nlby + ntby == p - three)
+    s_mm01: z3.BoolRef = z3.And(lbs, ~tbs, nlbs + ntbs == p - three)
+    e_mm01: z3.BoolRef = z3.And(lbe, ~tbe, nlbe + ntbe == p - three)
 
-    x_mm10: z3.BoolRef = z3.And(z3.Not(lbx), tbx, nlbx + ntbx == p - three)
-    y_mm10: z3.BoolRef = z3.And(z3.Not(lby), tby, nlby + ntby == p - three)
-    s_mm10: z3.BoolRef = z3.And(z3.Not(lbs), tbs, nlbs + ntbs == p - three)
-    e_mm10: z3.BoolRef = z3.And(z3.Not(lbe), tbe, nlbe + ntbe == p - three)
+    x_mm10: z3.BoolRef = z3.And(~lbx, tbx, nlbx + ntbx == p - three)
+    y_mm10: z3.BoolRef = z3.And(~lby, tby, nlby + ntby == p - three)
+    s_mm10: z3.BoolRef = z3.And(~lbs, tbs, nlbs + ntbs == p - three)
+    e_mm10: z3.BoolRef = z3.And(~lbe, tbe, nlbe + ntbe == p - three)
 
     """
 
@@ -854,11 +840,11 @@ def seltzo_two_sum_lemmas(
     # Lemma P4B: Ones in the mantissa shield the exponent from decreasing and
     # leading zeros from being destroyed.
     result["SELTZO-TwoSum-P4B-X"] = z3.Implies(
-        z3.And(diff_sign, z3.Not(x_pow2), f1x > ey),
+        z3.And(diff_sign, ~x_pow2, f1x > ey),
         z3.And(ss == sx, es == ex, f1s <= f1x),
     )
     result["SELTZO-TwoSum-P4B-Y"] = z3.Implies(
-        z3.And(diff_sign, z3.Not(y_pow2), f1y > ex),
+        z3.And(diff_sign, ~y_pow2, f1y > ex),
         z3.And(ss == sy, es == ey, f1s <= f1y),
     )
 
@@ -887,49 +873,48 @@ def seltzo_two_sum_lemmas(
     # Lemma P6: If there is a gap between the addends, then the exponent cannot
     # change, and at most one leading bit can be destroyed.
     result["SELTZO-TwoSum-P6-X"] = z3.Implies(
-        z3.And(z3.Not(x_pow2), ey + one < g1x),
+        z3.And(~x_pow2, ey + one < g1x),
         z3.And(ss == sx, es == ex, f0s >= f0x - one, f1s >= f1x - one),
     )
     result["SELTZO-TwoSum-P6-Y"] = z3.Implies(
-        z3.And(z3.Not(y_pow2), ex + one < g1y),
+        z3.And(~y_pow2, ex + one < g1y),
         z3.And(ss == sy, es == ey, f0s >= f0y - one, f1s >= f1y - one),
     )
 
     # Lemma P7A: Adding into leading ones increases the exponent.
     result["SELTZO-TwoSum-P7A-X"] = z3.Implies(
-        z3.And(y_nonzero, same_sign, ey > f0x),
+        z3.And(~y_zero, same_sign, ey > f0x),
         es >= ex + one,
     )
     result["SELTZO-TwoSum-P7A-Y"] = z3.Implies(
-        z3.And(x_nonzero, same_sign, ex > f0y),
+        z3.And(~x_zero, same_sign, ex > f0y),
         es >= ey + one,
     )
 
     # Lemma P7B: Subtracting from leading zeros decreases the exponent.
     result["SELTZO-TwoSum-P7B-X"] = z3.Implies(
-        z3.And(y_nonzero, diff_sign, ex + one > ey, ey > f1x),
+        z3.And(~y_zero, diff_sign, ex + one > ey, ey > f1x),
         es <= ex - one,
     )
     result["SELTZO-TwoSum-P7B-Y"] = z3.Implies(
-        z3.And(x_nonzero, diff_sign, ey + one > ex, ex > f1y),
+        z3.And(~x_zero, diff_sign, ey + one > ex, ex > f1y),
         es <= ey - one,
     )
 
     # Lemma P8: Adding a number to a power of two cannot increase the exponent
     # as long as it contains a zero not too far away.
     result["SELTZO-TwoSum-P8-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_nonzero, ex > ey, f0y + (p + one) > ex),
+        z3.And(same_sign, x_pow2, ~y_zero, ex > ey, f0y + (p + one) > ex),
         z3.And(ss == sx, es == ex, f1s == ey),
     )
     result["SELTZO-TwoSum-P8-Y"] = z3.Implies(
-        z3.And(same_sign, y_pow2, x_nonzero, ey > ex, f0x + (p + one) > ey),
+        z3.And(same_sign, y_pow2, ~x_zero, ey > ex, f0x + (p + one) > ey),
         z3.And(ss == sy, es == ey, f1s == ex),
     )
 
     # Lemma P9: One specific output is impossible.
-    result["SELTZO-TwoSum-P9"] = z3.Not(
-        z3.And(s_pow2, e_pow2, ss != se, es < ee + (p + one))
-    )
+    result["SELTZO-TwoSum-P9"] =
+        ~z3.And(s_pow2, e_pow2, ss != se, es < ee + (p + one))
 
     # Lemma P10A: Adding a small number cannot destroy leading zeros past its
     # exponent.
@@ -956,42 +941,42 @@ def seltzo_two_sum_lemmas(
     # Lemma P11A: Adding just past the end of an all-1 mantissa increments the
     # sum to the following power of 2.
     result["SELTZO-TwoSum-P11A-X"] = z3.Implies(
-        z3.And(same_sign, x_all1, y_nonzero, ex == ey + p),
+        z3.And(same_sign, x_all1, ~y_zero, ex == ey + p),
         z3.And(s_pow2, ss == sx, es == ex + one),
     )
     result["SELTZO-TwoSum-P11A-Y"] = z3.Implies(
-        z3.And(same_sign, y_all1, x_nonzero, ey == ex + p),
+        z3.And(same_sign, y_all1, ~x_zero, ey == ex + p),
         z3.And(s_pow2, ss == sy, es == ey + one),
     )
 
     # Lemma P11B: Subtracting just past the end of a power of 2 decrements the
     # sum to the previous all-1 number.
     result["SELTZO-TwoSum-P11B-X"] = z3.Implies(
-        z3.And(diff_sign, x_pow2, y_nonzero, z3.Not(lby), ex == ey + p),
+        z3.And(diff_sign, x_pow2, ~y_zero, ~lby, ex == ey + p),
         z3.And(s_all1, ss == sx, es == ex - one),
     )
     result["SELTZO-TwoSum-P11B-Y"] = z3.Implies(
-        z3.And(diff_sign, y_pow2, x_nonzero, z3.Not(lbx), ey == ex + p),
+        z3.And(diff_sign, y_pow2, ~x_zero, ~lbx, ey == ex + p),
         z3.And(s_all1, ss == sy, es == ey - one),
     )
 
     # Lemma P12: Adding a small number flips the parity of the mantissa.
     result["SELTZO-TwoSum-P12-X"] = z3.Implies(
         z3.And(
-            z3.Not(x_pow2),
-            y_nonzero,
-            z3.Not(tbx),
-            z3.Not(lby),
+            ~x_pow2,
+            ~y_zero,
+            ~tbx,
+            ~lby,
             ex == ey + (p - one),
         ),
         z3.And(ss == sx, es == ex, tbs),
     )
     result["SELTZO-TwoSum-P12-Y"] = z3.Implies(
         z3.And(
-            z3.Not(y_pow2),
-            x_nonzero,
-            z3.Not(tby),
-            z3.Not(lbx),
+            ~y_pow2,
+            ~x_zero,
+            ~tby,
+            ~lbx,
             ey == ex + (p - one),
         ),
         z3.And(ss == sy, es == ey, tbs),
@@ -1003,7 +988,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sx,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ex - one,
             nlbs == p - two,
             ntbs == one,
@@ -1016,7 +1001,7 @@ def seltzo_two_sum_lemmas(
         z3.And(
             ss == sy,
             lbs,
-            z3.Not(tbs),
+            ~tbs,
             es == ey - one,
             nlbs == p - two,
             ntbs == one,
@@ -1029,13 +1014,13 @@ def seltzo_two_sum_lemmas(
     # of the mantissa of the larger addend.
     result["SELTZO-TwoSum-P14-X"] = z3.Implies(
         z3.And(
-            y_nonzero, same_sign, g1x > ey, ey + p > ex, z3.Not(y_pow2), f1y + p < ex
+            ~y_zero, same_sign, g1x > ey, ey + p > ex, ~y_pow2, f1y + p < ex
         ),
         z3.And(ss == sx, es == ex, se == sx, ee == f1y),
     )
     result["SELTZO-TwoSum-P14-Y"] = z3.Implies(
         z3.And(
-            x_nonzero, same_sign, g1y > ex, ex + p > ey, z3.Not(x_pow2), f1x + p < ey
+            ~x_zero, same_sign, g1y > ex, ex + p > ey, ~x_pow2, f1x + p < ey
         ),
         z3.And(ss == sy, es == ey, se == sy, ee == f1x),
     )
@@ -1069,9 +1054,9 @@ def seltzo_two_sum_lemmas(
             same_sign,
             x_pow2,
             ex == ey + p,
-            y_nonzero,
-            z3.Not(y_pow2),
-            z3.Not(lby),
+            ~y_zero,
+            ~y_pow2,
+            ~lby,
             nlby > one,
         ),
         z3.And(
@@ -1090,9 +1075,9 @@ def seltzo_two_sum_lemmas(
             same_sign,
             y_pow2,
             ey == ex + p,
-            x_nonzero,
-            z3.Not(x_pow2),
-            z3.Not(lbx),
+            ~x_zero,
+            ~x_pow2,
+            ~lbx,
             nlbx > one,
         ),
         z3.And(
@@ -1123,28 +1108,28 @@ def seltzo_two_sum_lemmas(
     # Lemma P19: If the inputs are different, then the result cannot be zero.
     result["SELTZO-TwoSum-P19"] = z3.Implies(
         z3.Or(ex != ey, f0x != f0y, f1x != f1y, g0x != g0y, g1x != g1y),
-        z3.Not(s_zero),
+        ~s_zero,
     )
 
     # Lemma P20: The amount of cancellation is limited if the subtrahend has
     # leading zeros.
     result["SELTZO-TwoSum-P20-X"] = z3.Implies(
-        z3.And(diff_sign, ex > ey, z3.Not(lby)),
+        z3.And(diff_sign, ex > ey, ~lby),
         z3.And(ss == sx, es >= ey - one),
     )
     result["SELTZO-TwoSum-P20-Y"] = z3.Implies(
-        z3.And(diff_sign, ey > ex, z3.Not(lbx)),
+        z3.And(diff_sign, ey > ex, ~lbx),
         z3.And(ss == sy, es >= ex - one),
     )
 
     # Lemma P21: When subtracting an adjacent number from from a power of 2,
     # cancellation is determined by leading ones in the subtrahend.
     result["SELTZO-TwoSum-P21-X"] = z3.Implies(
-        z3.And(y_nonzero, diff_sign, x_pow2, ex == ey + one),
+        z3.And(~y_zero, diff_sign, x_pow2, ex == ey + one),
         z3.And(ss == sx, z3.Or(es == f0y, es == f0y + one), e_pos_zero),
     )
     result["SELTZO-TwoSum-P21-Y"] = z3.Implies(
-        z3.And(x_nonzero, diff_sign, y_pow2, ey == ex + one),
+        z3.And(~x_zero, diff_sign, y_pow2, ey == ex + one),
         z3.And(ss == sy, z3.Or(es == f0x, es == f0x + one), e_pos_zero),
     )
 

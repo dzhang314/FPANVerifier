@@ -34,7 +34,7 @@ def se_two_sum_lemmas(
     y_zero: z3.BoolRef = is_zero(y)
     y_pos_zero: z3.BoolRef = z3.And(is_positive(y), y_zero)
     y_neg_zero: z3.BoolRef = z3.And(is_negative(y), y_zero)
-    xy_nonzero: z3.BoolRef = z3.And(z3.Not(x_zero), z3.Not(y_zero))
+    xy_nonzero: z3.BoolRef = z3.And(~x_zero, ~y_zero)
 
     s_zero: z3.BoolRef = is_zero(s)
     s_pos_zero: z3.BoolRef = z3.And(is_positive(s), s_zero)
@@ -74,11 +74,11 @@ def se_two_sum_lemmas(
 
     # Lemma SE-Z2: One addend is zero.
     result["SE-TwoSum-Z2-X"] = z3.Implies(
-        z3.And(y_zero, z3.Not(x_zero)),
+        z3.And(y_zero, ~x_zero),
         z3.And(s_equals_x, e_pos_zero),
     )
     result["SE-TwoSum-Z2-Y"] = z3.Implies(
-        z3.And(x_zero, z3.Not(y_zero)),
+        z3.And(x_zero, ~y_zero),
         z3.And(s_equals_y, e_pos_zero),
     )
 
