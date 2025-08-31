@@ -80,6 +80,9 @@ def seltzo_two_sum_lemmas(
     x_all1: z3.BoolRef = z3.And(lbx, tbx, nlbx == p - one, ntbx == p - one)
     y_all1: z3.BoolRef = z3.And(lby, tby, nlby == p - one, ntby == p - one)
 
+    x_one0: z3.BoolRef = z3.And(lbx, tbx, nlbx + ntbx == p - two)
+    y_one0: z3.BoolRef = z3.And(lby, tby, nlby + ntby == p - two)
+
     x_one1: z3.BoolRef = z3.And(~lbx, ~tbx, nlbx + ntbx == p - two)
     y_one1: z3.BoolRef = z3.And(~lby, ~tby, nlby + ntby == p - two)
 
@@ -945,6 +948,94 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C20: Sum of an r1r0 that just hangs off the end of a pow2.
+    result["SELTZO-TwoSum-C20-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_r1r0, nlby > one, ex == gy + (p + one)),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex,
+            nlbs == (ex - ey) - two,
+            ntbs == p - (ex - ey),
+            se != sx,
+            ~lbe,
+            ~tbe,
+            ee == gy,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C20-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_r1r0, nlbx > one, ey == gx + (p + one)),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey,
+            nlbs == (ey - ex) - two,
+            ntbs == p - (ey - ex),
+            se != sy,
+            ~lbe,
+            ~tbe,
+            ee == gx,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
+    # Lemma C21: Sum of an r1r0 that fills in the end of a pow2.
+    result["SELTZO-TwoSum-C21-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_r1r0, ex > ey + one, gy == ex - (p - one)),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            tbs,
+            es == ex,
+            nlbs == (ex - ey) - one,
+            ntbs == p - (ex - ey),
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C21-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_r1r0, ey > ex + one, gx == ey - (p - one)),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            tbs,
+            es == ey,
+            nlbs == (ey - ex) - one,
+            ntbs == p - (ey - ex),
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C22: Sum of a pow2 that fills in the gap of a one0.
+    result["SELTZO-TwoSum-C22-X"] = z3.Implies(
+        z3.And(same_sign, x_one0, y_pow2, ey == fx),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C22-Y"] = z3.Implies(
+        z3.And(same_sign, y_one0, x_pow2, ex == fy),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
@@ -970,6 +1061,9 @@ def seltzo_two_sum_lemmas(
 
     s_all1: z3.BoolRef = z3.And(lbs, tbs, nlbs == p - one, ntbs == p - one)
     e_all1: z3.BoolRef = z3.And(lbe, tbe, nlbe == p - one, ntbe == p - one)
+
+    s_one0: z3.BoolRef = z3.And(lbs, tbs, nlbs + ntbs == p - two)
+    e_one0: z3.BoolRef = z3.And(lbe, tbe, nlbe + ntbe == p - two)
 
     s_one1: z3.BoolRef = z3.And(~lbs, ~tbs, nlbs + ntbs == p - two)
     e_one1: z3.BoolRef = z3.And(~lbe, ~tbe, nlbe + ntbe == p - two)
@@ -1135,8 +1229,7 @@ def seltzo_two_sum_lemmas(
     )
 
     # Lemma P9: One specific output is impossible.
-    result["SELTZO-TwoSum-P9"] =
-        ~z3.And(s_pow2, e_pow2, ss != se, es < ee + (p + one))
+    result["SELTZO-TwoSum-P9"] = ~z3.And(s_pow2, e_pow2, ss != se, es < ee + (p + one))
 
     # Lemma P10A: Adding a small number cannot destroy leading zeros past its
     # exponent.
@@ -1235,15 +1328,11 @@ def seltzo_two_sum_lemmas(
     # Lemma P14: The leading zeros of the smaller addend straddle the boundary
     # of the mantissa of the larger addend.
     result["SELTZO-TwoSum-P14-X"] = z3.Implies(
-        z3.And(
-            ~y_zero, same_sign, g1x > ey, ey + p > ex, ~y_pow2, f1y + p < ex
-        ),
+        z3.And(~y_zero, same_sign, g1x > ey, ey + p > ex, ~y_pow2, f1y + p < ex),
         z3.And(ss == sx, es == ex, se == sx, ee == f1y),
     )
     result["SELTZO-TwoSum-P14-Y"] = z3.Implies(
-        z3.And(
-            ~x_zero, same_sign, g1y > ex, ex + p > ey, ~x_pow2, f1x + p < ey
-        ),
+        z3.And(~x_zero, same_sign, g1y > ex, ex + p > ey, ~x_pow2, f1x + p < ey),
         z3.And(ss == sy, es == ey, se == sy, ee == f1x),
     )
 
