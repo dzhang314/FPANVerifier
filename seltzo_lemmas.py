@@ -1218,6 +1218,82 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C28: Sum of a one1 just past the end of a pow2.
+    result["SELTZO-TwoSum-C28-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_one1, ex == ey + p),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            tbs,
+            es == ex,
+            nlbs == p - two,
+            ntbs == one,
+            se != sy,
+            lbe,
+            ~tbe,
+            ee == ey - one,
+            nlbe == nlby,
+            ntbe == p - (nlby + one),
+        ),
+    )
+    result["SELTZO-TwoSum-C28-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_one1, ey == ex + p),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            tbs,
+            es == ey,
+            nlbs == p - two,
+            ntbs == one,
+            se != sx,
+            lbe,
+            ~tbe,
+            ee == ex - one,
+            nlbe == nlbx,
+            ntbe == p - (nlbx + one),
+        ),
+    )
+
+    # Lemma C29: Sum of a pow2 and a number of the form 1.01 -> 1.10.
+    result["SELTZO-TwoSum-C29-X"] = z3.Implies(
+        z3.And(
+            same_sign,
+            ~lbx,
+            nlbx == one,
+            nlbx + ntbx < p - two,
+            y_pow2,
+            ex == ey + two,
+        ),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs == tbx,
+            es == ex,
+            nlbs == one,
+            ntbs == ntbx,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C29-Y"] = z3.Implies(
+        z3.And(
+            same_sign,
+            ~lby,
+            nlby == one,
+            nlby + ntby < p - two,
+            x_pow2,
+            ey == ex + two,
+        ),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs == tby,
+            es == ey,
+            nlbs == one,
+            ntbs == ntby,
+            e_pos_zero,
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
