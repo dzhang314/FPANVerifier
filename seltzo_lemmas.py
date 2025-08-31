@@ -1146,6 +1146,78 @@ def seltzo_two_sum_lemmas(
         z3.And(s_pos_zero, e_pos_zero),
     )
 
+    # Lemma C26: Difference of a one1 just past the end of a pow2.
+    result["SELTZO-TwoSum-C26-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_one1, ex == ey + p),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se == sy,
+            ~lbe,
+            ~tbe,
+            ee == fy,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C26-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_one1, ey == ex + p),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se == sx,
+            ~lbe,
+            ~tbe,
+            ee == fx,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
+    # Lemma C27: Sum of a pow2 and an all1.
+    result["SELTZO-TwoSum-C27-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_all1, ex > ey + two, ex < ey + p),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex,
+            nlbs == (ex - ey) - two,
+            ntbs == p - (ex - ey),
+            se != sy,
+            ~lbe,
+            ~tbe,
+            ee == ey - (p - one),
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C27-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_all1, ey > ex + two, ey < ex + p),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey,
+            nlbs == (ey - ex) - two,
+            ntbs == p - (ey - ex),
+            se != sx,
+            ~lbe,
+            ~tbe,
+            ee == ex - (p - one),
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
