@@ -831,6 +831,120 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C17: Cancellation in a difference between two one1s.
+    result["SELTZO-TwoSum-C17-X"] = z3.Implies(
+        z3.And(diff_sign, x_one1, y_one1, ey == fx, ex > fy + p),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex,
+            nlbs == p - one,
+            ntbs == p - one,
+            se == sy,
+            ~lbe,
+            ~tbe,
+            ee == fy,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C17-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one1, x_one1, ex == fy, ey > fx + p),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey,
+            nlbs == p - one,
+            ntbs == p - one,
+            se == sx,
+            ~lbe,
+            ~tbe,
+            ee == fx,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
+    # Lemma C17A: Cancellation in a difference between two one1s.
+    result["SELTZO-TwoSum-C17A-X"] = z3.Implies(
+        z3.And(diff_sign, x_one1, y_one1, ey == fx, ex == fy + p),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C17A-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one1, x_one1, ex == fy, ey == fx + p),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C18: Cancellation in a difference between a pow2 and a one1.
+    result["SELTZO-TwoSum-C18-X"] = z3.Implies(
+        z3.And(diff_sign, x_one1, y_pow2, ex == ey),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == fx,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C18-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one1, x_pow2, ey == ex),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == fy,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C19: Cancellation in a difference between a pow2 and a one1.
+    result["SELTZO-TwoSum-C19-X"] = z3.Implies(
+        z3.And(diff_sign, x_one1, y_pow2, fx == ey),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C19-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one1, x_pow2, fy == ex),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
