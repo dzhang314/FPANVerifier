@@ -1036,6 +1036,116 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    # Lemma C23: Sum of a one0 and a trailing pow2.
+    result["SELTZO-TwoSum-C23-X"] = z3.Implies(
+        z3.And(same_sign, x_one0, y_pow2, ex == ey + (p - one)),
+        z3.And(
+            ss == sx,
+            lbs,
+            ~tbs,
+            es == ex,
+            nlbs == nlbx + one,
+            ntbs == (p - two) - nlbx,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C23-Y"] = z3.Implies(
+        z3.And(same_sign, y_one0, x_pow2, ey == ex + (p - one)),
+        z3.And(
+            ss == sy,
+            lbs,
+            ~tbs,
+            es == ey,
+            nlbs == nlby + one,
+            ntbs == (p - two) - nlby,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C24: Sum of a pow2 that fills in an r0r1 with one leading bit.
+    result["SELTZO-TwoSum-C24-X"] = z3.Implies(
+        z3.And(same_sign, x_r0r1, nlbx == one, y_pow2, ex == ey + one),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C24-Y"] = z3.Implies(
+        z3.And(same_sign, y_r0r1, nlby == one, x_pow2, ey == ex + one),
+        z3.And(
+            ss == sy,
+            lbs,
+            tbs,
+            es == ey,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C25: Difference of two r1r0s with the same exponent.
+    result["SELTZO-TwoSum-C25-X"] = z3.Implies(
+        z3.And(diff_sign, x_r1r0, y_r1r0, ex == ey, nlbx > nlby + one),
+        z3.And(
+            ss == sx,
+            lbs,
+            ~tbs,
+            es == fy,
+            nlbs == (nlbx - nlby) - one,
+            ntbs == p - (nlbx - nlby),
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C25-Y"] = z3.Implies(
+        z3.And(diff_sign, y_r1r0, x_r1r0, ey == ex, nlby > nlbx + one),
+        z3.And(
+            ss == sy,
+            lbs,
+            ~tbs,
+            es == fx,
+            nlbs == (nlby - nlbx) - one,
+            ntbs == p - (nlby - nlbx),
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C25A: Difference of two r1r0s with the same exponent.
+    result["SELTZO-TwoSum-C25A-X"] = z3.Implies(
+        z3.And(diff_sign, x_r1r0, y_r1r0, ex == ey, nlbx == nlby + one),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == fy,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C25A-Y"] = z3.Implies(
+        z3.And(diff_sign, y_r1r0, x_r1r0, ey == ex, nlby == nlbx + one),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == fx,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C25S: Difference of two r1r0s with the same exponent.
+    result["SELTZO-TwoSum-C25S"] = z3.Implies(
+        z3.And(diff_sign, x_r1r0, y_r1r0, ex == ey, nlbx == nlby),
+        z3.And(s_pos_zero, e_pos_zero),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
