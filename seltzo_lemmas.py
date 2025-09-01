@@ -949,12 +949,12 @@ def seltzo_two_sum_lemmas(
         z3.And(diff_sign, y_all1, x_pow2, ey == ex),
         z3.And(
             ss == sy,
-            ~lbs,
-            tbs,
+            lbs,
+            ~tbs,
             es == ey - one,
             nlbs == p - two,
             ntbs == one,
-            s_pos_zero,
+            e_pos_zero,
         ),
     )
 
