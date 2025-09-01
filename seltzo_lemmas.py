@@ -186,18 +186,10 @@ def seltzo_two_sum_lemmas(
 
     ################################################### SYSTEMATIC CASE ANALYSES
 
-    # Sum of two powers of two (general case).
-    result["SELTZO-TwoSum-POW2-POW2-S-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ey > ex - (p - one)),
-        seltzo_case_zero(
-            (sx, False, False, ex, (ex - ey) - one, (p - one) - (ex - ey))
-        ),
-    )
-    result["SELTZO-TwoSum-POW2-POW2-S-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey > ex + one, ex > ey - (p - one)),
-        seltzo_case_zero(
-            (sy, False, False, ey, (ey - ex) - one, (p - one) - (ey - ex))
-        ),
+    # Sum of two powers of two (equal exponent case).
+    result["SELTZO-TwoSum-POW2-POW2-SE"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey),
+        seltzo_case_zero((sx, False, False, ex + one, p - one, p - one)),
     )
 
     # Sum of two powers of two (adjacent case).
@@ -206,8 +198,22 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sx, True, False, ex, one, p - two)),
     )
     result["SELTZO-TwoSum-POW2-POW2-SA-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey == ex + one),
+        z3.And(same_sign, y_pow2, x_pow2, ey == ex + one),
         seltzo_case_zero((sy, True, False, ey, one, p - two)),
+    )
+
+    # Sum of two powers of two (general case).
+    result["SELTZO-TwoSum-POW2-POW2-SG-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ex < ey + (p - one)),
+        seltzo_case_zero(
+            (sx, False, False, ex, (ex - ey) - one, (p - one) - (ex - ey))
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-SG-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_pow2, ey > ex + one, ey < ex + (p - one)),
+        seltzo_case_zero(
+            (sy, False, False, ey, (ey - ex) - one, (p - one) - (ey - ex))
+        ),
     )
 
     # Sum of two powers of two (boundary case).
@@ -216,14 +222,8 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sx, False, True, ex, p - two, one)),
     )
     result["SELTZO-TwoSum-POW2-POW2-SB-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey == ex + (p - one)),
+        z3.And(same_sign, y_pow2, x_pow2, ey == ex + (p - one)),
         seltzo_case_zero((sy, False, True, ey, p - two, one)),
-    )
-
-    # Sum of two powers of two (equal case).
-    result["SELTZO-TwoSum-POW2-POW2-SE"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex == ey),
-        seltzo_case_zero((sx, False, False, ex + one, p - one, p - one)),
     )
 
     # Sum of two powers of two (identity case).
@@ -235,7 +235,59 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-POW2-POW2-SI-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey > ex + (p - one)),
+        z3.And(same_sign, y_pow2, x_pow2, ey > ex + (p - one)),
+        seltzo_case(
+            (sy, False, False, ey, p - one, p - one),
+            (sx, False, False, ex, p - one, p - one),
+        ),
+    )
+
+    # Difference of two powers of two (equal exponent case).
+    result["SELTZO-TwoSum-POW2-POW2-DE"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex == ey),
+        z3.And(s_pos_zero, e_pos_zero),
+    )
+
+    # Difference of two powers of two (adjacent case).
+    result["SELTZO-TwoSum-POW2-POW2-DA-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex == ey + one),
+        seltzo_case_zero((sx, False, False, ex - one, p - one, p - one)),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-DA-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey == ex + one),
+        seltzo_case_zero((sy, False, False, ey - one, p - one, p - one)),
+    )
+
+    # Difference of two powers of two (general case).
+    result["SELTZO-TwoSum-POW2-POW2-DG-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex > ey + one, ex < ey + p),
+        seltzo_case_zero((sx, True, False, ex - one, (ex - ey) - one, p - (ex - ey))),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-DG-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey > ex + one, ey < ex + p),
+        seltzo_case_zero((sy, True, False, ey - one, (ey - ex) - one, p - (ey - ex))),
+    )
+
+    # Difference of two powers of two (boundary case).
+    result["SELTZO-TwoSum-POW2-POW2-DB-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex == ey + p),
+        seltzo_case_zero((sx, True, True, ex - one, p - one, p - one)),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-DB-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey == ex + p),
+        seltzo_case_zero((sy, True, True, ey - one, p - one, p - one)),
+    )
+
+    # Difference of two powers of two (identity case).
+    result["SELTZO-TwoSum-POW2-POW2-DI-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_pow2, ex > ey + p),
+        seltzo_case(
+            (sx, False, False, ex, p - one, p - one),
+            (sy, False, False, ey, p - one, p - one),
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-DI-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_pow2, ey > ex + p),
         seltzo_case(
             (sy, False, False, ey, p - one, p - one),
             (sx, False, False, ex, p - one, p - one),
