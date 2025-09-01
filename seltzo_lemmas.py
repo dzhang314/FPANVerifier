@@ -92,6 +92,156 @@ def seltzo_two_sum_lemmas(
     x_r1r0: z3.BoolRef = z3.And(lbx, ~tbx, nlbx + ntbx == p - one)
     y_r1r0: z3.BoolRef = z3.And(lby, ~tby, nlby + ntby == p - one)
 
+    def seltzo_case_zero(
+        s_values: tuple[
+            BoolVar | None,
+            bool | None,
+            bool | None,
+            IntVar | None,
+            IntVar | None,
+            IntVar | None,
+        ],
+    ) -> z3.BoolRef:
+        ss_value, lbs_value, tbs_value, es_value, nlbs_value, ntbs_value = s_values
+        assert ss_value is not ss
+        assert lbs_value is not lbs
+        assert tbs_value is not tbs
+        assert es_value is not es
+        assert nlbs_value is not nlbs
+        assert ntbs_value is not ntbs
+        clauses: list[z3.BoolRef] = []
+        if ss_value is not None:
+            clauses.append(ss == ss_value)
+        if isinstance(lbs_value, bool):
+            clauses.append(lbs if lbs_value else ~lbs)
+        if isinstance(tbs_value, bool):
+            clauses.append(tbs if tbs_value else ~tbs)
+        if es_value is not None:
+            clauses.append(es == es_value)
+        if nlbs_value is not None:
+            clauses.append(nlbs == nlbs_value)
+        if ntbs_value is not None:
+            clauses.append(ntbs == ntbs_value)
+        clauses.append(e_pos_zero)
+        return z3.And(*clauses)
+
+    def seltzo_case(
+        s_values: tuple[
+            BoolVar | None,
+            bool | None,
+            bool | None,
+            IntVar | None,
+            IntVar | None,
+            IntVar | None,
+        ],
+        e_values: tuple[
+            BoolVar | None,
+            bool | None,
+            bool | None,
+            IntVar | None,
+            IntVar | None,
+            IntVar | None,
+        ],
+    ) -> z3.BoolRef:
+        ss_value, lbs_value, tbs_value, es_value, nlbs_value, ntbs_value = s_values
+        se_value, lbe_value, tbe_value, ee_value, nlbe_value, ntbe_value = e_values
+        assert ss_value is not ss
+        assert lbs_value is not lbs
+        assert tbs_value is not tbs
+        assert es_value is not es
+        assert nlbs_value is not nlbs
+        assert ntbs_value is not ntbs
+        assert se_value is not se
+        assert lbe_value is not lbe
+        assert tbe_value is not tbe
+        assert ee_value is not ee
+        assert nlbe_value is not nlbe
+        assert ntbe_value is not ntbe
+        clauses: list[z3.BoolRef] = []
+        if ss_value is not None:
+            clauses.append(ss == ss_value)
+        if isinstance(lbs_value, bool):
+            clauses.append(lbs if lbs_value else ~lbs)
+        if isinstance(tbs_value, bool):
+            clauses.append(tbs if tbs_value else ~tbs)
+        if es_value is not None:
+            clauses.append(es == es_value)
+        if nlbs_value is not None:
+            clauses.append(nlbs == nlbs_value)
+        if ntbs_value is not None:
+            clauses.append(ntbs == ntbs_value)
+        if se_value is not None:
+            clauses.append(se == se_value)
+        if isinstance(lbe_value, bool):
+            clauses.append(lbe if lbe_value else ~lbe)
+        if isinstance(tbe_value, bool):
+            clauses.append(tbe if tbe_value else ~tbe)
+        if ee_value is not None:
+            clauses.append(ee == ee_value)
+        if nlbe_value is not None:
+            clauses.append(nlbe == nlbe_value)
+        if ntbe_value is not None:
+            clauses.append(ntbe == ntbe_value)
+        return z3.And(*clauses)
+
+    ################################################### SYSTEMATIC CASE ANALYSES
+
+    # Sum of two powers of two (general case).
+    result["SELTZO-TwoSum-POW2-POW2-S-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ey > ex - (p - one)),
+        seltzo_case_zero(
+            (sx, False, False, ex, (ex - ey) - one, (p - one) - (ex - ey))
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-S-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey > ex + one, ex > ey - (p - one)),
+        seltzo_case_zero(
+            (sy, False, False, ey, (ey - ex) - one, (p - one) - (ey - ex))
+        ),
+    )
+
+    # Sum of two powers of two (adjacent case).
+    result["SELTZO-TwoSum-POW2-POW2-SA-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey + one),
+        seltzo_case_zero((sx, True, False, ex, one, p - two)),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-SA-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey == ex + one),
+        seltzo_case_zero((sy, True, False, ey, one, p - two)),
+    )
+
+    # Sum of two powers of two (boundary case).
+    result["SELTZO-TwoSum-POW2-POW2-SB-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey + (p - one)),
+        seltzo_case_zero((sx, False, True, ex, p - two, one)),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-SB-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey == ex + (p - one)),
+        seltzo_case_zero((sy, False, True, ey, p - two, one)),
+    )
+
+    # Sum of two powers of two (equal case).
+    result["SELTZO-TwoSum-POW2-POW2-SE"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey),
+        seltzo_case_zero((sx, False, False, ex + one, p - one, p - one)),
+    )
+
+    # Sum of two powers of two (identity case).
+    result["SELTZO-TwoSum-POW2-POW2-SI-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex > ey + (p - one)),
+        seltzo_case(
+            (sx, False, False, ex, p - one, p - one),
+            (sy, False, False, ey, p - one, p - one),
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-SI-Y"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ey > ex + (p - one)),
+        seltzo_case(
+            (sy, False, False, ey, p - one, p - one),
+            (sx, False, False, ex, p - one, p - one),
+        ),
+    )
+
     ############################################################ COMPLETE LEMMAS
 
     # Lemma C01: Sum where one number fits entirely into the other's leading
@@ -185,99 +335,6 @@ def seltzo_two_sum_lemmas(
             es == ey,
             nlbs == ey - ex - one,
             ntbs == ntby,
-            e_pos_zero,
-        ),
-    )
-
-    # Lemma C02: Sum of powers of two (general case).
-    result["SELTZO-TwoSum-C02-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, ey > ex - (p - one)),
-        z3.And(
-            ss == sx,
-            ~lbs,
-            ~tbs,
-            es == ex,
-            nlbs == (ex - ey) - one,
-            ntbs == (p - one) - (ex - ey),
-            e_pos_zero,
-        ),
-    )
-    result["SELTZO-TwoSum-C02-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey > ex + one, ex > ey - (p - one)),
-        z3.And(
-            ss == sy,
-            ~lbs,
-            ~tbs,
-            es == ey,
-            nlbs == (ey - ex) - one,
-            ntbs == (p - one) - (ey - ex),
-            e_pos_zero,
-        ),
-    )
-
-    # Lemma C02A: Sum of powers of two (adjacent case).
-    result["SELTZO-TwoSum-C02A-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex == ey + one),
-        z3.And(
-            ss == sx,
-            lbs,
-            ~tbs,
-            es == ex,
-            nlbs == one,
-            ntbs == p - two,
-            e_pos_zero,
-        ),
-    )
-    result["SELTZO-TwoSum-C02A-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey == ex + one),
-        z3.And(
-            ss == sy,
-            lbs,
-            ~tbs,
-            es == ey,
-            nlbs == one,
-            ntbs == p - two,
-            e_pos_zero,
-        ),
-    )
-
-    # Lemma C02B: Sum of powers of two (boundary case).
-    result["SELTZO-TwoSum-C02B-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex == ey + (p - one)),
-        z3.And(
-            ss == sx,
-            ~lbs,
-            tbs,
-            es == ex,
-            nlbs == p - two,
-            ntbs == one,
-            e_pos_zero,
-        ),
-    )
-    result["SELTZO-TwoSum-C02B-Y"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ey == ex + (p - one)),
-        z3.And(
-            ss == sy,
-            ~lbs,
-            tbs,
-            es == ey,
-            nlbs == p - two,
-            ntbs == one,
-            e_pos_zero,
-        ),
-    )
-
-    # Lemma C02S: Sum of powers of two (identical case).
-    result["SELTZO-TwoSum-C02S"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex == ey),
-        z3.And(
-            ss == sx,
-            ~lbs,
-            ~tbs,
-            es == ex + one,
-            es == ey + one,
-            nlbs == p - one,
-            ntbs == p - one,
             e_pos_zero,
         ),
     )
