@@ -798,17 +798,17 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    # Lemma C16: Difference of an all1 just past the end of a pow2.
+    # Lemma C16: Difference of a pow2 and an all1 (general case).
     result["SELTZO-TwoSum-C16-X"] = z3.Implies(
-        z3.And(diff_sign, x_pow2, y_all1, ex == ey + (p + one)),
+        z3.And(diff_sign, x_pow2, y_all1, ex > ey + two, ex < ey + (p + one)),
         z3.And(
             ss == sx,
             lbs,
-            tbs,
+            ~tbs,
             es == ex - one,
-            nlbs == p - one,
-            ntbs == p - one,
-            se == sx,
+            nlbs == (ex - ey) - two,
+            ntbs == (p + one) - (ex - ey),
+            se != sy,
             ~lbe,
             ~tbe,
             ee == ey - (p - one),
@@ -817,6 +817,104 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-C16-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_all1, ey > ex + two, ey < ex + (p + one)),
+        z3.And(
+            ss == sy,
+            lbs,
+            ~tbs,
+            es == ey - one,
+            nlbs == (ey - ex) - two,
+            ntbs == (p + one) - (ey - ex),
+            se != sx,
+            ~lbe,
+            ~tbe,
+            ee == ex - (p - one),
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
+    # Lemma C16A1: Difference of a pow2 and an all1 (adjacent case 1).
+    result["SELTZO-TwoSum-C16A1-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_all1, ex == ey + one),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex - p,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C16A1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_all1, ey == ex + one),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey - p,
+            nlbs == p - one,
+            ntbs == p - one,
+            e_pos_zero,
+        ),
+    )
+
+    # Lemma C16A2: Difference of a pow2 and an all1 (adjacent case 2).
+    result["SELTZO-TwoSum-C16A2-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_all1, ex == ey + two),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se != sy,
+            ~lbe,
+            ~tbe,
+            ee == ey - (p - one),
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C16A2-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_all1, ey == ex + two),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se != sx,
+            ~lbe,
+            ~tbe,
+            ee == ex - (p - one),
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+
+    # Lemma C16B: Difference of a pow2 and an all1 (boundary case).
+    result["SELTZO-TwoSum-C16B-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_all1, ex == ey + (p + one)),
+        z3.And(
+            ss == sx,
+            lbs,
+            tbs,
+            es == ex - one,
+            nlbs == p - one,
+            ntbs == p - one,
+            se != sy,
+            ~lbe,
+            ~tbe,
+            ee == ey - (p - one),
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C16B-Y"] = z3.Implies(
         z3.And(diff_sign, y_pow2, x_all1, ey == ex + (p + one)),
         z3.And(
             ss == sy,
@@ -825,12 +923,38 @@ def seltzo_two_sum_lemmas(
             es == ey - one,
             nlbs == p - one,
             ntbs == p - one,
-            se == sy,
+            se != sx,
             ~lbe,
             ~tbe,
             ee == ex - (p - one),
             nlbe == p - one,
             ntbe == p - one,
+        ),
+    )
+
+    # Lemma C16S: Difference of a pow2 and an all1 (identical case).
+    result["SELTZO-TwoSum-C16S-X"] = z3.Implies(
+        z3.And(diff_sign, x_all1, y_pow2, ex == ey),
+        z3.And(
+            ss == sx,
+            lbs,
+            ~tbs,
+            es == ex - one,
+            nlbs == p - two,
+            ntbs == one,
+            e_pos_zero,
+        ),
+    )
+    result["SELTZO-TwoSum-C16S-Y"] = z3.Implies(
+        z3.And(diff_sign, y_all1, x_pow2, ey == ex),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            tbs,
+            es == ey - one,
+            nlbs == p - two,
+            ntbs == one,
+            s_pos_zero,
         ),
     )
 
@@ -1291,6 +1415,42 @@ def seltzo_two_sum_lemmas(
             nlbs == one,
             ntbs == ntby,
             e_pos_zero,
+        ),
+    )
+
+    # Lemma C30: Sum of an r1r0 that fills one past the tail of a pow2.
+    result["SELTZO-TwoSum-C30-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_r1r0, ex > ey + two, gy == ex - p),
+        z3.And(
+            ss == sx,
+            ~lbs,
+            ~tbs,
+            es == ex,
+            nlbs == (ex - ey) - two,
+            ntbs == p - (ex - ey),
+            se != sy,
+            ~lbe,
+            ~tbe,
+            ee == ex - p,
+            nlbe == p - one,
+            ntbe == p - one,
+        ),
+    )
+    result["SELTZO-TwoSum-C30-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_r1r0, ey > ex + two, gx == ey - p),
+        z3.And(
+            ss == sy,
+            ~lbs,
+            ~tbs,
+            es == ey,
+            nlbs == (ey - ex) - two,
+            ntbs == p - (ey - ex),
+            se != sx,
+            ~lbe,
+            ~tbe,
+            ee == ey - p,
+            nlbe == p - one,
+            ntbe == p - one,
         ),
     )
 
