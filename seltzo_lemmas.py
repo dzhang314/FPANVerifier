@@ -94,7 +94,7 @@ def seltzo_two_sum_lemmas(
 
     def seltzo_case_zero(
         s_values: tuple[
-            BoolVar | None,
+            tuple[BoolVar] | BoolVar | None,
             bool | None,
             bool | None,
             IntVar | None,
@@ -110,7 +110,9 @@ def seltzo_two_sum_lemmas(
         assert nlbs_value is not nlbs
         assert ntbs_value is not ntbs
         clauses: list[z3.BoolRef] = []
-        if ss_value is not None:
+        if isinstance(ss_value, tuple):
+            clauses.append(ss != ss_value[0])
+        elif ss_value is not None:
             clauses.append(ss == ss_value)
         if isinstance(lbs_value, bool):
             clauses.append(lbs if lbs_value else ~lbs)
@@ -127,7 +129,7 @@ def seltzo_two_sum_lemmas(
 
     def seltzo_case(
         s_values: tuple[
-            BoolVar | None,
+            tuple[BoolVar] | BoolVar | None,
             bool | None,
             bool | None,
             IntVar | None,
@@ -135,7 +137,7 @@ def seltzo_two_sum_lemmas(
             IntVar | None,
         ],
         e_values: tuple[
-            BoolVar | None,
+            tuple[BoolVar] | BoolVar | None,
             bool | None,
             bool | None,
             IntVar | None,
@@ -158,7 +160,9 @@ def seltzo_two_sum_lemmas(
         assert nlbe_value is not nlbe
         assert ntbe_value is not ntbe
         clauses: list[z3.BoolRef] = []
-        if ss_value is not None:
+        if isinstance(ss_value, tuple):
+            clauses.append(ss != ss_value[0])
+        elif ss_value is not None:
             clauses.append(ss == ss_value)
         if isinstance(lbs_value, bool):
             clauses.append(lbs if lbs_value else ~lbs)
@@ -170,7 +174,9 @@ def seltzo_two_sum_lemmas(
             clauses.append(nlbs == nlbs_value)
         if ntbs_value is not None:
             clauses.append(ntbs == ntbs_value)
-        if se_value is not None:
+        if isinstance(se_value, tuple):
+            clauses.append(se != se_value[0])
+        elif se_value is not None:
             clauses.append(se == se_value)
         if isinstance(lbe_value, bool):
             clauses.append(lbe if lbe_value else ~lbe)
@@ -184,7 +190,7 @@ def seltzo_two_sum_lemmas(
             clauses.append(ntbe == ntbe_value)
         return z3.And(*clauses)
 
-    ################################################### SYSTEMATIC CASE ANALYSES
+    ############################################################################
 
     # Sum of two powers of two (equal exponent case).
     result["SELTZO-TwoSum-POW2-POW2-SE"] = z3.Implies(
@@ -242,6 +248,8 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    ############################################################################
+
     # Difference of two powers of two (equal exponent case).
     result["SELTZO-TwoSum-POW2-POW2-DE"] = z3.Implies(
         z3.And(diff_sign, x_pow2, y_pow2, ex == ey),
@@ -291,6 +299,24 @@ def seltzo_two_sum_lemmas(
         seltzo_case(
             (sy, False, False, ey, p - one, p - one),
             (sx, False, False, ex, p - one, p - one),
+        ),
+    )
+
+    ############################################################################
+
+    # Sum of an all-ones number with a power of two (general case).
+    result["SELTZO-TwoSum-ALL1-POW2-SG-X"] = z3.Implies(
+        z3.And(same_sign, x_all1, y_pow2, ex > ey, ex < ey + (p - two)),
+        seltzo_case(
+            (sx, False, False, ex + one, ex - ey, (p - two) - (ex - ey)),
+            ((sx,), False, False, ex - (p - one), p - one, p - one),
+        ),
+    )
+    result["SELTZO-TwoSum-ALL1-POW2-SG-Y"] = z3.Implies(
+        z3.And(same_sign, y_all1, x_pow2, ey > ex, ey < ex + (p - two)),
+        seltzo_case(
+            (sy, False, False, ey + one, ey - ex, (p - two) - (ey - ex)),
+            ((sy,), False, False, ey - (p - one), p - one, p - one),
         ),
     )
 
@@ -422,42 +448,6 @@ def seltzo_two_sum_lemmas(
             ~lbe,
             ~tbe,
             ee == f0x + one,
-            nlbe == p - one,
-            ntbe == p - one,
-        ),
-    )
-
-    # Lemma C04: Sum of all1 and pow2.
-    result["SELTZO-TwoSum-C04-X"] = z3.Implies(
-        z3.And(same_sign, x_all1, y_pow2, ex > ey, ex < ey + (p - two)),
-        z3.And(
-            ss == sx,
-            ~lbs,
-            ~tbs,
-            es == ex + one,
-            nlbs == ex - ey,
-            ntbs == (p - two) - (ex - ey),
-            se != sx,
-            ~lbe,
-            ~tbe,
-            ee == ex - (p - one),
-            nlbe == p - one,
-            ntbe == p - one,
-        ),
-    )
-    result["SELTZO-TwoSum-C04-Y"] = z3.Implies(
-        z3.And(same_sign, y_all1, x_pow2, ey > ex, ey < ex + (p - two)),
-        z3.And(
-            ss == sx,
-            ~lbs,
-            ~tbs,
-            es == ey + one,
-            nlbs == ey - ex,
-            ntbs == (p - two) - (ey - ex),
-            se != sx,
-            ~lbe,
-            ~tbe,
-            ee == ey - (p - one),
             nlbe == p - one,
             ntbe == p - one,
         ),
