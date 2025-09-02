@@ -11,20 +11,19 @@ of floating-point algorithms. It uses a novel reasoning technique called the
 [SELTZO abstraction][1] to precisely track the propagation of rounding errors
 through multiple interdependent operations.
 
-**FPANVerifier** handles a specific class of algorithms called
+FPANVerifier handles a specific class of algorithms called
 [**floating-point accumulation networks** (**FPANs**)][2], which are
 branch-free sequences of floating-point sum and [TwoSum][3] operations.
-These algorithms are used to implement
-[high-precision arithmetic with native machine-precision operations][4]
+These algorithms are used to implement [fast high-precision arithmetic][4]
 and form the backbone of high-performance libraries like
 [MultiFloats.jl][5], [QD][6], [XBLAS][7], and [CAMPARY][8].
 
-**FPANVerifier** is **several *million* times faster** than standard
-floating-point verification tools, including [Z3][9], [CVC5][10],
-[MathSAT][11], and [Bitwuzla][12]. It solves problems in *seconds* that other
-tools need *hours* to *days* to answer, if at all. The bit-precise reasoning
-capability of the SELTZO abstraction allows **FPANVerifier** to solve problems
-that are impossible for interval-based tools like [COLIBRI][13] and [dReal][14].
+FPANVerifier is **several *million* times faster** than standard floating-point
+verification tools, including [Z3][9], [CVC5][10], [MathSAT][11], and
+[Bitwuzla][12]. It solves problems in *seconds* that other tools need *hours*
+to *days* to answer, if at all. The bit-precise reasoning capability of the
+SELTZO abstraction allows FPANVerifier to solve problems that are impossible
+for interval-based tools like [COLIBRI][13] and [dReal][14].
 
 |          | Z3       | CVC5       | MathSAT  | Bitwuzla  | Colibri2 | dReal | **FPANVerifier** |
 |----------|----------|------------|----------|-----------|----------|-------|------------------|
@@ -34,11 +33,11 @@ that are impossible for interval-based tools like [COLIBRI][13] and [dReal][14].
 | Float64  | > 3 days | > 3 days   | > 3 days | > 3 days  | N/A      | N/A   | **0.9 sec**      |
 | Float128 | > 3 days | > 3 days   | > 3 days | > 3 days  | N/A      | N/A   | **1.0 sec**      |
 
-⚠️ **IMPORTANT NOTE:** **FPANVerifier** is a **sound but incomplete** reasoning
-tool. This means that every result proven by **FPANVerifier** is definitely
-true, but a statement that FPANVerifier fails to prove is not necessarily false.
-In some cases, a statement that is true for concrete floating-point numbers
-may fail to hold in the SELTZO abstract domain.
+⚠️ **IMPORTANT NOTE:** FPANVerifier is a **sound but incomplete** reasoning
+tool. This means that every result proven by FPANVerifier is definitely true,
+but a statement that FPANVerifier fails to prove is not necessarily false.
+In some cases, a statement that is true for actual floating-point numbers may
+be false in the SELTZO abstract domain, where FPANVerifier searches for proofs.
 
 [1]: https://arxiv.org/pdf/2505.18791#page=10
 [2]: https://link.springer.com/chapter/10.1007/978-3-031-98682-6_12
