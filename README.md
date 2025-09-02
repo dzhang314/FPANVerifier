@@ -13,10 +13,16 @@ through multiple interdependent operations.
 
 FPANVerifier handles a specific class of algorithms called
 [**floating-point accumulation networks** (**FPANs**)][2], which are
-branch-free sequences of floating-point sum and [TwoSum][3] operations.
-These algorithms are used to implement [fast high-precision arithmetic][4]
-and form the backbone of high-performance libraries like
-[MultiFloats.jl][5], [QD][6], [XBLAS][7], and [CAMPARY][8].
+branch-free sequences of floating-point sum and [TwoSum][3] operations. These
+algorithms are used to implement [fast high-precision arithmetic][4] and form
+the backbone of high-performance libraries like [MultiFloats.jl][5], [QD][6],
+[XBLAS][7], and [CAMPARY][8].
+
+Despite being widely used, FPANs are notoriously difficult to analyze, and even
+expert numerical analysts have [made mistakes][15] leading to the publication
+of [incorrect algorithms][15] and [false error bounds][16]. FPANVerifier turns
+the tedious, error-prone process of manual rounding error analysis into a fully
+automated computation with rigorous formal correctness guarantees.
 
 FPANVerifier is **several *million* times faster** than standard floating-point
 verification tools, including [Z3][9], [CVC5][10], [MathSAT][11], and
@@ -37,7 +43,7 @@ for interval-based tools like [COLIBRI][13] and [dReal][14].
 tool. This means that every result proven by FPANVerifier is definitely true,
 but a statement that FPANVerifier fails to prove is not necessarily false.
 In some cases, a statement that is true for actual floating-point numbers may
-be false in the SELTZO abstract domain, where FPANVerifier searches for proofs.
+be false in the SELTZO abstract domain where FPANVerifier searches for proofs.
 
 [1]: https://arxiv.org/pdf/2505.18791#page=10
 [2]: https://link.springer.com/chapter/10.1007/978-3-031-98682-6_12
@@ -53,3 +59,6 @@ be false in the SELTZO abstract domain, where FPANVerifier searches for proofs.
 [12]: https://bitwuzla.github.io/
 [13]: https://colibri.frama-c.com/
 [14]: https://dreal.github.io/
+[15]: https://dl.acm.org/doi/abs/10.1145/567806.567808
+[16]: https://dl.acm.org/doi/10.1145/3121432
+[17]: https://dl.acm.org/doi/10.1145/3484514
