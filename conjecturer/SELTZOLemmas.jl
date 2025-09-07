@@ -137,13 +137,13 @@ function check_seltzo_two_sum_lemmas(
     for i = 1:min(rs.count[], length(rs.reservoir))
         println("Unverified case $i:")
         x, y = rs.reservoir[i]
-        sx, lbx, lby, ex, fx, gx = unpack(x, T)
-        sy, tbx, tby, ey, fy, gy = unpack(y, T)
+        sx, lbx, tbx, ex, fx, gx = unpack(x, T)
+        sy, lby, tby, ey, fy, gy = unpack(y, T)
         println("    SELTZO Input 1: ",
-            "(sx = $sx, lbx = $lbx, lby = $lby, ",
+            "(sx = $sx, lbx = $lbx, tbx = $tbx, ",
             "ex = $ex, fx = $fx, gx = $gx) [$x]")
         println("    SELTZO Input 2: ",
-            "(sy = $sy, tbx = $tbx, tby = $tby, ",
+            "(sy = $sy, lby = $lby, tby = $tby, ",
             "ey = $ey, fy = $fy, gy = $gy) [$y]")
         println("    SELTZO Outputs:")
         for (k, vs) in condense(abstract_outputs(two_sum_abstractions, x, y), T)
