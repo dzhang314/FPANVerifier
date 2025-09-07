@@ -39,7 +39,7 @@ function check_seltzo_two_sum_lemmas(
     neg_zero = SELTZOAbstraction(-zero(T))
     abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
     lemma_counts = Dict{String,Int}()
-    rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(10)
+    rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(5)
 
     for x in abstract_inputs, y in abstract_inputs
 
@@ -135,13 +135,26 @@ function check_seltzo_two_sum_lemmas(
     end
     println("Unverified cases: $(rs.count[])")
     for i = 1:min(rs.count[], length(rs.reservoir))
+        println("Unverified case $i:")
         x, y = rs.reservoir[i]
-        println("Input 1: $(unpack(x, T)) [$x]")
-        println("Input 2: $(unpack(y, T)) [$y]")
+        sx, lbx, lby, ex, fx, gx = unpack(x, T)
+        sy, tbx, tby, ey, fy, gy = unpack(y, T)
+        println("    SELTZO Input 1: ",
+            "(sx = $sx, lbx = $lbx, lby = $lby, ",
+            "ex = $ex, fx = $fx, gx = $gx) [$x]")
+        println("    SELTZO Input 2: ",
+            "(sy = $sy, tbx = $tbx, tby = $tby, ",
+            "ey = $ey, fy = $fy, gy = $gy) [$y]")
+        println("    SELTZO Outputs:")
         for (k, vs) in condense(abstract_outputs(two_sum_abstractions, x, y), T)
-            println("    $k:")
+            ss, lbs, tbs, se, lbe, tbe = k
             for v in vs
-                println("        $v")
+                es, fs, gs, ee, fe, ge = v
+                println("        ",
+                    "(ss = $ss, lbs = $lbs, tbs = $tbs, ",
+                    "es = $es, fs = $fs, gs = $gs), ",
+                    "(se = $se, lbe = $lbe, tbe = $tbe, ",
+                    "ee = $ee, fe = $fe, ge = $ge)")
             end
         end
     end
