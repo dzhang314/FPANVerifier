@@ -295,6 +295,16 @@ end
 end
 
 
+@inline mantissa_leading_bit(t::SELTZOType) =
+    (t == ALL1) | (t == R1R0) | (t == ONE0) | (t == TWO0) |
+    (t == MM01) | (t == G10) | (t == G11)
+
+
+@inline mantissa_trailing_bit(t::SELTZOType) =
+    (t == ALL1) | (t == R0R1) | (t == ONE0) | (t == TWO0) |
+    (t == MM10) | (t == G01) | (t == G11)
+
+
 ########################################################## ABSTRACTION UNPACKING
 
 

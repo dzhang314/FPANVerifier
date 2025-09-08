@@ -34,7 +34,13 @@ function verify_exhaustive(::Type{T}, ::Type{U}) where {T,U}
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(seltzo)
         @assert mantissa_trailing_ones(x) === mantissa_trailing_ones(seltzo)
 
-        @assert (seltzo_classify(seltzo, T) === ZERO) === iszero(x)
+        seltzo_type = seltzo_classify(seltzo, T)
+        @assert (seltzo_type === ZERO) === iszero(x)
+        @assert mantissa_leading_bit(x) === mantissa_leading_bit(seltzo_type)
+        @assert mantissa_trailing_bit(x) === mantissa_trailing_bit(seltzo_type)
+        if isfinite(x) & !issubnormal(x)
+            @assert ((seltzo_type === POW2) === ispow2(abs(x)))
+        end
 
         @assert unpack(se) ===
                 (unpack_bools(se)..., unpack_ints(se)...)
@@ -87,7 +93,10 @@ function verify_random(::Type{T}, ::Type{U}, n::Int) where {T,U}
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(seltzo)
         @assert mantissa_trailing_ones(x) === mantissa_trailing_ones(seltzo)
 
-        @assert (seltzo_classify(seltzo, T) === ZERO) === iszero(x)
+        seltzo_type = seltzo_classify(seltzo, T)
+        @assert (seltzo_type === ZERO) === iszero(x)
+        @assert mantissa_leading_bit(x) === mantissa_leading_bit(seltzo_type)
+        @assert mantissa_trailing_bit(x) === mantissa_trailing_bit(seltzo_type)
 
         @assert unpack(se) ===
                 (unpack_bools(se)..., unpack_ints(se)...)
