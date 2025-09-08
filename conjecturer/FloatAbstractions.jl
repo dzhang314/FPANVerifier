@@ -585,7 +585,7 @@ end
 ################################################################# LEMMA CHECKING
 
 
-export LemmaChecker, add_case!
+export LemmaChecker, add_case!, SELTZORange
 
 
 struct LemmaChecker{A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
@@ -795,23 +795,32 @@ function add_case!(
 end
 
 
-const _SELTZORange = Tuple{
-    _BoolRange,_BoolRange,_BoolRange,
-    _IntRange,_IntRange,_IntRange}
+struct SELTZORange
+    s_range::UnitRange{Bool}
+    lb_range::UnitRange{Bool}
+    tb_range::UnitRange{Bool}
+    e_range::UnitRange{Int}
+    f_range::UnitRange{Int}
+    g_range::UnitRange{Int}
+end
+
+
+@inline SELTZORange(s::Bool, lb::Bool, tb::Bool, e::Int, f::Int, g::Int) =
+    SELTZORange(s:s, lb:lb, tb:tb, e:e, f:f, g:g)
 
 
 function add_case!(
     lemma::_LemmaOutputs{SELTZOAbstraction,T},
-    (sr_range, lbr_range, tbr_range, er_range, fr_range, gr_range)::_SELTZORange,
+    r::SELTZORange,
     e::SELTZOAbstraction,
 ) where {T<:AbstractFloat}
     p = precision(T)
-    for sr in _lemma_range_s(sr_range)
-        for lbr in _lemma_range_s(lbr_range)
-            for tbr in _lemma_range_s(tbr_range)
-                for er in _lemma_range_e(er_range, T)
-                    for fr in _lemma_range_t(fr_range, T)
-                        for gr in _lemma_range_t(gr_range, T)
+    for sr in r.s_range
+        for lbr in r.lb_range
+            for tbr in r.tb_range
+                for er in _lemma_range_e(r.e_range, T)
+                    for fr in r.f_range
+                        for gr in _lemma_range_t(r.g_range, T)
                             nlbr = (er - fr) - 1
                             ntbr = (p - 1) - (er - gr)
                             r = SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr)
@@ -828,22 +837,22 @@ end
 
 function add_case!(
     lemma::_LemmaOutputs{SELTZOAbstraction,T},
-    (sr_range, lbr_range, tbr_range, er_range, fr_range, gr_range)::_SELTZORange,
-    (se_range, lbe_range, tbe_range, ee_range, fe_range, ge_range)::_SELTZORange,
+    r::SELTZORange,
+    e::SELTZORange,
 ) where {T<:AbstractFloat}
     p = precision(T)
-    for sr in _lemma_range_s(sr_range)
-        for lbr in _lemma_range_s(lbr_range)
-            for tbr in _lemma_range_s(tbr_range)
-                for er in _lemma_range_e(er_range, T)
-                    for fr in _lemma_range_t(fr_range, T)
-                        for gr in _lemma_range_t(gr_range, T)
-                            for se in _lemma_range_s(se_range)
-                                for lbe in _lemma_range_s(lbe_range)
-                                    for tbe in _lemma_range_s(tbe_range)
-                                        for ee in _lemma_range_e(ee_range, T)
-                                            for fe in _lemma_range_t(fe_range, T)
-                                                for ge in _lemma_range_t(ge_range, T)
+    for sr in r.s_range
+        for lbr in r.lb_range
+            for tbr in r.tb_range
+                for er in _lemma_range_e(r.e_range, T)
+                    for fr in r.f_range
+                        for gr in _lemma_range_t(r.g_range, T)
+                            for se in e.s_range
+                                for lbe in e.lb_range
+                                    for tbe in e.tb_range
+                                        for ee in _lemma_range_e(e.e_range, T)
+                                            for fe in e.f_range
+                                                for ge in _lemma_range_t(e.g_range, T)
                                                     nlbr = (er - fr) - 1
                                                     ntbr = (p - 1) - (er - gr)
                                                     nlbe = (ee - fe) - 1
