@@ -77,11 +77,11 @@ function check_se_two_sum_lemmas(
             # Lemmas in Family SE-S apply to addends with the same sign.
 
             checker("SE-S1-X", same_sign & (ex == ey + p)) do lemma
-                add_case!(lemma, (sx, ex:ex+1), (!sy, ey-(p-1):ex-p))
+                add_case!(lemma, (sx, ex:ex+1), (~sy, ey-(p-1):ex-p))
                 add_case!(lemma, x            , y                   )
             end
             checker("SE-S1-Y", same_sign & (ey == ex + p)) do lemma
-                add_case!(lemma, (sy, ey:ey+1), (!sx, ex-(p-1):ey-p))
+                add_case!(lemma, (sy, ey:ey+1), (~sx, ex-(p-1):ey-p))
                 add_case!(lemma, y            , x                   )
             end
 
@@ -96,13 +96,13 @@ function check_se_two_sum_lemmas(
 
             checker("SE-S3-X", same_sign & (ex == ey + (p-2))) do lemma
                 add_case!(lemma, (sx, ex:ex+1), pos_zero                )
-                add_case!(lemma, (sx, ex:ex+1), (!sy, ey-(p-1):ex-p    ))
+                add_case!(lemma, (sx, ex:ex+1), (~sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, (sx, ex     ), ( sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, (sx, ex+1   ), ( sy, ey-(p-1):ex-(p-1)))
             end
             checker("SE-S3-Y", same_sign & (ey == ex + (p-2))) do lemma
                 add_case!(lemma, (sy, ey:ey+1), pos_zero                )
-                add_case!(lemma, (sy, ey:ey+1), (!sx, ex-(p-1):ey-p    ))
+                add_case!(lemma, (sy, ey:ey+1), (~sx, ex-(p-1):ey-p    ))
                 add_case!(lemma, (sy, ey     ), ( sx, ex-(p-1):ey-p    ))
                 add_case!(lemma, (sy, ey+1   ), ( sx, ex-(p-1):ey-(p-1)))
             end
@@ -128,26 +128,26 @@ function check_se_two_sum_lemmas(
             # Lemmas in Family SE-D apply to addends with different signs.
 
             checker("SE-D1-X", diff_sign & (ex == ey + (p+1))) do lemma
-                add_case!(lemma, (sx, ex-1), (!sy, ey-(p-1):ex-(p+2)))
+                add_case!(lemma, (sx, ex-1), (~sy, ey-(p-1):ex-(p+2)))
                 add_case!(lemma, x         , y                       )
             end
             checker("SE-D1-Y", diff_sign & (ey == ex + (p+1))) do lemma
-                add_case!(lemma, (sy, ey-1), (!sx, ex-(p-1):ey-(p+2)))
+                add_case!(lemma, (sy, ey-1), (~sx, ex-(p-1):ey-(p+2)))
                 add_case!(lemma, y         , x                       )
             end
 
             checker("SE-D2-X", diff_sign & (ex == ey + p)) do lemma
                 add_case!(lemma, (sx, ex-1), pos_zero                )
                 add_case!(lemma, (sx, ex-1), ( sy, ey-(p-1):ex-(p+2)))
-                add_case!(lemma, (sx, ex-1), (!sy, ey-(p-1):ex-(p+1)))
-                add_case!(lemma, (sx, ex  ), (!sy, ey-(p-1):ex-p    ))
+                add_case!(lemma, (sx, ex-1), (~sy, ey-(p-1):ex-(p+1)))
+                add_case!(lemma, (sx, ex  ), (~sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, x         , y                       )
             end
             checker("SE-D2-Y", diff_sign & (ey == ex + p)) do lemma
                 add_case!(lemma, (sy, ey-1), pos_zero                )
                 add_case!(lemma, (sy, ey-1), ( sx, ex-(p-1):ey-(p+2)))
-                add_case!(lemma, (sy, ey-1), (!sx, ex-(p-1):ey-(p+1)))
-                add_case!(lemma, (sy, ey  ), (!sx, ex-(p-1):ey-p    ))
+                add_case!(lemma, (sy, ey-1), (~sx, ex-(p-1):ey-(p+1)))
+                add_case!(lemma, (sy, ey  ), (~sx, ex-(p-1):ey-p    ))
                 add_case!(lemma, y         , x                       )
             end
 
