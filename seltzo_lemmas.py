@@ -228,16 +228,6 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, ex, ex + one)),
     )
 
-    # Sum of two powers of two (identity case).
-    result["SELTZO-TwoSum-POW2-POW2-SI-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex > ey + (p - one)),
-        seltzo_case((sx, 0, 0, ex, fx, gx), (sy, 0, 0, ey, fy, gy)),
-    )
-    result["SELTZO-TwoSum-POW2-POW2-SI-Y"] = z3.Implies(
-        z3.And(same_sign, y_pow2, x_pow2, ey > ex + (p - one)),
-        seltzo_case((sy, 0, 0, ey, fy, gy), (sx, 0, 0, ex, fx, gx)),
-    )
-
     ############################################################################
 
     # Difference of two powers of two (equal exponent case).
@@ -274,16 +264,6 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-POW2-POW2-DB-Y"] = z3.Implies(
         z3.And(diff_sign, y_pow2, x_pow2, ey == ex + p),
         seltzo_case_zero((sy, 1, 1, ey - one, fy - one, gy - one)),
-    )
-
-    # Difference of two powers of two (identity case).
-    result["SELTZO-TwoSum-POW2-POW2-DI-X"] = z3.Implies(
-        z3.And(diff_sign, x_pow2, y_pow2, ex > ey + p),
-        seltzo_case((sx, 0, 0, ex, fx, gx), (sy, 0, 0, ey, fy, gy)),
-    )
-    result["SELTZO-TwoSum-POW2-POW2-DI-Y"] = z3.Implies(
-        z3.And(diff_sign, y_pow2, x_pow2, ey > ex + p),
-        seltzo_case((sy, 0, 0, ey, fy, gy), (sx, 0, 0, ex, fx, gx)),
     )
 
     ############################################################################

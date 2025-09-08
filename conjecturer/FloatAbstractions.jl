@@ -809,6 +809,17 @@ end
     SELTZORange(s:s, lb:lb, tb:tb, e:e, f:f, g:g)
 
 
+@inline function SELTZORange(s::Bool, lb::Int, tb::Int, e::Int, f::Int, g::Int)
+    if !(iszero(lb) | isone(lb))
+        throw(DomainError(lb, "Leading bit must be 0 or 1."))
+    end
+    if !(iszero(tb) | isone(tb))
+        throw(DomainError(tb, "Trailing bit must be 0 or 1."))
+    end
+    return SELTZORange(s:s, Bool(lb):Bool(lb), Bool(tb):Bool(tb), e:e, f:f, g:g)
+end
+
+
 function add_case!(
     lemma::_LemmaOutputs{SELTZOAbstraction,T},
     r::SELTZORange,
