@@ -81,8 +81,8 @@ export FloatAbstraction, SEAbstraction, SETZAbstraction, SELTZOAbstraction,
 # - The exponent fits into a 15-bit signed integer.
 # - The number of mantissa bits fits into a 7-bit unsigned integer.
 # This just barely accommodates IEEE quadruple precision (binary128) using
-# 1 (sign) + 1 (leading bit) + 1 (trailing bit) + 15 (exponent) +
-#     7 (leading bit count) + 7 (trailing bit count) = 32 bits.
+# 1 (sign) + 1 (leading bit) + 1 (trailing bit) + 15 (exponent)
+# + 7 (leading bit count) + 7 (trailing bit count) = 32 bits.
 
 
 abstract type FloatAbstraction end
@@ -103,6 +103,14 @@ struct SELTZOAbstraction <: FloatAbstraction
 end
 
 
+@inline Base.isless(a::SEAbstraction, b::SEAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SETZAbstraction, b::SETZAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SELTZOAbstraction, b::SELTZOAbstraction) =
+    isless(a.data, b.data)
+
+
 abstract type EFTAbstraction{A<:FloatAbstraction} end
 
 
@@ -120,6 +128,12 @@ struct TwoProdAbstraction{A<:FloatAbstraction} <: EFTAbstraction{A}
     p::A
     e::A
 end
+
+
+@inline Base.isless(a::TwoSumAbstraction{A}, b::TwoSumAbstraction{A}) where
+{A<:FloatAbstraction} = isless((a.x, a.y, a.s, a.e), (b.x, b.y, b.s, b.e))
+@inline Base.isless(a::TwoProdAbstraction{A}, b::TwoProdAbstraction{A}) where
+{A<:FloatAbstraction} = isless((a.x, a.y, a.p, a.e), (b.x, b.y, b.p, b.e))
 
 
 ####################################################### ABSTRACTION CONSTRUCTORS
@@ -224,21 +238,164 @@ end
     ifelse(mantissa_trailing_bit(x), mantissa_trailing_bits(x), 0)
 
 
-########################################################### ABSTRACTION ORDERING
+##################################################### ABSTRACTION CLASSIFICATION
 
 
-@inline Base.isless(a::SEAbstraction, b::SEAbstraction) =
-    isless(a.data, b.data)
-@inline Base.isless(a::SETZAbstraction, b::SETZAbstraction) =
-    isless(a.data, b.data)
-@inline Base.isless(a::SELTZOAbstraction, b::SELTZOAbstraction) =
-    isless(a.data, b.data)
+export SELTZOType, seltzo_classify,
+    ZERO, POW2, ALL1, R0R1, R1R0, ONE0, ONE1, TWO0, TWO1, MM01, MM10,
+    G00, G01, G10, G11
 
 
-@inline Base.isless(a::TwoSumAbstraction{A}, b::TwoSumAbstraction{A}) where
-{A<:FloatAbstraction} = isless((a.x, a.y, a.s, a.e), (b.x, b.y, b.s, b.e))
-@inline Base.isless(a::TwoProdAbstraction{A}, b::TwoProdAbstraction{A}) where
-{A<:FloatAbstraction} = isless((a.x, a.y, a.p, a.e), (b.x, b.y, b.p, b.e))
+@enum SELTZOType begin
+    ZERO # e = e_min - 1
+    POW2 # ~lb; ~tb; nlb = ntb = p - 1
+    ALL1 #  lb;  tb; nlb = ntb = p - 1
+    R0R1 # ~lb;  tb; nlb + ntb = p - 1
+    R1R0 #  lb; ~tb; nlb + ntb = p - 1
+    ONE0 #  lb;  tb; nlb + ntb = p - 2
+    ONE1 # ~lb; ~tb; nlb + ntb = p - 2
+    TWO0 #  lb;  tb; nlb + ntb = p - 3
+    TWO1 # ~lb; ~tb; nlb + ntb = p - 3
+    MM01 #  lb; ~tb; nlb + ntb = p - 3
+    MM10 # ~lb;  tb; nlb + ntb = p - 3
+    G00  # ~lb; ~tb; nlb + ntb < p - 3
+    G01  # ~lb;  tb; nlb + ntb < p - 3
+    G10  #  lb; ~tb; nlb + ntb < p - 3
+    G11  #  lb;  tb; nlb + ntb < p - 3
+end
+
+
+@inline function seltzo_classify(
+    x::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    _zero = zero(T)
+    pos_zero = SELTZOAbstraction(+_zero)
+    neg_zero = SELTZOAbstraction(-_zero)
+    if (x == pos_zero) | (x == neg_zero)
+        return ZERO
+    end
+    p = precision(T)
+    lb = mantissa_leading_bit(x)
+    tb = mantissa_trailing_bit(x)
+    nlb = mantissa_leading_bits(x)
+    ntb = mantissa_trailing_bits(x)
+    if nlb == ntb == p - 1
+        return (~lb & ~tb) ? POW2 : (lb & tb) ? ALL1 : @assert false
+    elseif nlb + ntb == p - 1
+        return (~lb & tb) ? R0R1 : (lb & ~tb) ? R1R0 : @assert false
+    elseif nlb + ntb == p - 2
+        return (lb & tb) ? ONE0 : (~lb & ~tb) ? ONE1 : @assert false
+    elseif nlb + ntb == p - 3
+        return lb ? (tb ? TWO0 : MM01) : (tb ? MM10 : TWO1)
+    else
+        @assert 1 < nlb + ntb < p - 3
+        return lb ? (tb ? G11 : G10) : (tb ? G01 : G00)
+    end
+end
+
+
+########################################################## ABSTRACTION UNPACKING
+
+
+export unpack, unpack_bools, unpack_ints
+
+
+@inline unpack(x::SEAbstraction) =
+    (signbit(x), unsafe_exponent(x))
+
+@inline unpack(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x), unsafe_exponent(x))
+
+@inline unpack_bools(x::SEAbstraction) =
+    (signbit(x),)
+
+@inline unpack_bools(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x),)
+
+@inline unpack_ints(x::SEAbstraction) =
+    (unsafe_exponent(x),)
+
+@inline unpack_ints(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (unsafe_exponent(x),)
+
+
+@inline unpack(x::SETZAbstraction) =
+    (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
+
+@inline function unpack(
+    x::SETZAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    s = signbit(x)
+    e = unsafe_exponent(x)
+    f = e - ((p - 1) - mantissa_trailing_zeros(x))
+    return (s, e, f)
+end
+
+@inline unpack_bools(x::SETZAbstraction) =
+    (signbit(x),)
+
+@inline unpack_bools(x::SETZAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x),)
+
+@inline unpack_ints(x::SETZAbstraction) =
+    (unsafe_exponent(x), mantissa_trailing_zeros(x))
+
+@inline function unpack_ints(
+    x::SETZAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    e = unsafe_exponent(x)
+    f = e - ((p - 1) - mantissa_trailing_zeros(x))
+    return (e, f)
+end
+
+
+@inline unpack(x::SELTZOAbstraction) = (
+    signbit(x),
+    mantissa_leading_bit(x),
+    mantissa_trailing_bit(x),
+    unsafe_exponent(x),
+    mantissa_leading_bits(x),
+    mantissa_trailing_bits(x),
+)
+
+@inline function unpack(
+    x::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    s = signbit(x)
+    lb = mantissa_leading_bit(x)
+    tb = mantissa_trailing_bit(x)
+    e = unsafe_exponent(x)
+    f = e - (mantissa_leading_bits(x) + 1)
+    g = e - ((p - 1) - mantissa_trailing_bits(x))
+    return (s, lb, tb, e, f, g)
+end
+
+@inline unpack_bools(x::SELTZOAbstraction) =
+    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
+
+@inline unpack_bools(x::SELTZOAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
+
+@inline unpack_ints(x::SELTZOAbstraction) =
+    (unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
+
+@inline function unpack_ints(
+    x::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    e = unsafe_exponent(x)
+    f = e - (mantissa_leading_bits(x) + 1)
+    g = e - ((p - 1) - mantissa_trailing_bits(x))
+    return (e, f, g)
+end
 
 
 ######################################################### EXHAUSTIVE ENUMERATION
@@ -664,109 +821,6 @@ function add_case!(
         end
     end
     return lemma
-end
-
-
-################################################# ABSTRACTION REPARAMETERIZATION
-
-
-export unpack, unpack_bools, unpack_ints
-
-
-@inline unpack(x::SEAbstraction) =
-    (signbit(x), unsafe_exponent(x))
-
-@inline unpack(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x), unsafe_exponent(x))
-
-@inline unpack_bools(x::SEAbstraction) =
-    (signbit(x),)
-
-@inline unpack_bools(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x),)
-
-@inline unpack_ints(x::SEAbstraction) =
-    (unsafe_exponent(x),)
-
-@inline unpack_ints(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (unsafe_exponent(x),)
-
-
-@inline unpack(x::SETZAbstraction) =
-    (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
-
-@inline function unpack(
-    x::SETZAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    s = signbit(x)
-    e = unsafe_exponent(x)
-    f = e - ((p - 1) - mantissa_trailing_zeros(x))
-    return (s, e, f)
-end
-
-@inline unpack_bools(x::SETZAbstraction) =
-    (signbit(x),)
-
-@inline unpack_bools(x::SETZAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x),)
-
-@inline unpack_ints(x::SETZAbstraction) =
-    (unsafe_exponent(x), mantissa_trailing_zeros(x))
-
-@inline function unpack_ints(
-    x::SETZAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    e = unsafe_exponent(x)
-    f = e - ((p - 1) - mantissa_trailing_zeros(x))
-    return (e, f)
-end
-
-
-@inline unpack(x::SELTZOAbstraction) = (
-    signbit(x),
-    mantissa_leading_bit(x),
-    mantissa_trailing_bit(x),
-    unsafe_exponent(x),
-    mantissa_leading_bits(x),
-    mantissa_trailing_bits(x),
-)
-
-@inline function unpack(
-    x::SELTZOAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    s = signbit(x)
-    lb = mantissa_leading_bit(x)
-    tb = mantissa_trailing_bit(x)
-    e = unsafe_exponent(x)
-    f = e - (mantissa_leading_bits(x) + 1)
-    g = e - ((p - 1) - mantissa_trailing_bits(x))
-    return (s, lb, tb, e, f, g)
-end
-
-@inline unpack_bools(x::SELTZOAbstraction) =
-    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
-
-@inline unpack_bools(x::SELTZOAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
-
-@inline unpack_ints(x::SELTZOAbstraction) =
-    (unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
-
-@inline function unpack_ints(
-    x::SELTZOAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    e = unsafe_exponent(x)
-    f = e - (mantissa_leading_bits(x) + 1)
-    g = e - ((p - 1) - mantissa_trailing_bits(x))
-    return (e, f, g)
 end
 
 
