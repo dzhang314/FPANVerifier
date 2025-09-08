@@ -46,16 +46,8 @@ function check_seltzo_two_sum_lemmas(
 
         cx = seltzo_classify(x, T)
         cy = seltzo_classify(y, T)
-        sx, lbx, lby, ex, fx, gx = unpack(x, T)
-        sy, tbx, tby, ey, fy, gy = unpack(y, T)
-        f0x = ex - (mantissa_leading_ones(x) + 1)
-        f0y = ey - (mantissa_leading_ones(y) + 1)
-        f1x = ex - (mantissa_leading_zeros(x) + 1)
-        f1y = ey - (mantissa_leading_zeros(y) + 1)
-        g0x = ex - ((p - 1) - mantissa_trailing_ones(x))
-        g0y = ey - ((p - 1) - mantissa_trailing_ones(y))
-        g1x = ex - ((p - 1) - mantissa_trailing_zeros(x))
-        g1y = ey - ((p - 1) - mantissa_trailing_zeros(y))
+        sx, lbx, tbx, ex, fx, gx = unpack(x, T)
+        sy, lby, tby, ey, fy, gy = unpack(y, T)
 
         same_sign = (sx == sy)
         diff_sign = (sx != sy)
@@ -103,17 +95,25 @@ function check_seltzo_two_sum_lemmas(
 
             checker("SELTZO-I-X",
                 (ex > ey + (p+1)) |
-                ((ex == ey + (p+1)) & ((ey == g1y) | same_sign | (ex > g1x))) |
-                ((ex == ey + p) & (ey == g1y) & (same_sign | (ex > g1x)) & (ex < g1x + (p-1)))
+                ((ex == ey + (p+1)) & ((cy == POW2) | same_sign | (cx != POW2))) |
+                ((ex == ey + p) & (cy == POW2) & (same_sign | (cx != POW2)) & (~tbx))
             ) do lemma
                 add_case!(lemma, x, y)
             end
             checker("SELTZO-I-Y",
                 (ey > ex + (p+1)) |
-                ((ey == ex + (p+1)) & ((ex == g1x) | same_sign | (ey > g1y))) |
-                ((ey == ex + p) & (ex == g1x) & (same_sign | (ey > g1y)) & (ey < g1y + (p-1)))
+                ((ey == ex + (p+1)) & ((cx == POW2) | same_sign | (cy != POW2))) |
+                ((ey == ex + p) & (cx == POW2) & (same_sign | (cy != POW2)) & (~tby))
             ) do lemma
                 add_case!(lemma, y, x)
+            end
+
+            checker("SELTZO-1",
+                diff_sign & lbx & (~tbx) & lby & (~tby) &
+                (ex == fx + 2) & (fx > ey + 1 > gx) & (ex > fy + p) & (fy + 1 == gy)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, ~lbx, tbx, ex, fx, gx), SELTZORange(~sy, ~lby, tby, gy, gy-p, gy))
+                add_case!(lemma, SELTZORange(sx, lbx, tbx, ex, fx, gx), SELTZORange(~sy, ~lby, tby, gy, gy-p, gy))
             end
 
         end
