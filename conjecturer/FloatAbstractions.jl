@@ -588,7 +588,7 @@ struct LemmaChecker{A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
     eft_abstractions::Vector{E}
     x::A
     y::A
-    count::Array{Int,0}
+    coverage_count::Array{Int,0}
     total_counts::Dict{String,Int}
 end
 
@@ -634,7 +634,7 @@ function (checker::LemmaChecker{A,E,T})(
         lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
         state_claims!(lemma)
         if computed_outputs == sort!(lemma.claimed_outputs)
-            checker.count[] += 1
+            checker.coverage_count[] += 1
             if haskey(checker.total_counts, lemma_name)
                 checker.total_counts[lemma_name] += 1
             else

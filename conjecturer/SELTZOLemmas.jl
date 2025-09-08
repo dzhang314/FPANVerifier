@@ -7,7 +7,7 @@ using FloatAbstractions
 
 struct ReservoirSampler{T}
     reservoir::Vector{T}
-    count::Array{Int,0}
+    population_size::Array{Int,0}
 
     @inline ReservoirSampler{T}(k::Int) where {T} =
         new{T}(Vector{T}(undef, k), fill(0))
@@ -15,11 +15,11 @@ end
 
 
 function Base.push!(rs::ReservoirSampler{T}, x::T) where {T}
-    rs.count[] += 1
-    if rs.count[] <= length(rs.reservoir)
-        rs.reservoir[rs.count[]] = x
+    rs.population_size[] += 1
+    if rs.population_size[] <= length(rs.reservoir)
+        rs.reservoir[rs.population_size[]] = x
     else
-        i = rand(1:rs.count[])
+        i = rand(1:rs.population_size[])
         if i <= length(rs.reservoir)
             rs.reservoir[i] = x
         end
@@ -119,7 +119,7 @@ function check_seltzo_two_sum_lemmas(
         end
         #! format: on
 
-        if iszero(checker.count[])
+        if iszero(checker.coverage_count[])
             # println(stderr,
             #     "ERROR: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
             #     " are not covered by any lemmas.")
@@ -129,7 +129,7 @@ function check_seltzo_two_sum_lemmas(
             else
                 unverified_counts[(cx, cy)] = 1
             end
-        elseif !isone(checker.count[])
+        elseif !isone(checker.coverage_count[])
             println(stderr,
                 "WARNING: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
                 " are covered by multiple lemmas.")
@@ -140,11 +140,11 @@ function check_seltzo_two_sum_lemmas(
     for (name, n) in sort!(collect(lemma_counts))
         println("    $name: $n")
     end
-    println("Unverified cases: $(rs.count[])")
-    for ((cx, cy), count) in sort!(collect(unverified_counts))
-        println("    ($cx, $cy): $count")
+    println("Unverified cases: $(rs.population_size[])")
+    for ((cx, cy), case_count) in sort!(collect(unverified_counts))
+        println("    ($cx, $cy): $case_count")
     end
-    for i = 1:min(rs.count[], length(rs.reservoir))
+    for i = 1:min(rs.population_size[], length(rs.reservoir))
         println("Unverified case $i:")
         x, y = rs.reservoir[i]
         cx = seltzo_classify(x, T)

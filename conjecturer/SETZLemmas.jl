@@ -776,11 +776,11 @@ function check_setz_two_sum_lemmas(
         end
         #! format: on
 
-        if iszero(checker.count[])
+        if iszero(checker.coverage_count[])
             println(stderr,
                 "ERROR: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
                 " are not covered by any lemmas.")
-        elseif !isone(checker.count[])
+        elseif !isone(checker.coverage_count[])
             println(stderr,
                 "WARNING: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
                 " are covered by multiple lemmas.")
