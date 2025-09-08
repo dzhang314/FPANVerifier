@@ -367,10 +367,10 @@ def show_two_sum(
     e: SELTZOVariable,
     prefix: str = "",
 ) -> None:
-    x_sign: str = "+" if to_bool(model[x.sign_bit]) else "-"
-    y_sign: str = "+" if to_bool(model[y.sign_bit]) else "-"
-    s_sign: str = "+" if to_bool(model[s.sign_bit]) else "-"
-    e_sign: str = "+" if to_bool(model[e.sign_bit]) else "-"
+    x_sign: str = "-" if to_bool(model[x.sign_bit]) else "+"
+    y_sign: str = "-" if to_bool(model[y.sign_bit]) else "+"
+    s_sign: str = "-" if to_bool(model[s.sign_bit]) else "+"
+    e_sign: str = "-" if to_bool(model[e.sign_bit]) else "+"
     x_digits: dict[int, str] = extract_digits(model, x)
     y_digits: dict[int, str] = extract_digits(model, y)
     s_digits: dict[int, str] = extract_digits(model, s)
