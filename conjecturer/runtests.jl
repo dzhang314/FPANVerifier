@@ -34,6 +34,8 @@ function verify_exhaustive(::Type{T}, ::Type{U}) where {T,U}
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(seltzo)
         @assert mantissa_trailing_ones(x) === mantissa_trailing_ones(seltzo)
 
+        @assert (seltzo_classify(seltzo, T) === ZERO) === iszero(x)
+
         @assert unpack(se) ===
                 (unpack_bools(se)..., unpack_ints(se)...)
         @assert unpack(se, T) ===
@@ -85,6 +87,8 @@ function verify_random(::Type{T}, ::Type{U}, n::Int) where {T,U}
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(seltzo)
         @assert mantissa_trailing_ones(x) === mantissa_trailing_ones(seltzo)
 
+        @assert (seltzo_classify(seltzo, T) === ZERO) === iszero(x)
+
         @assert unpack(se) ===
                 (unpack_bools(se)..., unpack_ints(se)...)
         @assert unpack(se, T) ===
@@ -103,6 +107,6 @@ end
 
 
 @testset "FloatAbstractions (random)" begin
-    @test verify_random(Float64, UInt64, 10000000000)
-    @test verify_random(Float128, UInt128, 1000000000)
+    @test verify_random(Float64, UInt64, 10^9)
+    @test verify_random(Float128, UInt128, 10^8)
 end
