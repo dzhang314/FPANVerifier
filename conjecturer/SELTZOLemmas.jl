@@ -5,6 +5,52 @@ push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
 
 
+@enum SELTZOType begin
+    ZERO # e = e_min - 1
+    POW2 # ~lb; ~tb; nlb = ntb = p - 1
+    ALL1 #  lb;  tb; nlb = ntb = p - 1
+    R0R1 # ~lb;  tb; nlb + ntb = p - 1
+    R1R0 #  lb; ~tb; nlb + ntb = p - 1
+    ONE0 #  lb;  tb; nlb + ntb = p - 2
+    ONE1 # ~lb; ~tb; nlb + ntb = p - 2
+    TWO0 #  lb;  tb; nlb + ntb = p - 3
+    TWO1 # ~lb; ~tb; nlb + ntb = p - 3
+    MM01 #  lb; ~tb; nlb + ntb = p - 3
+    MM10 # ~lb;  tb; nlb + ntb = p - 3
+    G00  # ~lb; ~tb; nlb + ntb < p - 3
+    G01  # ~lb;  tb; nlb + ntb < p - 3
+    G10  #  lb; ~tb; nlb + ntb < p - 3
+    G11  #  lb;  tb; nlb + ntb < p - 3
+end
+
+
+@inline function classify(
+    x::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    _zero = zero(T)
+    pos_zero = SELTZOAbstraction(+_zero)
+    neg_zero = SELTZOAbstraction(-_zero)
+    if (x == pos_zero) | (x == neg_zero)
+        return ZERO
+    end
+    p = precision(T)
+    _, lb, tb, _, nlb, ntb = unpack(x)
+    if nlb == ntb == p - 1
+        return (~lb & ~tb) ? POW2 : (lb & tb) ? ALL1 : @assert false
+    elseif nlb + ntb == p - 1
+        return (~lb & tb) ? R0R1 : (lb & ~tb) ? R1R0 : @assert false
+    elseif nlb + ntb == p - 2
+        return (lb & tb) ? ONE0 : (~lb & ~tb) ? ONE1 : @assert false
+    elseif nlb + ntb == p - 3
+        return lb ? (tb ? TWO0 : MM01) : (tb ? MM10 : TWO1)
+    else
+        @assert 1 < nlb + ntb < p - 3
+        return lb ? (tb ? G11 : G10) : (tb ? G01 : G00)
+    end
+end
+
+
 struct ReservoirSampler{T}
     reservoir::Vector{T}
     count::Array{Int,0}
@@ -39,10 +85,13 @@ function check_seltzo_two_sum_lemmas(
     neg_zero = SELTZOAbstraction(-zero(T))
     abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
     lemma_counts = Dict{String,Int}()
+    unverified_counts = Dict{Tuple{SELTZOType,SELTZOType},Int}()
     rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(5)
 
     for x in abstract_inputs, y in abstract_inputs
 
+        cx = classify(x, T)
+        cy = classify(y, T)
         sx, lbx, lby, ex, fx, gx = unpack(x, T)
         sy, tbx, tby, ey, fy, gy = unpack(y, T)
         f0x = ex - (mantissa_leading_ones(x) + 1)
@@ -53,6 +102,7 @@ function check_seltzo_two_sum_lemmas(
         g0y = ey - ((p - 1) - mantissa_trailing_ones(y))
         g1x = ex - ((p - 1) - mantissa_trailing_zeros(x))
         g1y = ey - ((p - 1) - mantissa_trailing_zeros(y))
+
         same_sign = (sx == sy)
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
@@ -119,8 +169,11 @@ function check_seltzo_two_sum_lemmas(
             # println(stderr,
             #     "ERROR: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
             #     " are not covered by any lemmas.")
-            if length(abstract_outputs(two_sum_abstractions, x, y)) > 2
-                push!(rs, (x, y))
+            push!(rs, (x, y))
+            if haskey(unverified_counts, (cx, cy))
+                unverified_counts[(cx, cy)] += 1
+            else
+                unverified_counts[(cx, cy)] = 1
             end
         elseif !isone(checker.count[])
             println(stderr,
@@ -134,15 +187,20 @@ function check_seltzo_two_sum_lemmas(
         println("    $name: $n")
     end
     println("Unverified cases: $(rs.count[])")
+    for ((cx, cy), count) in sort!(collect(unverified_counts))
+        println("    ($cx, $cy): $count")
+    end
     for i = 1:min(rs.count[], length(rs.reservoir))
         println("Unverified case $i:")
         x, y = rs.reservoir[i]
+        cx = classify(x, T)
+        cy = classify(y, T)
         sx, lbx, tbx, ex, fx, gx = unpack(x, T)
         sy, lby, tby, ey, fy, gy = unpack(y, T)
-        println("    SELTZO Input 1: ",
+        println("    $cx: ",
             "(sx = $sx, lbx = $lbx, tbx = $tbx, ",
             "ex = $ex, fx = $fx, gx = $gx) [$x]")
-        println("    SELTZO Input 2: ",
+        println("    $cy: ",
             "(sy = $sy, lby = $lby, tby = $tby, ",
             "ey = $ey, fy = $fy, gy = $gy) [$y]")
         println("    SELTZO Outputs:")
