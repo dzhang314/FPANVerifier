@@ -134,6 +134,17 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, lby, tby, ey, ex, gy), pos_zero)
             end
 
+            checker("SELTZO-3-X",
+                diff_sign & lby & tby & (ex < ey + p) & (fx > gx) & (gx > gy + (p-2)) & (ey == gy + (p-3)) & (fy == gy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, lbx, tbx, ex, fx, ey+1), SELTZORange(~sy, lby, ~tby, fy, gy-1, gy-2))
+            end
+            checker("SELTZO-3-Y",
+                diff_sign & lbx & tbx & (ey < ex + p) & (fy > gy) & (gy > gx + (p-2)) & (ex == gx + (p-3)) & (fx == gx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, lby, tby, ey, fy, ex+1), SELTZORange(~sx, lbx, ~tbx, fx, gx-1, gx-2))
+            end
+
         end
         #! format: on
 
@@ -230,5 +241,5 @@ end
 
 if abspath(PROGRAM_FILE) == @__FILE__
     main("SELTZO-TwoSum-Float16.bin", 319_985_950, 0xCC55FA4F, Float16)
-    # main("SELTZO-TwoSum-BFloat16.bin", 1_172_449_766, 0xCB0D263C, BFloat16)
+    main("SELTZO-TwoSum-BFloat16.bin", 1_172_449_766, 0xCB0D263C, BFloat16)
 end
