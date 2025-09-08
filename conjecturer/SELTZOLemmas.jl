@@ -123,11 +123,13 @@ function check_seltzo_two_sum_lemmas(
             # println(stderr,
             #     "ERROR: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
             #     " are not covered by any lemmas.")
-            push!(rs, (x, y))
-            if haskey(unverified_counts, (cx, cy))
-                unverified_counts[(cx, cy)] += 1
-            else
-                unverified_counts[(cx, cy)] = 1
+            if !isempty(abstract_outputs(two_sum_abstractions, x, y))
+                push!(rs, (x, y))
+                if haskey(unverified_counts, (cx, cy))
+                    unverified_counts[(cx, cy)] += 1
+                else
+                    unverified_counts[(cx, cy)] = 1
+                end
             end
         elseif !isone(checker.coverage_count[])
             println(stderr,
@@ -151,23 +153,16 @@ function check_seltzo_two_sum_lemmas(
         cy = seltzo_classify(y, T)
         sx, lbx, tbx, ex, fx, gx = unpack(x, T)
         sy, lby, tby, ey, fy, gy = unpack(y, T)
-        println("    $cx: ",
-            "(sx = $sx, lbx = $lbx, tbx = $tbx, ",
-            "ex = $ex, fx = $fx, gx = $gx) [$x]")
-        println("    $cy: ",
-            "(sy = $sy, lby = $lby, tby = $tby, ",
-            "ey = $ey, fy = $fy, gy = $gy) [$y]")
+        sx_str = sx ? '-' : '+'
+        sy_str = sy ? '-' : '+'
+        println("    $sx_str$cx: (ex = $ex, fx = $fx, gx = $gx) [$x]")
+        println("    $sy_str$cy: (ey = $ey, fy = $fy, gy = $gy) [$y]")
         println("    SELTZO Outputs:")
-        for (k, vs) in condense(abstract_outputs(two_sum_abstractions, x, y), T)
-            ss, lbs, tbs, se, lbe, tbe = k
-            for v in vs
-                es, fs, gs, ee, fe, ge = v
-                println("        ",
-                    "(ss = $ss, lbs = $lbs, tbs = $tbs, ",
-                    "es = $es, fs = $fs, gs = $gs), ",
-                    "(se = $se, lbe = $lbe, tbe = $tbe, ",
-                    "ee = $ee, fe = $fe, ge = $ge)")
-            end
+        output_classes = classified_outputs(two_sum_abstractions, x, y, T)
+        for ((ss, cs, se, ce), outputs) in output_classes
+            ss_str = ss ? '-' : '+'
+            se_str = se ? '-' : '+'
+            println("        ($ss_str$cs, $se_str$ce): $(length(outputs))")
         end
     end
     flush(stdout)
