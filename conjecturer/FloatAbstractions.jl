@@ -1174,20 +1174,21 @@ function _find_best_seltzo_model(
 
     result = nothing
     for output_index = 1:length(deep_indices)
-        best_score = 0
+        best_score = nothing
         best_model = nothing
         for (c1, c2, c3, c4, c5, c6) in SELTZO_COEFFICIENT_VECTORS
             predicted = input_data * [c1, c2, c3, c4, c5, c6]
             actual = output_data[:, output_index]
             c0 = actual[reference_index] - predicted[reference_index]
             predicted .+= c0
-            score = count(predicted .== actual)
-            if score > best_score
+            score = (-count(predicted .== actual),
+                sum(abs.((c1, c2, c3, c4, c5, c6))), abs(c0))
+            if isnothing(best_score) || score < best_score
                 best_score = score
                 best_model = (c0, c1, c2, c3, c4, c5, c6)
             end
         end
-        trial_result = (-best_score, output_index, best_model)
+        trial_result = (best_score, output_index, best_model)
         if isnothing(result) || trial_result < result
             result = trial_result
         end
