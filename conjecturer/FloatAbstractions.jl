@@ -512,7 +512,7 @@ end
 ################################################################## OUTPUT LOOKUP
 
 
-export abstract_outputs
+export abstract_outputs, classified_outputs
 
 
 function abstract_outputs(
@@ -521,8 +521,8 @@ function abstract_outputs(
     y::A,
 ) where {A<:FloatAbstraction}
     target = TwoSumAbstraction{A}(x, y, x, y)
-    v = view(two_sum_abstractions, searchsorted(two_sum_abstractions, target;
-        by=(a -> (a.x, a.y))))
+    v = view(two_sum_abstractions,
+        searchsorted(two_sum_abstractions, target; by=(a -> (a.x, a.y))))
     return [(a.s, a.e) for a in v]
 end
 
@@ -533,9 +533,35 @@ function abstract_outputs(
     y::A,
 ) where {A<:FloatAbstraction}
     target = TwoProdAbstraction{A}(x, y, x, y)
-    v = view(two_prod_abstractions, searchsorted(two_prod_abstractions, target;
-        by=(a -> (a.x, a.y))))
+    v = view(two_prod_abstractions,
+        searchsorted(two_prod_abstractions, target; by=(a -> (a.x, a.y))))
     return [(a.p, a.e) for a in v]
+end
+
+
+function classified_outputs(
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    result = Dict{
+        Tuple{Bool,SELTZOType,Bool,SELTZOType},
+        Vector{NTuple{6,Int}}}()
+    for (s, e) in abstract_outputs(two_sum_abstractions, x, y)
+        ss = signbit(s)
+        cs = seltzo_classify(s, T)
+        se = signbit(e)
+        ce = seltzo_classify(e, T)
+        key = (ss, cs, se, ce)
+        value = (unpack_ints(s, T)..., unpack_ints(e, T)...)
+        if haskey(result, key)
+            push!(result[key], value)
+        else
+            result[key] = [value]
+        end
+    end
+    return result
 end
 
 
@@ -821,97 +847,6 @@ function add_case!(
         end
     end
     return lemma
-end
-
-
-##################################################################### COALESCING
-
-
-export _Slab, _project, _unit_weight_vectors, _partition
-
-
-struct _Slab{T,N}
-
-    weight_vector::NTuple{N,T}
-    lower_bound::T
-    upper_bound::T
-
-    function _Slab{T,N}(
-        weight_vector::NTuple{N,T},
-        lower_bound::T,
-        upper_bound::T,
-    ) where {T,N}
-        @assert lower_bound <= upper_bound
-        return new{T,N}(weight_vector, lower_bound, upper_bound)
-    end
-
-end
-
-
-@inline function _project(slab::_Slab{T,N}, first_coordinate::T) where {T,N}
-    (first_weight, remaining_weights...) = slab.weight_vector
-    return _Slab{T,N - 1}(remaining_weights,
-        slab.lower_bound - first_weight * first_coordinate,
-        slab.upper_bound - first_weight * first_coordinate)
-end
-
-
-@inline function _first_nonzero_is_positive(tuple::Tuple)
-    for item in tuple
-        if !iszero(item)
-            return !signbit(item)
-        end
-    end
-    return false
-end
-
-
-function _unit_weight_vectors(::Type{T}, ::Val{N}) where {T,N}
-    _zero = zero(T)
-    _one = one(T)
-    _weights = (-_one, _zero, _one)
-    all_tuples = Iterators.product(ntuple(_ -> _weights, Val{N}())...)
-    filtered_tuples = [t for t in all_tuples if _first_nonzero_is_positive(t)]
-    # Order by Hamming weight, then lexicographically with +1 < -1 < 0.
-    sort!(filtered_tuples; rev=true,
-        by=(t -> (-sum(abs.(t)), abs.(t) .+ abs.(t) .+ t)))
-    return filtered_tuples
-end
-
-
-function _is_unit_vector(v, k)
-    for (i, x) in pairs(v)
-        if i == k
-            if !isone(x)
-                return false
-            end
-        elseif !iszero(x)
-            return false
-        end
-    end
-    return true
-end
-
-
-function _enumerate(slabs::AbstractVector{_Slab{T,N}}) where {T,N}
-end
-
-
-function _partition(
-    pairs::AbstractVector{Tuple{A,A}},
-    ::Type{T},
-) where {A<:FloatAbstraction,T<:AbstractFloat}
-    keys = [(unpack_bools(a, T)..., unpack_bools(b, T)...) for (a, b) in pairs]
-    values = [(unpack_ints(a, T)..., unpack_ints(b, T)...) for (a, b) in pairs]
-    result = Dict{eltype(keys),Vector{eltype(values)}}()
-    for (k, v) in zip(keys, values)
-        if haskey(result, k)
-            push!(result[k], v)
-        else
-            result[k] = [v]
-        end
-    end
-    return result
 end
 
 
