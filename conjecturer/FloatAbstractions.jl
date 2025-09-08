@@ -561,6 +561,9 @@ function classified_outputs(
             result[key] = [value]
         end
     end
+    for (_, v) in result
+        sort!(v)
+    end
     return result
 end
 
@@ -853,9 +856,6 @@ end
 ############################################################### OUTPUT REDUCTION
 
 
-export condense
-
-
 @inline _combine(i::Int, j::Int) =
     (i + 1 == j) ? (i:j) :
     (j + 1 == i) ? (j:i) : nothing
@@ -886,7 +886,7 @@ export condense
         end
     end
     # If we reach this point, then s and t differ only at index k.
-    @assert all((i == k) || (s[i] == t[i]) for i = 1:n)
+    @assert all(xor(i == k, s[i] == t[i]) for i = 1:n)
     # Attempt to combine s[k] with t[k].
     c = _combine(s[k], t[k])
     if isnothing(c)
@@ -924,39 +924,6 @@ end
             return v
         end
     end
-end
-
-
-@generated function _extract_type(x::Tuple, ::Type{T}) where {T}
-    result = Expr[]
-    for i in eachindex(x.parameters)
-        if x.parameters[i] === T
-            push!(result, :(x[$i]))
-        end
-    end
-    return Expr(:tuple, result...)
-end
-
-
-function condense(
-    pairs::AbstractVector{Tuple{A,A}},
-    ::Type{T},
-) where {A<:FloatAbstraction,T<:AbstractFloat}
-    unpacked_pairs = [(unpack(a, T)..., unpack(b, T)...) for (a, b) in pairs]
-    result = Dict{Tuple,Vector{Tuple}}()
-    for item in unpacked_pairs
-        key = _extract_type(item, Bool)
-        value = _extract_type(item, Int)
-        if haskey(result, key)
-            push!(result[key], value)
-        else
-            result[key] = [value]
-        end
-    end
-    for (_, values) in result
-        _combine!(sort!(values))
-    end
-    return result
 end
 
 
@@ -998,13 +965,11 @@ end
 end
 
 @inline function _compatible(x::Int, y::UnitRange{Int})
-    # return _compatible(x, y.start) & _compatible(x, y.stop)
-    return false
+    return _compatible(x, y.start) & _compatible(x, y.stop)
 end
 
 @inline function _compatible(x::UnitRange{Int}, y::Int)
-    # return _compatible(x.start, y) & _compatible(x.stop, y)
-    return false
+    return _compatible(x.start, y) & _compatible(x.stop, y)
 end
 
 @inline function _compatible(x::AbstractUnitRange, y::AbstractUnitRange)
@@ -1049,29 +1014,31 @@ end
 
 
 function compatible_neighbors(
-    eft_abstractions::AbstractVector{E},
-    x::A,
-    y::A,
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
     ::Type{T};
     r_max::Int=1,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
-    result = Dict{Tuple{A,A},Dict{Tuple,Vector{Tuple}}}()
-    stack = Vector{Tuple{A,A,Int}}()
-    rejected = Set{Tuple{A,A}}()
-    result[(x, y)] = condense(abstract_outputs(eft_abstractions, x, y), T)
+) where {T<:AbstractFloat}
+    result = Dict{
+        Tuple{SELTZOAbstraction,SELTZOAbstraction},
+        Dict{Tuple,Vector{Tuple}}}()
+    stack = Vector{Tuple{SELTZOAbstraction,SELTZOAbstraction,Int}}()
+    rejected = Set{Tuple{SELTZOAbstraction,SELTZOAbstraction}}()
+    result[(x, y)] = classified_outputs(two_sum_abstractions, x, y, T)
     push!(stack, (x, y, 1))
     while !isempty(stack)
         sx, sy, r = popfirst!(stack)
-        reference = result[(sx, sy)]
+        reference_outputs = result[(sx, sy)]
         if r <= r_max
             nsx = _neighborhood(sx)
             nsy = _neighborhood(sy)
             for nx in nsx, ny in nsy
                 if !(((nx, ny) in rejected) || haskey(result, (nx, ny)))
-                    neighbor = condense(abstract_outputs(
-                            eft_abstractions, nx, ny), T)
-                    if _compatible(neighbor, reference)
-                        result[(nx, ny)] = neighbor
+                    neighbor_outputs = classified_outputs(
+                        two_sum_abstractions, nx, ny, T)
+                    if _compatible(neighbor_outputs, reference_outputs)
+                        result[(nx, ny)] = neighbor_outputs
                         if r < r_max
                             push!(stack, (nx, ny, r + 1))
                         end
@@ -1086,24 +1053,24 @@ function compatible_neighbors(
 end
 
 
-############################################################### LEMMA GENERATION
+################################################################## DEEP INDEXING
 
 
-export _deep_indices, _deep_getindex, _majority, _seltzo_string
+export _deep_eachindex, _deep_getindex
 
 
-@inline _deep_indices(::Integer; prefix::Tuple=()) = Tuple[prefix]
+@inline _deep_eachindex(::Integer; prefix::Tuple=()) = Tuple[prefix]
 
-@inline _deep_indices(::UnitRange; prefix::Tuple=()) =
+@inline _deep_eachindex(::UnitRange; prefix::Tuple=()) =
     Tuple[(prefix..., :start), (prefix..., :stop)]
 
-function _deep_indices(
+function _deep_eachindex(
     collection::Union{Tuple,AbstractVector,AbstractDict};
     prefix::Tuple=(),
 )
     result = Tuple[]
     for (index, item) in pairs(collection)
-        append!(result, _deep_indices(item; prefix=(prefix..., index)))
+        append!(result, _deep_eachindex(item; prefix=(prefix..., index)))
     end
     return result
 end
@@ -1124,6 +1091,102 @@ end
     key::K,
     suffix...,
 ) where {K,V} = _deep_getindex(dictionary[key], suffix...)
+
+
+######################################################## SELTZO LEMMA GENERATION
+
+
+export _find_best_seltzo_model, _delete_inconsistent_data!, _seltzo_string
+
+
+const SELTZO_COEFFICIENT_VECTORS = sort!(
+    reshape(collect(Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)), :);
+    by=v -> (sum(abs.(v)), -2 .* v .^ 2 .- v))
+
+
+function _find_best_seltzo_model(
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
+    data::AbstractDict{
+        Tuple{SELTZOAbstraction,SELTZOAbstraction},
+        Dict{Tuple,Vector{Tuple}}},
+    deep_indices::AbstractVector{Tuple},
+    ::Type{T},
+) where {T<:AbstractFloat}
+    @assert haskey(data, (x, y))
+    Base.require_one_based_indexing(deep_indices)
+
+    input_data = Matrix{Int}(undef, length(data), 6)
+    output_data = Matrix{Int}(undef, length(data), length(deep_indices))
+
+    reference_index = nothing
+    for (data_index, ((nx, ny), outputs)) in enumerate(data)
+        if (nx == x) & (ny == y)
+            reference_index = data_index
+        end
+        ex, fx, gx = unpack_ints(nx, T)
+        @inbounds input_data[data_index, 1] = ex
+        @inbounds input_data[data_index, 2] = fx
+        @inbounds input_data[data_index, 3] = gx
+        ey, fy, gy = unpack_ints(ny, T)
+        @inbounds input_data[data_index, 4] = ey
+        @inbounds input_data[data_index, 5] = fy
+        @inbounds input_data[data_index, 6] = gy
+        for (output_index, deep_index) in enumerate(deep_indices)
+            output_data[data_index, output_index] =
+                _deep_getindex(outputs, deep_index...)
+        end
+    end
+    @assert !isnothing(reference_index)
+
+    result = nothing
+    for output_index = 1:length(deep_indices)
+        best_score = 0
+        best_model = nothing
+        for (c1, c2, c3, c4, c5, c6) in SELTZO_COEFFICIENT_VECTORS
+            predicted = input_data * [c1, c2, c3, c4, c5, c6]
+            actual = output_data[:, output_index]
+            c0 = actual[reference_index] - predicted[reference_index]
+            predicted .+= c0
+            score = count(predicted .== actual)
+            if score > best_score
+                best_score = score
+                best_model = (c0, c1, c2, c3, c4, c5, c6)
+            end
+        end
+        trial_result = (-best_score, output_index, best_model)
+        if isnothing(result) || trial_result < result
+            result = trial_result
+        end
+    end
+    return result[2] => result[3]
+end
+
+
+function _delete_inconsistent_data!(
+    data::AbstractDict{
+        Tuple{SELTZOAbstraction,SELTZOAbstraction},
+        Dict{Tuple,Vector{Tuple}}},
+    deep_index::Tuple,
+    (c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int},
+    ::Type{T},
+) where {T<:AbstractFloat}
+    invalid_keys = Tuple{SELTZOAbstraction,SELTZOAbstraction}[]
+    for ((nx, ny), outputs) in data
+        ex, fx, gx = unpack_ints(nx, T)
+        ey, fy, gy = unpack_ints(ny, T)
+        predicted =
+            c0 + c1 * ex + c2 * fx + c3 * gx + c4 * ey + c5 * fy + c6 * gy
+        actual = _deep_getindex(outputs, deep_index...)
+        if predicted != actual
+            push!(invalid_keys, (nx, ny))
+        end
+    end
+    for key in invalid_keys
+        delete!(data, key)
+    end
+    return data
+end
 
 
 function _seltzo_string((c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int})
