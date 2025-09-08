@@ -281,16 +281,20 @@ end
     nlb = mantissa_leading_bits(x)
     ntb = mantissa_trailing_bits(x)
     if nlb == ntb == p - 1
-        return (~lb & ~tb) ? POW2 : (lb & tb) ? ALL1 : @assert false
+        return ((~lb & ~tb) ? POW2 : (lb & tb) ? ALL1 :
+                throw(DomainError(x, "Invalid SELTZOAbstraction.")))
     elseif nlb + ntb == p - 1
-        return (~lb & tb) ? R0R1 : (lb & ~tb) ? R1R0 : @assert false
+        return ((~lb & tb) ? R0R1 : (lb & ~tb) ? R1R0 :
+                throw(DomainError(x, "Invalid SELTZOAbstraction.")))
     elseif nlb + ntb == p - 2
-        return (lb & tb) ? ONE0 : (~lb & ~tb) ? ONE1 : @assert false
+        return ((lb & tb) ? ONE0 : (~lb & ~tb) ? ONE1 :
+                throw(DomainError(x, "Invalid SELTZOAbstraction.")))
     elseif nlb + ntb == p - 3
         return lb ? (tb ? TWO0 : MM01) : (tb ? MM10 : TWO1)
-    else
-        @assert 1 < nlb + ntb < p - 3
+    elseif 1 < nlb + ntb < p - 3
         return lb ? (tb ? G11 : G10) : (tb ? G01 : G00)
+    else
+        throw(DomainError(x, "Invalid SELTZOAbstraction."))
     end
 end
 
@@ -943,8 +947,9 @@ end
 export compatible_neighbors
 
 
-function _neighborhood(x::SELTZOAbstraction)
+function _neighborhood(x::SELTZOAbstraction, ::Type{T}) where {T<:AbstractFloat}
     result = SELTZOAbstraction[]
+    c = seltzo_classify(x, T)
     s, lb, tb, e, nlb, ntb = unpack(x)
     for ds = false:true
         for dlb = false:true
@@ -952,14 +957,23 @@ function _neighborhood(x::SELTZOAbstraction)
                 for de = -1:+1
                     for dnlb = -1:+1
                         for dntb = -1:+1
-                            push!(result, SELTZOAbstraction(
-                                xor(s, ds),
-                                xor(lb, dlb),
-                                xor(tb, dtb),
-                                e + de,
-                                nlb + dnlb,
-                                ntb + dntb,
-                            ))
+                            try
+                                nx = SELTZOAbstraction(
+                                    xor(s, ds),
+                                    xor(lb, dlb),
+                                    xor(tb, dtb),
+                                    e + de,
+                                    nlb + dnlb,
+                                    ntb + dntb,
+                                )
+                                if seltzo_classify(nx, T) == c
+                                    push!(result, nx)
+                                end
+                            catch exception
+                                if !(exception isa DomainError)
+                                    rethrow()
+                                end
+                            end
                         end
                     end
                 end
@@ -1041,8 +1055,8 @@ function compatible_neighbors(
         sx, sy, r = popfirst!(stack)
         reference_outputs = result[(sx, sy)]
         if r <= r_max
-            nsx = _neighborhood(sx)
-            nsy = _neighborhood(sy)
+            nsx = _neighborhood(sx, T)
+            nsy = _neighborhood(sy, T)
             for nx in nsx, ny in nsy
                 if !(((nx, ny) in rejected) || haskey(result, (nx, ny)))
                     neighbor_outputs = classified_outputs(
