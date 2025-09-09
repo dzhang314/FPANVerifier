@@ -192,117 +192,133 @@ def seltzo_two_sum_lemmas(
 
     ############################################################################
 
-    result["SELTZO-TwoSum-C01-X"] = z3.Implies(
-        z3.And(~y_zero, same_sign, ~lbx, tbx, ~tby, ex > ey + one, gy > fx + one),
-        seltzo_case_zero((sx, 0, 1, ex, ey, gx)),
+    result["SELTZO-TwoSum-F-POW2-G-X"] = z3.Implies(
+        z3.And(~y_zero, same_sign, x_pow2, ~tby, ex > ey + one, gy > fx + one),
+        seltzo_case_zero((sx, 0, 0, ex, ey, gy)),
     )
-    result["SELTZO-TwoSum-C01-Y"] = z3.Implies(
-        z3.And(~x_zero, same_sign, ~lby, tby, ~tbx, ey > ex + one, gx > fy + one),
-        seltzo_case_zero((sy, 0, 1, ey, ex, gy)),
-    )
-
-    result["SELTZO-TwoSum-C02-X"] = z3.Implies(
-        z3.And(same_sign, ~lbx, tbx, lby, ~tby, ex == ey + one, gy > fx + one),
-        seltzo_case_zero((sx, 1, 1, ex, fy, gx)),
-    )
-    result["SELTZO-TwoSum-C02-Y"] = z3.Implies(
-        z3.And(same_sign, ~lby, tby, lbx, ~tbx, ey == ex + one, gx > fy + one),
-        seltzo_case_zero((sy, 1, 1, ey, fx, gy)),
+    result["SELTZO-TwoSum-F-POW2-G-Y"] = z3.Implies(
+        z3.And(~x_zero, same_sign, y_pow2, ~tbx, ey > ex + one, gx > fy + one),
+        seltzo_case_zero((sy, 0, 0, ey, ex, gx)),
     )
 
-    result["SELTZO-TwoSum-C03-X"] = z3.Implies(
-        z3.And(
-            ~y_zero, same_sign, ~lbx, tbx, ~lby, ~tby, ex == ey + one, gy > fx + one
-        ),
-        seltzo_case_zero((sx, 1, 1, ex, ey - one, gx)),
+    result["SELTZO-TwoSum-F-POW2-A1-X"] = z3.Implies(
+        z3.And(~y_zero, same_sign, x_pow2, ~tby, ex == ey + one, lby, gy > fx + one),
+        seltzo_case_zero((sx, 1, 0, ex, fy, gy)),
     )
-    result["SELTZO-TwoSum-C03-Y"] = z3.Implies(
-        z3.And(
-            ~x_zero, same_sign, ~lby, tby, ~lbx, ~tbx, ey == ex + one, gx > fy + one
-        ),
-        seltzo_case_zero((sy, 1, 1, ey, ex - one, gy)),
+    result["SELTZO-TwoSum-F-POW2-A1-Y"] = z3.Implies(
+        z3.And(~x_zero, same_sign, y_pow2, ~tbx, ey == ex + one, lbx, gx > fy + one),
+        seltzo_case_zero((sy, 1, 0, ey, fx, gx)),
     )
 
-    result["SELTZO-TwoSum-C04-X"] = z3.Implies(
+    result["SELTZO-TwoSum-F-POW2-A2-X"] = z3.Implies(
+        z3.And(~y_zero, same_sign, x_pow2, ~tby, ex == ey + one, ~lby, gy > fx + one),
+        seltzo_case_zero((sx, 1, 0, ex, ey - one, gy)),
+    )
+    result["SELTZO-TwoSum-F-POW2-A2-Y"] = z3.Implies(
+        z3.And(~x_zero, same_sign, y_pow2, ~tbx, ey == ex + one, ~lbx, gx > fy + one),
+        seltzo_case_zero((sy, 1, 0, ey, ex - one, gx)),
+    )
+
+    result["SELTZO-TwoSum-F-T0-G-X"] = z3.Implies(
         z3.And(
-            ~y_zero, same_sign, ~x_pow2, ~lbx, ~tbx, ~tby, ex > ey + one, gy > fx + one
+            ~y_zero, same_sign, ~lbx, ~tby, ~tbx, ~x_pow2, ex > ey + one, gy > fx + one
         ),
         seltzo_case_zero((sx, 0, 0, ex, ey, gx)),
     )
-    result["SELTZO-TwoSum-C04-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-F-T0-G-Y"] = z3.Implies(
         z3.And(
-            ~x_zero, same_sign, ~y_pow2, ~lby, ~tby, ~tbx, ey > ex + one, gx > fy + one
+            ~x_zero, same_sign, ~lby, ~tbx, ~tby, ~y_pow2, ey > ex + one, gx > fy + one
         ),
         seltzo_case_zero((sy, 0, 0, ey, ex, gy)),
     )
 
-    result["SELTZO-TwoSum-C05-X"] = z3.Implies(
+    result["SELTZO-TwoSum-F-T0-A1-X"] = z3.Implies(
         z3.And(
-            same_sign, ~x_pow2, ~lbx, ~tbx, lby, ~tby, ex == ey + one, gy > fx + one
+            ~y_zero,
+            same_sign,
+            ~lbx,
+            ~tby,
+            ~tbx,
+            ~x_pow2,
+            ex == ey + one,
+            lby,
+            gy > fx + one,
         ),
         seltzo_case_zero((sx, 1, 0, ex, fy, gx)),
     )
-    result["SELTZO-TwoSum-C05-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-F-T0-A1-Y"] = z3.Implies(
         z3.And(
-            same_sign, ~y_pow2, ~lby, ~tby, lbx, ~tbx, ey == ex + one, gx > fy + one
+            ~x_zero,
+            same_sign,
+            ~lby,
+            ~tbx,
+            ~tby,
+            ~y_pow2,
+            ey == ex + one,
+            lbx,
+            gx > fy + one,
         ),
         seltzo_case_zero((sy, 1, 0, ey, fx, gy)),
     )
 
-    result["SELTZO-TwoSum-C06-X"] = z3.Implies(
+    result["SELTZO-TwoSum-F-T0-A2-X"] = z3.Implies(
         z3.And(
             ~y_zero,
             same_sign,
-            ~x_pow2,
             ~lbx,
-            ~tbx,
-            ~lby,
             ~tby,
+            ~tbx,
+            ~x_pow2,
             ex == ey + one,
+            ~lby,
             gy > fx + one,
         ),
         seltzo_case_zero((sx, 1, 0, ex, ey - one, gx)),
     )
-    result["SELTZO-TwoSum-C06-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-F-T0-A2-Y"] = z3.Implies(
         z3.And(
             ~x_zero,
             same_sign,
-            ~y_pow2,
             ~lby,
-            ~tby,
-            ~lbx,
             ~tbx,
+            ~tby,
+            ~y_pow2,
             ey == ex + one,
+            ~lbx,
             gx > fy + one,
         ),
         seltzo_case_zero((sy, 1, 0, ey, ex - one, gy)),
     )
 
-    result["SELTZO-TwoSum-C07-X"] = z3.Implies(
-        z3.And(~y_zero, same_sign, x_pow2, ~tby, ex > ey + one, gy > fx + one),
-        seltzo_case_zero((sx, 0, 0, ex, ey, gy)),
+    result["SELTZO-TwoSum-F-T1-G-X"] = z3.Implies(
+        z3.And(~y_zero, same_sign, ~lbx, ~tby, tbx, ex > ey + one, gy > fx + one),
+        seltzo_case_zero((sx, 0, 1, ex, ey, gx)),
     )
-    result["SELTZO-TwoSum-C07-Y"] = z3.Implies(
-        z3.And(~x_zero, same_sign, y_pow2, ~tbx, ey > ex + one, gx > fy + one),
-        seltzo_case_zero((sy, 0, 0, ey, ex, gx)),
-    )
-
-    result["SELTZO-TwoSum-C08-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, lby, ~tby, ex == ey + one, gy > fx + one),
-        seltzo_case_zero((sx, 1, 0, ex, fy, gy)),
-    )
-    result["SELTZO-TwoSum-C08-Y"] = z3.Implies(
-        z3.And(same_sign, y_pow2, lbx, ~tbx, ey == ex + one, gx > fy + one),
-        seltzo_case_zero((sy, 1, 0, ey, fx, gx)),
+    result["SELTZO-TwoSum-F-T1-G-Y"] = z3.Implies(
+        z3.And(~x_zero, same_sign, ~lby, ~tbx, tby, ey > ex + one, gx > fy + one),
+        seltzo_case_zero((sy, 0, 1, ey, ex, gy)),
     )
 
-    result["SELTZO-TwoSum-C09-X"] = z3.Implies(
-        z3.And(~y_zero, same_sign, x_pow2, ~lby, ~tby, ex == ey + one, gy > fx + one),
-        seltzo_case_zero((sx, 1, 0, ex, ey - one, gy)),
+    result["SELTZO-TwoSum-F-T1-A1-X"] = z3.Implies(
+        z3.And(~y_zero, same_sign, ~lbx, ~tby, tbx, ex == ey + one, lby, gy > fx + one),
+        seltzo_case_zero((sx, 1, 1, ex, fy, gx)),
     )
-    result["SELTZO-TwoSum-C09-Y"] = z3.Implies(
-        z3.And(~x_zero, same_sign, y_pow2, ~lbx, ~tbx, ey == ex + one, gx > fy + one),
-        seltzo_case_zero((sy, 1, 0, ey, ex - one, gx)),
+    result["SELTZO-TwoSum-F-T1-A1-Y"] = z3.Implies(
+        z3.And(~x_zero, same_sign, ~lby, ~tbx, tby, ey == ex + one, lbx, gx > fy + one),
+        seltzo_case_zero((sy, 1, 1, ey, fx, gy)),
+    )
+
+    result["SELTZO-TwoSum-F-T1-A2-X"] = z3.Implies(
+        z3.And(
+            ~y_zero, same_sign, ~lbx, ~tby, tbx, ex == ey + one, ~lby, gy > fx + one
+        ),
+        seltzo_case_zero((sx, 1, 1, ex, ey - one, gx)),
+    )
+    result["SELTZO-TwoSum-F-T1-A2-Y"] = z3.Implies(
+        z3.And(
+            ~x_zero, same_sign, ~lby, ~tbx, tby, ey == ex + one, ~lbx, gx > fy + one
+        ),
+        seltzo_case_zero((sy, 1, 1, ey, ex - one, gy)),
     )
 
     ############################################################################
