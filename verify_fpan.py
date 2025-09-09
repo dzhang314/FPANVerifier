@@ -354,7 +354,11 @@ def seltzo_keys(
             nonzero_exponents.append(exponent)
     min_exponent: int = min(nonzero_exponents, default=0)
     return [
-        seltzo_key(model, variable, FLOAT16_MIN_EXPONENT - min_exponent)
+        seltzo_key(
+            model,
+            variable,
+            (FLOAT16_MIN_EXPONENT - min_exponent) + (FLOAT16_PRECISION + 1),
+        )
         for variable in variables
     ]
 
