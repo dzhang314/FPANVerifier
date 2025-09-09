@@ -402,6 +402,54 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, ex, ex + one)),
     )
 
+    result["SELTZO-TwoSum-R0R1-R1R0-S3-X"] = z3.Implies(
+        z3.And(same_sign, x_r0r1, y_r1r0, ex > ey + one, fy > fx),
+        seltzo_case_zero((sx, 0, 1, ex, ey, gx)),
+    )
+    result["SELTZO-TwoSum-R0R1-R1R0-S3-Y"] = z3.Implies(
+        z3.And(same_sign, y_r0r1, x_r1r0, ey > ex + one, fx > fy),
+        seltzo_case_zero((sy, 0, 1, ey, ex, gy)),
+    )
+
+    result["SELTZO-TwoSum-POW2-ONE1-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_one1, ex == ey + p),
+        seltzo_case(
+            (sx, 0, 1, ex, ey + one, ey + two),
+            ((sy,), 1, 0, ey - one, fy - one, fy),
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-ONE1-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_one1, ey == ex + p),
+        seltzo_case(
+            (sy, 0, 1, ey, ex + one, ex + two),
+            ((sx,), 1, 0, ex - one, fx - one, fx),
+        ),
+    )
+
+    result["SELTZO-TwoSum-POW2-ONE1-S2-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_one1, ex > ey + one, ex < fy + (p - one)),
+        seltzo_case_zero((sx, 0, 0, ex, ey, gy)),
+    )
+    result["SELTZO-TwoSum-POW2-ONE1-S2-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_one1, ey > ex + one, ey < fx + (p - one)),
+        seltzo_case_zero((sy, 0, 0, ey, ex, gx)),
+    )
+
+    result["SELTZO-TwoSum-ALL1-R1R0-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_all1, y_r1r0, ex > ey, ex < fy + (p - one)),
+        seltzo_case(
+            (sx, 0, 0, ex + one, ey, gy),
+            ((sy,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+    result["SELTZO-TwoSum-ALL1-R1R0-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_all1, x_r1r0, ey > ex, ey < fx + (p - one)),
+        seltzo_case(
+            (sy, 0, 0, ey + one, ex, gx),
+            ((sx,), 0, 0, fy + one, fy - (p - one), fy + one),
+        ),
+    )
+
     """
 
     # Difference of a power of two and an all-ones number (equal exponent case).
