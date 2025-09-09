@@ -292,6 +292,52 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    result["SELTZO-TwoSum-R1R0-ALL1-D1-X"] = z3.Implies(
+        z3.And(diff_sign, x_r1r0, y_all1, ex > ey + two, ey + one > gx),
+        seltzo_case(
+            (sx, 1, 0, ex, ey + one, gx),
+            ((sy,), 0, 0, fy + one, fy - (p - one), fy + one),
+        ),
+    )
+    result["SELTZO-TwoSum-R1R0-ALL1-D1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_r1r0, x_all1, ey > ex + two, ex + one > gy),
+        seltzo_case(
+            (sy, 1, 0, ey, ex + one, gy),
+            ((sx,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+
+    result["SELTZO-TwoSum-R0R1-POW2-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_r0r1, y_pow2, ex == ey + one, ex == fx + two),
+        seltzo_case_zero((sx, 1, 1, ex, ex - p, ex)),
+    )
+    result["SELTZO-TwoSum-R0R1-POW2-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_r0r1, x_pow2, ey == ex + one, ey == fy + two),
+        seltzo_case_zero((sy, 1, 1, ey, ey - p, ey)),
+    )
+
+    result["SELTZO-TwoSum-ONE0-POW2-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_one0, y_pow2, fx == ey),
+        seltzo_case_zero((sx, 1, 1, ex, ex - p, ex)),
+    )
+    result["SELTZO-TwoSum-ONE0-POW2-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_one0, x_pow2, fy == ex),
+        seltzo_case_zero((sy, 1, 1, ey, ey - p, ey)),
+    )
+
+    result["SELTZO-TwoSum-R0R1-R1R0-S1-X"] = z3.Implies(
+        z3.And(
+            same_sign, x_r0r1, y_r1r0, ex == ey + two, ey == fx + one, fx == fy + one
+        ),
+        seltzo_case_zero((sx, 1, 1, ex, fx + one, gx - one)),
+    )
+    result["SELTZO-TwoSum-R0R1-R1R0-S1-Y"] = z3.Implies(
+        z3.And(
+            same_sign, y_r0r1, x_r1r0, ey == ex + two, ex == fy + one, fy == fx + one
+        ),
+        seltzo_case_zero((sy, 1, 1, ey, fy + one, gy - one)),
+    )
+
     """
 
     # Difference of a power of two and an all-ones number (equal exponent case).
@@ -1195,32 +1241,6 @@ def seltzo_two_sum_lemmas(
             es == ey,
             nlbs == nlby + one,
             ntbs == (p - two) - nlby,
-            e_pos_zero,
-        ),
-    )
-
-    # Lemma C24: Sum of a pow2 that fills in an r0r1 with one leading bit.
-    result["SELTZO-TwoSum-C24-X"] = z3.Implies(
-        z3.And(same_sign, x_r0r1, nlbx == one, y_pow2, ex == ey + one),
-        z3.And(
-            ss == sx,
-            lbs,
-            tbs,
-            es == ex,
-            nlbs == p - one,
-            ntbs == p - one,
-            e_pos_zero,
-        ),
-    )
-    result["SELTZO-TwoSum-C24-Y"] = z3.Implies(
-        z3.And(same_sign, y_r0r1, nlby == one, x_pow2, ey == ex + one),
-        z3.And(
-            ss == sy,
-            lbs,
-            tbs,
-            es == ey,
-            nlbs == p - one,
-            ntbs == p - one,
             e_pos_zero,
         ),
     )
