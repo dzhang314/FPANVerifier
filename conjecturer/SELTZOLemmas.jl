@@ -112,40 +112,113 @@ function check_seltzo_two_sum_lemmas(
 
             ####################################################################
 
+            checker("SELTZO-TwoSum-C01-X",
+                same_sign & (~lbx) & tbx & (~tby) & (ex > ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C01-Y",
+                same_sign & (~lby) & tby & (~tbx) & (ey > ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C02-X",
+                same_sign & (~lbx) & tbx & lby & (~tby) & (ex == ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 1, ex, fy, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C02-Y",
+                same_sign & (~lby) & tby & lbx & (~tbx) & (ey == ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 1, ey, fx, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C03-X",
+                same_sign & (~lbx) & tbx & (~lby) & (~tby) & (ex == ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 1, ex, ey-1, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C03-Y",
+                same_sign & (~lby) & tby & (~lbx) & (~tbx) & (ey == ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 1, ey, ex-1, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C04-X",
+                same_sign & (cx != POW2) & (~lbx) & (~tbx) & (~tby) & (ex > ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 0, 0, ex, ey, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C04-Y",
+                same_sign & (cy != POW2) & (~lby) & (~tby) & (~tbx) & (ey > ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C05-X",
+                same_sign & (cx != POW2) & (~lbx) & (~tbx) & lby & (~tby) & (ex == ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 0, ex, fy, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C05-Y",
+                same_sign & (cy != POW2) & (~lby) & (~tby) & lbx & (~tbx) & (ey == ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 0, ey, fx, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C06-X",
+                same_sign & (cx != POW2) & (~lbx) & (~tbx) & (~lby) & (~tby) & (ex == ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 0, ex, ey-1, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C06-Y",
+                same_sign & (cy != POW2) & (~lby) & (~tby) & (~lbx) & (~tbx) & (ey == ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex-1, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C07-X",
+                same_sign & (cx == POW2) & (~tby) & (ex > ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 0, 0, ex, ey, gy), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C07-Y",
+                same_sign & (cy == POW2) & (~tbx) & (ey > ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, gx), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C08-X",
+                same_sign & (cx == POW2) & lby & (~tby) & (ex == ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 0, ex, fy, gy), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C08-Y",
+                same_sign & (cy == POW2) & lbx & (~tbx) & (ey == ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 0, ey, fx, gx), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-C09-X",
+                same_sign & (cx == POW2) & (~lby) & (~tby) & (ex == ey + 1) & (gy > fx + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 0, ex, ey-1, gy), pos_zero)
+            end
+            checker("SELTZO-TwoSum-C09-Y",
+                same_sign & (cy == POW2) & (~lbx) & (~tbx) & (ey == ex + 1) & (gx > fy + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex-1, gx), pos_zero)
+            end
+
+            ####################################################################
+
             # Sum of two powers of two (equal exponent case).
             checker("SELTZO-TwoSum-POW2-POW2-SE",
                 same_sign & (cx == POW2) & (cy == POW2) &
                 (ex == ey)
             ) do lemma
                 add_case!(lemma, SELTZORange(sx, 0, 0, ex+1, fx+1, gx+1), pos_zero)
-            end
-
-            # Sum of two powers of two (adjacent case).
-            checker("SELTZO-TwoSum-POW2-POW2-SA-X",
-                same_sign & (cx == POW2) & (cy == POW2) &
-                (ex == ey + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 1, 0, ex, ey-1, ey), pos_zero)
-            end
-            checker("SELTZO-TwoSum-POW2-POW2-SA-Y",
-                same_sign & (cy == POW2) & (cx == POW2) &
-                (ey == ex + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex-1, ex), pos_zero)
-            end
-
-            # Sum of two powers of two (general case).
-            checker("SELTZO-TwoSum-POW2-POW2-SG-X",
-                same_sign & (cx == POW2) & (cy == POW2) &
-                (ex > ey + 1) & (ex < ey + (p-1))
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 0, 0, ex, ey, ey), pos_zero)
-            end
-            checker("SELTZO-TwoSum-POW2-POW2-SG-Y",
-                same_sign & (cy == POW2) & (cx == POW2) &
-                (ey > ex + 1) & (ey < ex + (p-1))
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, ex), pos_zero)
             end
 
             # Sum of two powers of two (boundary case).
@@ -650,19 +723,6 @@ function check_seltzo_two_sum_lemmas(
 
             ####################################################################
 
-            checker("SELTZO-TwoSum-C01-X",
-                same_sign & (~lbx) & tbx & (~tby) & (ex > ey + 1) & (gy > fx + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey, gx), pos_zero)
-            end
-            checker("SELTZO-TwoSum-C01-Y",
-                same_sign & (~lby) & tby & (~tbx) & (ey > ex + 1) & (gx > fy + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, gy), pos_zero)
-            end
-
-            ####################################################################
-
             checker("SELTZO-TwoSum-R1R0-ONE1-D1-X",
                 diff_sign & (cx == R1R0) & (cy == ONE1) &
                 (ex > fy + (p-1)) & (ey > fx + 1)
@@ -822,19 +882,6 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(~sx, 1, 0, ex-1, fx-1, fx))
             end
 
-            checker("SELTZO-TwoSum-POW2-ONE1-S2-X",
-                same_sign & (cx == POW2) & (cy == ONE1) &
-                (ex > ey + 1) & (ex < fy + (p-1))
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 0, 0, ex, ey, gy), pos_zero)
-            end
-            checker("SELTZO-TwoSum-POW2-ONE1-S2-Y",
-                same_sign & (cy == POW2) & (cx == ONE1) &
-                (ey > ex + 1) & (ey < fx + (p-1))
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, gx), pos_zero)
-            end
-
             checker("SELTZO-TwoSum-ALL1-R1R0-S1-X",
                 same_sign & (cx == ALL1) & (cy == R1R0) &
                 (ex > ey) & (ex < fy + (p-1))
@@ -852,7 +899,7 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(~sx, 0, 0, fy+1, fy-(p-1), fy+1))
             end
 
-            checker("SELTZO-TwoSum-POW2-ONE1-S3-X",
+            checker("SELTZO-TwoSum-POW2-ONE1-S2-X",
                 same_sign & (cx == POW2) & (cy == ONE1) &
                 (ex == ey + (p-1))
             ) do lemma
@@ -860,7 +907,7 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(sx, 0, 1, ex, ey, ey+1),
                     SELTZORange(sy, 0, 0, fy, fy-p, fy))
             end
-            checker("SELTZO-TwoSum-POW2-ONE1-S3-Y",
+            checker("SELTZO-TwoSum-POW2-ONE1-S2-Y",
                 same_sign & (cy == POW2) & (cx == ONE1) &
                 (ey == ex + (p-1))
             ) do lemma
@@ -901,19 +948,6 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma,
                     SELTZORange(sy, 0, 0, ey, ex+1, ex+1),
                     SELTZORange(~sx, 0, 0, fx+1, fx-(p-1), fx+1))
-            end
-
-            checker("SELTZO-TwoSum-R0R1-POW2-S2-X",
-                same_sign & (cx == R0R1) & (cy == POW2) &
-                (ex == ey + 1) & (ey == gx + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 1, 1, ex, ey-1, ey-1), pos_zero)
-            end
-            checker("SELTZO-TwoSum-R0R1-POW2-S2-Y",
-                same_sign & (cy == R0R1) & (cx == POW2) &
-                (ey == ex + 1) & (ex == gy + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 1, 1, ey, ex-1, ex-1), pos_zero)
             end
 
             checker("SELTZO-TwoSum-R1R0-ONE1-S1-X",
@@ -980,19 +1014,6 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 1, ey, gy, gx), pos_zero)
             end
 
-            checker("SELTZO-TwoSum-R0R1-POW2-S3-X",
-                same_sign & (cx == R0R1) & (cy == POW2) &
-                (ex == ey + 1) & (ex == fx + (p-1))
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 1, 1, ex, ey-1, gx), pos_zero)
-            end
-            checker("SELTZO-TwoSum-R0R1-POW2-S3-Y",
-                same_sign & (cy == R0R1) & (cx == POW2) &
-                (ey == ex + 1) & (ey == fy + (p-1))
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 1, 1, ey, ex-1, gy), pos_zero)
-            end
-
             checker("SELTZO-TwoSum-ONE1-R1R0-D2-X",
                 diff_sign & (cx == ONE1) & (cy == R1R0) &
                 (ey > fx) & (ex > fy + (p+1))
@@ -1008,19 +1029,6 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma,
                     SELTZORange(sy, 1, 0, ey-1, ex, gy),
                     SELTZORange(~sx, 0, 0, gx, fx-(p-1), gx))
-            end
-
-            checker("SELTZO-TwoSum-POW2-R1R0-S4-X",
-                same_sign & (cx == POW2) & (cy == R1R0) &
-                (ex > ey + 1) & (ex - fy < p)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 0, 0, ex, ey, gy), pos_zero)
-            end
-            checker("SELTZO-TwoSum-POW2-R1R0-S4-Y",
-                same_sign & (cy == POW2) & (cx == R1R0) &
-                (ey > ex + 1) & (ey - fx < p)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, gx), pos_zero)
             end
 
             checker("SELTZO-TwoSum-R1R0-ONE1-D2-X",
@@ -1043,7 +1051,7 @@ function check_seltzo_two_sum_lemmas(
         end
         #! format: on
 
-        if iszero(checker.coverage_count[])
+        if isempty(checker.covering_lemmas)
             # println(stderr,
             #     "ERROR: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
             #     " are not covered by any lemmas.")
@@ -1055,10 +1063,13 @@ function check_seltzo_two_sum_lemmas(
                     unverified_counts[(cx, cy)] = 1
                 end
             end
-        elseif !isone(checker.coverage_count[])
+        elseif !isone(length(checker.covering_lemmas))
             println(stderr,
                 "WARNING: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
-                " are covered by multiple lemmas.")
+                " are covered by multiple lemmas:")
+            for lemma_name in checker.covering_lemmas
+                println(stderr, "    ", lemma_name)
+            end
         end
     end
 
