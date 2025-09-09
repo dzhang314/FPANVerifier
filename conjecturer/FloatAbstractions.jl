@@ -1194,6 +1194,7 @@ function _find_best_seltzo_model(
             c0 = actual[reference_index] - predicted[reference_index]
             predicted .+= c0
             score = (-count(predicted .== actual),
+                count(map(!, iszero.((c1, c2, c3, c4, c5, c6)))),
                 sum(abs.((c1, c2, c3, c4, c5, c6))), abs(c0))
             if isnothing(best_score) || score < best_score
                 best_score = score
