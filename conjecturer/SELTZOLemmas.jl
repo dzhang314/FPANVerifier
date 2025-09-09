@@ -38,7 +38,7 @@ function check_seltzo_two_sum_lemmas(
     pos_zero = SELTZOAbstraction(+zero(T))
     neg_zero = SELTZOAbstraction(-zero(T))
     abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
-    lemma_counts = Dict{String,Int}()
+    case_counts = Dict{String,Int}()
     unverified_counts = Dict{Tuple{SELTZOType,SELTZOType},Int}()
     rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(5)
 
@@ -53,7 +53,7 @@ function check_seltzo_two_sum_lemmas(
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
-        checker = LemmaChecker(two_sum_abstractions, x, y, T, lemma_counts)
+        checker = LemmaChecker(two_sum_abstractions, x, y, T, case_counts)
 
         #! format: off
         if x_zero | y_zero ################################### ZERO LEMMA FAMILY
@@ -296,6 +296,92 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 1, ey, fy+1, gy-1), pos_zero)
             end
 
+            checker("SELTZO-TwoSum-R1R0-R1R0-D1-X",
+                diff_sign & (cx == R1R0) & (cy == R1R0) &
+                (ex > ey + 1) & (fx < fy)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 0, ex, ey, gx), pos_zero)
+            end
+            checker("SELTZO-TwoSum-R1R0-R1R0-D1-Y",
+                diff_sign & (cy == R1R0) & (cx == R1R0) &
+                (ey > ex + 1) & (fy < fx)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex, gy), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-ALL1-POW2-S1-X",
+                same_sign & (cx == ALL1) & (cy == POW2) &
+                (ex > ey) & (ex < ey + (p-2))
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 0, 0, ex+1, ey, ey),
+                    SELTZORange(~sy, 0, 0, fx+1, fx-(p-1), fx+1))
+            end
+            checker("SELTZO-TwoSum-ALL1-POW2-S1-Y",
+                same_sign & (cy == ALL1) & (cx == POW2) &
+                (ey > ex) & (ey < ex + (p-2))
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 0, 0, ey+1, ex, ex),
+                    SELTZORange(~sx, 0, 0, fy+1, fy-(p-1), fy+1))
+            end
+
+            checker("SELTZO-TwoSum-POW2-R1R0-S1-X",
+                same_sign & (cx == POW2) & (cy == R1R0) &
+                (ex == fy + p) & (ex > ey + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey, ey+1), pos_zero)
+            end
+            checker("SELTZO-TwoSum-POW2-R1R0-S1-Y",
+                same_sign & (cy == POW2) & (cx == R1R0) &
+                (ey == fx + p) & (ey > ex + 1)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, ex+1), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-ONE1-R1R0-D1-X",
+                diff_sign & (cx == ONE1) & (cy == R1R0) &
+                (ex == ey + (p-2)) & (fx == ey) & (ey == fy + 3)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 1, ex-1, fx-1, fx-1), pos_zero)
+            end
+            checker("SELTZO-TwoSum-ONE1-R1R0-D1-Y",
+                diff_sign & (cy == ONE1) & (cx == R1R0) &
+                (ey == ex + (p-2)) & (fy == ex) & (ex == fx + 3)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 1, ey-1, fy-1, fy-1), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-POW2-R1R0-S2-X",
+                same_sign & (cx == POW2) & (cy == R1R0) &
+                (ex == ey + p)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 0, 1, ex, ey+1, ey+2),
+                    SELTZORange(~sy, 0, 0, gy, gy-p, gy))
+            end
+            checker("SELTZO-TwoSum-POW2-R1R0-S2-Y",
+                same_sign & (cy == POW2) & (cx == R1R0) &
+                (ey == ex + p)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 0, 1, ey, ex+1, ex+2),
+                    SELTZORange(~sx, 0, 0, gx, gx-p, gx))
+            end
+
+            checker("SELTZO-TwoSum-R0R1-R1R0-S2-X",
+                same_sign & (cx == R0R1) & (cy == R1R0) &
+                (ex > ey + 1) & (fx == fy)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey, ey+1), pos_zero)
+            end
+            checker("SELTZO-TwoSum-R0R1-R1R0-S2-Y",
+                same_sign & (cy == R0R1) & (cx == R1R0) &
+                (ey > ex + 1) & (fy == fx)
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, ex+1), pos_zero)
+            end
+
         end
         #! format: on
 
@@ -319,7 +405,7 @@ function check_seltzo_two_sum_lemmas(
     end
 
     println("SELTZO-TwoSum-$T lemmas:")
-    for (name, n) in sort!(collect(lemma_counts))
+    for (name, n) in sort!(collect(case_counts))
         println("    $name: $n")
     end
     println("Unverified cases: $(rs.population_size[])")

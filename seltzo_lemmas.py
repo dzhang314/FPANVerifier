@@ -338,6 +338,70 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 1, ey, fy + one, gy - one)),
     )
 
+    result["SELTZO-TwoSum-R1R0-R1R0-D1-X"] = z3.Implies(
+        z3.And(diff_sign, x_r1r0, y_r1r0, ex > ey + one, fx < fy),
+        seltzo_case_zero((sx, 1, 0, ex, ey, gx)),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_r1r0, x_r1r0, ey > ex + one, fy < fx),
+        seltzo_case_zero((sy, 1, 0, ey, ex, gy)),
+    )
+
+    result["SELTZO-TwoSum-ALL1-POW2-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_all1, y_pow2, ex > ey, ex < ey + (p - two)),
+        seltzo_case(
+            (sx, 0, 0, ex + one, ey, ey),
+            ((sy,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+    result["SELTZO-TwoSum-ALL1-POW2-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_all1, x_pow2, ey > ex, ey < ex + (p - two)),
+        seltzo_case(
+            (sy, 0, 0, ey + one, ex, ex),
+            ((sx,), 0, 0, fy + one, fy - (p - one), fy + one),
+        ),
+    )
+
+    result["SELTZO-TwoSum-POW2-R1R0-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_r1r0, ex == fy + p, ex > ey + one),
+        seltzo_case_zero((sx, 0, 1, ex, ey, ey + one)),
+    )
+    result["SELTZO-TwoSum-POW2-R1R0-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_r1r0, ey == fx + p, ey > ex + one),
+        seltzo_case_zero((sy, 0, 1, ey, ex, ex + one)),
+    )
+
+    result["SELTZO-TwoSum-ONE1-R1R0-D1-X"] = z3.Implies(
+        z3.And(
+            diff_sign, x_one1, y_r1r0, ex == ey + (p - two), fx == ey, ey == fy + three
+        ),
+        seltzo_case_zero((sx, 1, 1, ex - one, fx - one, fx - one)),
+    )
+    result["SELTZO-TwoSum-ONE1-R1R0-D1-Y"] = z3.Implies(
+        z3.And(
+            diff_sign, y_one1, x_r1r0, ey == ex + (p - two), fy == ex, ex == fx + three
+        ),
+        seltzo_case_zero((sy, 1, 1, ey - one, fy - one, fy - one)),
+    )
+
+    result["SELTZO-TwoSum-POW2-R1R0-S2-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_r1r0, ex == ey + p),
+        seltzo_case((sx, 0, 1, ex, ey + one, ey + two), ((sy,), 0, 0, gy, gy - p, gy)),
+    )
+    result["SELTZO-TwoSum-POW2-R1R0-S2-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_r1r0, ey == ex + p),
+        seltzo_case((sy, 0, 1, ey, ex + one, ex + two), ((sx,), 0, 0, gx, gx - p, gx)),
+    )
+
+    result["SELTZO-TwoSum-R0R1-R1R0-S2-X"] = z3.Implies(
+        z3.And(same_sign, x_r0r1, y_r1r0, ex > ey + one, fx == fy),
+        seltzo_case_zero((sx, 0, 1, ex, ey, ey + one)),
+    )
+    result["SELTZO-TwoSum-R0R1-R1R0-S2-Y"] = z3.Implies(
+        z3.And(same_sign, y_r0r1, x_r1r0, ey > ex + one, fy == fx),
+        seltzo_case_zero((sy, 0, 1, ey, ex, ex + one)),
+    )
+
     """
 
     # Difference of a power of two and an all-ones number (equal exponent case).
