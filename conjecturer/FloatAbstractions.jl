@@ -1143,9 +1143,10 @@ end
 export _find_best_seltzo_model, _delete_inconsistent_data!, _seltzo_string
 
 
-const SELTZO_COEFFICIENT_VECTORS = sort!(
-    reshape(collect(Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)), :);
-    by=v -> (sum(abs.(v)), -2 .* v .^ 2 .- v))
+const SELTZO_COEFFICIENT_VECTORS = sort!([
+        v for v in Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)
+        if sum(v) == 1
+    ]; by=v -> (sum(abs.(v)), -2 .* v .^ 2 .- v))
 
 
 function _find_best_seltzo_model(
