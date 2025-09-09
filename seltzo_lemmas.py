@@ -916,6 +916,30 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, gy, gx)),
     )
 
+    result["SELTZO-TwoSum-R0R1-POW2-S3-X"] = z3.Implies(
+        z3.And(same_sign, x_r0r1, y_pow2, ex == ey + one, ex == fx + (p - one)),
+        seltzo_case_zero((sx, 1, 1, ex, ey - one, gx)),
+    )
+    result["SELTZO-TwoSum-R0R1-POW2-S3-Y"] = z3.Implies(
+        z3.And(same_sign, y_r0r1, x_pow2, ey == ex + one, ey == fy + (p - one)),
+        seltzo_case_zero((sy, 1, 1, ey, ex - one, gy)),
+    )
+
+    result["SELTZO-TwoSum-ONE1-R1R0-D2-X"] = z3.Implies(
+        z3.And(diff_sign, x_one1, y_r1r0, ey > fx, ex > fy + (p + one)),
+        seltzo_case(
+            (sx, 1, 0, ex - one, ey, gx),
+            ((sy,), 0, 0, gy, fy - (p - one), gy),
+        ),
+    )
+    result["SELTZO-TwoSum-ONE1-R1R0-D2-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one1, x_r1r0, ex > fy, ey > fx + (p + one)),
+        seltzo_case(
+            (sy, 1, 0, ey - one, ex, gy),
+            ((sx,), 0, 0, gx, fx - (p - one), gx),
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
@@ -994,6 +1018,26 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-P02B-Y"] = z3.Implies(
         z3.And(diff_sign, ey > ex + one, ex + one > f0y),
         z3.And(ss == sy, es == ey, f0s <= ex + one),
+    )
+
+    # Lemma P03A: Zeros insulate the exponent from increasing.
+    result["SELTZO-TwoSum-P03A-X"] = z3.Implies(
+        z3.And(same_sign, ey < f0x),
+        es == ex,
+    )
+    result["SELTZO-TwoSum-P03A-Y"] = z3.Implies(
+        z3.And(same_sign, ex < f0y),
+        es == ey,
+    )
+
+    # Lemma P03B: Ones insulate the exponent from decreasing.
+    result["SELTZO-TwoSum-P03B-X"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(x_pow2), ey < f1x),
+        es == ex,
+    )
+    result["SELTZO-TwoSum-P03B-Y"] = z3.Implies(
+        z3.And(diff_sign, z3.Not(y_pow2), ex < f1y),
+        es == ey,
     )
 
     return result
