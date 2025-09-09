@@ -206,58 +206,39 @@ function check_seltzo_two_sum_lemmas(
 
             ####################################################################
 
-            # checker("SELTZO-TwoSum-1-X",
-            #     diff_sign & lbx & (~tbx) & lby & (~tby) & (fy + 1 == gy) &
-            #     (ex == fx + 2) & (fx > ey + 1 > gx) & (ex > fy + p)
-            # ) do lemma
-            #     add_case!(lemma,
-            #         SELTZORange(sx, ~lbx, tbx, ex, fx, gx),
-            #         SELTZORange(~sy, ~lby, tby, gy, gy-p, gy))
-            #     add_case!(lemma,
-            #         SELTZORange(sx, lbx, tbx, ex, fx, gx),
-            #         SELTZORange(~sy, ~lby, tby, gy, gy-p, gy))
-            # end
-            # checker("SELTZO-TwoSum-1-Y",
-            #     diff_sign & lby & (~tby) & lbx & (~tbx) & (fx + 1 == gx) &
-            #     (ey == fy + 2) & (fy > ex + 1 > gy) & (ey > fx + p)
-            # ) do lemma
-            #     add_case!(lemma,
-            #         SELTZORange(sy, ~lby, tby, ey, fy, gy),
-            #         SELTZORange(~sx, ~lbx, tbx, gx, gx-p, gx))
-            #     add_case!(lemma,
-            #         SELTZORange(sy, lby, tby, ey, fy, gy),
-            #         SELTZORange(~sx, ~lbx, tbx, gx, gx-p, gx))
-            # end
+            checker("SELTZO-TwoSum-R1R0-ONE1-D1-X",
+                diff_sign & (cx == R1R0) & (cy == ONE1) &
+                (ex > fy + (p-1)) & (ey > fx + 1)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 1, 0, ex, ey, gx),
+                    SELTZORange(sy, 0, 0, fy, fy-p, fy))
+            end
+            checker("SELTZO-TwoSum-R1R0-ONE1-D1-Y",
+                diff_sign & (cy == R1R0) & (cx == ONE1) &
+                (ey > fx + (p-1)) & (ex > fy + 1)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 1, 0, ey, ex, gy),
+                    SELTZORange(sx, 0, 0, fx, fx-p, fx))
+            end
 
-            # checker("SELTZO-TwoSum-2-X",
-            #     same_sign & (~lbx) & (~tby) &
-            #     (ex > ey + 1) & (fx < fy) & (gx < gy)
-            # ) do lemma
-            #     add_case!(lemma, SELTZORange(sx, lbx, tbx, ex, ey, gx), pos_zero)
-            # end
-            # checker("SELTZO-TwoSum-2-Y",
-            #     same_sign & (~lby) & (~tbx) &
-            #     (ey > ex + 1) & (fy < fx) & (gy < gx)
-            # ) do lemma
-            #     add_case!(lemma, SELTZORange(sy, lby, tby, ey, ex, gy), pos_zero)
-            # end
-
-            # checker("SELTZO-TwoSum-3-X",
-            #     diff_sign & lby & tby & (ey == gy + (p-3)) & (fy == gy + 1) &
-            #     (ex < ey + p) & (fx > gx) & (gx > gy + (p-2))
-            # ) do lemma
-            #     add_case!(lemma,
-            #         SELTZORange(sx, lbx, tbx, ex, fx, ey+1),
-            #         SELTZORange(~sy, lby, ~tby, fy, gy-1, gy-2))
-            # end
-            # checker("SELTZO-TwoSum-3-Y",
-            #     diff_sign & lbx & tbx & (ex == gx + (p-3)) & (fx == gx + 1) &
-            #     (ey < ex + p) & (fy > gy) & (gy > gx + (p-2))
-            # ) do lemma
-            #     add_case!(lemma,
-            #         SELTZORange(sy, lby, tby, ey, fy, ex+1),
-            #         SELTZORange(~sx, lbx, ~tbx, fx, gx-1, gx-2))
-            # end
+            checker("SELTZO-TwoSum-POW2-ALL1-S1-X",
+                same_sign & (cx == POW2) & (cy == ALL1) &
+                (ex > ey + 2) & (ex < ey + p)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 0, 0, ex, ey+1, ey+1),
+                    SELTZORange(~sy, 0, 0, fy+1, fy-(p-1), fy+1))
+            end
+            checker("SELTZO-TwoSum-POW2-ALL1-S1-Y",
+                same_sign & (cy == POW2) & (cx == ALL1) &
+                (ey > ex + 2) & (ey < ex + p)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 0, 0, ey, ex+1, ex+1),
+                    SELTZORange(~sx, 0, 0, fx+1, fx-(p-1), fx+1))
+            end
 
         end
         #! format: on

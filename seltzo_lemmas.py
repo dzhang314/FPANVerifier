@@ -268,6 +268,32 @@ def seltzo_two_sum_lemmas(
 
     ############################################################################
 
+    result["SELTZO-TwoSum-R1R0-ONE1-D1-X"] = z3.Implies(
+        z3.And(diff_sign, x_r1r0, y_one1, ex > fy + (p - one), ey > fx + one),
+        seltzo_case((sx, 1, 0, ex, ey, gx), (sy, 0, 0, fy, fy - p, fy)),
+    )
+    result["SELTZO-TwoSum-R1R0-ONE1-D1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_r1r0, x_one1, ey > fx + (p - one), ex > fy + one),
+        seltzo_case((sy, 1, 0, ey, ex, gy), (sx, 0, 0, fx, fx - p, fx)),
+    )
+
+    result["SELTZO-TwoSum-POW2-ALL1-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_all1, ex > ey + two, ex < ey + p),
+        seltzo_case(
+            (sx, 0, 0, ex, ey + one, ey + one),
+            ((sy,), 0, 0, fy + one, fy - (p - one), fy + one),
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-ALL1-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_all1, ey > ex + two, ey < ex + p),
+        seltzo_case(
+            (sy, 0, 0, ey, ex + one, ex + one),
+            ((sx,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+
+    """
+
     # Difference of a power of two and an all-ones number (equal exponent case).
     result["SELTZO-TwoSum-POW2-ALL1-DE-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, y_all1, ex == ey),
@@ -364,7 +390,11 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    """
+
     ############################################################ COMPLETE LEMMAS
+
+    """
 
     # Lemma C01: Sum where one number fits entirely into the other's leading
     # zeros, with padding on both sides.
@@ -1437,6 +1467,8 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    """
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
@@ -1487,6 +1519,8 @@ def seltzo_two_sum_lemmas(
 
     ############################################################# PARTIAL LEMMAS
 
+    """
+
     # Lemma P01A: If the exponent increases, then the sum must have a number of
     # leading zeros proportional to the exponent gap.
     result["SELTZO-TwoSum-P01A-X"] = z3.Implies(es > ex, f1s <= ey + one)
@@ -1516,5 +1550,7 @@ def seltzo_two_sum_lemmas(
         z3.And(diff_sign, ey > ex + one, ex + one > f0y),
         z3.And(ss == sy, es == ey, f0s <= ex + one),
     )
+
+    """
 
     return result
