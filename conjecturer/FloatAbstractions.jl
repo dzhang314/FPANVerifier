@@ -1145,7 +1145,7 @@ export _find_best_seltzo_model, _delete_inconsistent_data!, _seltzo_string
 
 const SELTZO_COEFFICIENT_VECTORS = sort!([
         v for v in Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)
-        if sum(v) == 1
+        if all(iszero.(v)) || (sum(v) == 1)
     ]; by=v -> (sum(abs.(v)), -2 .* v .^ 2 .- v))
 
 
