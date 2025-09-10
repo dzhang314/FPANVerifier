@@ -1484,58 +1484,126 @@ def seltzo_two_sum_lemmas(
 
     ############################################################# PARTIAL LEMMAS
 
-    # Lemma P01A: If the exponent increases, then the sum must have a number of
-    # leading zeros proportional to the exponent gap.
-    result["SELTZO-TwoSum-P01A-X"] = z3.Implies(es > ex, f1s <= ey + one)
-    result["SELTZO-TwoSum-P01A-Y"] = z3.Implies(es > ey, f1s <= ex + one)
+    # Lemma P01A: Addition either preserves the exponent of the larger addend,
+    # in which case the sum has at least as many leading ones as that addend,
+    # or increases the exponent by one, in which case the sum must have leading
+    # zeros in the exponent gap.
+    result["SELTZO-TwoSum-P01A-X"] = z3.Implies(
+        z3.And(same_sign, ex >= ey),
+        z3.Or(
+            z3.And(es == ex, f0s <= f0x),
+            z3.And(es == ex + one, f1s <= ey + one),
+        ),
+    )
+    result["SELTZO-TwoSum-P01A-Y"] = z3.Implies(
+        z3.And(same_sign, ey >= ex),
+        z3.Or(
+            z3.And(es == ey, f0s <= f0y),
+            z3.And(es == ey + one, f1s <= ex + one),
+        ),
+    )
 
-    # Lemma P01B: If the exponent decreases, then the difference must have a
-    # number of leading ones proportional to the exponent gap.
-    result["SELTZO-TwoSum-P01B-X"] = z3.Implies(es < ex, f0s <= ey)
-    result["SELTZO-TwoSum-P01B-Y"] = z3.Implies(es < ey, f0s <= ex)
+    # Lemma P01B: Subtraction either preserves the exponent of the minuend,
+    # in which case the difference has at least as many leading zeros as the
+    # minuend, or decreases the exponent, in which case the difference must
+    # have leading ones in the exponent gap.
+    result["SELTZO-TwoSum-P01B-X"] = z3.Implies(
+        z3.And(diff_sign, ex >= ey),
+        z3.Or(
+            z3.And(es == ex, f1s <= f1x),
+            z3.And(es < ex, f0s <= ey),
+        ),
+    )
+    result["SELTZO-TwoSum-P01B-Y"] = z3.Implies(
+        z3.And(diff_sign, ey >= ex),
+        z3.Or(
+            z3.And(es == ey, f1s <= f1y),
+            z3.And(es < ey, f0s <= ex),
+        ),
+    )
 
-    # Lemma P02A: Adding into leading zeros preserves the exponent.
+    # Lemma P02A: A zero between the exponents of the addends
+    # insulates the exponent of the sum from increasing.
     result["SELTZO-TwoSum-P02A-X"] = z3.Implies(
+        z3.And(same_sign, f0x > ey, xy_nonzero),
+        z3.And(ss == sx, es == ex, f1s >= ey),
+    )
+    result["SELTZO-TwoSum-P02A-Y"] = z3.Implies(
+        z3.And(same_sign, f0y > ex, xy_nonzero),
+        z3.And(ss == sy, es == ey, f1s >= ex),
+    )
+
+    # Lemma P02B: A one between the exponents of the minuend and subtrahend
+    # insulates the exponent of the difference from decreasing.
+    result["SELTZO-TwoSum-P02B-X"] = z3.Implies(
+        z3.And(diff_sign, f1x > ey, xy_nonzero, z3.Not(x_pow2)),
+        z3.And(ss == sx, es == ex, f0s >= ey),
+    )
+    result["SELTZO-TwoSum-P02B-Y"] = z3.Implies(
+        z3.And(diff_sign, f1y > ex, xy_nonzero, z3.Not(y_pow2)),
+        z3.And(ss == sy, es == ey, f0s >= ex),
+    )
+
+    # Lemma P03A: Adding into leading zeros preserves the exponent.
+    result["SELTZO-TwoSum-P03A-X"] = z3.Implies(
         z3.And(same_sign, ex > ey + one, ey + one > f1x),
         z3.And(ss == sx, es == ex, f1s <= ey + one),
     )
-    result["SELTZO-TwoSum-P02A-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-P03A-Y"] = z3.Implies(
         z3.And(same_sign, ey > ex + one, ex + one > f1y),
         z3.And(ss == sy, es == ey, f1s <= ex + one),
     )
 
-    # Lemma P02B: Subtracting from leading ones preserves the exponent.
-    result["SELTZO-TwoSum-P02B-X"] = z3.Implies(
+    # Lemma P03B: Subtracting from leading ones preserves the exponent.
+    result["SELTZO-TwoSum-P03B-X"] = z3.Implies(
         z3.And(diff_sign, ex > ey + one, ey + one > f0x),
         z3.And(ss == sx, es == ex, f0s <= ey + one),
     )
-    result["SELTZO-TwoSum-P02B-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-P03B-Y"] = z3.Implies(
         z3.And(diff_sign, ey > ex + one, ex + one > f0y),
         z3.And(ss == sy, es == ey, f0s <= ex + one),
     )
 
-    # Lemma P03A: Zeros insulate the exponent from increasing.
-    result["SELTZO-TwoSum-P03A-X"] = z3.Implies(z3.And(same_sign, ey < f0x), es == ex)
-    result["SELTZO-TwoSum-P03A-Y"] = z3.Implies(z3.And(same_sign, ex < f0y), es == ey)
-
-    # Lemma P03B: Ones insulate the exponent from decreasing.
-    result["SELTZO-TwoSum-P03B-X"] = z3.Implies(
-        z3.And(diff_sign, z3.Not(x_pow2), ey < f1x), es == ex
+    # Lemma P04A: Adding into leading ones increases the exponent.
+    result["SELTZO-TwoSum-P04A-X"] = z3.Implies(
+        z3.And(same_sign, ex >= ey, ey > f0x, xy_nonzero),
+        z3.And(ss == sx, es == ex + one, f1s <= ey),
     )
-    result["SELTZO-TwoSum-P03B-Y"] = z3.Implies(
-        z3.And(diff_sign, z3.Not(y_pow2), ex < f1y), es == ey
+    result["SELTZO-TwoSum-P04A-Y"] = z3.Implies(
+        z3.And(same_sign, ey >= ex, ex > f0y, xy_nonzero),
+        z3.And(ss == sy, es == ey + one, f1s <= ex),
     )
 
-    # Lemma P04A: Addition preserves leading ones or increases the exponent.
-    result["SELTZO-TwoSum-P04A-X"] = z3.Implies(same_sign, z3.Or(f0s <= f0x, es > ex))
-    result["SELTZO-TwoSum-P04A-Y"] = z3.Implies(same_sign, z3.Or(f0s <= f0y, es > ey))
-
-    # Lemma P04B: Subtraction preserves leading zeros or decreases the exponent.
+    # Lemma P04B: Subtracting from leading zeros decreases the exponent.
     result["SELTZO-TwoSum-P04B-X"] = z3.Implies(
-        z3.And(diff_sign, ex >= ey), z3.Or(f1s <= f1x, es < ex)
+        z3.And(diff_sign, ex > ey + one, ey > f1x, xy_nonzero),
+        z3.And(ss == sx, es == ex - one, f0s <= ey),
     )
     result["SELTZO-TwoSum-P04B-Y"] = z3.Implies(
-        z3.And(diff_sign, ey >= ex), z3.Or(f1s <= f1y, es < ey)
+        z3.And(diff_sign, ey > ex + one, ex > f1y, xy_nonzero),
+        z3.And(ss == sy, es == ey - one, f0s <= ex),
+    )
+
+    # Lemma T01A: Adding a power of two into a leading zero bit.
+    # This should eventually be replaced by complete case-by-case lemmas.
+    result["SELTZO-TwoSum-T01A-X"] = z3.Implies(
+        z3.And(same_sign, ex == ey + one, ~lbx, ntbx < p - two, y_pow2),
+        z3.And(ss == sx, lbs, tbs == tbx, es == ex, ntbs == ntbx, e_pos_zero),
+    )
+    result["SELTZO-TwoSum-T01A-Y"] = z3.Implies(
+        z3.And(same_sign, ey == ex + one, ~lby, ntby < p - two, x_pow2),
+        z3.And(ss == sy, lbs, tbs == tby, es == ey, ntbs == ntby, e_pos_zero),
+    )
+
+    # Lemma T01B: Subtracting a power of two from a leading one bit.
+    # This should eventually be replaced by complete case-by-case lemmas.
+    result["SELTZO-TwoSum-T01B-X"] = z3.Implies(
+        z3.And(diff_sign, ex == ey + one, lbx, ntbx < p - two, y_pow2),
+        z3.And(ss == sx, ~lbs, tbs == tbx, es == ex, ntbs == ntbx, e_pos_zero),
+    )
+    result["SELTZO-TwoSum-T01B-Y"] = z3.Implies(
+        z3.And(diff_sign, ey == ex + one, lby, ntby < p - two, x_pow2),
+        z3.And(ss == sy, ~lbs, tbs == tby, es == ey, ntbs == ntby, e_pos_zero),
     )
 
     return result
