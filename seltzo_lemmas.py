@@ -1569,6 +1569,103 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    result["SELTZO-TwoSum-POW2-R1R0-D1-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_r1r0, ex == ey + (p - one), ey == fy + two),
+        seltzo_case_zero((sx, 1, 1, ex - one, ey, ey)),
+    )
+    result["SELTZO-TwoSum-POW2-R1R0-D1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_r1r0, ey == ex + (p - one), ex == fx + two),
+        seltzo_case_zero((sy, 1, 1, ey - one, ex, ex)),
+    )
+
+    result["SELTZO-TwoSum-R1R0-R1R0-D3-X"] = z3.Implies(
+        z3.And(
+            diff_sign,
+            x_r1r0,
+            y_r1r0,
+            ex == ey + two,
+            ey == fx + one,
+            ey == fy + (p - one),
+        ),
+        seltzo_case(
+            (sx, 0, 0, ex, ey, ey),
+            ((sy,), 0, 0, fy + one, fy - (p - one), fy + one),
+        ),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3-Y"] = z3.Implies(
+        z3.And(
+            diff_sign,
+            y_r1r0,
+            x_r1r0,
+            ey == ex + two,
+            ex == fy + one,
+            ex == fx + (p - one),
+        ),
+        seltzo_case(
+            (sy, 0, 0, ey, ex, ex),
+            ((sx,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+
+    result["SELTZO-TwoSum-POW2-ONE1-S3-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_one1, ex < ey + (p - one), ex > fy + (p - one)),
+        seltzo_case(
+            (sx, 0, 0, ex, ey, ey),
+            (sy, 0, 0, fy, fy - p, fy),
+        ),
+    )
+    result["SELTZO-TwoSum-POW2-ONE1-S3-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_one1, ey < ex + (p - one), ey > fx + (p - one)),
+        seltzo_case(
+            (sy, 0, 0, ey, ex, ex),
+            (sx, 0, 0, fx, fx - p, fx),
+        ),
+    )
+
+    result["SELTZO-TwoSum-ONE1-ONE1-D2-X"] = z3.Implies(
+        z3.And(diff_sign, x_one1, y_one1, ey == fx + two, ex > fy + p),
+        seltzo_case(
+            (sx, 1, 0, ex - one, fx + one, gx),
+            (sy, 0, 0, fy, fy - p, fy),
+        ),
+    )
+    result["SELTZO-TwoSum-ONE1-ONE1-D2-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one1, x_one1, ex == fy + two, ey > fx + p),
+        seltzo_case(
+            (sy, 1, 0, ey - one, fy + one, gy),
+            (sx, 0, 0, fx, fx - p, fx),
+        ),
+    )
+
+    result["SELTZO-TwoSum-R1R0-MM10-D1-X"] = z3.Implies(
+        z3.And(
+            diff_sign,
+            x_r1r0,
+            y_mm10,
+            ex == ey + (p - one),
+            ex > fx + two,
+            ey == fy + (p - three),
+        ),
+        seltzo_case(
+            (sx, 1, 1, ex, fx + one, gx),
+            (sy, 0, 0, fy, fy - two, fy - two),
+        ),
+    )
+    result["SELTZO-TwoSum-R1R0-MM10-D1-Y"] = z3.Implies(
+        z3.And(
+            diff_sign,
+            y_r1r0,
+            x_mm10,
+            ey == ex + (p - one),
+            ey > fy + two,
+            ex == fx + (p - three),
+        ),
+        seltzo_case(
+            (sy, 1, 1, ey, fy + one, gy),
+            (sx, 0, 0, fx, fx - two, fx - two),
+        ),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
@@ -1735,6 +1832,21 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-T01B-Y"] = z3.Implies(
         z3.And(diff_sign, ey == ex + one, lby, ntby < p - two, x_pow2),
         z3.And(ss == sy, ~lbs, tbs == tby, es == ey, ntbs == ntby, e_pos_zero),
+    )
+
+    # Lemma T02A: One addend fits inside the leading zeros of the other.
+    # This should eventually be replaced by complete case-by-case lemmas.
+    result["SELTZO-TwoSum-T02A-X"] = z3.Implies(
+        z3.And(same_sign, ex > ey, ~lbx, g1y > f1x, ~x_pow2, xy_nonzero),
+        z3.And(
+            ss == sx, lbs == (ex == ey + one), tbs == tbx, es == ex, f1s == ey, gs >= gx
+        ),
+    )
+    result["SELTZO-TwoSum-T02A-Y"] = z3.Implies(
+        z3.And(same_sign, ey > ex, ~lby, g1x > f1y, ~y_pow2, xy_nonzero),
+        z3.And(
+            ss == sy, lbs == (ey == ex + one), tbs == tby, es == ey, f1s == ex, gs >= gy
+        ),
     )
 
     return result
