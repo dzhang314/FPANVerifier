@@ -19,6 +19,7 @@ EXIT_NO_SOLVERS: int = 1
 LIA_SOLVERS: set[str] = detect_smt_solvers("QF_LIA", EXIT_NO_SOLVERS)
 SOLVER_LEN: int = max(map(len, LIA_SOLVERS))
 SHOW_COUNTEREXAMPLES: bool = pop_flag("--show-counterexamples")
+VERBOSE_COUNTEREXAMPLES: bool = pop_flag("--verbose-counterexamples")
 INTERNAL_SEPARATOR: str = "__"
 FLOAT16_PRECISION: int = 11
 FLOAT16_ZERO_EXPONENT: int = -15
@@ -575,17 +576,18 @@ class VerifierContext(object):
         if self.solver.check() == z3.sat:
             counterexample: z3.ModelRef = self.solver.model()
             for s, e, x, y in self.two_sum_operands:
-                print()
                 if DATA_FILE is None:
-                    print(f"({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
+                    print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
+                    show_two_sum(counterexample, x, y, s, e, prefix="  ")
                 else:
                     keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
                     is_valid: bool = exists_in_data(*keys)
-                    print(
-                        f"({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
-                        "(valid):" if is_valid else "(invalid):",
-                    )
-                show_two_sum(counterexample, x, y, s, e, prefix="  ")
+                    if VERBOSE_COUNTEREXAMPLES or not is_valid:
+                        print(
+                            f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
+                            "(valid):" if is_valid else "(invalid):",
+                        )
+                        show_two_sum(counterexample, x, y, s, e, prefix="  ")
             print()
         else:
             print(f"WARNING: No counterexample found with precision p = {precision}.")
