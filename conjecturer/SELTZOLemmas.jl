@@ -802,7 +802,7 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(~sx, 0, 0, fy+1, fy-(p-1), fy+1))
             end
 
-            checker("SELTZO-TwoSum-ALL1-POw2-SB1-X",
+            checker("SELTZO-TwoSum-ALL1-POW2-SB1-X",
                 same_sign & (cx == ALL1) & (cy == POW2) &
                 (ex == ey + (p-2))
             ) do lemma
