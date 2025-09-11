@@ -2138,6 +2138,53 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ex-1, fx, ex-(p-1)), pos_zero)
             end
 
+            checker("SELTZO-TwoSum-ALL1-R1R0-D3-X",
+                diff_sign & (cx == ALL1) & (cy == R1R0) &
+                (ex == ey) & (ey < fy + (p-1))
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 1, 0, fy, ey-p, ey-(p-1)), pos_zero)
+            end
+            checker("SELTZO-TwoSum-ALL1-R1R0-D3-Y",
+                diff_sign & (cy == ALL1) & (cx == R1R0) &
+                (ey == ex) & (ex < fx + (p-1))
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 1, 0, fx, ex-p, ex-(p-1)), pos_zero)
+            end
+
+            checker("SELTZO-TwoSum-TWO1-R1R0-D1-X",
+                diff_sign & (cx == TWO1) & (cy == R1R0) &
+                (ex > fy + p) & (ey + 1 == fx)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 0, 0, ex, fx-1, gx),
+                    SELTZORange(~sy, 0, 0, fy+1, fy-(p-1), fy+1))
+            end
+            checker("SELTZO-TwoSum-TWO1-R1R0-D1-Y",
+                diff_sign & (cy == TWO1) & (cx == R1R0) &
+                (ey > fx + p) & (ex + 1 == fy)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 0, 0, ey, fy-1, gy),
+                    SELTZORange(~sx, 0, 0, fx+1, fx-(p-1), fx+1))
+            end
+
+            checker("SELTZO-TwoSum-TWO1-R1R0-D2-X",
+                diff_sign & (cx == TWO1) & (cy == R1R0) &
+                (ex > fy + p) & (ey + 2 == fx)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 0, 0, ex, fx, gx+1),
+                    SELTZORange(~sy, 0, 0, fy+1, fy-(p-1), fy+1))
+            end
+            checker("SELTZO-TwoSum-TWO1-R1R0-D2-Y",
+                diff_sign & (cy == TWO1) & (cx == R1R0) &
+                (ey > fx + p) & (ex + 2 == fy)
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 0, 0, ey, fy, gy+1),
+                    SELTZORange(~sx, 0, 0, fx+1, fx-(p-1), fx+1))
+            end
+
         end
         #! format: on
 
