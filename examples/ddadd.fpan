@@ -15,8 +15,10 @@ two_sum a b
 
 prove a strongly_dominates b
 
+# The following TwoSum operations are not part of the ddadd algorithm.
+# They are included here for the purpose of analyzing the error terms.
+
 two_sum c d
 
-bound b / a
 bound c / a
 bound d / a
