@@ -806,28 +806,17 @@ struct SELTZORange
 end
 
 
-@inline SELTZORange(s::Bool, lb::Bool, tb::Bool, e::Int, f::Int, g::Int) =
-    SELTZORange(s:s, lb:lb, tb:tb, e:e, f:f, g:g)
-
-
-@inline function SELTZORange(s::Bool, lb::Int, tb::Int, e::Int, f::Int, g::Int)
-    if !(iszero(lb) | isone(lb))
-        throw(DomainError(lb, "Leading bit must be 0 or 1."))
-    end
-    if !(iszero(tb) | isone(tb))
-        throw(DomainError(tb, "Trailing bit must be 0 or 1."))
-    end
-    return SELTZORange(s:s, Bool(lb):Bool(lb), Bool(tb):Bool(tb), e:e, f:f, g:g)
-end
+@inline _to_range(n::Int) = n:n
+@inline _to_range(r::UnitRange{Int}) = r
 
 
 @inline function SELTZORange(
     s::Bool,
     lb::Int,
     tb::Int,
-    e::Int,
-    f::Int,
-    g::UnitRange{Int}
+    e::_IntRange,
+    f::_IntRange,
+    g::_IntRange,
 )
     if !(iszero(lb) | isone(lb))
         throw(DomainError(lb, "Leading bit must be 0 or 1."))
@@ -835,7 +824,14 @@ end
     if !(iszero(tb) | isone(tb))
         throw(DomainError(tb, "Trailing bit must be 0 or 1."))
     end
-    return SELTZORange(s:s, Bool(lb):Bool(lb), Bool(tb):Bool(tb), e:e, f:f, g)
+    return SELTZORange(
+        s:s,
+        Bool(lb):Bool(lb),
+        Bool(tb):Bool(tb),
+        _to_range(e),
+        _to_range(f),
+        _to_range(g)
+    )
 end
 
 
