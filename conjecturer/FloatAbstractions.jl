@@ -853,8 +853,8 @@ function add_case!(
                         for gr in _lemma_range_t(r.g_range, T)
                             nlbr = (er - fr) - 1
                             ntbr = (p - 1) - (er - gr)
-                            r = SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr)
-                            push!(lemma.claimed_outputs, (r, e))
+                            push!(lemma.claimed_outputs, (
+                                SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr), e))
                         end
                     end
                 end
@@ -887,9 +887,9 @@ function add_case!(
                                                     ntbr = (p - 1) - (er - gr)
                                                     nlbe = (ee - fe) - 1
                                                     ntbe = (p - 1) - (ee - ge)
-                                                    r = SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr)
-                                                    e = SELTZOAbstraction(se, lbe, tbe, ee, nlbe, ntbe)
-                                                    push!(lemma.claimed_outputs, (r, e))
+                                                    push!(lemma.claimed_outputs, (
+                                                        SELTZOAbstraction(sr, lbr, tbr, er, nlbr, ntbr),
+                                                        SELTZOAbstraction(se, lbe, tbe, ee, nlbe, ntbe)))
                                                 end
                                             end
                                         end
