@@ -2920,6 +2920,86 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
+    result["SELTZO-TwoSum-TWO0-R0R1-D1-X"] = z3.Implies(
+        z3.And(diff_sign, x_two0, y_r0r1, ex == ey, ex > fx + two, fx > fy + two),
+        seltzo_case_zero((sx, 1, 0, ex - one, fx, gy)),
+    )
+    result["SELTZO-TwoSum-TWO0-R0R1-D1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_two0, x_r0r1, ey == ex, ey > fy + two, fy > fx + two),
+        seltzo_case_zero((sy, 1, 0, ey - one, fy, gx)),
+    )
+
+    result["SELTZO-TwoSum-MM01-ONE1-S3-X"] = z3.Implies(
+        z3.And(
+            same_sign,
+            x_mm01,
+            y_one1,
+            ex > fy + (p - two),
+            fx + one < ey,
+            ex < fx + (p - three),
+        ),
+        seltzo_case(
+            (sx, 0, 0, ex + one, ey - one, gx),
+            (sy, 0, 0, fy, fy - p, fy),
+        ),
+    )
+    result["SELTZO-TwoSum-MM01-ONE1-S3-Y"] = z3.Implies(
+        z3.And(
+            same_sign,
+            y_mm01,
+            x_one1,
+            ey > fx + (p - two),
+            fy + one < ex,
+            ey < fy + (p - three),
+        ),
+        seltzo_case(
+            (sy, 0, 0, ey + one, ex - one, gy),
+            (sx, 0, 0, fx, fx - p, fx),
+        ),
+    )
+
+    result["SELTZO-TwoSum-G00-R1R0-S1-X"] = z3.Implies(
+        z3.And(same_sign, x_g00, y_r1r0, ex == ey + (p - one), ex - gx < p - two),
+        seltzo_case(
+            (sx, 0, 0, ex, fx, ey + one),
+            ((sy,), 0, 0, fy + one, fy - (p - one), fy + one),
+        ),
+    )
+    result["SELTZO-TwoSum-G00-R1R0-S1-Y"] = z3.Implies(
+        z3.And(same_sign, y_g00, x_r1r0, ey == ex + (p - one), ey - gy < p - two),
+        seltzo_case(
+            (sy, 0, 0, ey, fy, ex + one),
+            ((sx,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+
+    result["SELTZO-POW2-ONE1-D4-X"] = z3.Implies(
+        z3.And(diff_sign, x_pow2, y_one1, ex > ey + two, ex < fy + p),
+        seltzo_case_zero((sx, 1, 0, ex - one, ey, fy)),
+    )
+    result["SELTZO-POW2-ONE1-D4-Y"] = z3.Implies(
+        z3.And(diff_sign, y_pow2, x_one1, ey > ex + two, ey < fx + p),
+        seltzo_case_zero((sy, 1, 0, ey - one, ex, fx)),
+    )
+
+    result["SELTZO-TwoSum-ONE0-ONE1-D1-X"] = z3.Implies(
+        z3.And(diff_sign, x_one0, y_one1, ex == ey, fx == fy, ex > fx + three),
+        seltzo_case_zero((sx, 1, 0, ex - one, fx + one, ex - (p - one))),
+    )
+    result["SELTZO-TwoSum-ONE0-ONE1-D1-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one0, x_one1, ey == ex, fy == fx, ey > fy + three),
+        seltzo_case_zero((sy, 1, 0, ey - one, fy + one, ey - (p - one))),
+    )
+
+    result["SELTZO-TwoSum-ONE0-ONE1-D2-X"] = z3.Implies(
+        z3.And(diff_sign, x_one0, y_one1, ex == ey, fx + one == fy, ex > fx + three),
+        seltzo_case_zero((sx, 1, 0, ex - one, fx + one, ex - (p - one))),
+    )
+    result["SELTZO-TwoSum-ONE0-ONE1-D2-Y"] = z3.Implies(
+        z3.And(diff_sign, y_one0, x_one1, ey == ex, fy + one == fx, ey > fy + three),
+        seltzo_case_zero((sy, 1, 0, ey - one, fy + one, ey - (p - one))),
+    )
+
     ############################################################################
 
     fs: IntVar = es - (nlbs + one)
