@@ -8,6 +8,7 @@ import z3
 from time import sleep
 from typing import Callable, cast
 
+from se_lemmas import se_two_prod_lemmas
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
 from smt_utils import SMTJob, detect_smt_solvers, create_smt_job, pop_flag
@@ -569,6 +570,7 @@ class VerifierContext(object):
                             "NOTE: two_sum command on line",
                             line_number,
                             "can be replaced by fast_two_sum.",
+                            file=sys.stderr,
                         )
                     break
                 sleep(0.0001)
@@ -612,6 +614,7 @@ class VerifierContext(object):
                         "ERROR: fast_two_sum command on line",
                         line_number,
                         "is invalid and should be replaced by two_sum.",
+                        file=sys.stderr,
                     )
                 break
             sleep(0.0001)
@@ -626,6 +629,50 @@ class VerifierContext(object):
         list_b.append(new_b)
         self.two_sum_operands.append((old_a, old_b, new_a, new_b))
         self.add_two_sum_constraints(old_a, old_b, new_a, new_b)
+
+    def handle_two_prod_command(self, arguments: list[str], line_number: int) -> None:
+        assert len(arguments) == 4
+        name_x: str = arguments[0]
+        name_y: str = arguments[1]
+        name_p: str = arguments[2]
+        name_e: str = arguments[3]
+        assert name_x in self.variables
+        assert name_y in self.variables
+        assert name_p in self.variables
+        assert name_e in self.variables
+        if (len(self.variables[name_p]) > 1) or (len(self.variables[name_e]) > 1):
+            print(
+                "WARNING: two_prod command on line",
+                line_number,
+                "outputs to a variable already assigned.",
+                file=sys.stderr,
+            )
+        x: SELTZOVariable = self.variables[name_x][-1]
+        y: SELTZOVariable = self.variables[name_y][-1]
+        p: SELTZOVariable = self.variables[name_p][-1]
+        e: SELTZOVariable = self.variables[name_e][-1]
+        for claim in se_two_prod_lemmas(
+            x,
+            y,
+            p,
+            e,
+            x.sign_bit,
+            y.sign_bit,
+            p.sign_bit,
+            e.sign_bit,
+            x.exponent,
+            y.exponent,
+            p.exponent,
+            e.exponent,
+            lambda v: v.is_zero,
+            lambda v: ~v.sign_bit,
+            lambda v: v.sign_bit,
+            GLOBAL_PRECISION,
+            GLOBAL_ZERO_EXPONENT + 1,
+            Z3_ONE,
+            Z3_TWO,
+        ).values():
+            self.solver.add(claim)
 
     def extract_logical_condition(self, arguments: list[str]) -> z3.BoolRef:
         assert len(arguments) == 3
@@ -676,7 +723,10 @@ class VerifierContext(object):
                         show_two_sum(counterexample, x, y, s, e, prefix="  ")
             print()
         else:
-            print(f"WARNING: No counterexample found with precision p = {precision}.")
+            print(
+                f"WARNING: No counterexample found with precision p = {precision}.",
+                file=sys.stderr,
+            )
         self.solver.pop()
 
     def handle_prove_command(self, arguments: list[str]) -> None:
@@ -704,6 +754,7 @@ class VerifierContext(object):
                         "REFUTED by",
                         solver_name.ljust(SOLVER_LEN),
                         f"in{job.result[0]:8.3f} seconds.",
+                        file=sys.stderr,
                     )
                     if SHOW_COUNTEREXAMPLES:
                         self.show_counterexample(claim)
@@ -899,6 +950,8 @@ def main() -> None:
                         context.handle_two_sum_command(arguments, line_number)
                     elif command == "fast_two_sum":
                         context.handle_fast_two_sum_command(arguments, line_number)
+                    elif command == "two_prod":
+                        context.handle_two_prod_command(arguments, line_number)
                     elif command == "prove":
                         context.handle_prove_command(arguments)
                     elif command == "bound":
