@@ -59,9 +59,9 @@ def setz_two_sum_lemmas(
     same_sign: z3.BoolRef = sx == sy
     diff_sign: z3.BoolRef = sx != sy
 
-    #################################################### LEMMA FAMILY SETZ-Z (2)
+    ######################################################### LEMMA FAMILY Z (2)
 
-    # Lemmas in Family SETZ-Z (for "zero") apply
+    # Lemmas in Family Z (for "zero") apply
     # when one or both addends are zero.
 
     result["SETZ-TwoSum-Z1-PP"] = z3.Implies(
@@ -180,10 +180,10 @@ def setz_two_sum_lemmas(
         conditions.append(e_pos_zero)
         return z3.And(*conditions)
 
-    #################################################### LEMMA FAMILY SETZ-F (7)
+    ######################################################### LEMMA FAMILY F (7)
 
-    # Lemmas in Family SETZ-F apply to addends
-    # with the same trailing exponent (fx == fy).
+    # Lemmas in Family F apply to addends with
+    # the same trailing exponent (fx == fy).
 
     # The trailing exponent of a floating-point number x, denoted by
     # fx, is the place value of the last nonzero bit in its mantissa.
@@ -288,9 +288,9 @@ def setz_two_sum_lemmas(
         ),
     )
 
-    ################################################### LEMMA FAMILY SETZ-E (15)
+    ######################################################## LEMMA FAMILY E (15)
 
-    # Lemmas in Family SETZ-E (for "exact") apply to addends with
+    # Lemmas in Family E (for "exact") apply to addends with
     # different trailing exponents whose floating-point sum is exact.
 
     result["SETZ-TwoSum-EN0-X"] = z3.Implies(
@@ -486,9 +486,9 @@ def setz_two_sum_lemmas(
         setz_case_zero(None, (fy, ey - two), fy),
     )
 
-    #################################################### LEMMA FAMILY SETZ-O (3)
+    ######################################################### LEMMA FAMILY O (3)
 
-    # Lemmas in Family SETZ-O (for "overlap") apply to addends
+    # Lemmas in Family O (for "overlap") apply to addends
     # that completely overlap but cannot be summed exactly.
 
     result["SETZ-TwoSum-O0-X"] = z3.Implies(
@@ -560,7 +560,7 @@ def setz_two_sum_lemmas(
         ),
     )
 
-    #################################################### LEMMA FAMILY SETZ-1 (4)
+    ######################################################### LEMMA FAMILY 1 (4)
 
     result["SETZ-TwoSum-1-X"] = z3.Implies(
         z3.And(
@@ -634,7 +634,7 @@ def setz_two_sum_lemmas(
         setz_case(sy, ey, ex + one, (sx,), ey - p, fx),
     )
 
-    ################################################### LEMMA FAMILY SETZ-2 (18)
+    ######################################################## LEMMA FAMILY 2 (18)
 
     result["SETZ-TwoSum-2-X"] = z3.Implies(
         z3.And(xy_nonzero, same_sign, ex > fy + p, fx < ey),
@@ -1028,7 +1028,7 @@ def setz_two_sum_lemmas(
         ),
     )
 
-    ################################################### LEMMA FAMILY SETZ-3 (13)
+    ######################################################## LEMMA FAMILY 3 (13)
 
     result["SETZ-TwoSum-3-X"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, ex > fy + (p + one), fx < ey),
@@ -1271,7 +1271,7 @@ def setz_two_sum_lemmas(
         setz_case(sy, ey, (ex + two, ey), (sx,), ey - p, fx),
     )
 
-    #################################################### LEMMA FAMILY SETZ-4 (4)
+    ######################################################### LEMMA FAMILY 4 (4)
 
     result["SETZ-TwoSum-4-X"] = z3.Implies(
         z3.And(
