@@ -161,12 +161,14 @@ class SELTZOVariable(object):
         )
 
     def s_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
-        ntz: z3.ArithRef = z3.If(
-            self.trailing_bit, z3.IntVal(0), self.num_trailing_bits
-        )
         return z3.Or(
             other.is_zero,
-            self.exponent >= other.exponent + (GLOBAL_PRECISION - ntz),
+            self.exponent >= other.exponent + GLOBAL_PRECISION,
+            z3.And(
+                ~self.trailing_bit,
+                self.exponent + self.num_trailing_bits
+                >= other.exponent + GLOBAL_PRECISION,
+            ),
         )
 
     def p_dominates(self, other: "SELTZOVariable") -> z3.BoolRef:
@@ -450,7 +452,7 @@ def format_bound(name_a: str, name_b: str, k: int, j: int) -> str:
         return f"|{name_a}| <= 2^{-j} u^{k} |{name_b}|"
 
 
-class VerifierContext(object):
+class FPANVerifier(object):
 
     def __init__(self) -> None:
         self.solver: z3.Solver = z3.SolverFor("QF_LIA")
@@ -932,7 +934,7 @@ def main() -> None:
         try:
             with open(path) as f:
                 print(f"Processing file {repr(path)}.")
-                context: VerifierContext = VerifierContext()
+                verifier: FPANVerifier = FPANVerifier()
                 line_number: int = 0
                 for line in f.readlines():
                     line_number += 1
@@ -943,19 +945,19 @@ def main() -> None:
                         continue
                     command, *arguments = parts
                     if command == "variable":
-                        context.handle_variable_command(arguments)
+                        verifier.handle_variable_command(arguments)
                     elif command == "assume":
-                        context.handle_assume_command(arguments)
+                        verifier.handle_assume_command(arguments)
                     elif command == "two_sum":
-                        context.handle_two_sum_command(arguments, line_number)
+                        verifier.handle_two_sum_command(arguments, line_number)
                     elif command == "fast_two_sum":
-                        context.handle_fast_two_sum_command(arguments, line_number)
+                        verifier.handle_fast_two_sum_command(arguments, line_number)
                     elif command == "two_prod":
-                        context.handle_two_prod_command(arguments, line_number)
+                        verifier.handle_two_prod_command(arguments, line_number)
                     elif command == "prove":
-                        context.handle_prove_command(arguments)
+                        verifier.handle_prove_command(arguments)
                     elif command == "bound":
-                        context.handle_bound_command(arguments)
+                        verifier.handle_bound_command(arguments)
                     else:
                         print(
                             f"ERROR: Unknown command {repr(command)}.", file=sys.stderr
