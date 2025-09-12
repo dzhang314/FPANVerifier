@@ -7,6 +7,7 @@ import z3
 
 from time import sleep
 from typing import Callable, cast
+from uuid import uuid4
 
 from se_lemmas import se_two_prod_lemmas
 from setz_lemmas import setz_two_sum_lemmas
@@ -606,9 +607,8 @@ class FPANVerifier(object):
             )
         self.solver.pop()
 
-    def check(self, claim: z3.BoolRef, claim_name: str) -> tuple[bool, str, float]:
-        # TODO: Sanitize claim_name to ensure it is a valid filename.
-        job: SMTJob = create_smt_job(self.solver, "QF_LIA", claim_name, claim)
+    def check(self, claim: z3.BoolRef) -> tuple[bool, str, float]:
+        job: SMTJob = create_smt_job(self.solver, "QF_LIA", str(uuid4()), claim)
         job.start(LIA_SOLVERS)
         while True:
             if job.poll():
@@ -636,10 +636,7 @@ class FPANVerifier(object):
         old_a: SELTZOVariable = list_a[-1]
         old_b: SELTZOVariable = list_b[-1]
         if CHECK_FAST_TWO_SUM:
-            result, _, _ = self.check(
-                old_a.can_fast_two_sum(old_b),
-                f"fast_two_sum_{old_a.name}_{old_b.name}",
-            )
+            result, _, _ = self.check(old_a.can_fast_two_sum(old_b))
             if result:
                 print(
                     "NOTE: two_sum command on line",
@@ -670,10 +667,7 @@ class FPANVerifier(object):
         list_b: list[SELTZOVariable] = self.variables[name_b]
         old_a: SELTZOVariable = list_a[-1]
         old_b: SELTZOVariable = list_b[-1]
-        result, _, _ = self.check(
-            old_a.can_fast_two_sum(old_b),
-            f"fast_two_sum_{old_a.name}_{old_b.name}",
-        )
+        result, _, _ = self.check(old_a.can_fast_two_sum(old_b))
         if not result:
             print(
                 "ERROR: fast_two_sum command on line",
@@ -741,7 +735,7 @@ class FPANVerifier(object):
 
     def handle_prove_command(self, arguments: list[str]) -> None:
         claim: z3.BoolRef = self.extract_logical_condition(arguments)
-        result, solver_name, solver_time = self.check(claim, "_".join(arguments))
+        result, solver_name, solver_time = self.check(claim)
         if result:
             print(
                 " ".join(arguments).ljust(30),
@@ -787,8 +781,7 @@ class FPANVerifier(object):
             nonlocal last_passing_name
             nonlocal last_passing_time
             result, solver_name, solver_time = self.check(
-                a.is_smaller_than(b, GLOBAL_PRECISION * k + j),
-                f"bound_{name_a}_{name_b}_{k}_{j}",
+                a.is_smaller_than(b, GLOBAL_PRECISION * k + j)
             )
             if verbose:
                 if result:
