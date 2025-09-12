@@ -20,6 +20,7 @@ LIA_SOLVERS: set[str] = detect_smt_solvers("QF_LIA", EXIT_NO_SOLVERS)
 SOLVER_LEN: int = max(map(len, LIA_SOLVERS))
 SHOW_COUNTEREXAMPLES: bool = pop_flag("--show-counterexamples")
 VERBOSE_COUNTEREXAMPLES: bool = pop_flag("--verbose-counterexamples")
+CHECK_FAST_TWO_SUM: bool = pop_flag("--check-fast-two-sum")
 INTERNAL_SEPARATOR: str = "__"
 FLOAT16_PRECISION: int = 11
 FLOAT16_ZERO_EXPONENT: int = -15
@@ -243,6 +244,17 @@ class SELTZOVariable(object):
             ),
         )
 
+    def can_fast_two_sum(self, other: "SELTZOVariable") -> z3.BoolRef:
+        return z3.Or(
+            self.is_zero,
+            other.is_zero,
+            self.exponent >= other.exponent,
+            z3.And(
+                ~self.trailing_bit,
+                self.exponent + self.num_trailing_bits >= other.exponent,
+            ),
+        )
+
 
 # TODO: Eventually, all `assert` statements should be
 # replaced by informative user-facing error messages.
@@ -455,7 +467,83 @@ class VerifierContext(object):
             SELTZOVariable(self.solver, name + INTERNAL_SEPARATOR + "0")
         ]
 
-    def handle_two_sum_command(self, arguments: list[str]) -> None:
+    def add_two_sum_constraints(
+        self,
+        x: SELTZOVariable,
+        y: SELTZOVariable,
+        s: SELTZOVariable,
+        e: SELTZOVariable,
+    ) -> None:
+        for claim in setz_two_sum_lemmas(
+            x,
+            y,
+            s,
+            e,
+            x.sign_bit,
+            y.sign_bit,
+            s.sign_bit,
+            e.sign_bit,
+            x.exponent,
+            y.exponent,
+            s.exponent,
+            e.exponent,
+            z3.If(x.trailing_bit, Z3_ZERO, x.num_trailing_bits),
+            z3.If(y.trailing_bit, Z3_ZERO, y.num_trailing_bits),
+            z3.If(s.trailing_bit, Z3_ZERO, s.num_trailing_bits),
+            z3.If(e.trailing_bit, Z3_ZERO, e.num_trailing_bits),
+            lambda v: v.is_zero,
+            lambda v: ~v.sign_bit,
+            lambda v: v.sign_bit,
+            lambda v, w: v.can_equal(w),
+            GLOBAL_PRECISION,
+            Z3_ONE,
+            Z3_TWO,
+            Z3_THREE,
+        ).values():
+            self.solver.add(claim)
+
+        for claim in seltzo_two_sum_lemmas(
+            x,
+            y,
+            s,
+            e,
+            x.sign_bit,
+            y.sign_bit,
+            s.sign_bit,
+            e.sign_bit,
+            x.leading_bit,
+            y.leading_bit,
+            s.leading_bit,
+            e.leading_bit,
+            x.trailing_bit,
+            y.trailing_bit,
+            s.trailing_bit,
+            e.trailing_bit,
+            x.exponent,
+            y.exponent,
+            s.exponent,
+            e.exponent,
+            x.num_leading_bits,
+            y.num_leading_bits,
+            s.num_leading_bits,
+            e.num_leading_bits,
+            x.num_trailing_bits,
+            y.num_trailing_bits,
+            s.num_trailing_bits,
+            e.num_trailing_bits,
+            lambda v: v.is_zero,
+            lambda v: ~v.sign_bit,
+            lambda v: v.sign_bit,
+            lambda v, w: v.can_equal(w),
+            GLOBAL_PRECISION,
+            Z3_ONE,
+            Z3_TWO,
+            Z3_THREE,
+        ).values():
+            self.solver.add(claim)
+
+    def handle_two_sum_command(self, arguments: list[str], line_number: int) -> None:
+
         assert len(arguments) == 2
         name_a: str = arguments[0]
         name_b: str = arguments[1]
@@ -465,6 +553,26 @@ class VerifierContext(object):
         list_b: list[SELTZOVariable] = self.variables[name_b]
         old_a: SELTZOVariable = list_a[-1]
         old_b: SELTZOVariable = list_b[-1]
+
+        if CHECK_FAST_TWO_SUM:
+            # TODO: Sanitize claim name to ensure it is a valid filename.
+            claim_name: str = f"fast_two_sum_{old_a.name}_{old_b.name}"
+            job: SMTJob = create_smt_job(
+                self.solver, "QF_LIA", claim_name, old_a.can_fast_two_sum(old_b)
+            )
+            job.start(LIA_SOLVERS)
+            while True:
+                if job.poll():
+                    assert job.result is not None
+                    if job.result[1] == z3.unsat:
+                        print(
+                            "NOTE: two_sum command on line",
+                            line_number,
+                            "can be replaced by fast_two_sum.",
+                        )
+                    break
+                sleep(0.0001)
+
         new_a: SELTZOVariable = SELTZOVariable(
             self.solver, name_a + INTERNAL_SEPARATOR + str(len(list_a))
         )
@@ -473,73 +581,51 @@ class VerifierContext(object):
         )
         list_a.append(new_a)
         list_b.append(new_b)
-        self.two_sum_operands.append((new_a, new_b, old_a, old_b))
-        for claim in setz_two_sum_lemmas(
-            old_a,
-            old_b,
-            new_a,
-            new_b,
-            old_a.sign_bit,
-            old_b.sign_bit,
-            new_a.sign_bit,
-            new_b.sign_bit,
-            old_a.exponent,
-            old_b.exponent,
-            new_a.exponent,
-            new_b.exponent,
-            z3.If(old_a.trailing_bit, Z3_ZERO, old_a.num_trailing_bits),
-            z3.If(old_b.trailing_bit, Z3_ZERO, old_b.num_trailing_bits),
-            z3.If(new_a.trailing_bit, Z3_ZERO, new_a.num_trailing_bits),
-            z3.If(new_b.trailing_bit, Z3_ZERO, new_b.num_trailing_bits),
-            lambda v: v.is_zero,
-            lambda v: ~v.sign_bit,
-            lambda v: v.sign_bit,
-            lambda v, w: v.can_equal(w),
-            GLOBAL_PRECISION,
-            Z3_ONE,
-            Z3_TWO,
-            Z3_THREE,
-        ).values():
-            self.solver.add(claim)
-        for claim in seltzo_two_sum_lemmas(
-            old_a,
-            old_b,
-            new_a,
-            new_b,
-            old_a.sign_bit,
-            old_b.sign_bit,
-            new_a.sign_bit,
-            new_b.sign_bit,
-            old_a.leading_bit,
-            old_b.leading_bit,
-            new_a.leading_bit,
-            new_b.leading_bit,
-            old_a.trailing_bit,
-            old_b.trailing_bit,
-            new_a.trailing_bit,
-            new_b.trailing_bit,
-            old_a.exponent,
-            old_b.exponent,
-            new_a.exponent,
-            new_b.exponent,
-            old_a.num_leading_bits,
-            old_b.num_leading_bits,
-            new_a.num_leading_bits,
-            new_b.num_leading_bits,
-            old_a.num_trailing_bits,
-            old_b.num_trailing_bits,
-            new_a.num_trailing_bits,
-            new_b.num_trailing_bits,
-            lambda v: v.is_zero,
-            lambda v: ~v.sign_bit,
-            lambda v: v.sign_bit,
-            lambda v, w: v.can_equal(w),
-            GLOBAL_PRECISION,
-            Z3_ONE,
-            Z3_TWO,
-            Z3_THREE,
-        ).values():
-            self.solver.add(claim)
+        self.two_sum_operands.append((old_a, old_b, new_a, new_b))
+        self.add_two_sum_constraints(old_a, old_b, new_a, new_b)
+
+    def handle_fast_two_sum_command(
+        self, arguments: list[str], line_number: int
+    ) -> None:
+
+        assert len(arguments) == 2
+        name_a: str = arguments[0]
+        name_b: str = arguments[1]
+        assert name_a in self.variables
+        assert name_b in self.variables
+        list_a: list[SELTZOVariable] = self.variables[name_a]
+        list_b: list[SELTZOVariable] = self.variables[name_b]
+        old_a: SELTZOVariable = list_a[-1]
+        old_b: SELTZOVariable = list_b[-1]
+
+        # TODO: Sanitize claim name to ensure it is a valid filename.
+        claim_name: str = f"fast_two_sum_{old_a.name}_{old_b.name}"
+        job: SMTJob = create_smt_job(
+            self.solver, "QF_LIA", claim_name, old_a.can_fast_two_sum(old_b)
+        )
+        job.start(LIA_SOLVERS)
+        while True:
+            if job.poll():
+                assert job.result is not None
+                if job.result[1] == z3.sat:
+                    print(
+                        "ERROR: fast_two_sum command on line",
+                        line_number,
+                        "is invalid and should be replaced by two_sum.",
+                    )
+                break
+            sleep(0.0001)
+
+        new_a: SELTZOVariable = SELTZOVariable(
+            self.solver, name_a + INTERNAL_SEPARATOR + str(len(list_a))
+        )
+        new_b: SELTZOVariable = SELTZOVariable(
+            self.solver, name_b + INTERNAL_SEPARATOR + str(len(list_b))
+        )
+        list_a.append(new_a)
+        list_b.append(new_b)
+        self.two_sum_operands.append((old_a, old_b, new_a, new_b))
+        self.add_two_sum_constraints(old_a, old_b, new_a, new_b)
 
     def extract_logical_condition(self, arguments: list[str]) -> z3.BoolRef:
         assert len(arguments) == 3
@@ -575,7 +661,7 @@ class VerifierContext(object):
         self.solver.add(~claim)
         if self.solver.check() == z3.sat:
             counterexample: z3.ModelRef = self.solver.model()
-            for s, e, x, y in self.two_sum_operands:
+            for x, y, s, e in self.two_sum_operands:
                 if DATA_FILE is None:
                     print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
                     show_two_sum(counterexample, x, y, s, e, prefix="  ")
@@ -624,8 +710,6 @@ class VerifierContext(object):
                 else:
                     assert False
                 break
-            # Sleep to avoid busy waiting. Even the fastest SMT solvers
-            # take a few milliseconds, so 0.1ms is a reasonable interval.
             sleep(0.0001)
 
     def test_bound(
@@ -673,8 +757,6 @@ class VerifierContext(object):
                     return (False, solver_name, solver_time)
                 else:
                     assert False
-            # Sleep to avoid busy waiting. Even the fastest SMT solvers
-            # take a few milliseconds, so 0.1ms is a reasonable interval.
             sleep(0.0001)
 
     def handle_bound_command(
@@ -800,7 +882,9 @@ def main() -> None:
             with open(path) as f:
                 print(f"Processing file {repr(path)}.")
                 context: VerifierContext = VerifierContext()
-                for line in f:
+                line_number: int = 0
+                for line in f.readlines():
+                    line_number += 1
                     if "#" in line:
                         line = line[: line.index("#")]
                     parts: list[str] = line.split()
@@ -812,7 +896,9 @@ def main() -> None:
                     elif command == "assume":
                         context.handle_assume_command(arguments)
                     elif command == "two_sum":
-                        context.handle_two_sum_command(arguments)
+                        context.handle_two_sum_command(arguments, line_number)
+                    elif command == "fast_two_sum":
+                        context.handle_fast_two_sum_command(arguments, line_number)
                     elif command == "prove":
                         context.handle_prove_command(arguments)
                     elif command == "bound":

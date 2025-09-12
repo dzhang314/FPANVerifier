@@ -4335,11 +4335,11 @@ def seltzo_two_sum_lemmas(
     # Lemma P02B: A one between the exponents of the minuend and subtrahend
     # insulates the exponent of the difference from decreasing.
     result["SELTZO-TwoSum-P02B-X"] = z3.Implies(
-        z3.And(diff_sign, f1x > ey, xy_nonzero, z3.Not(x_pow2)),
+        z3.And(diff_sign, f1x > ey, xy_nonzero, ~x_pow2),
         z3.And(ss == sx, es == ex, f0s >= ey),
     )
     result["SELTZO-TwoSum-P02B-Y"] = z3.Implies(
-        z3.And(diff_sign, f1y > ex, xy_nonzero, z3.Not(y_pow2)),
+        z3.And(diff_sign, f1y > ex, xy_nonzero, ~y_pow2),
         z3.And(ss == sy, es == ey, f0s >= ex),
     )
 

@@ -6,19 +6,19 @@ variable d
 assume a strongly_dominates c
 assume b strongly_dominates d
 
-two_sum a b
-two_sum c d
-two_sum b c
-two_sum a b
-two_sum b d
-two_sum a b
+two_sum      a b
+two_sum      c d
+two_sum      b c
+fast_two_sum a b
+fast_two_sum b d
+fast_two_sum a b
 
 prove a strongly_dominates b
 
 # The following TwoSum operations are not part of the ddadd algorithm.
 # They are included here for the purpose of analyzing the error terms.
 
-two_sum c d
+fast_two_sum c d
 
 bound c / a
 bound d / a
