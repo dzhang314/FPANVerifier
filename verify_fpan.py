@@ -545,6 +545,86 @@ class FPANVerifier(object):
         ).values():
             self.solver.add(claim)
 
+    def add_two_prod_constraints(
+        self,
+        x: SELTZOVariable,
+        y: SELTZOVariable,
+        p: SELTZOVariable,
+        e: SELTZOVariable,
+    ) -> None:
+        for claim in se_two_prod_lemmas(
+            x,
+            y,
+            p,
+            e,
+            x.sign_bit,
+            y.sign_bit,
+            p.sign_bit,
+            e.sign_bit,
+            x.exponent,
+            y.exponent,
+            p.exponent,
+            e.exponent,
+            lambda v: v.is_zero,
+            lambda v: ~v.sign_bit,
+            lambda v: v.sign_bit,
+            GLOBAL_PRECISION,
+            GLOBAL_ZERO_EXPONENT + 1,
+            Z3_ONE,
+            Z3_TWO,
+        ).values():
+            self.solver.add(claim)
+
+    def show_counterexample(
+        self,
+        claim: z3.BoolRef,
+        precision: int = FLOAT16_PRECISION,
+    ) -> None:
+        self.solver.push()
+        self.solver.add(GLOBAL_PRECISION == precision)
+        self.solver.add(~claim)
+        if self.solver.check() == z3.sat:
+            counterexample: z3.ModelRef = self.solver.model()
+            for x, y, s, e in self.two_sum_operands:
+                if DATA_FILE is None:
+                    print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
+                    show_two_sum(counterexample, x, y, s, e, prefix="  ")
+                else:
+                    keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
+                    is_valid: bool = exists_in_data(*keys)
+                    if VERBOSE_COUNTEREXAMPLES or not is_valid:
+                        print(
+                            f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
+                            "(valid):" if is_valid else "(invalid):",
+                        )
+                        show_two_sum(counterexample, x, y, s, e, prefix="  ")
+            print()
+        else:
+            print(
+                f"WARNING: No counterexample found with precision p = {precision}.",
+                file=sys.stderr,
+            )
+        self.solver.pop()
+
+    def check(self, claim: z3.BoolRef, claim_name: str) -> tuple[bool, str, float]:
+        # TODO: Sanitize claim_name to ensure it is a valid filename.
+        job: SMTJob = create_smt_job(self.solver, "QF_LIA", claim_name, claim)
+        job.start(LIA_SOLVERS)
+        while True:
+            if job.poll():
+                assert job.result is not None
+                assert len(job.processes) == 1
+                solver_name: str = job.processes.popitem()[0]
+                if job.result[1] == z3.unsat:
+                    return (True, solver_name, job.result[0])
+                elif job.result[1] == z3.sat:
+                    return (False, solver_name, job.result[0])
+                else:
+                    assert False
+            # Sleep to avoid busy waiting. Even the fastest SMT solvers
+            # take a few milliseconds, so 0.1ms is a reasonable interval.
+            sleep(0.0001)
+
     def handle_two_sum_command(self, arguments: list[str], line_number: int) -> None:
 
         assert len(arguments) == 2
@@ -558,24 +638,17 @@ class FPANVerifier(object):
         old_b: SELTZOVariable = list_b[-1]
 
         if CHECK_FAST_TWO_SUM:
-            # TODO: Sanitize claim name to ensure it is a valid filename.
-            claim_name: str = f"fast_two_sum_{old_a.name}_{old_b.name}"
-            job: SMTJob = create_smt_job(
-                self.solver, "QF_LIA", claim_name, old_a.can_fast_two_sum(old_b)
+            result, _, _ = self.check(
+                old_a.can_fast_two_sum(old_b),
+                f"fast_two_sum_{old_a.name}_{old_b.name}",
             )
-            job.start(LIA_SOLVERS)
-            while True:
-                if job.poll():
-                    assert job.result is not None
-                    if job.result[1] == z3.unsat:
-                        print(
-                            "NOTE: two_sum command on line",
-                            line_number,
-                            "can be replaced by fast_two_sum.",
-                            file=sys.stderr,
-                        )
-                    break
-                sleep(0.0001)
+            if result:
+                print(
+                    "NOTE: two_sum command on line",
+                    line_number,
+                    "can be replaced by fast_two_sum.",
+                    file=sys.stderr,
+                )
 
         new_a: SELTZOVariable = SELTZOVariable(
             self.solver, name_a + INTERNAL_SEPARATOR + str(len(list_a))
@@ -602,24 +675,17 @@ class FPANVerifier(object):
         old_a: SELTZOVariable = list_a[-1]
         old_b: SELTZOVariable = list_b[-1]
 
-        # TODO: Sanitize claim name to ensure it is a valid filename.
-        claim_name: str = f"fast_two_sum_{old_a.name}_{old_b.name}"
-        job: SMTJob = create_smt_job(
-            self.solver, "QF_LIA", claim_name, old_a.can_fast_two_sum(old_b)
+        result, _, _ = self.check(
+            old_a.can_fast_two_sum(old_b),
+            f"fast_two_sum_{old_a.name}_{old_b.name}",
         )
-        job.start(LIA_SOLVERS)
-        while True:
-            if job.poll():
-                assert job.result is not None
-                if job.result[1] == z3.sat:
-                    print(
-                        "ERROR: fast_two_sum command on line",
-                        line_number,
-                        "is invalid and should be replaced by two_sum.",
-                        file=sys.stderr,
-                    )
-                break
-            sleep(0.0001)
+        if not result:
+            print(
+                "ERROR: fast_two_sum command on line",
+                line_number,
+                "is invalid and should be replaced by two_sum.",
+                file=sys.stderr,
+            )
 
         new_a: SELTZOVariable = SELTZOVariable(
             self.solver, name_a + INTERNAL_SEPARATOR + str(len(list_a))
@@ -653,28 +719,7 @@ class FPANVerifier(object):
         y: SELTZOVariable = self.variables[name_y][-1]
         p: SELTZOVariable = self.variables[name_p][-1]
         e: SELTZOVariable = self.variables[name_e][-1]
-        for claim in se_two_prod_lemmas(
-            x,
-            y,
-            p,
-            e,
-            x.sign_bit,
-            y.sign_bit,
-            p.sign_bit,
-            e.sign_bit,
-            x.exponent,
-            y.exponent,
-            p.exponent,
-            e.exponent,
-            lambda v: v.is_zero,
-            lambda v: ~v.sign_bit,
-            lambda v: v.sign_bit,
-            GLOBAL_PRECISION,
-            GLOBAL_ZERO_EXPONENT + 1,
-            Z3_ONE,
-            Z3_TWO,
-        ).values():
-            self.solver.add(claim)
+        self.add_two_prod_constraints(x, y, p, e)
 
     def extract_logical_condition(self, arguments: list[str]) -> z3.BoolRef:
         assert len(arguments) == 3
@@ -700,117 +745,30 @@ class FPANVerifier(object):
     def handle_assume_command(self, arguments: list[str]) -> None:
         self.solver.add(self.extract_logical_condition(arguments))
 
-    def show_counterexample(
-        self,
-        claim: z3.BoolRef,
-        precision: int = FLOAT16_PRECISION,
-    ) -> None:
-        self.solver.push()
-        self.solver.add(GLOBAL_PRECISION == precision)
-        self.solver.add(~claim)
-        if self.solver.check() == z3.sat:
-            counterexample: z3.ModelRef = self.solver.model()
-            for x, y, s, e in self.two_sum_operands:
-                if DATA_FILE is None:
-                    print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
-                    show_two_sum(counterexample, x, y, s, e, prefix="  ")
-                else:
-                    keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
-                    is_valid: bool = exists_in_data(*keys)
-                    if VERBOSE_COUNTEREXAMPLES or not is_valid:
-                        print(
-                            f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
-                            "(valid):" if is_valid else "(invalid):",
-                        )
-                        show_two_sum(counterexample, x, y, s, e, prefix="  ")
-            print()
-        else:
-            print(
-                f"WARNING: No counterexample found with precision p = {precision}.",
-                file=sys.stderr,
-            )
-        self.solver.pop()
-
     def handle_prove_command(self, arguments: list[str]) -> None:
         claim: z3.BoolRef = self.extract_logical_condition(arguments)
-        # TODO: Sanitize claim_name to ensure it is a valid filename.
-        claim_name: str = "_".join(arguments)
-        job: SMTJob = create_smt_job(self.solver, "QF_LIA", claim_name, claim)
-        job.start(LIA_SOLVERS)
-        while True:
-            if job.poll():
-                assert job.result is not None
-                assert len(job.processes) == 1
-                solver_name: str = job.processes.popitem()[0]
-                if job.result[1] == z3.unsat:
-                    print(
-                        " ".join(arguments).ljust(30),
-                        "proved by",
-                        solver_name.ljust(SOLVER_LEN),
-                        f"in{job.result[0]:8.3f} seconds.",
-                    )
-                elif job.result[1] == z3.sat:
-                    print(
-                        "ERROR:",
-                        " ".join(arguments).ljust(22),
-                        "REFUTED by",
-                        solver_name.ljust(SOLVER_LEN),
-                        f"in{job.result[0]:8.3f} seconds.",
-                        file=sys.stderr,
-                    )
-                    if SHOW_COUNTEREXAMPLES:
-                        self.show_counterexample(claim)
-                else:
-                    assert False
-                break
-            sleep(0.0001)
-
-    def test_bound(
-        self,
-        name_a: str,
-        name_b: str,
-        a: SELTZOVariable,
-        b: SELTZOVariable,
-        k: int,
-        j: int,
-        verbose: bool,
-    ) -> tuple[bool, str, float]:
-        # TODO: Sanitize bound name to ensure it is a valid filename.
-        bound_name: str = f"bound_{name_a}_{name_b}_{k}_{j}"
-        job: SMTJob = create_smt_job(
-            self.solver,
-            "QF_LIA",
-            bound_name,
-            a.is_smaller_than(b, GLOBAL_PRECISION * k + j),
+        result, solver_name, solver_time = self.check(
+            claim,
+            "_".join(arguments),
         )
-        job.start(LIA_SOLVERS)
-        while True:
-            if job.poll():
-                assert job.result is not None
-                assert len(job.processes) == 1
-                solver_name: str = job.processes.popitem()[0]
-                solver_time: float = job.result[0]
-                if job.result[1] == z3.unsat:
-                    if verbose:
-                        print(
-                            f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} proved ",
-                            format_bound(name_a, name_b, k, j).ljust(30),
-                            f"in{solver_time:8.3f} seconds.",
-                            end="\r",
-                        )
-                    return (True, solver_name, solver_time)
-                elif job.result[1] == z3.sat:
-                    if verbose:
-                        print(
-                            f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} refuted",
-                            format_bound(name_a, name_b, k, j).ljust(30),
-                            f"in{solver_time:8.3f} seconds.",
-                            end="\r",
-                        )
-                    return (False, solver_name, solver_time)
-                else:
-                    assert False
-            sleep(0.0001)
+        if result:
+            print(
+                " ".join(arguments).ljust(30),
+                "proved by",
+                solver_name.ljust(SOLVER_LEN),
+                f"in{solver_time:8.3f} seconds.",
+            )
+        else:
+            print(
+                "ERROR:",
+                " ".join(arguments).ljust(22),
+                "REFUTED by",
+                solver_name.ljust(SOLVER_LEN),
+                f"in{solver_time:8.3f} seconds.",
+                file=sys.stderr,
+            )
+            if SHOW_COUNTEREXAMPLES:
+                self.show_counterexample(claim)
 
     def handle_bound_command(
         self,
@@ -834,26 +792,42 @@ class FPANVerifier(object):
         last_passing_name: str | None = None
         last_passing_time: float | None = None
 
-        def local_test_bound(k: int, j: int) -> bool:
+        def check_bound(k: int, j: int) -> bool:
             nonlocal last_passing_name
             nonlocal last_passing_time
-            result: tuple[bool, str, float] = self.test_bound(
-                name_a, name_b, a, b, k, j, verbose
+            result, solver_name, solver_time = self.check(
+                a.is_smaller_than(b, GLOBAL_PRECISION * k + j),
+                f"bound_{name_a}_{name_b}_{k}_{j}",
             )
-            if result[0]:
-                last_passing_name = result[1]
-                last_passing_time = result[2]
-            return result[0]
+            if verbose:
+                if result:
+                    print(
+                        f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} proved ",
+                        format_bound(name_a, name_b, k, j).ljust(30),
+                        f"in{solver_time:8.3f} seconds.",
+                        end="\r",
+                    )
+                else:
+                    print(
+                        f"\x1b[2K  {solver_name.rjust(SOLVER_LEN)} refuted",
+                        format_bound(name_a, name_b, k, j).ljust(30),
+                        f"in{solver_time:8.3f} seconds.",
+                        end="\r",
+                    )
+            if result:
+                last_passing_name = solver_name
+                last_passing_time = solver_time
+            return result
 
         # Perform a linear scan to find passing and failing values of k.
         passing_k: int | None = None
         failing_k: int | None = None
         trial_k: int
-        if local_test_bound(origin_k, origin_j):
+        if check_bound(origin_k, origin_j):
             passing_k = origin_k
             while True:
                 trial_k = passing_k + 1
-                if local_test_bound(trial_k, origin_j):
+                if check_bound(trial_k, origin_j):
                     passing_k = trial_k
                 else:
                     failing_k = trial_k
@@ -862,7 +836,7 @@ class FPANVerifier(object):
             failing_k = origin_k
             while True:
                 trial_k = failing_k - 1
-                if local_test_bound(trial_k, origin_j):
+                if check_bound(trial_k, origin_j):
                     passing_k = trial_k
                     break
                 else:
@@ -879,18 +853,18 @@ class FPANVerifier(object):
         trial_j: int
         while passing_j < 0:
             trial_j = (passing_j + 1) // 2
-            if local_test_bound(passing_k, trial_j):
+            if check_bound(passing_k, trial_j):
                 passing_j = trial_j
             else:
                 failing_j = trial_j
                 break
         if failing_j is None:
             assert passing_j == 0
-            if local_test_bound(passing_k, 1):
+            if check_bound(passing_k, 1):
                 passing_j = 1
                 while True:
                     trial_j = passing_j * 2
-                    if local_test_bound(passing_k, trial_j):
+                    if check_bound(passing_k, trial_j):
                         passing_j = trial_j
                     else:
                         failing_j = trial_j
@@ -905,7 +879,7 @@ class FPANVerifier(object):
         # Perform a binary search to tighten the bounds on j.
         while passing_j + 1 < failing_j:
             trial_j = (passing_j + failing_j) // 2
-            if local_test_bound(passing_k, trial_j):
+            if check_bound(passing_k, trial_j):
                 passing_j = trial_j
             else:
                 failing_j = trial_j
