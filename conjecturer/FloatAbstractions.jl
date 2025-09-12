@@ -986,30 +986,24 @@ function _neighborhood(x::SELTZOAbstraction, ::Type{T}) where {T<:AbstractFloat}
     result = SELTZOAbstraction[]
     c = seltzo_classify(x, T)
     s, lb, tb, e, nlb, ntb = unpack(x)
-    for ds = false:true
-        for dlb = false:true
-            for dtb = false:true
-                for de = -1:+1
-                    for dnlb = -1:+1
-                        for dntb = -1:+1
-                            try
-                                nx = SELTZOAbstraction(
-                                    xor(s, ds),
-                                    xor(lb, dlb),
-                                    xor(tb, dtb),
-                                    e + de,
-                                    nlb + dnlb,
-                                    ntb + dntb,
-                                )
-                                if seltzo_classify(nx, T) == c
-                                    push!(result, nx)
-                                end
-                            catch exception
-                                if !(exception isa DomainError)
-                                    rethrow()
-                                end
-                            end
-                        end
+    for de = -1:+1
+        for dnlb = -1:+1
+            for dntb = -1:+1
+                try
+                    nx = SELTZOAbstraction(
+                        s,
+                        lb,
+                        tb,
+                        e + de,
+                        nlb + dnlb,
+                        ntb + dntb,
+                    )
+                    if seltzo_classify(nx, T) == c
+                        push!(result, nx)
+                    end
+                catch exception
+                    if !(exception isa DomainError)
+                        rethrow()
                     end
                 end
             end
@@ -1160,7 +1154,7 @@ export _find_best_seltzo_model, _delete_inconsistent_data!, _seltzo_string
 
 const SELTZO_COEFFICIENT_VECTORS = sort!([
         v for v in Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)
-        if all(iszero.(v)) || (sum(v) == 1)
+        if all(iszero.(v)) || ((sum(v) == 1) && count(!iszero, v) <= 2)
     ]; by=v -> (sum(abs.(v)), -2 .* v .^ 2 .- v))
 
 
