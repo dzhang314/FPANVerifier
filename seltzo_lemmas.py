@@ -4383,6 +4383,16 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey - one, f0s <= ex),
     )
 
+    # Lemma P05: A trailing bit that is not cancelled out must remain intact.
+    result["SELTZO-TwoSum-P05-X"] = z3.Implies(
+        z3.And(g1x > g1y, xy_nonzero),
+        z3.Or(g1s == g1y, g1e == g1y),
+    )
+    result["SELTZO-TwoSum-P05-Y"] = z3.Implies(
+        z3.And(g1y > g1x, xy_nonzero),
+        z3.Or(g1s == g1x, g1e == g1x),
+    )
+
     # Lemma T01A: Adding a power of two into a leading zero bit.
     # This should eventually be replaced by complete case-by-case lemmas.
     result["SELTZO-TwoSum-T01A-X"] = z3.Implies(
