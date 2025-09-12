@@ -626,7 +626,6 @@ class FPANVerifier(object):
             sleep(0.0001)
 
     def handle_two_sum_command(self, arguments: list[str], line_number: int) -> None:
-
         assert len(arguments) == 2
         name_a: str = arguments[0]
         name_b: str = arguments[1]
@@ -636,7 +635,6 @@ class FPANVerifier(object):
         list_b: list[SELTZOVariable] = self.variables[name_b]
         old_a: SELTZOVariable = list_a[-1]
         old_b: SELTZOVariable = list_b[-1]
-
         if CHECK_FAST_TWO_SUM:
             result, _, _ = self.check(
                 old_a.can_fast_two_sum(old_b),
@@ -649,7 +647,6 @@ class FPANVerifier(object):
                     "can be replaced by fast_two_sum.",
                     file=sys.stderr,
                 )
-
         new_a: SELTZOVariable = SELTZOVariable(
             self.solver, name_a + INTERNAL_SEPARATOR + str(len(list_a))
         )
@@ -664,7 +661,6 @@ class FPANVerifier(object):
     def handle_fast_two_sum_command(
         self, arguments: list[str], line_number: int
     ) -> None:
-
         assert len(arguments) == 2
         name_a: str = arguments[0]
         name_b: str = arguments[1]
@@ -674,7 +670,6 @@ class FPANVerifier(object):
         list_b: list[SELTZOVariable] = self.variables[name_b]
         old_a: SELTZOVariable = list_a[-1]
         old_b: SELTZOVariable = list_b[-1]
-
         result, _, _ = self.check(
             old_a.can_fast_two_sum(old_b),
             f"fast_two_sum_{old_a.name}_{old_b.name}",
@@ -686,7 +681,6 @@ class FPANVerifier(object):
                 "is invalid and should be replaced by two_sum.",
                 file=sys.stderr,
             )
-
         new_a: SELTZOVariable = SELTZOVariable(
             self.solver, name_a + INTERNAL_SEPARATOR + str(len(list_a))
         )
@@ -747,10 +741,7 @@ class FPANVerifier(object):
 
     def handle_prove_command(self, arguments: list[str]) -> None:
         claim: z3.BoolRef = self.extract_logical_condition(arguments)
-        result, solver_name, solver_time = self.check(
-            claim,
-            "_".join(arguments),
-        )
+        result, solver_name, solver_time = self.check(claim, "_".join(arguments))
         if result:
             print(
                 " ".join(arguments).ljust(30),
