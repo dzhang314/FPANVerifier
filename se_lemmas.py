@@ -49,12 +49,12 @@ def se_two_sum_lemmas(
     same_sign: z3.BoolRef = sx == sy
     diff_sign: z3.BoolRef = sx != sy
 
-    ###################################################### LEMMA FAMILY SE-Z (2)
+    ######################################################### LEMMA FAMILY Z (2)
 
-    # Lemmas in Family SE-Z (for "zero") apply
+    # Lemmas in Family Z (for "zero") apply
     # when one or both addends are zero.
 
-    # Lemma SE-Z1: Both addends are zero.
+    # Lemma Z1: Both addends are zero.
     result["SE-TwoSum-Z1-PP"] = z3.Implies(
         z3.And(x_pos_zero, y_pos_zero),
         z3.And(s_pos_zero, e_pos_zero),
@@ -72,7 +72,7 @@ def se_two_sum_lemmas(
         z3.And(s_neg_zero, e_pos_zero),
     )
 
-    # Lemma SE-Z2: One addend is zero.
+    # Lemma Z2: One addend is zero.
     result["SE-TwoSum-Z2-X"] = z3.Implies(
         z3.And(y_zero, ~x_zero),
         z3.And(s_equals_x, e_pos_zero),
@@ -82,9 +82,9 @@ def se_two_sum_lemmas(
         z3.And(s_equals_y, e_pos_zero),
     )
 
-    ############################################################# LEMMA SE-I (1)
+    ################################################################ LEMMA I (1)
 
-    # Lemma SE-I (for "identical") applies to addends
+    # Lemma I (for "identical") applies to addends
     # returned unchanged by the TwoSum algorithm.
 
     result["SE-TwoSum-I-X"] = z3.Implies(
@@ -148,9 +148,9 @@ def se_two_sum_lemmas(
         result.append(e_pos_zero)
         return z3.And(*result)
 
-    ###################################################### LEMMA FAMILY SE-S (5)
+    ######################################################### LEMMA FAMILY S (5)
 
-    # Lemmas in Family SE-S apply to addends with the same sign.
+    # Lemmas in Family S apply to addends with the same sign.
 
     result["SE-TwoSum-S1-X"] = z3.Implies(
         z3.And(same_sign, ex == ey + p),
@@ -226,9 +226,9 @@ def se_two_sum_lemmas(
         ),
     )
 
-    ###################################################### LEMMA FAMILY SE-D (5)
+    ######################################################### LEMMA FAMILY D (5)
 
-    # Lemmas in Family SE-D apply to addends with different signs.
+    # Lemmas in Family D apply to addends with different signs.
 
     result["SE-TwoSum-D1-X"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, ex == ey + (p + one)),

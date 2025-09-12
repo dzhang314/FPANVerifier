@@ -28,30 +28,30 @@ function check_se_two_sum_lemmas(
         checker = LemmaChecker(two_sum_abstractions, x, y, T, lemma_counts)
 
         #! format: off
-        if x_zero | y_zero ################################### LEMMA FAMILY SE-Z
+        if x_zero | y_zero ###################################### LEMMA FAMILY Z
 
-            # Lemmas in Family SE-Z (for "zero") apply
+            # Lemmas in Family Z (for "zero") apply
             # when one or both addends are zero.
 
-            # Lemma SE-Z1: Both addends are zero.
-            checker("SE-Z1-PP", (x == pos_zero) & (y == pos_zero)) do lemma
+            # Lemma Z1: Both addends are zero.
+            checker("SE-TwoSum-Z1-PP", (x == pos_zero) & (y == pos_zero)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-Z1-PN", (x == pos_zero) & (y == neg_zero)) do lemma
+            checker("SE-TwoSum-Z1-PN", (x == pos_zero) & (y == neg_zero)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-Z1-NP", (x == neg_zero) & (y == pos_zero)) do lemma
+            checker("SE-TwoSum-Z1-NP", (x == neg_zero) & (y == pos_zero)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-Z1-NN", (x == neg_zero) & (y == neg_zero)) do lemma
+            checker("SE-TwoSum-Z1-NN", (x == neg_zero) & (y == neg_zero)) do lemma
                 add_case!(lemma, neg_zero, pos_zero)
             end
 
-            # Lemma SE-Z2: One addend is zero.
-            checker("SE-Z2-X", y_zero & !x_zero) do lemma
+            # Lemma Z2: One addend is zero.
+            checker("SE-TwoSum-Z2-X", y_zero & !x_zero) do lemma
                 add_case!(lemma, x, pos_zero)
             end
-            checker("SE-Z2-Y", x_zero & !y_zero) do lemma
+            checker("SE-TwoSum-Z2-Y", x_zero & !y_zero) do lemma
                 add_case!(lemma, y, pos_zero)
             end
 
@@ -60,90 +60,90 @@ function check_se_two_sum_lemmas(
             # From this point onward, all lemmas implicitly
             # assume that both addends are nonzero.
 
-            ################################################## LEMMA FAMILY SE-I
+            ##################################################### LEMMA FAMILY I
 
-            # Lemmas in Family SE-I (for "identical") apply
+            # Lemmas in Family I (for "identical") apply
             # to addends unchanged by the TwoSum algorithm.
 
-            checker("SE-I-X", (ex > ey + (p+1)) | ((ex == ey + (p+1)) & same_sign)) do lemma
+            checker("SE-TwoSum-I-X", (ex > ey + (p+1)) | ((ex == ey + (p+1)) & same_sign)) do lemma
                 add_case!(lemma, x, y)
             end
-            checker("SE-I-Y", (ey > ex + (p+1)) | ((ey == ex + (p+1)) & same_sign)) do lemma
+            checker("SE-TwoSum-I-Y", (ey > ex + (p+1)) | ((ey == ex + (p+1)) & same_sign)) do lemma
                 add_case!(lemma, y, x)
             end
 
-            ################################################## LEMMA FAMILY SE-S
+            ##################################################### LEMMA FAMILY S
 
-            # Lemmas in Family SE-S apply to addends with the same sign.
+            # Lemmas in Family S apply to addends with the same sign.
 
-            checker("SE-S1-X", same_sign & (ex == ey + p)) do lemma
+            checker("SE-TwoSum-S1-X", same_sign & (ex == ey + p)) do lemma
                 add_case!(lemma, (sx, ex:ex+1), (~sy, ey-(p-1):ex-p))
                 add_case!(lemma, x            , y                   )
             end
-            checker("SE-S1-Y", same_sign & (ey == ex + p)) do lemma
+            checker("SE-TwoSum-S1-Y", same_sign & (ey == ex + p)) do lemma
                 add_case!(lemma, (sy, ey:ey+1), (~sx, ex-(p-1):ey-p))
                 add_case!(lemma, y            , x                   )
             end
 
-            checker("SE-S2-X", same_sign & (ex == ey + (p-1))) do lemma
+            checker("SE-TwoSum-S2-X", same_sign & (ex == ey + (p-1))) do lemma
                 add_case!(lemma, (sx, ex:ex+1), pos_zero          )
                 add_case!(lemma, (sx, ex:ex+1), (±, ey-(p-1):ex-p))
             end
-            checker("SE-S2-Y", same_sign & (ey == ex + (p-1))) do lemma
+            checker("SE-TwoSum-S2-Y", same_sign & (ey == ex + (p-1))) do lemma
                 add_case!(lemma, (sy, ey:ey+1), pos_zero          )
                 add_case!(lemma, (sy, ey:ey+1), (±, ex-(p-1):ey-p))
             end
 
-            checker("SE-S3-X", same_sign & (ex == ey + (p-2))) do lemma
+            checker("SE-TwoSum-S3-X", same_sign & (ex == ey + (p-2))) do lemma
                 add_case!(lemma, (sx, ex:ex+1), pos_zero                )
                 add_case!(lemma, (sx, ex:ex+1), (~sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, (sx, ex     ), ( sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, (sx, ex+1   ), ( sy, ey-(p-1):ex-(p-1)))
             end
-            checker("SE-S3-Y", same_sign & (ey == ex + (p-2))) do lemma
+            checker("SE-TwoSum-S3-Y", same_sign & (ey == ex + (p-2))) do lemma
                 add_case!(lemma, (sy, ey:ey+1), pos_zero                )
                 add_case!(lemma, (sy, ey:ey+1), (~sx, ex-(p-1):ey-p    ))
                 add_case!(lemma, (sy, ey     ), ( sx, ex-(p-1):ey-p    ))
                 add_case!(lemma, (sy, ey+1   ), ( sx, ex-(p-1):ey-(p-1)))
             end
 
-            checker("SE-S4-X", same_sign & (ex > ey) & (ex < ey + (p-2))) do lemma
+            checker("SE-TwoSum-S4-X", same_sign & (ex > ey) & (ex < ey + (p-2))) do lemma
                 add_case!(lemma, (sx, ex:ex+1), pos_zero              )
                 add_case!(lemma, (sx, ex     ), (±, ey-(p-1):ex-p    ))
                 add_case!(lemma, (sx, ex+1   ), (±, ey-(p-1):ex-(p-1)))
             end
-            checker("SE-S4-Y", same_sign & (ey > ex) & (ey < ex + (p-2))) do lemma
+            checker("SE-TwoSum-S4-Y", same_sign & (ey > ex) & (ey < ex + (p-2))) do lemma
                 add_case!(lemma, (sy, ey:ey+1), pos_zero              )
                 add_case!(lemma, (sy, ey     ), (±, ex-(p-1):ey-p    ))
                 add_case!(lemma, (sy, ey+1   ), (±, ex-(p-1):ey-(p-1)))
             end
 
-            checker("SE-S5", same_sign & (ex == ey)) do lemma
+            checker("SE-TwoSum-S5", same_sign & (ex == ey)) do lemma
                 add_case!(lemma, (sx, ex+1), pos_zero)
                 add_case!(lemma, (sx, ex+1), (±, ex-(p-1)))
             end
 
-            ################################################## LEMMA FAMILY SE-D
+            ##################################################### LEMMA FAMILY D
 
-            # Lemmas in Family SE-D apply to addends with different signs.
+            # Lemmas in Family D apply to addends with different signs.
 
-            checker("SE-D1-X", diff_sign & (ex == ey + (p+1))) do lemma
+            checker("SE-TwoSum-D1-X", diff_sign & (ex == ey + (p+1))) do lemma
                 add_case!(lemma, (sx, ex-1), (~sy, ey-(p-1):ex-(p+2)))
                 add_case!(lemma, x         , y                       )
             end
-            checker("SE-D1-Y", diff_sign & (ey == ex + (p+1))) do lemma
+            checker("SE-TwoSum-D1-Y", diff_sign & (ey == ex + (p+1))) do lemma
                 add_case!(lemma, (sy, ey-1), (~sx, ex-(p-1):ey-(p+2)))
                 add_case!(lemma, y         , x                       )
             end
 
-            checker("SE-D2-X", diff_sign & (ex == ey + p)) do lemma
+            checker("SE-TwoSum-D2-X", diff_sign & (ex == ey + p)) do lemma
                 add_case!(lemma, (sx, ex-1), pos_zero                )
                 add_case!(lemma, (sx, ex-1), ( sy, ey-(p-1):ex-(p+2)))
                 add_case!(lemma, (sx, ex-1), (~sy, ey-(p-1):ex-(p+1)))
                 add_case!(lemma, (sx, ex  ), (~sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, x         , y                       )
             end
-            checker("SE-D2-Y", diff_sign & (ey == ex + p)) do lemma
+            checker("SE-TwoSum-D2-Y", diff_sign & (ey == ex + p)) do lemma
                 add_case!(lemma, (sy, ey-1), pos_zero                )
                 add_case!(lemma, (sy, ey-1), ( sx, ex-(p-1):ey-(p+2)))
                 add_case!(lemma, (sy, ey-1), (~sx, ex-(p-1):ey-(p+1)))
@@ -151,27 +151,27 @@ function check_se_two_sum_lemmas(
                 add_case!(lemma, y         , x                       )
             end
 
-            checker("SE-D3-X", diff_sign & (ex > ey + 1) & (ex < ey + p)) do lemma
+            checker("SE-TwoSum-D3-X", diff_sign & (ex > ey + 1) & (ex < ey + p)) do lemma
                 add_case!(lemma, (sx, ex-1:ex), pos_zero              )
                 add_case!(lemma, (sx, ex-1   ), (±, ey-(p-1):ex-(p+1)))
                 add_case!(lemma, (sx, ex     ), (±, ey-(p-1):ex-p    ))
             end
-            checker("SE-D3-Y", diff_sign & (ey > ex + 1) & (ey < ex + p)) do lemma
+            checker("SE-TwoSum-D3-Y", diff_sign & (ey > ex + 1) & (ey < ex + p)) do lemma
                 add_case!(lemma, (sy, ey-1:ey), pos_zero              )
                 add_case!(lemma, (sy, ey-1   ), (±, ex-(p-1):ey-(p+1)))
                 add_case!(lemma, (sy, ey     ), (±, ex-(p-1):ey-p    ))
             end
 
-            checker("SE-D4-X", diff_sign & (ex == ey + 1)) do lemma
+            checker("SE-TwoSum-D4-X", diff_sign & (ex == ey + 1)) do lemma
                 add_case!(lemma, (sx, ex-p:ex), pos_zero )
                 add_case!(lemma, (sx, ex     ), (±, ex-p))
             end
-            checker("SE-D4-Y", diff_sign & (ey == ex + 1)) do lemma
+            checker("SE-TwoSum-D4-Y", diff_sign & (ey == ex + 1)) do lemma
                 add_case!(lemma, (sy, ey-p:ey), pos_zero )
                 add_case!(lemma, (sy, ey     ), (±, ey-p))
             end
 
-            checker("SE-D5", diff_sign & (ex == ey)) do lemma
+            checker("SE-TwoSum-D5", diff_sign & (ex == ey)) do lemma
                 add_case!(lemma, pos_zero          , pos_zero)
                 add_case!(lemma, (±, ex-(p-1):ex-1), pos_zero)
             end
@@ -226,15 +226,15 @@ function check_se_two_prod_lemmas(
         checker = LemmaChecker(two_prod_abstractions, x, y, T, lemma_counts)
 
         #! format: off
-        if x_zero | y_zero ################################### LEMMA FAMILY SE-Z
+        if x_zero | y_zero ###################################### LEMMA FAMILY Z
 
-            # Lemmas in Family SE-Z (for "zero") apply
+            # Lemmas in Family Z (for "zero") apply
             # when one or both factors are zero.
 
-            checker("SE-ZS", same_sign) do lemma
+            checker("SE-TwoProd-ZS", same_sign) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-ZD", diff_sign) do lemma
+            checker("SE-TwoProd-ZD", diff_sign) do lemma
                 add_case!(lemma, neg_zero, pos_zero)
             end
 
@@ -243,37 +243,37 @@ function check_se_two_prod_lemmas(
             # From this point onward, all lemmas implicitly
             # assume that both factors are nonzero.
 
-            ################################################## LEMMA FAMILY SE-U
+            ##################################################### LEMMA FAMILY U
 
-            # Lemmas in Family SE-U (for "underflow") apply to nonzero factors
+            # Lemmas in Family U (for "underflow") apply to nonzero factors
             # whose product is too small to have a normalized representation.
 
-            checker("SE-US", same_sign & (ex + ey < e_min - (p-1))) do lemma
+            checker("SE-TwoProd-US", same_sign & (ex + ey < e_min - (p-1))) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-UD", diff_sign & (ex + ey < e_min - (p-1))) do lemma
+            checker("SE-TwoProd-UD", diff_sign & (ex + ey < e_min - (p-1))) do lemma
                 add_case!(lemma, neg_zero, neg_zero)
             end
 
-            ################################################## LEMMA FAMILY SE-P
+            ##################################################### LEMMA FAMILY P
 
-            # Lemma SE-P1 applies to cases where the product
+            # Lemma P1 applies to cases where the product
             # is normalized but the error term may underflow.
 
-            checker("SE-P1", (ex + ey > e_min - p) & (ex + ey < e_min + (p-1))) do lemma
+            checker("SE-TwoProd-P1", (ex + ey > e_min - p) & (ex + ey < e_min + (p-1))) do lemma
                 add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), pos_zero                      )
                 add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), neg_zero                      )
-                add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-2*(p-1):ex+ey-p    ))
-                add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-2*(p-1):ex+ey-(p-1)))
+                add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-(p+p-2):ex+ey-p    ))
+                add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-(p+p-2):ex+ey-(p-1)))
             end
 
-            # Lemma SE-P2 applies to cases where the product
+            # Lemma P2 applies to cases where the product
             # and error term are both normalized.
 
-            checker("SE-P2", (ex + ey > e_min + (p-2))) do lemma
+            checker("SE-TwoProd-P2", (ex + ey > e_min + (p-2))) do lemma
                 add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), pos_zero                      )
-                add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-2*(p-1):ex+ey-p    ))
-                add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-2*(p-1):ex+ey-(p-1)))
+                add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-(p+p-2):ex+ey-p    ))
+                add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-(p+p-2):ex+ey-(p-1)))
             end
 
         end
