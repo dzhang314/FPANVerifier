@@ -307,3 +307,179 @@ def se_two_sum_lemmas(
     )
 
     return result
+
+
+def se_two_prod_lemmas(
+    x: FloatVar,
+    y: FloatVar,
+    s: FloatVar,
+    e: FloatVar,
+    sx: BoolVar,
+    sy: BoolVar,
+    ss: BoolVar,
+    se: BoolVar,
+    ex: IntVar,
+    ey: IntVar,
+    es: IntVar,
+    ee: IntVar,
+    is_zero: Callable[[FloatVar], z3.BoolRef],
+    is_positive: Callable[[FloatVar], z3.BoolRef],
+    is_negative: Callable[[FloatVar], z3.BoolRef],
+    p: IntVar,
+    e_min: IntVar,
+    one: IntVar,
+    two: IntVar,
+) -> dict[str, z3.BoolRef]:
+
+    result: dict[str, z3.BoolRef] = {}
+
+    x_zero: z3.BoolRef = is_zero(x)
+    y_zero: z3.BoolRef = is_zero(y)
+    xy_nonzero: z3.BoolRef = z3.And(~x_zero, ~y_zero)
+
+    s_zero: z3.BoolRef = is_zero(s)
+    s_pos_zero: z3.BoolRef = z3.And(is_positive(s), s_zero)
+    s_neg_zero: z3.BoolRef = z3.And(is_negative(s), s_zero)
+    e_pos_zero: z3.BoolRef = z3.And(is_positive(e), is_zero(e))
+    e_neg_zero: z3.BoolRef = z3.And(is_negative(e), is_zero(e))
+
+    same_sign: z3.BoolRef = sx == sy
+    diff_sign: z3.BoolRef = sx != sy
+
+    ############################################################# LEMMA FAMILY Z
+
+    # Lemmas in Family Z (for "zero") apply
+    # when one or both addends are zero.
+
+    result["SE-TwoSum-ZS"] = z3.Implies(
+        z3.And(~xy_nonzero, same_sign),
+        z3.And(s_pos_zero, e_pos_zero),
+    )
+    result["SE-TwoSum-ZD"] = z3.Implies(
+        z3.And(~xy_nonzero, diff_sign),
+        z3.And(s_neg_zero, e_pos_zero),
+    )
+
+    ############################################################# LEMMA FAMILY U
+
+    # Lemmas in Family U (for "underflow") apply to nonzero factors
+    # whose product is too small to have a normalized representation.
+
+    result["SE-TwoProd-US"] = z3.Implies(
+        z3.And(
+            xy_nonzero,
+            same_sign,
+            ex + ey < e_min - (p - one),
+        ),
+        z3.And(s_pos_zero, e_pos_zero),
+    )
+    result["SE-TwoProd-UD"] = z3.Implies(
+        z3.And(
+            xy_nonzero,
+            diff_sign,
+            ex + ey < e_min - (p - one),
+        ),
+        z3.And(s_neg_zero, e_neg_zero),
+    )
+
+    ########################################################### HELPER FUNCTIONS
+
+    def se_case(
+        ss_value: BoolVar | tuple[BoolVar] | None,
+        es_range: IntVar | tuple[IntVar, IntVar],
+        se_value: BoolVar | tuple[BoolVar] | None,
+        ee_range: IntVar | tuple[IntVar, IntVar],
+    ) -> z3.BoolRef:
+        result: list[z3.BoolRef] = []
+        if isinstance(ss_value, tuple):
+            result.append(ss != ss_value[0])
+        elif ss_value is not None:
+            result.append(ss == ss_value)
+        if isinstance(es_range, tuple):
+            result.append(es >= es_range[0])
+            result.append(es <= es_range[1])
+        else:
+            result.append(es == es_range)
+        if isinstance(se_value, tuple):
+            result.append(se != se_value[0])
+        elif se_value is not None:
+            result.append(se == se_value)
+        if isinstance(ee_range, tuple):
+            result.append(ee >= ee_range[0])
+            result.append(ee <= ee_range[1])
+        else:
+            result.append(ee == ee_range)
+        return z3.And(*result)
+
+    def se_case_pos_zero(
+        ss_value: BoolVar | tuple[BoolVar] | None,
+        es_range: IntVar | tuple[IntVar, IntVar],
+    ) -> z3.BoolRef:
+        result: list[z3.BoolRef] = []
+        if isinstance(ss_value, tuple):
+            result.append(ss != ss_value[0])
+        elif ss_value is not None:
+            result.append(ss == ss_value)
+        if isinstance(es_range, tuple):
+            result.append(es >= es_range[0])
+            result.append(es <= es_range[1])
+        else:
+            result.append(es == es_range)
+        result.append(e_pos_zero)
+        return z3.And(*result)
+
+    def se_case_neg_zero(
+        ss_value: BoolVar | tuple[BoolVar] | None,
+        es_range: IntVar | tuple[IntVar, IntVar],
+    ) -> z3.BoolRef:
+        result: list[z3.BoolRef] = []
+        if isinstance(ss_value, tuple):
+            result.append(ss != ss_value[0])
+        elif ss_value is not None:
+            result.append(ss == ss_value)
+        if isinstance(es_range, tuple):
+            result.append(es >= es_range[0])
+            result.append(es <= es_range[1])
+        else:
+            result.append(es == es_range)
+        result.append(e_neg_zero)
+        return z3.And(*result)
+
+    ############################################################# LEMMA FAMILY P
+
+    # Lemma P1 applies to cases where the product
+    # is normalized but the error term may underflow.
+
+    result["SE-TwoProd-P1"] = z3.Implies(
+        z3.And(xy_nonzero, ex + ey > e_min - p, ex + ey < e_min + (p - one)),
+        z3.Or(
+            se_case_pos_zero(sx ^ sy, (ex + ey, ex + ey + one)),
+            se_case_neg_zero(sx ^ sy, (ex + ey, ex + ey + one)),
+            se_case(sx ^ sy, ex + ey, None, (ex + ey - (p + p - two), ex + ey - p)),
+            se_case(
+                sx ^ sy,
+                ex + ey + one,
+                None,
+                (ex + ey - (p + p - two), ex + ey - (p - one)),
+            ),
+        ),
+    )
+
+    # Lemma P2 applies to cases where the product
+    # and error term are both normalized.
+
+    result["SE-TwoProd-P2"] = z3.Implies(
+        z3.And(xy_nonzero, ex + ey > e_min + (p + two)),
+        z3.Or(
+            se_case_pos_zero(sx ^ sy, (ex + ey, ex + ey + one)),
+            se_case(sx ^ sy, ex + ey, None, (ex + ey - (p + p - two), ex + ey - p)),
+            se_case(
+                sx ^ sy,
+                ex + ey + one,
+                None,
+                (ex + ey - (p + p - two), ex + ey - (p - one)),
+            ),
+        ),
+    )
+
+    return result
