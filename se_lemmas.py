@@ -469,7 +469,7 @@ def se_two_prod_lemmas(
     # and error term are both normalized.
 
     result["SE-TwoProd-P2"] = z3.Implies(
-        z3.And(xy_nonzero, ex + ey > e_min + (p + two)),
+        z3.And(xy_nonzero, ex + ey > e_min + (p - two)),
         z3.Or(
             se_case_pos_zero(sx ^ sy, (ex + ey, ex + ey + one)),
             se_case(sx ^ sy, ex + ey, None, (ex + ey - (p + p - two), ex + ey - p)),
