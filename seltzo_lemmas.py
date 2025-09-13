@@ -3787,8 +3787,6 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 0, ey - one, fx - one, fy + one)),
     )
 
-    ################## CONSISTENCY VERIFIED UP TO THIS POINT ###################
-
     result["SELTZO-TwoSum-POW2-TWO1-D4-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, y_two1, ey == fy + two, ex == ey + one),
         seltzo_case_zero((sx, 0, 0, ey - one, gy, gy)),
@@ -4780,6 +4778,8 @@ def seltzo_two_sum_lemmas(
             ),
         ),
     )
+
+    ################## CONSISTENCY VERIFIED UP TO THIS POINT ###################
 
     ############################################################################
 

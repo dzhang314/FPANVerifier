@@ -3785,8 +3785,6 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey-1, fx-1, fy+1), pos_zero)
             end
 
-            ############## CONSISTENCY VERIFIED UP TO THIS POINT ###############
-
             checker("SELTZO-TwoSum-POW2-TWO1-D4-X",
                 diff_sign & (cx == POW2) & (cy == TWO1) &
                 (ey == fy + 2) & (ex == ey + 1)
@@ -4630,6 +4628,8 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(sy, 0, 1, ey, ex, fx+1),
                     SELTZORange(sx, 0, 0, fy-1, fy-(p+1), fy-1))
             end
+
+            ############## CONSISTENCY VERIFIED UP TO THIS POINT ###############
 
         end
         #! format: on
