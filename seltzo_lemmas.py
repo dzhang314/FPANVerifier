@@ -3714,7 +3714,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
     result["SELTZO-TwoSum-POW2-MM10-S2-Y"] = z3.Implies(
-        z3.And(same_sign, y_mm10, x_pow2, ey > ex + one, ey < fx + (p - two)),
+        z3.And(same_sign, y_pow2, x_mm10, ey > ex + one, ey < fx + (p - two)),
         seltzo_case(
             (sy, 0, 0, ey, ex, gx),
             ((sx,), 0, 0, ex - (p - one), ex - (p + p - one), ex - (p - one)),
