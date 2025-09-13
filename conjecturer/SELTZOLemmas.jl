@@ -4820,6 +4820,23 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, fx, gx+1:fx-2, fy), pos_zero)
             end
 
+            checker("SELTZO-TwoSum-POW2-G01-S4-X",
+                same_sign & (cx == POW2) & (cy == G01) &
+                (ex > ey + 1) & (ex < gy + (p-1))
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sx, 0, 0, ex, ey, gy),
+                    SELTZORange(~sy, 0, 0, ey-(p-1), ey-(p+p-1), ey-(p-1)))
+            end
+            checker("SELTZO-TwoSum-POW2-G01-S4-Y",
+                same_sign & (cy == POW2) & (cx == G01) &
+                (ey > ex + 1) & (ey < gx + (p-1))
+            ) do lemma
+                add_case!(lemma,
+                    SELTZORange(sy, 0, 0, ey, ex, gx),
+                    SELTZORange(~sx, 0, 0, ex-(p-1), ex-(p+p-1), ex-(p-1)))
+            end
+
         end
         #! format: on
 
