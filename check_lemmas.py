@@ -16,6 +16,8 @@ def check_equivalence(
 
     assert z3.is_implies(primal_lemma)
     assert z3.is_implies(dual_lemma)
+    assert primal_lemma.num_args() == 2
+    assert dual_lemma.num_args() == 2
     primal_hypothesis = primal_lemma.arg(0)
     primal_conclusion = primal_lemma.arg(1)
     dual_hypothesis = dual_lemma.arg(0)
@@ -132,7 +134,7 @@ def main() -> None:
             file=sys.stderr,
         )
 
-    specific_lemma_names = set(
+    precise_lemma_names = set(
         lemma_name
         for lemma_name in lemmas.keys()
         if not lemma_name.startswith("SELTZO-TwoSum-P0")
@@ -140,10 +142,10 @@ def main() -> None:
     )
 
     print("Checking lemma mirror duality...")
-    for name in specific_lemma_names:
+    for name in precise_lemma_names:
         if name.endswith("-X"):
             mirror_name = name[:-2] + "-Y"
-            if mirror_name in specific_lemma_names:
+            if mirror_name in precise_lemma_names:
                 check_equivalence(
                     solver, name, lemmas[name], mirror_lemmas[mirror_name]
                 )
@@ -151,7 +153,7 @@ def main() -> None:
                 print(f"ERROR: Lemma {name} has no mirror dual.", file=sys.stderr)
         elif name.endswith("-Y"):
             mirror_name = name[:-2] + "-X"
-            if mirror_name in specific_lemma_names:
+            if mirror_name in precise_lemma_names:
                 check_equivalence(
                     solver, name, lemmas[name], mirror_lemmas[mirror_name]
                 )
@@ -164,7 +166,7 @@ def main() -> None:
                 )
 
     print("Checking lemma hypothesis satisfiability...")
-    for name in specific_lemma_names:
+    for name in precise_lemma_names:
         lemma = lemmas[name]
         assert z3.is_implies(lemma)
         assert lemma.num_args() == 2
@@ -177,13 +179,15 @@ def main() -> None:
         solver.pop()
 
     print("Checking lemma hypothesis disjointness...")
-    for name_a in specific_lemma_names:
-        for name_b in specific_lemma_names:
+    for name_a in precise_lemma_names:
+        for name_b in precise_lemma_names:
             if name_a != name_b:
                 lemma_a = lemmas[name_a]
                 lemma_b = lemmas[name_b]
                 assert z3.is_implies(lemma_a)
                 assert z3.is_implies(lemma_b)
+                assert lemma_a.num_args() == 2
+                assert lemma_b.num_args() == 2
                 hypothesis_a = lemma_a.arg(0)
                 hypothesis_b = lemma_b.arg(0)
                 solver.push()

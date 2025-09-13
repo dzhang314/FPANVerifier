@@ -278,7 +278,8 @@ class FPANVerifier(object):
         s: SELTZOVariable,
         e: SELTZOVariable,
     ) -> None:
-        for claim in setz_two_sum_lemmas(
+
+        instantiated_setz_lemmas = setz_two_sum_lemmas(
             x,
             y,
             s,
@@ -303,10 +304,12 @@ class FPANVerifier(object):
             Z3_ONE,
             Z3_TWO,
             Z3_THREE,
-        ).values():
+        )
+
+        for claim in instantiated_setz_lemmas.values():
             self.solver.add(claim)
 
-        for claim in seltzo_two_sum_lemmas(
+        instantiated_seltzo_lemmas: dict[str, z3.BoolRef] = seltzo_two_sum_lemmas(
             x,
             y,
             s,
@@ -343,7 +346,9 @@ class FPANVerifier(object):
             Z3_ONE,
             Z3_TWO,
             Z3_THREE,
-        ).values():
+        )
+
+        for claim in instantiated_seltzo_lemmas.values():
             self.solver.add(claim)
 
     def add_two_prod_constraints(
