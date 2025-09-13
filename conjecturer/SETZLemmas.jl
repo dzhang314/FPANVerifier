@@ -205,7 +205,7 @@ function check_setz_two_sum_lemmas(
                 add_case!(lemma, (sx, ex+1, fx), pos_zero)
             end
             checker("SETZ-TwoSum-ESS-Y", same_sign & (ex == ey) & (fx > fy) & (ex < fx + (p-1)) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex+1, fy), pos_zero)
+                add_case!(lemma, (sy, ey+1, fy), pos_zero)
             end
 
             # Lemma EDP0: Addends have different signs and partially overlap.

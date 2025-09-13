@@ -398,7 +398,7 @@ def setz_two_sum_lemmas(
             ex < fx + (p - one),
             ey < fy + (p - one),
         ),
-        setz_case_zero(sx, ex + one, fy),
+        setz_case_zero(sy, ey + one, fy),
     )
 
     result["SETZ-TwoSum-EDP0-X"] = z3.Implies(
@@ -928,7 +928,9 @@ def setz_two_sum_lemmas(
         ),
         z3.Or(
             setz_case_zero(sx, ex, fy),
-            setz_case(sx, ex + one, (ex - (p - three), ey), None, ex - (p - one), fy),
+            setz_case(
+                sx, ex + one, (ex - (p - three), ey - one), None, ex - (p - one), fy
+            ),
             setz_case(sx, ex + one, ey, (sy,), ex - (p - one), fy),
             setz_case(sx, ex + one, ex + one, sy, ex - (p - one), fy),
         ),
@@ -944,7 +946,9 @@ def setz_two_sum_lemmas(
         ),
         z3.Or(
             setz_case_zero(sy, ey, fx),
-            setz_case(sy, ey + one, (ey - (p - three), ex), None, ey - (p - one), fx),
+            setz_case(
+                sy, ey + one, (ey - (p - three), ex - one), None, ey - (p - one), fx
+            ),
             setz_case(sy, ey + one, ex, (sx,), ey - (p - one), fx),
             setz_case(sy, ey + one, ey + one, sx, ey - (p - one), fx),
         ),
@@ -955,7 +959,9 @@ def setz_two_sum_lemmas(
             xy_nonzero, same_sign, ex == fy + (p - one), fx == ey, ey > fy + (p - three)
         ),
         z3.Or(
-            setz_case(sx, ex + one, (ex - (p - three), ey), None, ex - (p - one), fy),
+            setz_case(
+                sx, ex + one, (ex - (p - three), ey - one), None, ex - (p - one), fy
+            ),
             setz_case(sx, ex + one, ey, (sy,), ex - (p - one), fy),
             setz_case(sx, ex + one, ex + one, sy, ex - (p - one), fy),
         ),
@@ -965,7 +971,9 @@ def setz_two_sum_lemmas(
             xy_nonzero, same_sign, ey == fx + (p - one), fy == ex, ex > fx + (p - three)
         ),
         z3.Or(
-            setz_case(sy, ey + one, (ey - (p - three), ex), None, ey - (p - one), fx),
+            setz_case(
+                sy, ey + one, (ey - (p - three), ex - one), None, ey - (p - one), fx
+            ),
             setz_case(sy, ey + one, ex, (sx,), ey - (p - one), fx),
             setz_case(sy, ey + one, ey + one, sx, ey - (p - one), fx),
         ),
@@ -1211,7 +1219,7 @@ def setz_two_sum_lemmas(
             setz_case_zero(sx, ex - one, fy),
             setz_case(sx, ex, (ex - (p - two), ey - one), None, ex - p, fy),
             setz_case(sx, ex, ey, (sy,), ex - p, fy),
-            setz_case(sx, ex, (ey + one, ex), sy, ex - p, fy),
+            setz_case(sx, ex, (ey + one, ex - one), sy, ex - p, fy),
         ),
     )
     result["SETZ-TwoSum-3BC0-Y"] = z3.Implies(
@@ -1222,7 +1230,7 @@ def setz_two_sum_lemmas(
             setz_case_zero(sy, ey - one, fx),
             setz_case(sy, ey, (ey - (p - two), ex - one), None, ey - p, fx),
             setz_case(sy, ey, ex, (sx,), ey - p, fx),
-            setz_case(sy, ey, (ex + one, ey), sx, ey - p, fx),
+            setz_case(sy, ey, (ex + one, ey - one), sx, ey - p, fx),
         ),
     )
 
