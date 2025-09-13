@@ -2931,13 +2931,13 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(~sx, 0, 0, fx+1, fx-(p-1), fx+1))
             end
 
-            checker("SELTZO-POW2-ONE1-D4-X",
+            checker("SELTZO-TwoSum-POW2-ONE1-D4-X",
                 diff_sign & (cx == POW2) & (cy == ONE1) &
                 (ex > ey + 2) & (ex < fy + p)
             ) do lemma
                 add_case!(lemma, SELTZORange(sx, 1, 0, ex-1, ey, fy), pos_zero)
             end
-            checker("SELTZO-POW2-ONE1-D4-Y",
+            checker("SELTZO-TwoSum-POW2-ONE1-D4-Y",
                 diff_sign & (cy == POW2) & (cx == ONE1) &
                 (ey > ex + 2) & (ey < fx + p)
             ) do lemma

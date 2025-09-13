@@ -2951,11 +2951,11 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    result["SELTZO-POW2-ONE1-D4-X"] = z3.Implies(
+    result["SELTZO-TwoSum-POW2-ONE1-D4-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, y_one1, ex > ey + two, ex < fy + p),
         seltzo_case_zero((sx, 1, 0, ex - one, ey, fy)),
     )
-    result["SELTZO-POW2-ONE1-D4-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-POW2-ONE1-D4-Y"] = z3.Implies(
         z3.And(diff_sign, y_pow2, x_one1, ey > ex + two, ey < fx + p),
         seltzo_case_zero((sy, 1, 0, ey - one, ex, fx)),
     )
