@@ -91,7 +91,7 @@ end
 
 
 function translate_hypothesis(expr::Symbol)
-    @assert (expr == :same_sign) || (expr == :diff_sign)
+    @assert expr in Symbol[:same_sign, :diff_sign, :lbx, :tbx, :lby, :tby]
     return string(expr)
 end
 
@@ -136,7 +136,20 @@ function translate_hypothesis(expr::Expr)
         lhs = expr.args[2]
         rhs = expr.args[3]
         return translate_int_expr(lhs) * " > " * translate_int_expr(rhs)
+    elseif (expr.head == :call) && (expr.args[1] == :(~))
+        @assert length(expr.args) == 2
+        @assert expr.args[2] isa Symbol
+        @assert expr.args[2] in Symbol[:lbx, :tbx, :lby, :tby]
+        return "~" * string(expr.args[2])
+    elseif (expr.head == :call) && (expr.args[1] == :(!=))
+        @assert length(expr.args) == 3
+        lhs = expr.args[2]
+        @assert lhs in Symbol[:cx, :cy]
+        rhs = expr.args[3]
+        @assert rhs in Symbol[:POW2, :ALL1]
+        return "~" * string(lhs)[2:end] * "_" * lowercase(string(rhs))
     else
+        println(expr)
         @assert false
     end
 end
