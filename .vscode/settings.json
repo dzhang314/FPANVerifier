@@ -32,6 +32,7 @@
         "ntzx",
         "ntzy",
         "opensmt",
+        "parseall",
         "prunings",
         "pycache",
         "Quadmath",
@@ -42,6 +43,7 @@
         "smtrat",
         "strengthenings",
         "testset",
+        "toplevel",
         "uinttype",
         "unsat",
         "yices"
