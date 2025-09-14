@@ -1822,7 +1822,7 @@ function julia_form(case::SymbolicSELTZOPair)
         return "    add_case!(lemma, $s_expr, pos_zero)"
     else
         e_expr = julia_form(case.e, "sy")
-        return "    add_case!(lemma,\n        $s_expr,\n        $e_expr)"
+        return "    add_case!(lemma, $s_expr, $e_expr)"
     end
 end
 
