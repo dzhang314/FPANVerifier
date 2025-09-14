@@ -51,12 +51,20 @@ function translate_int_expr(expr::Expr)
         @assert length(expr.args) == 3
         lhs = expr.args[2]
         rhs = expr.args[3]
-        return translate_int_expr(lhs) * " + " * translate_int_expr(rhs)
+        if rhs isa Expr
+            return translate_int_expr(lhs) * " + (" * translate_int_expr(rhs) * ")"
+        else
+            return translate_int_expr(lhs) * " + " * translate_int_expr(rhs)
+        end
     elseif expr.args[1] == :(-)
         @assert length(expr.args) == 3
         lhs = expr.args[2]
         rhs = expr.args[3]
-        return translate_int_expr(lhs) * " - " * translate_int_expr(rhs)
+        if rhs isa Expr
+            return translate_int_expr(lhs) * " - (" * translate_int_expr(rhs) * ")"
+        else
+            return translate_int_expr(lhs) * " - " * translate_int_expr(rhs)
+        end
     else
         @assert false
     end
