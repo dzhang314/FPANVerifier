@@ -1256,7 +1256,7 @@ end
 ################################################################################
 
 
-export check_seltzo_lemma, count_inputs
+export SELTZOLemma, check_seltzo_lemma, count_inputs
 
 
 struct SELTZOBound
@@ -1671,6 +1671,10 @@ const SELTZO_BOUND_EXPRESSIONS = Dict{Int,String}(
     1 => "1",
     2 => "2",
     3 => "3",
+    4 => "4 #= WARNING =#",
+    5 => "5 #= WARNING =#",
+    6 => "6 #= WARNING =#",
+    7 => "7 #= WARNING =#",
     8 => "(p-3)",
     9 => "(p-2)",
     10 => "(p-1)",
@@ -1678,6 +1682,17 @@ const SELTZO_BOUND_EXPRESSIONS = Dict{Int,String}(
     12 => "(p+1)",
     13 => "(p+2)",
     14 => "(p+3)",
+    15 => "15 #= WARNING =#",
+    16 => "16 #= WARNING =#",
+    17 => "17 #= WARNING =#",
+    18 => "18 #= WARNING =#",
+    19 => "19 #= WARNING =#",
+    20 => "20 #= WARNING =#",
+    21 => "(p+p-1)",
+    22 => "22 #= WARNING =#",
+    23 => "23 #= WARNING =#",
+    24 => "24 #= WARNING =#",
+    25 => "25 #= WARNING =#",
 )
 
 
