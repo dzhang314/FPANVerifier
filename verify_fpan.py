@@ -386,31 +386,48 @@ class FPANVerifier(object):
         claim: z3.BoolRef,
         precision: int = FLOAT16_PRECISION,
     ) -> None:
-        self.solver.push()
-        self.solver.add(GLOBAL_PRECISION == precision)
-        self.solver.add(~claim)
-        if self.solver.check() == z3.sat:
-            counterexample: z3.ModelRef = self.solver.model()
-            for x, y, s, e in self.two_sum_operands:
-                if DATA_FILE is None:
-                    print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
-                    show_two_sum(counterexample, x, y, s, e, prefix="  ")
-                else:
-                    keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
-                    is_valid: bool = exists_in_data(*keys)
-                    if VERBOSE_COUNTEREXAMPLES or not is_valid:
-                        print(
-                            f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
-                            "(valid):" if is_valid else "(invalid):",
+        for level in range(5):
+            self.solver.push()
+            self.solver.add(~claim)
+            self.solver.add(GLOBAL_PRECISION == precision)
+            for var_list in self.variables.values():
+                for var in var_list:
+                    if level == 0:
+                        self.solver.add(var.num_leading_bits == precision - 1)
+                        self.solver.add(var.num_trailing_bits == precision - 1)
+                    elif level < 4:
+                        self.solver.add(
+                            var.num_leading_bits + var.num_trailing_bits
+                            >= precision - level
                         )
+            if self.solver.check() == z3.sat:
+                print(
+                    f"Found counterexample with precision p = {precision} at level {level}."
+                )
+                counterexample: z3.ModelRef = self.solver.model()
+                for x, y, s, e in self.two_sum_operands:
+                    if DATA_FILE is None:
+                        print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
                         show_two_sum(counterexample, x, y, s, e, prefix="  ")
-            print()
+                    else:
+                        keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
+                        is_valid: bool = exists_in_data(*keys)
+                        if VERBOSE_COUNTEREXAMPLES or not is_valid:
+                            print(
+                                f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
+                                "(valid):" if is_valid else "(invalid):",
+                            )
+                            show_two_sum(counterexample, x, y, s, e, prefix="  ")
+                print()
+                self.solver.pop()
+                break
+            else:
+                self.solver.pop()
         else:
             print(
                 f"WARNING: No counterexample found with precision p = {precision}.",
                 file=sys.stderr,
             )
-        self.solver.pop()
 
     def check(self, claim: z3.BoolRef) -> tuple[bool, str, float]:
         job: SMTJob = create_smt_job(self.solver, "QF_LIA", str(uuid4()), claim)
