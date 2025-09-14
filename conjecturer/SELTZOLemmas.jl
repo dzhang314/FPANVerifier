@@ -1348,7 +1348,7 @@ function check_seltzo_two_sum_lemmas(
 
             checker("SELTZO-TwoSum-ONE1-R1R0-D3-X",
                 diff_sign & (cx == ONE1) & (cy == R1R0) &
-                (fx == ey) & (ex > fy + p+1)
+                (fx == ey) & (ex > fy + (p+1))
             ) do lemma
                 add_case!(lemma,
                     SELTZORange(sx, 1, 0, ex-1, fx-1, gx),
@@ -1356,7 +1356,7 @@ function check_seltzo_two_sum_lemmas(
             end
             checker("SELTZO-TwoSum-ONE1-R1R0-D3-Y",
                 diff_sign & (cy == ONE1) & (cx == R1R0) &
-                (fy == ex) & (ey > fx + p+1)
+                (fy == ex) & (ey > fx + (p+1))
             ) do lemma
                 add_case!(lemma,
                     SELTZORange(sy, 1, 0, ey-1, fy-1, gy),
@@ -4634,8 +4634,6 @@ function check_seltzo_two_sum_lemmas(
                     SELTZORange(sy, 0, 1, ey, ex, fx+1),
                     SELTZORange(sx, 0, 0, fy-1, fy-(p+1), fy-1))
             end
-
-            ############## CONSISTENCY VERIFIED UP TO THIS POINT ###############
 
             checker("SELTZO-TwoSum-ONE1-G10-D2-X",
                 diff_sign & (cx == ONE1) & (cy == G10) &
