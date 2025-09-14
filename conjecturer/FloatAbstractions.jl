@@ -3,6 +3,7 @@ module FloatAbstractions
 using Base: uinttype, exponent_bias, exponent_mask,
     significand_bits, significand_mask
 using Base.Threads: @threads, nthreads
+using Random: shuffle!
 
 ################################################ FLOATING-POINT BIT MANIPULATION
 
@@ -1071,7 +1072,7 @@ function compatible_neighbors(
     x::SELTZOAbstraction,
     y::SELTZOAbstraction,
     ::Type{T};
-    r_max::Int=1,
+    r_max::Int,
 ) where {T<:AbstractFloat}
     result = Dict{
         Tuple{SELTZOAbstraction,SELTZOAbstraction},
@@ -1107,9 +1108,6 @@ end
 
 
 ################################################################## DEEP INDEXING
-
-
-export _deep_eachindex, _deep_getindex
 
 
 @inline _deep_eachindex(::Integer; prefix::Tuple=()) = Tuple[prefix]
@@ -1149,9 +1147,6 @@ end
 ######################################################## SELTZO LEMMA GENERATION
 
 
-export _find_best_seltzo_model, _delete_inconsistent_data!, _seltzo_string
-
-
 const SELTZO_COEFFICIENT_VECTORS = sort!([
         v for v in Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)
         if all(iszero.(v)) || ((sum(v) == 1) && count(!iszero, v) <= 2)
@@ -1167,6 +1162,7 @@ function _find_best_seltzo_model(
     deep_indices::AbstractVector{Tuple},
     ::Type{T},
 ) where {T<:AbstractFloat}
+
     @assert haskey(data, (x, y))
     Base.require_one_based_indexing(deep_indices)
 
@@ -1202,9 +1198,19 @@ function _find_best_seltzo_model(
             actual = output_data[:, output_index]
             c0 = actual[reference_index] - predicted[reference_index]
             predicted .+= c0
-            score = (-count(predicted .== actual),
-                count(map(!, iszero.((c1, c2, c3, c4, c5, c6)))),
-                sum(abs.((c1, c2, c3, c4, c5, c6))), abs(c0))
+            score = (
+                # Score each model by the number of correct predictions.
+                # Higher is better, so the count is negated.
+                -count(predicted .== actual),
+                # Among models with the same number of correct predictions,
+                # prefer those with fewer nonzero coefficients.
+                count(map(!iszero, (c1, c2, c3, c4, c5, c6))),
+                # Among models with the same number nonzero coefficients,
+                # prefer those with smaller absolute coefficients.
+                sum(abs.((c1, c2, c3, c4, c5, c6))),
+                # Finally, prefer models with a smaller constant term.
+                abs(c0),
+            )
             if isnothing(best_score) || score < best_score
                 best_score = score
                 best_model = (c0, c1, c2, c3, c4, c5, c6)
@@ -1215,6 +1221,8 @@ function _find_best_seltzo_model(
             result = trial_result
         end
     end
+
+    # Discard the score and return only the best model and its output index.
     return result[2] => result[3]
 end
 
@@ -1245,7 +1253,482 @@ function _delete_inconsistent_data!(
 end
 
 
-function _seltzo_string((c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int})
+################################################################################
+
+
+export check_seltzo_lemma, count_inputs
+
+
+struct SELTZOBound
+    coefficients::NTuple{6,Int}
+    lower_bound::Int
+    upper_bound::Int
+end
+
+
+struct SymbolicSELTZOTuple
+    s::Bool
+    lb::Bool
+    tb::Bool
+    e::NTuple{7,Int}
+    f::NTuple{7,Int}
+    g::NTuple{7,Int}
+end
+
+
+struct SymbolicSELTZOPair
+    s::Union{Nothing,SymbolicSELTZOTuple}
+    e::Union{Nothing,SymbolicSELTZOTuple}
+end
+
+
+struct SELTZOLemma
+    sxy::Bool # false -> same_sign, true -> diff_sign
+    cx::SELTZOType
+    cy::SELTZOType
+    bounds::Vector{SELTZOBound}
+    cases::Vector{SymbolicSELTZOPair}
+end
+
+
+@inline function _satisfies_bounds(
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
+    bounds::Vector{SELTZOBound},
+    ::Type{T},
+) where {T<:AbstractFloat}
+    ex, fx, gx = unpack_ints(x, T)
+    ey, fy, gy = unpack_ints(y, T)
+    for bound in bounds
+        c1, c2, c3, c4, c5, c6 = bound.coefficients
+        value = c1 * ex + c2 * fx + c3 * gx + c4 * ey + c5 * fy + c6 * gy
+        if !(bound.lower_bound <= value <= bound.upper_bound)
+            return false
+        end
+    end
+    return true
+end
+
+
+@inline function _evaluate_model(
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
+    (c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int},
+    ::Type{T},
+) where {T<:AbstractFloat}
+    ex, fx, gx = unpack_ints(x, T)
+    ey, fy, gy = unpack_ints(y, T)
+    return c0 + c1 * ex + c2 * fx + c3 * gx + c4 * ey + c5 * fy + c6 * gy
+end
+
+
+function check_seltzo_lemma(
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
+    lemma::SELTZOLemma,
+    ::Type{T};
+) where {T<:AbstractFloat}
+
+    pos_zero = SELTZOAbstraction(+zero(T))
+    abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
+    xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
+    ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+
+    try
+        @threads for x in xs
+            sx = signbit(x)
+            for y in ys
+                sy = signbit(y)
+                if xor(sx, sy) == lemma.sxy
+                    if _satisfies_bounds(x, y, lemma.bounds, T)
+                        checker = _LemmaOutputs{SELTZOAbstraction,T}(
+                            Tuple{SELTZOAbstraction,SELTZOAbstraction}[])
+                        for case in lemma.cases
+                            s_range = isnothing(case.s) ? pos_zero : SELTZORange(
+                                xor(sx, case.s.s),
+                                Int(case.s.lb),
+                                Int(case.s.tb),
+                                _evaluate_model(x, y, case.s.e, T),
+                                _evaluate_model(x, y, case.s.f, T),
+                                _evaluate_model(x, y, case.s.g, T),
+                            )
+                            e_range = isnothing(case.e) ? pos_zero : SELTZORange(
+                                xor(sy, case.e.s),
+                                Int(case.e.lb),
+                                Int(case.e.tb),
+                                _evaluate_model(x, y, case.e.e, T),
+                                _evaluate_model(x, y, case.e.f, T),
+                                _evaluate_model(x, y, case.e.g, T),
+                            )
+                            add_case!(checker, s_range, e_range)
+                        end
+                        actual_outputs = abstract_outputs(two_sum_abstractions, x, y)
+                        if actual_outputs != sort!(checker.claimed_outputs)
+                            throw(false)
+                        end
+                    end
+                end
+            end
+        end
+    catch exception
+        if exception isa CompositeException
+            for sub_exception in exception.exceptions
+                if sub_exception isa TaskFailedException
+                    if sub_exception.task.result isa Bool
+                        return sub_exception.task.result
+                    elseif sub_exception.task.result isa DomainError
+                        return false
+                    end
+                end
+            end
+        end
+        rethrow()
+    end
+
+    return true
+end
+
+
+function count_inputs(
+    lemma::SELTZOLemma,
+    ::Type{T},
+) where {T<:AbstractFloat}
+
+    abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
+    xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
+    ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+
+    result = 0
+    for x in xs
+        sx = signbit(x)
+        for y in ys
+            sy = signbit(y)
+            if xor(sx, sy) == lemma.sxy
+                if _satisfies_bounds(x, y, lemma.bounds, T)
+                    result += 1
+                end
+            end
+        end
+    end
+
+    return result
+end
+
+
+################################################################################
+
+
+export find_seltzo_lemma_candidate
+
+
+@inline function _prune_lower_bound(bound::SELTZOBound)
+    return SELTZOBound(bound.coefficients, typemin(Int), bound.upper_bound)
+end
+
+
+function _prune_lower_bound(lemma::SELTZOLemma, bound_index::Int)
+    @assert bound_index in eachindex(lemma.bounds)
+    result = deepcopy(lemma)
+    if result.bounds[bound_index].upper_bound == typemax(Int)
+        deleteat!(result.bounds, bound_index)
+    else
+        result.bounds[bound_index] = _prune_lower_bound(result.bounds[bound_index])
+    end
+    return result
+end
+
+
+@inline function _prune_upper_bound(bound::SELTZOBound)
+    return SELTZOBound(bound.coefficients, bound.lower_bound, typemax(Int))
+end
+
+
+function _prune_upper_bound(lemma::SELTZOLemma, bound_index::Int)
+    @assert bound_index in eachindex(lemma.bounds)
+    result = deepcopy(lemma)
+    if result.bounds[bound_index].lower_bound == typemin(Int)
+        deleteat!(result.bounds, bound_index)
+    else
+        result.bounds[bound_index] = _prune_upper_bound(result.bounds[bound_index])
+    end
+    return result
+end
+
+
+function _possible_prunings(lemma::SELTZOLemma)
+    result = SELTZOLemma[]
+    for (bound_index, bound) in pairs(lemma.bounds)
+        if bound.lower_bound != typemin(Int)
+            push!(result, _prune_lower_bound(lemma, bound_index))
+        end
+        if bound.upper_bound != typemax(Int)
+            push!(result, _prune_upper_bound(lemma, bound_index))
+        end
+    end
+    return result
+end
+
+
+@inline function _weaken_lower_bound(bound::SELTZOBound)
+    @assert bound.lower_bound != typemin(Int)
+    return SELTZOBound(bound.coefficients, bound.lower_bound - 1, bound.upper_bound)
+end
+
+
+function _weaken_lower_bound(lemma::SELTZOLemma, bound_index::Int)
+    @assert bound_index in eachindex(lemma.bounds)
+    result = deepcopy(lemma)
+    result.bounds[bound_index] = _weaken_lower_bound(result.bounds[bound_index])
+    return result
+end
+
+
+@inline function _weaken_upper_bound(bound::SELTZOBound)
+    @assert bound.upper_bound != typemax(Int)
+    return SELTZOBound(bound.coefficients, bound.lower_bound, bound.upper_bound + 1)
+end
+
+
+function _weaken_upper_bound(lemma::SELTZOLemma, bound_index::Int)
+    @assert bound_index in eachindex(lemma.bounds)
+    result = deepcopy(lemma)
+    result.bounds[bound_index] = _weaken_upper_bound(result.bounds[bound_index])
+    return result
+end
+
+
+function _possible_strengthenings(lemma::SELTZOLemma)
+    result = SELTZOLemma[]
+    for (bound_index, bound) in pairs(lemma.bounds)
+        if bound.lower_bound != typemin(Int)
+            push!(result, _weaken_lower_bound(lemma, bound_index))
+        end
+        if bound.upper_bound != typemax(Int)
+            push!(result, _weaken_upper_bound(lemma, bound_index))
+        end
+    end
+    return result
+end
+
+
+function _find_initial_seltzo_lemma(
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
+    ::Type{T};
+    r_max::Int,
+) where {T<:AbstractFloat}
+
+    data = compatible_neighbors(two_sum_abstractions, x, y, T; r_max)
+
+    deep_indices = only(Set{Vector{Tuple}}(_deep_eachindex.(values(data))))
+    models = Dict{Tuple,NTuple{7,Int}}()
+    while !isempty(deep_indices)
+        output_index, model = _find_best_seltzo_model(x, y, data, deep_indices, T)
+        models[deep_indices[output_index]] = model
+        _delete_inconsistent_data!(data, deep_indices[output_index], model, T)
+        deleteat!(deep_indices, output_index)
+    end
+
+    deep_indices = only(Set{Vector{Tuple}}(_deep_eachindex.(values(data))))
+    models = Dict{Tuple,NTuple{7,Int}}()
+    while !isempty(deep_indices)
+        output_index, model = _find_best_seltzo_model(x, y, data, deep_indices, T)
+        models[deep_indices[output_index]] = model
+        _delete_inconsistent_data!(data, deep_indices[output_index], model, T)
+        deleteat!(deep_indices, output_index)
+    end
+
+    cx = only(unique!(sort!([seltzo_classify(nx, T) for (nx, _) in keys(data)])))
+    cy = only(unique!(sort!([seltzo_classify(ny, T) for (_, ny) in keys(data)])))
+    sx = only(unique!(sort!([signbit(nx) for (nx, _) in keys(data)])))
+    sy = only(unique!(sort!([signbit(ny) for (_, ny) in keys(data)])))
+    ex = [unpack_ints(nx, T)[1] for (nx, _) in keys(data)]
+    fx = [unpack_ints(nx, T)[2] for (nx, _) in keys(data)]
+    gx = [unpack_ints(nx, T)[3] for (nx, _) in keys(data)]
+    ey = [unpack_ints(ny, T)[1] for (_, ny) in keys(data)]
+    fy = [unpack_ints(ny, T)[2] for (_, ny) in keys(data)]
+    gy = [unpack_ints(ny, T)[3] for (_, ny) in keys(data)]
+
+    fx_indeterminate = (cx != POW2) & (cx != ALL1)
+    fy_indeterminate = (cy != POW2) & (cy != ALL1)
+    gx_indeterminate = (cx == G00) | (cx == G01) | (cx == G10) | (cx == G11)
+    gy_indeterminate = (cy == G00) | (cy == G01) | (cy == G10) | (cy == G11)
+
+    lemma_bounds = SELTZOBound[]
+    push!(lemma_bounds, SELTZOBound((+1, 0, 0, -1, 0, 0), extrema(ex - ey)...))
+    if fx_indeterminate
+        push!(lemma_bounds, SELTZOBound((+1, -1, 0, 0, 0, 0), extrema(ex - fx)...))
+        push!(lemma_bounds, SELTZOBound((0, +1, 0, -1, 0, 0), extrema(fx - ey)...))
+    end
+    if gx_indeterminate
+        push!(lemma_bounds, SELTZOBound((+1, 0, -1, 0, 0, 0), extrema(ex - gx)...))
+        push!(lemma_bounds, SELTZOBound((0, +1, -1, 0, 0, 0), extrema(fx - gx)...))
+        push!(lemma_bounds, SELTZOBound((0, 0, -1, +1, 0, 0), extrema(ey - gx)...))
+    end
+    if fy_indeterminate
+        push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, -1, 0), extrema(ey - fy)...))
+        push!(lemma_bounds, SELTZOBound((-1, 0, 0, 0, +1, 0), extrema(fy - ex)...))
+    end
+    if gy_indeterminate
+        push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, 0, -1), extrema(ey - gy)...))
+        push!(lemma_bounds, SELTZOBound((0, 0, 0, 0, +1, -1), extrema(fy - gy)...))
+        push!(lemma_bounds, SELTZOBound((+1, 0, 0, 0, 0, -1), extrema(ex - gy)...))
+    end
+    if fx_indeterminate & fy_indeterminate
+        push!(lemma_bounds, SELTZOBound((0, +1, 0, 0, -1, 0), extrema(fx - fy)...))
+    end
+    if gx_indeterminate & gy_indeterminate
+        push!(lemma_bounds, SELTZOBound((0, 0, +1, 0, 0, -1), extrema(gx - gy)...))
+    end
+
+    lemma_cases = SymbolicSELTZOPair[]
+    output_classes = unique!(sort!([k[1] for k in keys(models)]))
+    for output_class in output_classes
+        output_cases = unique!(sort!([k[2] for k in keys(models) if k[1] == output_class]))
+        for output_case in output_cases
+            (ss, cs, se, ce) = output_class
+            s = SymbolicSELTZOTuple(
+                xor(ss, signbit(x)),
+                mantissa_leading_bit(cs),
+                mantissa_trailing_bit(cs),
+                models[(output_class, output_case, 1)],
+                models[(output_class, output_case, 2)],
+                models[(output_class, output_case, 3)],
+            )
+            e = SymbolicSELTZOTuple(
+                xor(se, signbit(y)),
+                mantissa_leading_bit(ce),
+                mantissa_trailing_bit(ce),
+                models[(output_class, output_case, 4)],
+                models[(output_class, output_case, 5)],
+                models[(output_class, output_case, 6)],
+            )
+            if e.e == (exponent(floatmin(T)) - 1, 0, 0, 0, 0, 0, 0)
+                push!(lemma_cases, SymbolicSELTZOPair(s, nothing))
+            else
+                push!(lemma_cases, SymbolicSELTZOPair(s, e))
+            end
+        end
+    end
+
+    return SELTZOLemma(xor(sx, sy), cx, cy, lemma_bounds, lemma_cases)
+end
+
+
+function find_seltzo_lemma_candidate(
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
+    x::SELTZOAbstraction,
+    y::SELTZOAbstraction,
+    ::Type{T};
+    r_max::Int,
+) where {T<:AbstractFloat}
+
+    result = _find_initial_seltzo_lemma(two_sum_abstractions, x, y, T; r_max)
+    if !check_seltzo_lemma(two_sum_abstractions, result, T)
+        return nothing
+    end
+
+    while true
+        found = false
+        for prune in shuffle!(_possible_prunings(result))
+            if check_seltzo_lemma(two_sum_abstractions, prune, T)
+                result = prune
+                found = true
+                break
+            end
+        end
+        if !found
+            break
+        end
+    end
+
+    while true
+        found = false
+        for weakening in shuffle!(_possible_strengthenings(result))
+            if check_seltzo_lemma(two_sum_abstractions, weakening, T)
+                result = weakening
+                found = true
+                break
+            end
+        end
+        if !found
+            break
+        end
+    end
+
+    return result
+end
+
+
+################################################################################
+
+
+export julia_form
+
+
+const SELTZO_VARIABLE_NAMES = String["ex", "fx", "gx", "ey", "fy", "gy"]
+const SELTZO_BOUND_EXPRESSIONS = Dict{Int,String}(
+    1 => "1",
+    2 => "2",
+    3 => "3",
+    8 => "(p-3)",
+    9 => "(p-2)",
+    10 => "(p-1)",
+    11 => "p",
+    12 => "(p+1)",
+    13 => "(p+2)",
+    14 => "(p+3)",
+)
+
+
+function julia_form(bound::SELTZOBound)
+    result = String[]
+    pos_idx = only(findall(==(+1), bound.coefficients))
+    neg_idx = only(findall(==(-1), bound.coefficients))
+    pos_var = SELTZO_VARIABLE_NAMES[pos_idx]
+    neg_var = SELTZO_VARIABLE_NAMES[neg_idx]
+    if bound.lower_bound == bound.upper_bound
+        bound_val = bound.lower_bound
+        if bound_val == 0
+            push!(result, "($pos_var == $neg_var)")
+        elseif bound_val > 0
+            bound_expr = SELTZO_BOUND_EXPRESSIONS[bound_val]
+            push!(result, "($pos_var == $neg_var + $bound_expr)")
+        elseif bound_val < 0
+            bound_expr = SELTZO_BOUND_EXPRESSIONS[-bound_val]
+            push!(result, "($pos_var + $bound_expr == $neg_var)")
+        end
+    else
+        if bound.lower_bound != typemin(Int)
+            bound_val = bound.lower_bound - 1
+            if bound_val == 0
+                push!(result, "($pos_var > $neg_var)")
+            elseif bound_val > 0
+                bound_expr = SELTZO_BOUND_EXPRESSIONS[bound_val]
+                push!(result, "($pos_var > $neg_var + $bound_expr)")
+            elseif bound_val < 0
+                bound_expr = SELTZO_BOUND_EXPRESSIONS[-bound_val]
+                push!(result, "($pos_var + $bound_expr > $neg_var)")
+            end
+        end
+        if bound.upper_bound != typemax(Int)
+            bound_val = bound.upper_bound + 1
+            if bound_val == 0
+                push!(result, "($pos_var < $neg_var)")
+            elseif bound_val > 0
+                bound_expr = SELTZO_BOUND_EXPRESSIONS[bound_val]
+                push!(result, "($pos_var < $neg_var + $bound_expr)")
+            elseif bound_val < 0
+                bound_expr = SELTZO_BOUND_EXPRESSIONS[-bound_val]
+                push!(result, "($pos_var + $bound_expr < $neg_var)")
+            end
+        end
+    end
+    return result
+end
+
+
+function julia_form((c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int})
     result = ""
     if c1 == +1
         result *= (isempty(result) ? "ex" : "+ex")
@@ -1290,13 +1773,42 @@ function _seltzo_string((c0, c1, c2, c3, c4, c5, c6)::NTuple{7,Int})
         @assert iszero(c6)
     end
     if c0 > 0
-        result *= (isempty(result) ? "$c0" : "+$c0")
+        c0_expr = SELTZO_BOUND_EXPRESSIONS[c0]
+        result *= (isempty(result) ? "$c0_expr" : "+$c0_expr")
     elseif c0 < 0
-        result *= "-$(-c0)"
+        c0_expr = SELTZO_BOUND_EXPRESSIONS[-c0]
+        result *= "-$c0_expr"
     else
         @assert iszero(c0)
     end
     return isempty(result) ? "0" : result
+end
+
+
+function julia_form(t::SymbolicSELTZOTuple, sign_var::AbstractString)
+    s_expr = t.s ? ('~' * sign_var) : sign_var
+    lb_expr = t.lb ? '1' : '0'
+    tb_expr = t.tb ? '1' : '0'
+    e_expr = julia_form(t.e)
+    f_expr = julia_form(t.f)
+    g_expr = julia_form(t.g)
+    return "SELTZORange($s_expr, $lb_expr, $tb_expr, $e_expr, $f_expr, $g_expr)"
+end
+
+
+function julia_form(::Nothing, ::AbstractString)
+    return "pos_zero"
+end
+
+
+function julia_form(case::SymbolicSELTZOPair)
+    s_expr = julia_form(case.s, "sx")
+    if isnothing(case.e)
+        return "    add_case!(lemma, $s_expr, pos_zero)"
+    else
+        e_expr = julia_form(case.e, "sy")
+        return "    add_case!(lemma,\n        $s_expr,\n        $e_expr)"
+    end
 end
 
 
