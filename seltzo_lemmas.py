@@ -6681,7 +6681,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    result["SELTZO-TwoSum-POW2-G00-D11-X"] = z3.Implies(
+    result["SELTZO-TwoSum-POW2-G00-D12-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, y_g00, fy + (p + one) == ex, fy == gy + two),
         z3.Or(
             seltzo_case((sx, 1, 1, ex - one, ey, ey), ((sy,), 0, 0, gy, gy - p, gy)),
@@ -6690,7 +6690,7 @@ def seltzo_two_sum_lemmas(
             ),
         ),
     )
-    result["SELTZO-TwoSum-POW2-G00-D11-Y"] = z3.Implies(
+    result["SELTZO-TwoSum-POW2-G00-D12-Y"] = z3.Implies(
         z3.And(diff_sign, y_pow2, x_g00, fx + (p + one) == ey, fx == gx + two),
         z3.Or(
             seltzo_case((sy, 1, 1, ey - one, ex, ex), ((sx,), 0, 0, gx, gx - p, gx)),

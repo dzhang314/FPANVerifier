@@ -5801,14 +5801,14 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ey-1, ex, gy), SELTZORange(~sx, 0, 0, gx, fx-(p-1), gx))
             end
 
-            checker("SELTZO-TwoSum-POW2-G00-D11-X",
+            checker("SELTZO-TwoSum-POW2-G00-D12-X",
                 diff_sign & (cx == POW2) & (cy == G00) &
                 (fy + (p+1) == ex) & (fy == gy + 2)
             ) do lemma
                 add_case!(lemma, SELTZORange(sx, 1, 1, ex-1, ey, ey), SELTZORange(~sy, 0, 0, gy, gy-p, gy))
                 add_case!(lemma, SELTZORange(sx, 1, 1, ex-1, ey, ey), SELTZORange(~sy, 1, 0, fy-1, gy-1, gy))
             end
-            checker("SELTZO-TwoSum-POW2-G00-D11-Y",
+            checker("SELTZO-TwoSum-POW2-G00-D12-Y",
                 diff_sign & (cy == POW2) & (cx == G00) &
                 (fx + (p+1) == ey) & (fx == gx + 2)
             ) do lemma
