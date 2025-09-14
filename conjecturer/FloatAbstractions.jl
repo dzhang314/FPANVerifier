@@ -242,12 +242,12 @@ end
 ##################################################### ABSTRACTION CLASSIFICATION
 
 
-export SELTZOType, seltzo_classify,
+export SELTZOClass, seltzo_classify,
     ZERO, POW2, ALL1, R0R1, R1R0, ONE0, ONE1, TWO0, TWO1, MM01, MM10,
     G00, G01, G10, G11
 
 
-@enum SELTZOType begin
+@enum SELTZOClass begin
     ZERO # e = e_min - 1
     POW2 # ~lb; ~tb; nlb = ntb = p - 1
     ALL1 #  lb;  tb; nlb = ntb = p - 1
@@ -300,12 +300,12 @@ end
 end
 
 
-@inline mantissa_leading_bit(t::SELTZOType) =
+@inline mantissa_leading_bit(t::SELTZOClass) =
     (t == ALL1) | (t == R1R0) | (t == ONE0) | (t == TWO0) |
     (t == MM01) | (t == G10) | (t == G11)
 
 
-@inline mantissa_trailing_bit(t::SELTZOType) =
+@inline mantissa_trailing_bit(t::SELTZOClass) =
     (t == ALL1) | (t == R0R1) | (t == ONE0) | (t == TWO0) |
     (t == MM10) | (t == G01) | (t == G11)
 
@@ -561,7 +561,7 @@ function classified_outputs(
     ::Type{T},
 ) where {T<:AbstractFloat}
     result = Dict{
-        Tuple{Bool,SELTZOType,Bool,SELTZOType},
+        Tuple{Bool,SELTZOClass,Bool,SELTZOClass},
         Vector{NTuple{6,Int}}}()
     for (s, e) in abstract_outputs(two_sum_abstractions, x, y)
         ss = signbit(s)
@@ -1284,8 +1284,8 @@ end
 
 struct SELTZOLemma
     sxy::Bool # false -> same_sign, true -> diff_sign
-    cx::SELTZOType
-    cy::SELTZOType
+    cx::SELTZOClass
+    cy::SELTZOClass
     bounds::Vector{SELTZOBound}
     cases::Vector{SymbolicSELTZOPair}
 end

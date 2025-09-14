@@ -28,6 +28,48 @@ function Base.push!(rs::ReservoirSampler{T}, x::T) where {T}
 end
 
 
+function parse_seltzo_class(s::AbstractString)
+    if uppercase(s) == "ZERO"
+        return ZERO
+    elseif uppercase(s) == "POW2"
+        return POW2
+    elseif uppercase(s) == "ALL1"
+        return ALL1
+    elseif uppercase(s) == "R0R1"
+        return R0R1
+    elseif uppercase(s) == "R1R0"
+        return R1R0
+    elseif uppercase(s) == "ONE0"
+        return ONE0
+    elseif uppercase(s) == "ONE1"
+        return ONE1
+    elseif uppercase(s) == "TWO0"
+        return TWO0
+    elseif uppercase(s) == "TWO1"
+        return TWO1
+    elseif uppercase(s) == "MM01"
+        return MM01
+    elseif uppercase(s) == "MM10"
+        return MM10
+    elseif uppercase(s) == "G00"
+        return G00
+    elseif uppercase(s) == "G01"
+        return G01
+    elseif uppercase(s) == "G10"
+        return G10
+    elseif uppercase(s) == "G11"
+        return G11
+    else
+        println("WARNING: Unrecognized SELTZO class $s will be ignored.")
+        return nothing
+    end
+end
+
+
+const CLASS_X = length(ARGS) >= 1 ? parse_seltzo_class(ARGS[1]) : nothing
+const CLASS_Y = length(ARGS) >= 2 ? parse_seltzo_class(ARGS[2]) : nothing
+
+
 function check_seltzo_two_sum_lemmas(
     two_sum_abstractions::Vector{TwoSumAbstraction{SELTZOAbstraction}},
     ::Type{T},
@@ -39,13 +81,23 @@ function check_seltzo_two_sum_lemmas(
     neg_zero = SELTZOAbstraction(-zero(T))
     abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
     case_counts = Dict{String,Int}()
-    unverified_counts = Dict{Tuple{SELTZOType,SELTZOType},Int}()
+    unverified_counts = Dict{Tuple{SELTZOClass,SELTZOClass},Int}()
     rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(5)
 
     for x in abstract_inputs, y in abstract_inputs
 
         cx = seltzo_classify(x, T)
         cy = seltzo_classify(y, T)
+        @static if (!isnothing(CLASS_X)) && (!isnothing(CLASS_Y))
+            if minmax(cx, cy) != minmax(CLASS_X, CLASS_Y)
+                continue
+            end
+        elseif !isnothing(CLASS_X)
+            if (cx != CLASS_X) && (cy != CLASS_X)
+                continue
+            end
+        end
+
         sx, lbx, tbx, ex, fx, gx = unpack(x, T)
         sy, lby, tby, ey, fy, gy = unpack(y, T)
 
