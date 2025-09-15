@@ -569,7 +569,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 1, ey - one, fy - one, gy - one)),
     )
 
-    ############################################################################
+    ################################################### LEMMA FAMILY ALL1-ALL1-S
 
     result["SELTZO-TwoSum-ALL1-ALL1-SE"] = z3.Implies(
         z3.And(same_sign, x_all1, y_all1, ex == ey),
@@ -580,44 +580,36 @@ def seltzo_two_sum_lemmas(
         z3.And(same_sign, x_all1, y_all1, ex == ey + one),
         seltzo_case(
             (sx, 0, 1, ex + one, ey, ey + one),
-            (sy, 0, 0, fx, fx - p, fy + one),
+            (sy, 0, 0, fy + one, fy - (p - one), fy + one),
         ),
     )
     result["SELTZO-TwoSum-ALL1-ALL1-SA-Y"] = z3.Implies(
         z3.And(same_sign, y_all1, x_all1, ey == ex + one),
         seltzo_case(
             (sy, 0, 1, ey + one, ex, ex + one),
-            (sx, 0, 0, fy, fy - p, fx + one),
+            (sx, 0, 0, fx + one, fx - (p - one), fx + one),
         ),
     )
 
     result["SELTZO-TwoSum-ALL1-ALL1-SG-X"] = z3.Implies(
         z3.And(same_sign, x_all1, y_all1, ex > ey + one, ex < ey + (p - one)),
-        seltzo_case(
-            (sx, 0, 1, ex + one, ey, ey + one),
-            (sy, 1, 0, fx, fy, fy + one),
-        ),
+        seltzo_case((sx, 0, 1, ex + one, ey, ey + one), (sy, 1, 0, fx, fy, fy + one)),
     )
     result["SELTZO-TwoSum-ALL1-ALL1-SG-Y"] = z3.Implies(
         z3.And(same_sign, y_all1, x_all1, ey > ex + one, ey < ex + (p - one)),
-        seltzo_case(
-            (sy, 0, 1, ey + one, ex, ex + one),
-            (sx, 1, 0, fy, fx, fx + one),
-        ),
+        seltzo_case((sy, 0, 1, ey + one, ex, ex + one), (sx, 1, 0, fy, fx, fx + one)),
     )
 
     result["SELTZO-TwoSum-ALL1-ALL1-SB1-X"] = z3.Implies(
         z3.And(same_sign, x_all1, y_all1, ex == ey + (p - one)),
         seltzo_case(
-            (sx, 0, 0, ex + one, fx + one, gx + one),
-            (sy, 1, 0, fx, fy, fy + one),
+            (sx, 0, 0, ex + one, fx + one, gx + one), (sy, 1, 0, fx, fy, fy + one)
         ),
     )
     result["SELTZO-TwoSum-ALL1-ALL1-SB1-Y"] = z3.Implies(
         z3.And(same_sign, y_all1, x_all1, ey == ex + (p - one)),
         seltzo_case(
-            (sy, 0, 0, ey + one, fy + one, gy + one),
-            (sx, 1, 0, fy, fx, fx + one),
+            (sy, 0, 0, ey + one, fy + one, gy + one), (sx, 1, 0, fy, fx, fx + one)
         ),
     )
 
@@ -636,7 +628,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    ############################################################################
+    ################################################### LEMMA FAMILY ALL1-ALL1-D
 
     result["SELTZO-TwoSum-ALL1-ALL1-DE"] = z3.Implies(
         z3.And(diff_sign, x_all1, y_all1, ex == ey),
@@ -655,14 +647,14 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-ALL1-ALL1-DA2-X"] = z3.Implies(
         z3.And(diff_sign, x_all1, y_all1, ex == ey + two),
         seltzo_case(
-            (sx, 0, 1, ey + two, ey, ey + one),
+            (sx, 0, 1, ex, ey, ey + one),
             ((sy,), 0, 0, fy + one, fy - (p - one), fy + one),
         ),
     )
     result["SELTZO-TwoSum-ALL1-ALL1-DA2-Y"] = z3.Implies(
         z3.And(diff_sign, y_all1, x_all1, ey == ex + two),
         seltzo_case(
-            (sy, 0, 1, ex + two, ex, ex + one),
+            (sy, 0, 1, ey, ex, ex + one),
             ((sx,), 0, 0, fx + one, fx - (p - one), fx + one),
         ),
     )
