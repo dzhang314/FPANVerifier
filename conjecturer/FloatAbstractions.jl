@@ -1563,11 +1563,11 @@ function _find_initial_seltzo_lemma(
     if gx_indeterminate
         push!(lemma_bounds, SELTZOBound((+1, 0, -1, 0, 0, 0), extrema(ex - gx)...))
         push!(lemma_bounds, SELTZOBound((0, +1, -1, 0, 0, 0), extrema(fx - gx)...))
-        push!(lemma_bounds, SELTZOBound((0, 0, -1, +1, 0, 0), extrema(ey - gx)...))
+        push!(lemma_bounds, SELTZOBound((0, 0, +1, -1, 0, 0), extrema(gx - ey)...))
     end
     if fy_indeterminate
         push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, -1, 0), extrema(ey - fy)...))
-        push!(lemma_bounds, SELTZOBound((-1, 0, 0, 0, +1, 0), extrema(fy - ex)...))
+        push!(lemma_bounds, SELTZOBound((+1, 0, 0, 0, -1, 0), extrema(ex - fy)...))
     end
     if gy_indeterminate
         push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, 0, -1), extrema(ey - gy)...))
