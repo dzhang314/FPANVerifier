@@ -162,8 +162,12 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, y, x)
             end
 
-            ####################################################################
+            ##################################################### LEMMA FAMILY L
 
+            # Lemmas in family L apply to situations where the smaller addend
+            # fits entirely inside the leading bits of the larger addend.
+
+            # Larger addend is a power of two (general case).
             checker("SELTZO-TwoSum-LS-POW2-G-X",
                 same_sign & (cx == POW2) & (~tby) &
                 (ex > ey + 1) & (gy > fx + 1)
@@ -177,6 +181,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, gx), pos_zero)
             end
 
+            # Larger addend is a power of two (adjacent case 1).
             checker("SELTZO-TwoSum-LS-POW2-A1-X",
                 same_sign & (cx == POW2) & lby & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -190,6 +195,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ey, fx, gx), pos_zero)
             end
 
+            # Larger addend is a power of two (adjacent case 2).
             checker("SELTZO-TwoSum-LS-POW2-A2-X",
                 same_sign & (cx == POW2) & (~lby) & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -203,6 +209,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex-1, gx), pos_zero)
             end
 
+            # Larger addend has trailing zeros (general case).
             checker("SELTZO-TwoSum-LS-T0-G-X",
                 same_sign & (~lbx) & (~tbx) & (cx != POW2) & (~tby) &
                 (ex > ey + 1) & (gy > fx + 1)
@@ -216,6 +223,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex, gy), pos_zero)
             end
 
+            # Larger addend has trailing zeros (adjacent case 1).
             checker("SELTZO-TwoSum-LS-T0-A1-X",
                 same_sign & (~lbx) & (~tbx) & (cx != POW2) & lby & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -229,6 +237,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ey, fx, gy), pos_zero)
             end
 
+            # Larger addend has trailing zeros (adjacent case 2).
             checker("SELTZO-TwoSum-LS-T0-A2-X",
                 same_sign & (~lbx) & (~tbx) & (cx != POW2) & (~lby) & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -242,6 +251,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex-1, gy), pos_zero)
             end
 
+            # Larger addend has trailing ones (general case).
             checker("SELTZO-TwoSum-LS-T1-G-X",
                 same_sign & (~lbx) & tbx & (~tby) &
                 (ex > ey + 1) & (gy > fx + 1)
@@ -255,6 +265,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, gy), pos_zero)
             end
 
+            # Larger addend has trailing ones (adjacent case 1).
             checker("SELTZO-TwoSum-LS-T1-A1-X",
                 same_sign & (~lbx) & tbx & lby & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -268,6 +279,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 1, ey, fx, gy), pos_zero)
             end
 
+            # Larger addend has trailing ones (adjacent case 2).
             checker("SELTZO-TwoSum-LS-T1-A2-X",
                 same_sign & (~lbx) & tbx & (~lby) & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -281,6 +293,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 1, ey, ex-1, gy), pos_zero)
             end
 
+            # Larger addend is an all-ones number (general case).
             checker("SELTZO-TwoSum-LD-ALL1-G-X",
                 diff_sign & (cx == ALL1) & (~tby) &
                 (ex > ey + 1) & (gy > fx + 1)
@@ -294,6 +307,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 1, ey, ex, gx), pos_zero)
             end
 
+            # Larger addend is an all-ones number (adjacent case 1).
             checker("SELTZO-TwoSum-LD-ALL1-A1-X",
                 diff_sign & (cx == ALL1) & lby & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -307,6 +321,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 1, ey, fx, gx), pos_zero)
             end
 
+            # Larger addend is an all-ones number (adjacent case 2).
             checker("SELTZO-TwoSum-LD-ALL1-A2-X",
                 diff_sign & (cx == ALL1) & (~lby) & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -320,6 +335,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex-1, gx), pos_zero)
             end
 
+            # Larger addend has trailing zeros (general case).
             checker("SELTZO-TwoSum-LD-T0-G-X",
                 diff_sign & lbx & (~tbx) & (~tby) &
                 (ex > ey + 1) & (gy > fx + 1)
@@ -333,6 +349,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex, gy), pos_zero)
             end
 
+            # Larger addend has trailing zeros (adjacent case 1).
             checker("SELTZO-TwoSum-LD-T0-A1-X",
                 diff_sign & lbx & (~tbx) & lby & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -346,6 +363,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey, fx, gy), pos_zero)
             end
 
+            # Larger addend has trailing zeros (adjacent case 2).
             checker("SELTZO-TwoSum-LD-T0-A2-X",
                 diff_sign & lbx & (~tbx) & (~lby) & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -359,6 +377,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey, ex-1, gy), pos_zero)
             end
 
+            # Larger addend has trailing ones (general case).
             checker("SELTZO-TwoSum-LD-T1-G-X",
                 diff_sign & lbx & tbx & (cx != ALL1) & (~tby) &
                 (ex > ey + 1) & (gy > fx + 1)
@@ -372,6 +391,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 1, 1, ey, ex, gy), pos_zero)
             end
 
+            # Larger addend has trailing ones (adjacent case 1).
             checker("SELTZO-TwoSum-LD-T1-A1-X",
                 diff_sign & lbx & tbx & (cx != ALL1) & lby & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -385,6 +405,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 1, ey, fx, gy), pos_zero)
             end
 
+            # Larger addend has trailing ones (adjacent case 2).
             checker("SELTZO-TwoSum-LD-T1-A2-X",
                 diff_sign & lbx & tbx & (cx != ALL1) & (~lby) & (~tby) &
                 (ex == ey + 1) & (gy > fx + 1)
@@ -398,7 +419,7 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex-1, gy), pos_zero)
             end
 
-            ####################################################################
+            ########################################### LEMMA FAMILY POW2-POW2-S
 
             # Sum of two powers of two (equal exponent case).
             checker("SELTZO-TwoSum-POW2-POW2-SE",
@@ -408,9 +429,23 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sx, 0, 0, ex+1, fx+1, gx+1), pos_zero)
             end
 
-            # Remaining POW2-POW2-S lemmas have been subsumed by F lemmas.
+            # Sum of two powers of two (boundary case).
+            checker("SELTZO-TwoSum-POW2-POW2-SB-X",
+                same_sign & (cx == POW2) & (cy == POW2) &
+                (ex == ey + (p-1))
+            ) do lemma
+                add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey, ey+1), pos_zero)
+            end
+            checker("SELTZO-TwoSum-POW2-POW2-SB-Y",
+                same_sign & (cy == POW2) & (cx == POW2) &
+                (ey == ex + (p-1))
+            ) do lemma
+                add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, ex+1), pos_zero)
+            end
 
-            ####################################################################
+            # Remaining POW2-POW2-S lemmas have been subsumed by L lemmas.
+
+            ########################################### LEMMA FAMILY POW2-POW2-D
 
             # Difference of two powers of two (equal exponent case).
             checker("SELTZO-TwoSum-POW2-POW2-DE",
@@ -6133,19 +6168,6 @@ function check_seltzo_two_sum_lemmas(
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey+1, fy, ey+1), SELTZORange(~sx, 0, 0, fx, gx:fx-2, gx-1))
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey+1, fy, ey+1), SELTZORange(~sx, 1, 0, fx, gx-2, gx-1))
                 add_case!(lemma, SELTZORange(sy, 0, 0, ey+1, fy, ey+1), SELTZORange(~sx, 1, 0, fx, gx+1:fx-2, gx-1))
-            end
-
-            checker("SELTZO-TwoSum-POW2-POW2-S1-X",
-                same_sign & (cx == POW2) & (cy == POW2) &
-                (ex > ey + 1) & (gy == fx + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey, gy+1), pos_zero)
-            end
-            checker("SELTZO-TwoSum-POW2-POW2-S1-Y",
-                same_sign & (cy == POW2) & (cx == POW2) &
-                (ey > ex + 1) & (gx == fy + 1)
-            ) do lemma
-                add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, gx+1), pos_zero)
             end
 
             checker("SELTZO-TwoSum-POW2-ONE1-S4-X",

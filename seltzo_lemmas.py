@@ -200,8 +200,12 @@ def seltzo_two_sum_lemmas(
         seltzo_case_helper(clauses, (se, lbe, tbe, ee, nlbe, ntbe), e_values)
         return z3.And(*clauses)
 
-    ############################################################################
+    ############################################################# LEMMA FAMILY L
 
+    # Lemmas in family L apply to situations where the smaller addend
+    # fits entirely inside the leading bits of the larger addend.
+
+    # Larger addend is a power of two (general case).
     result["SELTZO-TwoSum-LS-POW2-G-X"] = z3.Implies(
         z3.And(xy_nonzero, same_sign, x_pow2, ~tby, ex > ey + one, gy > fx + one),
         seltzo_case_zero((sx, 0, 0, ex, ey, gy)),
@@ -211,6 +215,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 0, ey, ex, gx)),
     )
 
+    # Larger addend is a power of two (adjacent case 1).
     result["SELTZO-TwoSum-LS-POW2-A1-X"] = z3.Implies(
         z3.And(xy_nonzero, same_sign, x_pow2, lby, ~tby, ex == ey + one, gy > fx + one),
         seltzo_case_zero((sx, 1, 0, ex, fy, gy)),
@@ -220,6 +225,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 0, ey, fx, gx)),
     )
 
+    # Larger addend is a power of two (adjacent case 2).
     result["SELTZO-TwoSum-LS-POW2-A2-X"] = z3.Implies(
         z3.And(
             xy_nonzero, same_sign, x_pow2, ~lby, ~tby, ex == ey + one, gy > fx + one
@@ -233,6 +239,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 0, ey, ex - one, gx)),
     )
 
+    # Larger addend has trailing zeros (general case).
     result["SELTZO-TwoSum-LS-T0-G-X"] = z3.Implies(
         z3.And(
             xy_nonzero,
@@ -260,6 +267,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 0, ey, ex, gy)),
     )
 
+    # Larger addend has trailing zeros (adjacent case 1).
     result["SELTZO-TwoSum-LS-T0-A1-X"] = z3.Implies(
         z3.And(
             xy_nonzero,
@@ -289,6 +297,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 0, ey, fx, gy)),
     )
 
+    # Larger addend has trailing zeros (adjacent case 2).
     result["SELTZO-TwoSum-LS-T0-A2-X"] = z3.Implies(
         z3.And(
             xy_nonzero,
@@ -318,6 +327,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 0, ey, ex - one, gy)),
     )
 
+    # Larger addend has trailing ones (general case).
     result["SELTZO-TwoSum-LS-T1-G-X"] = z3.Implies(
         z3.And(xy_nonzero, same_sign, ~lbx, tbx, ~tby, ex > ey + one, gy > fx + one),
         seltzo_case_zero((sx, 0, 1, ex, ey, gx)),
@@ -327,6 +337,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, ex, gy)),
     )
 
+    # Larger addend has trailing ones (adjacent case 1).
     result["SELTZO-TwoSum-LS-T1-A1-X"] = z3.Implies(
         z3.And(
             xy_nonzero, same_sign, ~lbx, tbx, lby, ~tby, ex == ey + one, gy > fx + one
@@ -340,6 +351,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 1, ey, fx, gy)),
     )
 
+    # Larger addend has trailing ones (adjacent case 2).
     result["SELTZO-TwoSum-LS-T1-A2-X"] = z3.Implies(
         z3.And(
             xy_nonzero, same_sign, ~lbx, tbx, ~lby, ~tby, ex == ey + one, gy > fx + one
@@ -353,6 +365,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 1, ey, ex - one, gy)),
     )
 
+    # Larger addend is an all-ones number (general case).
     result["SELTZO-TwoSum-LD-ALL1-G-X"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, x_all1, ~tby, ex > ey + one, gy > fx + one),
         seltzo_case_zero((sx, 1, 1, ex, ey, gy)),
@@ -362,6 +375,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 1, ey, ex, gx)),
     )
 
+    # Larger addend is an all-ones number (adjacent case 1).
     result["SELTZO-TwoSum-LD-ALL1-A1-X"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, x_all1, lby, ~tby, ex == ey + one, gy > fx + one),
         seltzo_case_zero((sx, 0, 1, ex, fy, gy)),
@@ -371,6 +385,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, fx, gx)),
     )
 
+    # Larger addend is an all-ones number (adjacent case 2).
     result["SELTZO-TwoSum-LD-ALL1-A2-X"] = z3.Implies(
         z3.And(
             xy_nonzero, diff_sign, x_all1, ~lby, ~tby, ex == ey + one, gy > fx + one
@@ -384,6 +399,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, ex - one, gx)),
     )
 
+    # Larger addend has trailing zeros (general case).
     result["SELTZO-TwoSum-LD-T0-G-X"] = z3.Implies(
         z3.And(xy_nonzero, diff_sign, lbx, ~tbx, ~tby, ex > ey + one, gy > fx + one),
         seltzo_case_zero((sx, 1, 0, ex, ey, gx)),
@@ -393,6 +409,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 0, ey, ex, gy)),
     )
 
+    # Larger addend has trailing zeros (adjacent case 1).
     result["SELTZO-TwoSum-LD-T0-A1-X"] = z3.Implies(
         z3.And(
             xy_nonzero, diff_sign, lbx, ~tbx, lby, ~tby, ex == ey + one, gy > fx + one
@@ -406,6 +423,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 0, ey, fx, gy)),
     )
 
+    # Larger addend has trailing zeros (adjacent case 2).
     result["SELTZO-TwoSum-LD-T0-A2-X"] = z3.Implies(
         z3.And(
             xy_nonzero, diff_sign, lbx, ~tbx, ~lby, ~tby, ex == ey + one, gy > fx + one
@@ -419,6 +437,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 0, ey, ex - one, gy)),
     )
 
+    # Larger addend has trailing ones (general case).
     result["SELTZO-TwoSum-LD-T1-G-X"] = z3.Implies(
         z3.And(
             xy_nonzero, diff_sign, lbx, tbx, ~x_all1, ~tby, ex > ey + one, gy > fx + one
@@ -432,6 +451,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 1, 1, ey, ex, gy)),
     )
 
+    # Larger addend has trailing ones (adjacent case 1).
     result["SELTZO-TwoSum-LD-T1-A1-X"] = z3.Implies(
         z3.And(
             xy_nonzero,
@@ -461,6 +481,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, fx, gy)),
     )
 
+    # Larger addend has trailing ones (adjacent case 2).
     result["SELTZO-TwoSum-LD-T1-A2-X"] = z3.Implies(
         z3.And(
             xy_nonzero,
@@ -490,7 +511,7 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sy, 0, 1, ey, ex - one, gy)),
     )
 
-    ############################################################################
+    ################################################### LEMMA FAMILY POW2-POW2-S
 
     # Sum of two powers of two (equal exponent case).
     result["SELTZO-TwoSum-POW2-POW2-SE"] = z3.Implies(
@@ -498,9 +519,19 @@ def seltzo_two_sum_lemmas(
         seltzo_case_zero((sx, 0, 0, ex + one, fx + one, gx + one)),
     )
 
-    # Remaining POW2-POW2-S lemmas have been subsumed by F lemmas.
+    # Sum of two powers of two (boundary case).
+    result["SELTZO-TwoSum-POW2-POW2-SB-X"] = z3.Implies(
+        z3.And(same_sign, x_pow2, y_pow2, ex == ey + (p - one)),
+        seltzo_case_zero((sx, 0, 1, ex, ey, ey + one)),
+    )
+    result["SELTZO-TwoSum-POW2-POW2-SB-Y"] = z3.Implies(
+        z3.And(same_sign, y_pow2, x_pow2, ey == ex + (p - one)),
+        seltzo_case_zero((sy, 0, 1, ey, ex, ex + one)),
+    )
 
-    ############################################################################
+    # Remaining POW2-POW2-S lemmas have been subsumed by L lemmas.
+
+    ################################################### LEMMA FAMILY POW2-POW2-D
 
     # Difference of two powers of two (equal exponent case).
     result["SELTZO-TwoSum-POW2-POW2-DE"] = z3.Implies(
@@ -7175,15 +7206,6 @@ def seltzo_two_sum_lemmas(
                 ((sx,), 1, 0, fx, (gx + one, fx - two), gx - one),
             ),
         ),
-    )
-
-    result["SELTZO-TwoSum-POW2-POW2-S1-X"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_pow2, ex > ey + one, gy == fx + one),
-        seltzo_case_zero((sx, 0, 1, ex, ey, gy + one)),
-    )
-    result["SELTZO-TwoSum-POW2-POW2-S1-Y"] = z3.Implies(
-        z3.And(same_sign, y_pow2, x_pow2, ey > ex + one, gx == fy + one),
-        seltzo_case_zero((sy, 0, 1, ey, ex, gx + one)),
     )
 
     result["SELTZO-TwoSum-POW2-ONE1-S4-X"] = z3.Implies(
