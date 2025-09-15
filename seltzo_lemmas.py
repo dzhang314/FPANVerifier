@@ -689,15 +689,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    ############################################################################
-
-    result["SELTZO-TwoSum-POW2-ALL1-SE"] = z3.Implies(
-        z3.And(same_sign, x_pow2, y_all1, ex == ey),
-        seltzo_case(
-            (sx, 1, 0, ex + one, ey - one, ey),
-            ((sy,), 0, 0, fy + one, fy - (p - one), fy + one),
-        ),
-    )
+    ################################################### LEMMA FAMILY POW2-ALL1-S
 
     result["SELTZO-TwoSum-POW2-ALL1-SA1-X"] = z3.Implies(
         z3.And(same_sign, x_pow2, y_all1, ex == ey + one),
@@ -759,12 +751,7 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    ############################################################################
-
-    result["SELTZO-TwoSum-POW2-ALL1-DE"] = z3.Implies(
-        z3.And(diff_sign, x_pow2, y_all1, ex == ey),
-        seltzo_case_zero(((sx,), 1, 0, ex - one, fx, fx + one)),
-    )
+    ################################################### LEMMA FAMILY POW2-ALL1-D
 
     result["SELTZO-TwoSum-POW2-ALL1-DA1-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, y_all1, ex == ey + one),
@@ -820,13 +807,20 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    ############################################################################
+    ################################################### LEMMA FAMILY ALL1-POW2-S
 
-    result["SELTZO-TwoSum-ALL1-POW2-SE"] = z3.Implies(
+    result["SELTZO-TwoSum-ALL1-POW2-SE-X"] = z3.Implies(
         z3.And(same_sign, x_all1, y_pow2, ex == ey),
         seltzo_case(
             (sx, 1, 0, ex + one, ey - one, ey),
             ((sy,), 0, 0, fx + one, fx - (p - one), fx + one),
+        ),
+    )
+    result["SELTZO-TwoSum-ALL1-POW2-SE-Y"] = z3.Implies(
+        z3.And(same_sign, y_all1, x_pow2, ey == ex),
+        seltzo_case(
+            (sy, 1, 0, ey + one, ex - one, ex),
+            ((sx,), 0, 0, fy + one, fy - (p - one), fy + one),
         ),
     )
 
@@ -872,23 +866,25 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-ALL1-POW2-SB3-X"] = z3.Implies(
         z3.And(same_sign, x_all1, y_pow2, ex == ey + p),
         seltzo_case(
-            (sx, 0, 0, ex + one, fx + one, gx + one),
-            ((sy,), 0, 0, fx, fx - p, fx),
+            (sx, 0, 0, ex + one, fx + one, gx + one), ((sy,), 0, 0, fx, fx - p, fx)
         ),
     )
     result["SELTZO-TwoSum-ALL1-POW2-SB3-Y"] = z3.Implies(
         z3.And(same_sign, y_all1, x_pow2, ey == ex + p),
         seltzo_case(
-            (sy, 0, 0, ey + one, fy + one, gy + one),
-            ((sx,), 0, 0, fy, fy - p, fy),
+            (sy, 0, 0, ey + one, fy + one, gy + one), ((sx,), 0, 0, fy, fy - p, fy)
         ),
     )
 
-    ############################################################################
+    ################################################### LEMMA FAMILY ALL1-POW2-D
 
-    result["SELTZO-TwoSum-ALL1-POW2-DE"] = z3.Implies(
+    result["SELTZO-TwoSum-ALL1-POW2-DE-X"] = z3.Implies(
         z3.And(diff_sign, x_all1, y_pow2, ex == ey),
         seltzo_case_zero((sx, 1, 0, ex - one, fx, fx + one)),
+    )
+    result["SELTZO-TwoSum-ALL1-POW2-DE-Y"] = z3.Implies(
+        z3.And(diff_sign, y_all1, x_pow2, ey == ex),
+        seltzo_case_zero((sy, 1, 0, ey - one, fy, fy + one)),
     )
 
     result["SELTZO-TwoSum-ALL1-POW2-DB1-X"] = z3.Implies(
@@ -902,17 +898,11 @@ def seltzo_two_sum_lemmas(
 
     result["SELTZO-TwoSum-ALL1-POW2-DB2-X"] = z3.Implies(
         z3.And(diff_sign, x_all1, y_pow2, ex == ey + p),
-        seltzo_case(
-            (sx, 1, 0, ex, ey + one, ey + two),
-            ((sy,), 0, 0, ey, ey - p, ey),
-        ),
+        seltzo_case((sx, 1, 0, ex, ey + one, ey + two), ((sy,), 0, 0, fx, fx - p, fx)),
     )
     result["SELTZO-TwoSum-ALL1-POW2-DB2-Y"] = z3.Implies(
         z3.And(diff_sign, y_all1, x_pow2, ey == ex + p),
-        seltzo_case(
-            (sy, 1, 0, ey, ex + one, ex + two),
-            ((sx,), 0, 0, ex, ex - p, ex),
-        ),
+        seltzo_case((sy, 1, 0, ey, ex + one, ex + two), ((sx,), 0, 0, fy, fy - p, fy)),
     )
 
     ############################################################################
