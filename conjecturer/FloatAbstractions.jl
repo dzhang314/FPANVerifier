@@ -1261,7 +1261,7 @@ end
 ################################################################################
 
 
-export SELTZOLemma, check_seltzo_lemma, count_inputs
+export SELTZOLemma, check_seltzo_lemma, lemma_inputs
 
 
 struct SELTZOBound
@@ -1293,6 +1293,21 @@ struct SELTZOLemma
     cy::SELTZOClass
     bounds::Vector{SELTZOBound}
     cases::Vector{SymbolicSELTZOPair}
+end
+
+
+Base.:(==)(a::SELTZOLemma, b::SELTZOLemma) =
+    ((a.sxy == b.sxy) & (a.cx == b.cx) & (a.cy == b.cy)) &&
+    (a.bounds == b.bounds) && (a.cases == b.cases)
+
+
+function Base.hash(lemma::SELTZOLemma, h::UInt)
+    h = hash(lemma.sxy, h)
+    h = hash(lemma.cx, h)
+    h = hash(lemma.cy, h)
+    h = hash(lemma.bounds, h)
+    h = hash(lemma.cases, h)
+    return h
 end
 
 
@@ -1331,12 +1346,20 @@ function check_seltzo_lemma(
     two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
     lemma::SELTZOLemma,
     ::Type{T};
+    xs::Union{Nothing,AbstractVector{SELTZOAbstraction}}=nothing,
+    ys::Union{Nothing,AbstractVector{SELTZOAbstraction}}=nothing,
 ) where {T<:AbstractFloat}
 
     pos_zero = SELTZOAbstraction(+zero(T))
-    abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
-    xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
-    ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+    if isnothing(xs) | isnothing(ys)
+        abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
+        if isnothing(xs)
+            xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
+        end
+        if isnothing(ys)
+            ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+        end
+    end
 
     try
         @threads for x in xs
@@ -1402,23 +1425,31 @@ function check_seltzo_lemma(
 end
 
 
-function count_inputs(
+function lemma_inputs(
     lemma::SELTZOLemma,
-    ::Type{T},
+    ::Type{T};
+    xs::Union{Nothing,AbstractVector{SELTZOAbstraction}}=nothing,
+    ys::Union{Nothing,AbstractVector{SELTZOAbstraction}}=nothing,
 ) where {T<:AbstractFloat}
 
-    abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
-    xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
-    ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+    if isnothing(xs) | isnothing(ys)
+        abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
+        if isnothing(xs)
+            xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
+        end
+        if isnothing(ys)
+            ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+        end
+    end
 
-    result = 0
+    result = Tuple{SELTZOAbstraction,SELTZOAbstraction}[]
     for x in xs
         sx = signbit(x)
         for y in ys
             sy = signbit(y)
             if xor(sx, sy) == lemma.sxy
                 if _satisfies_bounds(x, y, lemma.bounds, T)
-                    result += 1
+                    push!(result, (x, y))
                 end
             end
         end
@@ -1431,7 +1462,7 @@ end
 ################################################################################
 
 
-export find_seltzo_lemma_candidate
+export find_initial_seltzo_lemma, expand_seltzo_lemma
 
 
 @inline function _prune_lower_bound(bound::SELTZOBound)
@@ -1634,24 +1665,63 @@ function _find_initial_seltzo_lemma(
 end
 
 
-function find_seltzo_lemma_candidate(
-    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
-    x::SELTZOAbstraction,
-    y::SELTZOAbstraction,
-    ::Type{T};
-    r_max::Int,
+function _same_value(
+    abstract_inputs::AbstractVector{Tuple{SELTZOAbstraction,SELTZOAbstraction}},
+    bound::SELTZOBound,
+    ::Type{T},
 ) where {T<:AbstractFloat}
-
-    result = _find_initial_seltzo_lemma(two_sum_abstractions, x, y, T; r_max)
-    if !check_seltzo_lemma(two_sum_abstractions, result, T)
+    if isempty(abstract_inputs)
         return nothing
     end
+    x, y = first(abstract_inputs)
+    ex, fx, gx = unpack_ints(x, T)
+    ey, fy, gy = unpack_ints(y, T)
+    c1, c2, c3, c4, c5, c6 = bound.coefficients
+    reference_value = c1 * ex + c2 * fx + c3 * gx + c4 * ey + c5 * fy + c6 * gy
+    for (x, y) in abstract_inputs
+        ex, fx, gx = unpack_ints(x, T)
+        ey, fy, gy = unpack_ints(y, T)
+        value = c1 * ex + c2 * fx + c3 * gx + c4 * ey + c5 * fy + c6 * gy
+        if value != reference_value
+            return nothing
+        end
+    end
+    return reference_value
+end
+
+
+function expand_seltzo_lemma(
+    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
+    lemma::SELTZOLemma,
+    ::Type{T};
+    xs::Union{Nothing,AbstractVector{SELTZOAbstraction}}=nothing,
+    ys::Union{Nothing,AbstractVector{SELTZOAbstraction}}=nothing
+) where {T<:AbstractFloat}
+
+    if isnothing(xs) | isnothing(ys)
+        abstract_inputs = enumerate_abstractions(SELTZOAbstraction, T)
+        if isnothing(xs)
+            xs = filter(x -> seltzo_classify(x, T) == lemma.cx, abstract_inputs)
+        end
+        if isnothing(ys)
+            ys = filter(y -> seltzo_classify(y, T) == lemma.cy, abstract_inputs)
+        end
+    end
+
+    if !check_seltzo_lemma(two_sum_abstractions, lemma, T; xs, ys)
+        return (nothing, nothing)
+    end
+
+    result = deepcopy(lemma)
 
     while true
         found = false
-        for prune in shuffle!(_possible_prunings(result))
-            if check_seltzo_lemma(two_sum_abstractions, prune, T)
-                result = prune
+        possible_expansions = shuffle!(vcat(
+            _possible_prunings(result),
+            _possible_strengthenings(result)))
+        for expansion in possible_expansions
+            if check_seltzo_lemma(two_sum_abstractions, expansion, T; xs, ys)
+                result = expansion
                 found = true
                 break
             end
@@ -1661,21 +1731,16 @@ function find_seltzo_lemma_candidate(
         end
     end
 
-    while true
-        found = false
-        for weakening in shuffle!(_possible_strengthenings(result))
-            if check_seltzo_lemma(two_sum_abstractions, weakening, T)
-                result = weakening
-                found = true
-                break
-            end
-        end
-        if !found
-            break
+    input_set = lemma_inputs(result, T; xs, ys)
+    for (bound_index, bound) in pairs(result.bounds)
+        value = _same_value(input_set, bound, T)
+        if !isnothing(value)
+            result.bounds[bound_index] =
+                SELTZOBound(bound.coefficients, value, value)
         end
     end
 
-    return result
+    return (result, input_set)
 end
 
 
@@ -1843,6 +1908,29 @@ function julia_form(case::SymbolicSELTZOPair)
         e_expr = julia_form(case.e, "sy")
         return "    add_case!(lemma, $s_expr, $e_expr)"
     end
+end
+
+
+function julia_form(lemma::SELTZOLemma)
+    hypotheses = String[
+        lemma.sxy ? "diff_sign" : "same_sign",
+        "(cx == $(lemma.cx))",
+        "(cy == $(lemma.cy))",
+    ]
+    for bound in lemma.bounds
+        append!(hypotheses, julia_form(bound))
+    end
+    buffer = IOBuffer()
+    lemma_code = "$(lemma.cx)-$(lemma.cy)-$(lemma.sxy ? 'D' : 'S')"
+    println(buffer, "checker(\"SELTZO-TwoSum-$lemma_code<#>-X\",")
+    println(buffer, "    ", join(hypotheses[1:3], " & ") * " &")
+    println(buffer, "    ", join(hypotheses[4:end], " & "))
+    println(buffer, ") do lemma")
+    for case in lemma.cases
+        println(buffer, julia_form(case))
+    end
+    println(buffer, "end")
+    return String(take!(buffer))
 end
 
 
