@@ -1561,7 +1561,7 @@ function _possible_strengthenings(lemma::SELTZOLemma)
 end
 
 
-function _find_initial_seltzo_lemma(
+function find_initial_seltzo_lemma(
     two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
     x::SELTZOAbstraction,
     y::SELTZOAbstraction,
