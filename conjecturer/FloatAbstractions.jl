@@ -1147,10 +1147,15 @@ end
 ######################################################## SELTZO LEMMA GENERATION
 
 
-const SELTZO_COEFFICIENT_VECTORS = sort!([
-        v for v in Iterators.product(ntuple(_ -> -1:+1, Val{6}())...)
-        if all(iszero.(v)) || ((sum(v) == 1) && count(!iszero, v) <= 2)
-    ]; by=v -> (sum(abs.(v)), -2 .* v .^ 2 .- v))
+const SELTZO_COEFFICIENT_VECTORS = NTuple{6,Int}[
+    (0, 0, 0, 0, 0, 0),
+    (1, 0, 0, 0, 0, 0),
+    (0, 1, 0, 0, 0, 0),
+    (0, 0, 1, 0, 0, 0),
+    (0, 0, 0, 1, 0, 0),
+    (0, 0, 0, 0, 1, 0),
+    (0, 0, 0, 0, 0, 1),
+]
 
 
 function _find_best_seltzo_model(
@@ -1343,25 +1348,34 @@ function check_seltzo_lemma(
                         checker = _LemmaOutputs{SELTZOAbstraction,T}(
                             Tuple{SELTZOAbstraction,SELTZOAbstraction}[])
                         for case in lemma.cases
-                            s_range = isnothing(case.s) ? pos_zero : SELTZORange(
-                                xor(sx, case.s.s),
-                                Int(case.s.lb),
-                                Int(case.s.tb),
-                                _evaluate_model(x, y, case.s.e, T),
-                                _evaluate_model(x, y, case.s.f, T),
-                                _evaluate_model(x, y, case.s.g, T),
-                            )
-                            e_range = isnothing(case.e) ? pos_zero : SELTZORange(
-                                xor(sy, case.e.s),
-                                Int(case.e.lb),
-                                Int(case.e.tb),
-                                _evaluate_model(x, y, case.e.e, T),
-                                _evaluate_model(x, y, case.e.f, T),
-                                _evaluate_model(x, y, case.e.g, T),
-                            )
+                            s_range = if isnothing(case.s)
+                                pos_zero
+                            else
+                                SELTZORange(
+                                    xor(sx, case.s.s),
+                                    Int(case.s.lb),
+                                    Int(case.s.tb),
+                                    _evaluate_model(x, y, case.s.e, T),
+                                    _evaluate_model(x, y, case.s.f, T),
+                                    _evaluate_model(x, y, case.s.g, T),
+                                )
+                            end
+                            e_range = if isnothing(case.e)
+                                pos_zero
+                            else
+                                SELTZORange(
+                                    xor(sy, case.e.s),
+                                    Int(case.e.lb),
+                                    Int(case.e.tb),
+                                    _evaluate_model(x, y, case.e.e, T),
+                                    _evaluate_model(x, y, case.e.f, T),
+                                    _evaluate_model(x, y, case.e.g, T),
+                                )
+                            end
                             add_case!(checker, s_range, e_range)
                         end
-                        actual_outputs = abstract_outputs(two_sum_abstractions, x, y)
+                        actual_outputs = abstract_outputs(
+                            two_sum_abstractions, x, y)
                         if actual_outputs != sort!(checker.claimed_outputs)
                             throw(false)
                         end
@@ -1431,7 +1445,8 @@ function _prune_lower_bound(lemma::SELTZOLemma, bound_index::Int)
     if result.bounds[bound_index].upper_bound == typemax(Int)
         deleteat!(result.bounds, bound_index)
     else
-        result.bounds[bound_index] = _prune_lower_bound(result.bounds[bound_index])
+        result.bounds[bound_index] =
+            _prune_lower_bound(result.bounds[bound_index])
     end
     return result
 end
@@ -1448,7 +1463,8 @@ function _prune_upper_bound(lemma::SELTZOLemma, bound_index::Int)
     if result.bounds[bound_index].lower_bound == typemin(Int)
         deleteat!(result.bounds, bound_index)
     else
-        result.bounds[bound_index] = _prune_upper_bound(result.bounds[bound_index])
+        result.bounds[bound_index] =
+            _prune_upper_bound(result.bounds[bound_index])
     end
     return result
 end
@@ -1470,28 +1486,32 @@ end
 
 @inline function _weaken_lower_bound(bound::SELTZOBound)
     @assert bound.lower_bound != typemin(Int)
-    return SELTZOBound(bound.coefficients, bound.lower_bound - 1, bound.upper_bound)
+    return SELTZOBound(bound.coefficients,
+        bound.lower_bound - 1, bound.upper_bound)
 end
 
 
 function _weaken_lower_bound(lemma::SELTZOLemma, bound_index::Int)
     @assert bound_index in eachindex(lemma.bounds)
     result = deepcopy(lemma)
-    result.bounds[bound_index] = _weaken_lower_bound(result.bounds[bound_index])
+    result.bounds[bound_index] =
+        _weaken_lower_bound(result.bounds[bound_index])
     return result
 end
 
 
 @inline function _weaken_upper_bound(bound::SELTZOBound)
     @assert bound.upper_bound != typemax(Int)
-    return SELTZOBound(bound.coefficients, bound.lower_bound, bound.upper_bound + 1)
+    return SELTZOBound(bound.coefficients,
+        bound.lower_bound, bound.upper_bound + 1)
 end
 
 
 function _weaken_upper_bound(lemma::SELTZOLemma, bound_index::Int)
     @assert bound_index in eachindex(lemma.bounds)
     result = deepcopy(lemma)
-    result.bounds[bound_index] = _weaken_upper_bound(result.bounds[bound_index])
+    result.bounds[bound_index] =
+        _weaken_upper_bound(result.bounds[bound_index])
     return result
 end
 
@@ -1523,7 +1543,8 @@ function _find_initial_seltzo_lemma(
     deep_indices = only(Set{Vector{Tuple}}(_deep_eachindex.(values(data))))
     models = Dict{Tuple,NTuple{7,Int}}()
     while !isempty(deep_indices)
-        output_index, model = _find_best_seltzo_model(x, y, data, deep_indices, T)
+        output_index, model = _find_best_seltzo_model(
+            x, y, data, deep_indices, T)
         models[deep_indices[output_index]] = model
         _delete_inconsistent_data!(data, deep_indices[output_index], model, T)
         deleteat!(deep_indices, output_index)
@@ -1532,22 +1553,17 @@ function _find_initial_seltzo_lemma(
     deep_indices = only(Set{Vector{Tuple}}(_deep_eachindex.(values(data))))
     models = Dict{Tuple,NTuple{7,Int}}()
     while !isempty(deep_indices)
-        output_index, model = _find_best_seltzo_model(x, y, data, deep_indices, T)
+        output_index, model = _find_best_seltzo_model(
+            x, y, data, deep_indices, T)
         models[deep_indices[output_index]] = model
         _delete_inconsistent_data!(data, deep_indices[output_index], model, T)
         deleteat!(deep_indices, output_index)
     end
 
-    cx = only(unique!(sort!([seltzo_classify(nx, T) for (nx, _) in keys(data)])))
-    cy = only(unique!(sort!([seltzo_classify(ny, T) for (_, ny) in keys(data)])))
-    sx = only(unique!(sort!([signbit(nx) for (nx, _) in keys(data)])))
-    sy = only(unique!(sort!([signbit(ny) for (_, ny) in keys(data)])))
-    ex = [unpack_ints(nx, T)[1] for (nx, _) in keys(data)]
-    fx = [unpack_ints(nx, T)[2] for (nx, _) in keys(data)]
-    gx = [unpack_ints(nx, T)[3] for (nx, _) in keys(data)]
-    ey = [unpack_ints(ny, T)[1] for (_, ny) in keys(data)]
-    fy = [unpack_ints(ny, T)[2] for (_, ny) in keys(data)]
-    gy = [unpack_ints(ny, T)[3] for (_, ny) in keys(data)]
+    cx = seltzo_classify(x, T)
+    cy = seltzo_classify(y, T)
+    sx, _, _, ex, fx, gx = unpack(x, T)
+    sy, _, _, ey, fy, gy = unpack(y, T)
 
     fx_indeterminate = (cx != POW2) & (cx != ALL1)
     fy_indeterminate = (cy != POW2) & (cy != ALL1)
@@ -1555,36 +1571,37 @@ function _find_initial_seltzo_lemma(
     gy_indeterminate = (cy == G00) | (cy == G01) | (cy == G10) | (cy == G11)
 
     lemma_bounds = SELTZOBound[]
-    push!(lemma_bounds, SELTZOBound((+1, 0, 0, -1, 0, 0), extrema(ex - ey)...))
+    push!(lemma_bounds, SELTZOBound((+1, 0, 0, -1, 0, 0), ex - ey, ex - ey))
     if fx_indeterminate
-        push!(lemma_bounds, SELTZOBound((+1, -1, 0, 0, 0, 0), extrema(ex - fx)...))
-        push!(lemma_bounds, SELTZOBound((0, +1, 0, -1, 0, 0), extrema(fx - ey)...))
+        push!(lemma_bounds, SELTZOBound((+1, -1, 0, 0, 0, 0), ex - fx, ex - fx))
+        push!(lemma_bounds, SELTZOBound((0, +1, 0, -1, 0, 0), fx - ey, fx - ey))
     end
     if gx_indeterminate
-        push!(lemma_bounds, SELTZOBound((+1, 0, -1, 0, 0, 0), extrema(ex - gx)...))
-        push!(lemma_bounds, SELTZOBound((0, +1, -1, 0, 0, 0), extrema(fx - gx)...))
-        push!(lemma_bounds, SELTZOBound((0, 0, +1, -1, 0, 0), extrema(gx - ey)...))
+        push!(lemma_bounds, SELTZOBound((+1, 0, -1, 0, 0, 0), ex - gx, ex - gx))
+        push!(lemma_bounds, SELTZOBound((0, +1, -1, 0, 0, 0), fx - gx, fx - gx))
+        push!(lemma_bounds, SELTZOBound((0, 0, +1, -1, 0, 0), gx - ey, gx - ey))
     end
     if fy_indeterminate
-        push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, -1, 0), extrema(ey - fy)...))
-        push!(lemma_bounds, SELTZOBound((+1, 0, 0, 0, -1, 0), extrema(ex - fy)...))
+        push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, -1, 0), ey - fy, ey - fy))
+        push!(lemma_bounds, SELTZOBound((+1, 0, 0, 0, -1, 0), ex - fy, ex - fy))
     end
     if gy_indeterminate
-        push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, 0, -1), extrema(ey - gy)...))
-        push!(lemma_bounds, SELTZOBound((0, 0, 0, 0, +1, -1), extrema(fy - gy)...))
-        push!(lemma_bounds, SELTZOBound((+1, 0, 0, 0, 0, -1), extrema(ex - gy)...))
+        push!(lemma_bounds, SELTZOBound((0, 0, 0, +1, 0, -1), ey - gy, ey - gy))
+        push!(lemma_bounds, SELTZOBound((0, 0, 0, 0, +1, -1), fy - gy, fy - gy))
+        push!(lemma_bounds, SELTZOBound((+1, 0, 0, 0, 0, -1), ex - gy, ex - gy))
     end
     if fx_indeterminate & fy_indeterminate
-        push!(lemma_bounds, SELTZOBound((0, +1, 0, 0, -1, 0), extrema(fx - fy)...))
+        push!(lemma_bounds, SELTZOBound((0, +1, 0, 0, -1, 0), fx - fy, fx - fy))
     end
     if gx_indeterminate & gy_indeterminate
-        push!(lemma_bounds, SELTZOBound((0, 0, +1, 0, 0, -1), extrema(gx - gy)...))
+        push!(lemma_bounds, SELTZOBound((0, 0, +1, 0, 0, -1), gx - gy, gx - gy))
     end
 
     lemma_cases = SymbolicSELTZOPair[]
     output_classes = unique!(sort!([k[1] for k in keys(models)]))
     for output_class in output_classes
-        output_cases = unique!(sort!([k[2] for k in keys(models) if k[1] == output_class]))
+        output_cases = unique!(sort!(
+            [k[2] for k in keys(models) if k[1] == output_class]))
         for output_case in output_cases
             (ss, cs, se, ce) = output_class
             s = SymbolicSELTZOTuple(
@@ -1603,11 +1620,13 @@ function _find_initial_seltzo_lemma(
                 models[(output_class, output_case, 5)],
                 models[(output_class, output_case, 6)],
             )
-            if e.e == (exponent(floatmin(T)) - 1, 0, 0, 0, 0, 0, 0)
-                push!(lemma_cases, SymbolicSELTZOPair(s, nothing))
-            else
-                push!(lemma_cases, SymbolicSELTZOPair(s, e))
+            if s.e == (exponent(floatmin(T)) - 1, 0, 0, 0, 0, 0, 0)
+                s = nothing
             end
+            if e.e == (exponent(floatmin(T)) - 1, 0, 0, 0, 0, 0, 0)
+                e = nothing
+            end
+            push!(lemma_cases, SymbolicSELTZOPair(s, e))
         end
     end
 
