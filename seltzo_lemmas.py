@@ -2020,29 +2020,6 @@ def seltzo_two_sum_lemmas(
         ),
     )
 
-    result["SELTZO-TwoSum-R0R1-R0R1-D1-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            x_r0r1,
-            y_r0r1,
-            ex == ey + (p - one),
-            ex == fx + (p - two),
-            ey < fy + (p - one),
-        ),
-        seltzo_case((sx, 0, 0, ex, fx, fx), (sy, 1, 0, fy, ey - p, ey - (p - one))),
-    )
-    result["SELTZO-TwoSum-R0R1-R0R1-D1-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            y_r0r1,
-            x_r0r1,
-            ey == ex + (p - one),
-            ey == fy + (p - two),
-            ex < fx + (p - one),
-        ),
-        seltzo_case((sy, 0, 0, ey, fy, fy), (sx, 1, 0, fx, ex - p, ex - (p - one))),
-    )
-
     result["SELTZO-TwoSum-R1R0-ONE1-S2-X"] = z3.Implies(
         z3.And(same_sign, x_r1r0, y_one1, ex > fy + p - two, gx == ey),
         seltzo_case(
@@ -4941,21 +4918,6 @@ def seltzo_two_sum_lemmas(
             seltzo_case((sy, 1, 0, ey, fy, gy), (sx, 1, 0, fx, gx - one, gx)),
             seltzo_case((sy, 0, 0, ey, fy, gy), (sx, 0, 0, fx, gx, gx)),
             seltzo_case((sy, 1, 0, ey, fy, gy), (sx, 0, 0, fx, gx, gx)),
-        ),
-    )
-
-    result["SELTZO-TwoSum-R0R1-R0R1-D2-X"] = z3.Implies(
-        z3.And(diff_sign, x_r0r1, y_r0r1, ex > ey + one, fx + one == ey, ex == fy + p),
-        seltzo_case(
-            (sx, 1, 0, ex - one, gy, gy + one),
-            ((sy,), 0, 0, ey - (p - one), ey - (p + p - one), ey - (p - one)),
-        ),
-    )
-    result["SELTZO-TwoSum-R0R1-R0R1-D2-Y"] = z3.Implies(
-        z3.And(diff_sign, y_r0r1, x_r0r1, ey > ex + one, fy + one == ex, ey == fx + p),
-        seltzo_case(
-            (sy, 1, 0, ey - one, gx, gx + one),
-            ((sx,), 0, 0, ex - (p - one), ex - (p + p - one), ex - (p - one)),
         ),
     )
 
