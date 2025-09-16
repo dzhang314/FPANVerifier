@@ -59,6 +59,7 @@ two_sum      e01 e10
 two_sum      p02 p20
 two_sum      e02 e20
 two_sum      p03 p30
+two_sum      p12 p21
 two_sum      e00 p01
 two_sum      e01 p11
 two_sum      e10 e02
@@ -101,3 +102,5 @@ bound e11 / p00
 bound e20 / p00
 bound p03 / p00
 bound p12 / p00
+bound p21 / p00
+bound p30 / p00
