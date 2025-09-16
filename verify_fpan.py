@@ -257,6 +257,7 @@ class FPANVerifier(object):
 
     def __init__(self) -> None:
         self.solver: z3.Solver = z3.SolverFor("QF_LIA")
+        self.solver.add(GLOBAL_PRECISION >= 8)
         self.variables: dict[str, list[SELTZOVariable]] = {}
         self.two_sum_operands: list[
             tuple[SELTZOVariable, SELTZOVariable, SELTZOVariable, SELTZOVariable]
