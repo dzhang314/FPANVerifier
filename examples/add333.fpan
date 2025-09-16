@@ -1,0 +1,35 @@
+variable a
+variable b
+variable c
+variable d
+variable e
+variable f
+
+assume a strongly_dominates c
+assume b strongly_dominates d
+assume c strongly_dominates e
+assume d strongly_dominates f
+
+two_sum      a b
+two_sum      c d
+two_sum      e f
+fast_two_sum a c
+fast_two_sum b f
+two_sum      d e
+fast_two_sum a d
+two_sum      b c
+two_sum      c e
+two_sum      c d
+two_sum      b c
+fast_two_sum a b
+two_sum      c d
+fast_two_sum b c
+fast_two_sum a b
+fast_two_sum b c
+
+prove a strongly_dominates b
+prove b strongly_dominates c
+
+bound d / a
+bound e / a
+bound f / a

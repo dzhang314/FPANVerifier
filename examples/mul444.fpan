@@ -1,0 +1,103 @@
+variable x0
+variable x1
+variable x2
+variable x3
+variable y0
+variable y1
+variable y2
+variable y3
+
+assume x0 strongly_dominates x1
+assume x1 strongly_dominates x2
+assume x2 strongly_dominates x3
+assume y0 strongly_dominates y1
+assume y1 strongly_dominates y2
+assume y2 strongly_dominates y3
+
+variable p00
+variable e00
+two_prod x0 y0 p00 e00
+
+variable p01
+variable e01
+two_prod x0 y1 p01 e01
+
+variable p10
+variable e10
+two_prod x1 y0 p10 e10
+
+variable p02
+variable e02
+two_prod x0 y2 p02 e02
+
+variable p11
+variable e11
+two_prod x1 y1 p11 e11
+
+variable p20
+variable e20
+two_prod x2 y0 p20 e20
+
+variable p03
+variable e03
+two_prod x0 y3 p03 e03
+
+variable p12
+variable e12
+two_prod x1 y2 p12 e12
+
+variable p21
+variable e21
+two_prod x2 y1 p21 e21
+
+variable p30
+variable e30
+two_prod x3 y0 p30 e30
+
+two_sum      p01 p10
+two_sum      e01 e10
+two_sum      p02 p20
+two_sum      e02 e20
+two_sum      p03 p30
+two_sum      e00 p01
+two_sum      e01 p11
+two_sum      e10 e02
+two_sum      p20 e11
+two_sum      p03 p12
+fast_two_sum p00 e00
+fast_two_sum p01 p10
+two_sum      e01 p02
+two_sum      e10 p03
+two_sum      p11 p20
+two_sum      p01 e01
+fast_two_sum p10 p11
+two_sum      e10 p02
+two_sum      p10 e01
+two_sum      p01 p10
+two_sum      e00 p01
+two_sum      p10 e10
+fast_two_sum p00 e00
+two_sum      p01 p10
+two_sum      e00 p01
+fast_two_sum p00 e00
+fast_two_sum p01 p10
+fast_two_sum e00 p01
+fast_two_sum p00 e00
+fast_two_sum p01 p10
+fast_two_sum e00 p01
+fast_two_sum p01 p10
+
+prove p00 strongly_dominates e00
+prove e00 strongly_dominates p01
+prove p01 strongly_dominates p10
+
+bound e01 / p00
+bound e10 / p00
+bound p02 / p00
+bound p11 / p00
+bound p20 / p00
+bound e02 / p00
+bound e11 / p00
+bound e20 / p00
+bound p03 / p00
+bound p12 / p00

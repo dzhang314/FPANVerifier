@@ -1,0 +1,32 @@
+variable x0
+variable x1
+variable y0
+variable y1
+
+assume x0 strongly_dominates x1
+assume y0 strongly_dominates y1
+
+variable p00
+variable e00
+two_prod x0 y0 p00 e00
+
+variable p01
+variable e01
+two_prod x0 y1 p01 e01
+
+variable p10
+variable e10
+two_prod x1 y0 p10 e10
+
+variable p11
+variable e11
+two_prod x1 y1 p11 e11
+
+two_sum      p01 p10
+two_sum      e00 p01
+fast_two_sum p00 e00
+
+prove p00 strongly_dominates e00
+
+bound p01 / p00
+bound p10 / p00
