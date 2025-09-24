@@ -107,7 +107,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
     generate_abstraction_data(SETZAbstraction, :TwoProd, Float16,
         11_454_024, 0x8182FE97)
     generate_abstraction_data(SETZAbstraction, :TwoProd, BFloat16,
-        313_420_440, 0x897409CD)
+        313_430_232, 0x77C73F13)
 
     generate_abstraction_data(SELTZOAbstraction, :TwoSum, Float16,
         319_985_950, 0xCC55FA4F)
@@ -115,6 +115,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
         1_172_449_766, 0xCB0D263C)
     generate_abstraction_data(SELTZOAbstraction, :TwoProd, Float16,
         1_273_864_440, 0x00AD2611)
-    # generate_abstraction_data(SELTZOAbstraction, :TwoProd, BFloat16, ?, ?)
+    generate_abstraction_data(SELTZOAbstraction, :TwoProd, BFloat16,
+        0, 0x00000000)
 
 end
