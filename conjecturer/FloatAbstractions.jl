@@ -3,6 +3,7 @@ module FloatAbstractions
 using Base: uinttype, exponent_bias, exponent_mask,
     significand_bits, significand_mask
 using Base.Threads: @threads, nthreads
+using Mmap: mmap
 using Random: shuffle!
 
 ################################################ FLOATING-POINT BIT MANIPULATION
@@ -558,42 +559,63 @@ function _merge(
     @assert isbitstype(T)
     @assert isbitstype(I)
     @assert sizeof(T) == sizeof(I)
-    if iszero(filesize(src1))
+
+    s1 = filesize(src1)
+    s2 = filesize(src2)
+    if iszero(s1)
         cp(src2, dst)
-    elseif iszero(filesize(src2))
+        return nothing
+    elseif iszero(s2)
         cp(src1, dst)
-    else
-        open(src1, "r") do f1
-            open(src2, "r") do f2
-                open(dst, "w") do g
-                    while (!eof(f1)) && (!eof(f2))
-                        i1 = peek(f1, I)
-                        i2 = peek(f2, I)
-                        t1 = reinterpret(T, i1)
-                        t2 = reinterpret(T, i2)
-                        if isless(t1, t2)
-                            @assert i1 === read(f1, I)
-                            write(g, i1)
-                        elseif isless(t2, t1)
-                            @assert i2 === read(f2, I)
-                            write(g, i2)
-                        else
-                            @assert i1 === read(f1, I)
-                            @assert i2 === read(f2, I)
-                            @assert i1 === i2
-                            write(g, i1)
-                        end
-                    end
-                    while !eof(f1)
-                        write(g, read(f1, I))
-                    end
-                    while !eof(f2)
-                        write(g, read(f2, I))
-                    end
-                end
-            end
-        end
+        return nothing
     end
+
+    v = mmap(src1, Vector{I})
+    w = mmap(src2, Vector{I})
+    m = length(v)
+    n = length(w)
+
+    io = open(dst, "w+")
+    truncate(io, s1 + s2)
+    result = mmap(io, Vector{I})
+
+    i = 1
+    j = 1
+    k = 1
+    while (i <= m) && (j <= n)
+        t1 = reinterpret(T, v[i])
+        t2 = reinterpret(T, w[j])
+        if isless(t1, t2)
+            result[k] = v[i]
+            i += 1
+        elseif isless(t2, t1)
+            result[k] = w[j]
+            j += 1
+        else
+            result[k] = v[i]
+            i += 1
+            j += 1
+        end
+        k += 1
+    end
+
+    while i <= m
+        result[k] = v[i]
+        i += 1
+        k += 1
+    end
+    finalize(v)
+
+    while j <= n
+        result[k] = w[j]
+        j += 1
+        k += 1
+    end
+    finalize(w)
+
+    finalize(result)
+    truncate(io, (k - 1) * sizeof(I))
+    close(io)
     return nothing
 end
 
