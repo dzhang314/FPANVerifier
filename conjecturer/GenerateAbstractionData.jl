@@ -116,6 +116,6 @@ if abspath(PROGRAM_FILE) == @__FILE__
     generate_abstraction_data(SELTZOAbstraction, :TwoProd, Float16,
         1_273_864_440, 0x00AD2611)
     generate_abstraction_data(SELTZOAbstraction, :TwoProd, BFloat16,
-        0, 0x00000000)
+        3_125_792_780, 0x03DBCA9F)
 
 end
