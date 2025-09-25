@@ -7,10 +7,10 @@ using FloatAbstractions
 
 
 function FloatAbstractions.two_prod(x::BFloat16, y::BFloat16)
-    p32 = Float32(x) * Float32(y)
-    p16 = BFloat16(p32)
-    e32 = p32 - Float32(p16)
-    e16 = BFloat16(e32)
+    p64 = Float64(x) * Float64(y)
+    p16 = BFloat16(p64)
+    e64 = p64 - Float64(p16)
+    e16 = BFloat16(e64)
     return (p16, e16)
 end
 
@@ -98,7 +98,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
     generate_abstraction_data(SEAbstraction, :TwoProd, Float16,
         62_524, 0x194E7F4D)
     generate_abstraction_data(SEAbstraction, :TwoProd, BFloat16,
-        6_053_998, 0x26942A54)
+        6_053_588, 0x89B01463)
 
     generate_abstraction_data(SETZAbstraction, :TwoSum, Float16,
         3_833_700, 0x66E6D552)
@@ -107,7 +107,7 @@ if abspath(PROGRAM_FILE) == @__FILE__
     generate_abstraction_data(SETZAbstraction, :TwoProd, Float16,
         11_454_024, 0x8182FE97)
     generate_abstraction_data(SETZAbstraction, :TwoProd, BFloat16,
-        313_430_232, 0x77C73F13)
+        313_420_440, 0x897409CD)
 
     generate_abstraction_data(SELTZOAbstraction, :TwoSum, Float16,
         319_985_950, 0xCC55FA4F)
