@@ -463,6 +463,28 @@ function two_sum(x::T, y::T) where {T}
 end
 
 
+function _chunk(
+    ::Type{TwoSumAbstraction{A}},
+    ::Type{T},
+    lo::I,
+    hi::I,
+) where {A<:FloatAbstraction,T<:AbstractFloat,I<:Integer}
+    @assert isbitstype(T)
+    @assert 2 * sizeof(T) == sizeof(I)
+    result = Set{TwoSumAbstraction{A}}()
+    for k = lo:hi
+        i, j = _deinterleave(k)
+        x = reinterpret(T, i)
+        y = reinterpret(T, j)
+        s, e = two_sum(x, y)
+        if _isnormal(x) & _isnormal(y) & _isnormal(s) & _isnormal(e)
+            push!(result, TwoSumAbstraction{A}(x, y, s, e))
+        end
+    end
+    return result
+end
+
+
 function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
@@ -474,17 +496,7 @@ function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
     @threads :dynamic for chunk_index = 1:(1<<n)
         k_lo = chunk_size * UInt32(chunk_index - 1)
         k_hi = chunk_size * UInt32(chunk_index) - 0x00000001
-        result = Set{TwoSumAbstraction{A}}()
-        for k = k_lo:k_hi
-            i, j = _deinterleave(k)
-            x = reinterpret(T, i)
-            y = reinterpret(T, j)
-            s, e = two_sum(x, y)
-            if _isnormal(x) & _isnormal(y) & _isnormal(s) & _isnormal(e)
-                push!(result, TwoSumAbstraction{A}(x, y, s, e))
-            end
-        end
-        results[chunk_index] = result
+        results[chunk_index] = _chunk(TwoSumAbstraction{A}, T, k_lo, k_hi)
     end
     return sort!(collect(union(results...)))
 end
@@ -494,6 +506,28 @@ function two_prod(x::T, y::T) where {T}
     p = x * y
     e = fma(x, y, -p)
     return (p, e)
+end
+
+
+function _chunk(
+    ::Type{TwoProdAbstraction{A}},
+    ::Type{T},
+    lo::I,
+    hi::I,
+) where {A<:FloatAbstraction,T<:AbstractFloat,I<:Integer}
+    @assert isbitstype(T)
+    @assert 2 * sizeof(T) == sizeof(I)
+    result = Set{TwoProdAbstraction{A}}()
+    for k = lo:hi
+        i, j = _deinterleave(k)
+        x = reinterpret(T, i)
+        y = reinterpret(T, j)
+        p, e = two_prod(x, y)
+        if _isnormal(x) & _isnormal(y) & _isnormal(p) & _isnormal(e)
+            push!(result, TwoProdAbstraction{A}(x, y, p, e))
+        end
+    end
+    return result
 end
 
 
@@ -508,17 +542,7 @@ function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
     @threads :dynamic for chunk_index = 1:(1<<n)
         k_lo = chunk_size * UInt32(chunk_index - 1)
         k_hi = chunk_size * UInt32(chunk_index) - 0x00000001
-        result = Set{TwoProdAbstraction{A}}()
-        for k = k_lo:k_hi
-            i, j = _deinterleave(k)
-            x = reinterpret(T, i)
-            y = reinterpret(T, j)
-            p, e = two_prod(x, y)
-            if _isnormal(x) & _isnormal(y) & _isnormal(p) & _isnormal(e)
-                push!(result, TwoProdAbstraction{A}(x, y, p, e))
-            end
-        end
-        results[chunk_index] = result
+        results[chunk_index] = _chunk(TwoProdAbstraction{A}, T, k_lo, k_hi)
     end
     return sort!(collect(union(results...)))
 end
