@@ -554,11 +554,8 @@ function _merge(
     src2::AbstractString,
     dst::AbstractString,
     ::Type{T},
-    ::Type{I},
-) where {T,I}
+) where {T}
     @assert isbitstype(T)
-    @assert isbitstype(I)
-    @assert sizeof(T) == sizeof(I)
 
     s1 = filesize(src1)
     s2 = filesize(src2)
@@ -570,29 +567,30 @@ function _merge(
         return nothing
     end
 
-    v = mmap(src1, Vector{I})
-    w = mmap(src2, Vector{I})
+    v = mmap(src1, Vector{T})
+    w = mmap(src2, Vector{T})
     m = length(v)
     n = length(w)
 
     io = open(dst, "w+")
     truncate(io, s1 + s2)
-    result = mmap(io, Vector{I})
+    result = mmap(io, Vector{T})
 
     i = 1
     j = 1
     k = 1
     while (i <= m) && (j <= n)
-        t1 = reinterpret(T, v[i])
-        t2 = reinterpret(T, w[j])
+        t1 = v[i]
+        t2 = w[j]
         if isless(t1, t2)
-            result[k] = v[i]
+            result[k] = t1
             i += 1
         elseif isless(t2, t1)
-            result[k] = w[j]
+            result[k] = t2
             j += 1
         else
-            result[k] = v[i]
+            @assert t1 === t2
+            result[k] = t1
             i += 1
             j += 1
         end
@@ -614,7 +612,7 @@ function _merge(
     finalize(w)
 
     finalize(result)
-    truncate(io, (k - 1) * sizeof(I))
+    truncate(io, (k - 1) * sizeof(T))
     close(io)
     return nothing
 end
@@ -645,7 +643,7 @@ function enumerate_abstractions(
                     src1 = "$(m - 1)-$(2 * chunk_index - 1).bin"
                     src2 = "$(m - 1)-$(2 * chunk_index - 0).bin"
                     dst = "$m-$chunk_index.bin"
-                    _merge(src1, src2, dst, TwoSumAbstraction{A}, UInt128)
+                    _merge(src1, src2, dst, TwoSumAbstraction{A})
                     rm(src1)
                     rm(src2)
                 end
@@ -684,7 +682,7 @@ function enumerate_abstractions(
                     src1 = "$(m - 1)-$(2 * chunk_index - 1).bin"
                     src2 = "$(m - 1)-$(2 * chunk_index - 0).bin"
                     dst = "$m-$chunk_index.bin"
-                    _merge(src1, src2, dst, TwoProdAbstraction{A}, UInt128)
+                    _merge(src1, src2, dst, TwoProdAbstraction{A})
                     rm(src1)
                     rm(src2)
                 end
