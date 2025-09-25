@@ -802,32 +802,32 @@ const EXIT_INPUT_FILE_MALFORMED = 2
 
 
 function main(
-    file_name::String,
+    filename::String,
     expected_count::Int,
     expected_crc::UInt32,
     ::Type{T},
 ) where {T<:AbstractFloat}
 
-    if !isfile(file_name)
+    if !isfile(filename)
         println(stderr,
-            "ERROR: Input file $file_name not found." *
+            "ERROR: Input file $filename not found." *
             " Run `julia GenerateAbstractionData.jl` to" *
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(file_name) ===
+    valid = (filesize(filename) ===
              expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})) &&
-            (open(crc32c, file_name) === expected_crc)
+            (open(crc32c, filename) === expected_crc)
     if !valid
         println(stderr,
-            "ERROR: Input file $file_name is malformed." *
+            "ERROR: Input file $filename is malformed." *
             " Run `julia GenerateAbstractionData.jl` to" *
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MALFORMED)
     end
     two_sum_abstractions =
         Vector{TwoSumAbstraction{SETZAbstraction}}(undef, expected_count)
-    read!(file_name, two_sum_abstractions)
+    read!(filename, two_sum_abstractions)
     check_setz_two_sum_lemmas(two_sum_abstractions, T)
     println("Successfully checked all SETZ-TwoSum-$T lemmas.")
     flush(stdout)

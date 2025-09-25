@@ -27,16 +27,16 @@ function generate_abstraction_data(
     @assert endswith(abstraction_name, "Abstraction")
     abstraction_name = abstraction_name[begin:end-length("Abstraction")]
 
-    file_name = "$abstraction_name-$op-$T.bin"
-    if !isfile(file_name)
-        println("Generating $file_name...")
+    filename = "$abstraction_name-$op-$T.bin"
+    if !isfile(filename)
+        println("Generating $filename...")
         flush(stdout)
         if op === :TwoSum
-            open(file_name, "w") do io
+            open(filename, "w") do io
                 write(io, enumerate_abstractions(TwoSumAbstraction{A}, T))
             end
         elseif op === :TwoProd
-            open(file_name, "w") do io
+            open(filename, "w") do io
                 write(io, enumerate_abstractions(TwoProdAbstraction{A}, T))
             end
         else
@@ -44,20 +44,20 @@ function generate_abstraction_data(
         end
     end
 
-    println("Verifying $file_name...")
+    println("Verifying $filename...")
     flush(stdout)
 
-    if !isfile(file_name)
-        println("ERROR: $file_name not found.")
+    if !isfile(filename)
+        println("ERROR: $filename not found.")
         flush(stdout)
         return nothing
     end
 
-    actual_size = filesize(file_name)
+    actual_size = filesize(filename)
     if op === :TwoSum
         expected_size = expected_count * sizeof(TwoSumAbstraction{A})
         if actual_size !== expected_size
-            println("ERROR: Size of $file_name is incorrect.")
+            println("ERROR: Size of $filename is incorrect.")
             println("Expected size: $expected_size bytes")
             println("Actual size: $actual_size bytes")
             flush(stdout)
@@ -65,7 +65,7 @@ function generate_abstraction_data(
     elseif op === :TwoProd
         expected_size = expected_count * sizeof(TwoProdAbstraction{A})
         if actual_size !== expected_size
-            println("ERROR: Size of $file_name is incorrect.")
+            println("ERROR: Size of $filename is incorrect.")
             println("Expected size: $expected_size bytes")
             println("Actual size: $actual_size bytes")
             flush(stdout)
@@ -74,12 +74,12 @@ function generate_abstraction_data(
         error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
     end
 
-    actual_crc = open(crc32c, file_name)
+    actual_crc = open(crc32c, filename)
     if actual_crc === expected_crc
-        println("Successfully verified $file_name.")
+        println("Successfully verified $filename.")
         flush(stdout)
     else
-        println("ERROR: Contents of $file_name are incorrect.")
+        println("ERROR: Contents of $filename are incorrect.")
         @printf("Expected CRC: 0x%08X\n", expected_crc)
         @printf("Actual CRC: 0x%08X\n", actual_crc)
         flush(stdout)
