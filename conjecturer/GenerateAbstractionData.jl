@@ -32,13 +32,9 @@ function generate_abstraction_data(
         println("Generating $filename...")
         flush(stdout)
         if op === :TwoSum
-            open(filename, "w") do io
-                write(io, enumerate_abstractions(TwoSumAbstraction{A}, T))
-            end
+            enumerate_abstractions(TwoSumAbstraction{A}, T, filename, 64)
         elseif op === :TwoProd
-            open(filename, "w") do io
-                write(io, enumerate_abstractions(TwoProdAbstraction{A}, T))
-            end
+            enumerate_abstractions(TwoProdAbstraction{A}, T, filename, 64)
         else
             error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
         end

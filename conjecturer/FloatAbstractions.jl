@@ -463,6 +463,13 @@ function two_sum(x::T, y::T) where {T}
 end
 
 
+function two_prod(x::T, y::T) where {T}
+    p = x * y
+    e = fma(x, y, -p)
+    return (p, e)
+end
+
+
 function _chunk(
     ::Type{TwoSumAbstraction{A}},
     ::Type{T},
@@ -482,30 +489,6 @@ function _chunk(
         end
     end
     return result
-end
-
-
-function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
-{A<:FloatAbstraction,T<:AbstractFloat}
-    @assert isbitstype(T)
-    @assert 2 * sizeof(T) == sizeof(UInt32)
-    # Run at least 4 chunks per thread.
-    n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
-    chunk_size = (0xFFFFFFFF >> n) + 0x00000001
-    results = Vector{Set{TwoSumAbstraction{A}}}(undef, 1 << n)
-    @threads :dynamic for chunk_index = 1:(1<<n)
-        k_lo = chunk_size * UInt32(chunk_index - 1)
-        k_hi = chunk_size * UInt32(chunk_index) - 0x00000001
-        results[chunk_index] = _chunk(TwoSumAbstraction{A}, T, k_lo, k_hi)
-    end
-    return sort!(collect(union(results...)))
-end
-
-
-function two_prod(x::T, y::T) where {T}
-    p = x * y
-    e = fma(x, y, -p)
-    return (p, e)
 end
 
 
@@ -531,6 +514,23 @@ function _chunk(
 end
 
 
+function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
+{A<:FloatAbstraction,T<:AbstractFloat}
+    @assert isbitstype(T)
+    @assert 2 * sizeof(T) == sizeof(UInt32)
+    # Run at least 4 chunks per thread.
+    n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
+    chunk_size = (0xFFFFFFFF >> n) + 0x00000001
+    results = Vector{Set{TwoSumAbstraction{A}}}(undef, 1 << n)
+    @threads :dynamic for chunk_index = 1:(1<<n)
+        lo = chunk_size * UInt32(chunk_index - 1)
+        hi = chunk_size * UInt32(chunk_index) - 0x00000001
+        results[chunk_index] = _chunk(TwoSumAbstraction{A}, T, lo, hi)
+    end
+    return sort!(collect(union(results...)))
+end
+
+
 function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
 {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
@@ -540,11 +540,139 @@ function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     results = Vector{Set{TwoProdAbstraction{A}}}(undef, 1 << n)
     @threads :dynamic for chunk_index = 1:(1<<n)
-        k_lo = chunk_size * UInt32(chunk_index - 1)
-        k_hi = chunk_size * UInt32(chunk_index) - 0x00000001
-        results[chunk_index] = _chunk(TwoProdAbstraction{A}, T, k_lo, k_hi)
+        lo = chunk_size * UInt32(chunk_index - 1)
+        hi = chunk_size * UInt32(chunk_index) - 0x00000001
+        results[chunk_index] = _chunk(TwoProdAbstraction{A}, T, lo, hi)
     end
     return sort!(collect(union(results...)))
+end
+
+
+function _merge(
+    src1::AbstractString,
+    src2::AbstractString,
+    dst::AbstractString,
+    ::Type{T},
+    ::Type{I},
+) where {T,I}
+    @assert isbitstype(T)
+    @assert isbitstype(I)
+    @assert sizeof(T) == sizeof(I)
+    if iszero(filesize(src1))
+        cp(src2, dst)
+    elseif iszero(filesize(src2))
+        cp(src1, dst)
+    else
+        open(src1, "r") do f1
+            open(src2, "r") do f2
+                open(dst, "w") do g
+                    while (!eof(f1)) && (!eof(f2))
+                        i1 = peek(f1, I)
+                        i2 = peek(f2, I)
+                        t1 = reinterpret(T, i1)
+                        t2 = reinterpret(T, i2)
+                        if isless(t1, t2)
+                            @assert i1 === read(f1, I)
+                            write(g, i1)
+                        elseif isless(t2, t1)
+                            @assert i2 === read(f2, I)
+                            write(g, i2)
+                        else
+                            @assert i1 === read(f1, I)
+                            @assert i2 === read(f2, I)
+                            @assert i1 === i2
+                            write(g, i1)
+                        end
+                    end
+                    while !eof(f1)
+                        write(g, read(f1, I))
+                    end
+                    while !eof(f2)
+                        write(g, read(f2, I))
+                    end
+                end
+            end
+        end
+    end
+    return nothing
+end
+
+
+function enumerate_abstractions(
+    ::Type{TwoSumAbstraction{A}},
+    ::Type{T},
+    filename::AbstractString,
+    num_chunks::Int=1024,
+) where {A<:FloatAbstraction,T<:AbstractFloat}
+    @assert !isfile(filename)
+    @assert ispow2(num_chunks)
+    n = trailing_zeros(num_chunks)
+    chunk_size = (0xFFFFFFFF >> n) + 0x00000001
+    mktempdir() do dirpath
+        cd(dirpath) do
+            @threads :dynamic for chunk_index = 1:(1<<n)
+                lo = chunk_size * UInt32(chunk_index - 1)
+                hi = chunk_size * UInt32(chunk_index) - 0x00000001
+                open("0-$chunk_index.bin", "w") do io
+                    write(io, sort!(collect(_chunk(
+                        TwoSumAbstraction{A}, T, lo, hi))))
+                end
+            end
+            for m = 1:n
+                @threads :dynamic for chunk_index = 1:(1<<(n-m))
+                    src1 = "$(m - 1)-$(2 * chunk_index - 1).bin"
+                    src2 = "$(m - 1)-$(2 * chunk_index - 0).bin"
+                    dst = "$m-$chunk_index.bin"
+                    _merge(src1, src2, dst, TwoSumAbstraction{A}, UInt128)
+                    rm(src1)
+                    rm(src2)
+                end
+            end
+        end
+        finalpath = joinpath(dirpath, "$n-1.bin")
+        @assert isfile(finalpath)
+        mv(finalpath, filename)
+    end
+    return nothing
+end
+
+
+function enumerate_abstractions(
+    ::Type{TwoProdAbstraction{A}},
+    ::Type{T},
+    filename::AbstractString,
+    num_chunks::Int,
+) where {A<:FloatAbstraction,T<:AbstractFloat}
+    @assert !isfile(filename)
+    @assert ispow2(num_chunks)
+    n = trailing_zeros(num_chunks)
+    chunk_size = (0xFFFFFFFF >> n) + 0x00000001
+    mktempdir() do dirpath
+        cd(dirpath) do
+            @threads :dynamic for chunk_index = 1:(1<<n)
+                lo = chunk_size * UInt32(chunk_index - 1)
+                hi = chunk_size * UInt32(chunk_index) - 0x00000001
+                open("0-$chunk_index.bin", "w") do io
+                    write(io, sort!(collect(_chunk(
+                        TwoProdAbstraction{A}, T, lo, hi))))
+                end
+            end
+            for m = 1:n
+                @threads :dynamic for chunk_index = 1:(1<<(n-m))
+                    src1 = "$(m - 1)-$(2 * chunk_index - 1).bin"
+                    src2 = "$(m - 1)-$(2 * chunk_index - 0).bin"
+                    dst = "$m-$chunk_index.bin"
+                    _merge(src1, src2, dst, TwoProdAbstraction{A}, UInt128)
+                    rm(src1)
+                    rm(src2)
+                end
+            end
+        end
+        finalpath = joinpath(dirpath, "$n-1.bin")
+        @assert isfile(finalpath)
+        mv(finalpath, filename)
+    end
+    return nothing
 end
 
 
