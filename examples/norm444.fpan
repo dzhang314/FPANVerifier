@@ -4,11 +4,25 @@ variable c
 variable d
 
 assume a can_fast_two_sum b
+assume a can_fast_two_sum c
+assume a can_fast_two_sum d
 assume b can_fast_two_sum c
+assume b can_fast_two_sum d
 assume c can_fast_two_sum d
 
 fast_two_sum a b
 fast_two_sum b c
+fast_two_sum a b
+fast_two_sum b c
+fast_two_sum c d
+two_sum c b
+fast_two_sum c d
+fast_two_sum c b
+fast_two_sum a b
+two_sum b c
+fast_two_sum a b
+fast_two_sum b c
+fast_two_sum a b
 fast_two_sum c d
 
 prove a strongly_dominates b

@@ -4,9 +4,15 @@ variable c
 
 assume a can_fast_two_sum b
 assume b can_fast_two_sum c
+assume a can_fast_two_sum c
 
 fast_two_sum a b
 fast_two_sum b c
+fast_two_sum a b
+fast_two_sum b c
+fast_two_sum a b
 
 prove a strongly_dominates b
 prove b strongly_dominates c
+
+bound c / a

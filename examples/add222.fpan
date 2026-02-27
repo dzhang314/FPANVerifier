@@ -13,7 +13,7 @@ fast_two_sum b d
 two_sum      b c
 fast_two_sum a b
 
-prove a strongly_dominates b
+prove a s_dominates b
 
 bound c / a
 bound d / a
