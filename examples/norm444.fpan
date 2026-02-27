@@ -1,0 +1,16 @@
+variable a
+variable b
+variable c
+variable d
+
+assume a can_fast_two_sum b
+assume b can_fast_two_sum c
+assume c can_fast_two_sum d
+
+fast_two_sum a b
+fast_two_sum b c
+fast_two_sum c d
+
+prove a strongly_dominates b
+prove b strongly_dominates c
+prove c strongly_dominates d

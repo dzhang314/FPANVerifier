@@ -550,6 +550,8 @@ class FPANVerifier(object):
             return a.qd_dominates(b)
         elif arguments[1] == "strongly_dominates":
             return a.strongly_dominates(b)
+        elif arguments[1] == "can_fast_two_sum":
+            return a.strongly_dominates(b)
         else:
             assert False
 
