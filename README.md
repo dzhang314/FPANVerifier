@@ -20,7 +20,7 @@ the backbone of high-performance libraries like [MultiFloats.jl][5], [QD][6],
 
 Despite being widely used, FPANs are notoriously difficult to analyze, and even
 expert numerical analysts have [made mistakes][15] leading to the publication
-of [incorrect algorithms][15] and [false error bounds][16]. FPANVerifier turns
+of [false error bounds][16] and [incorrect algorithms][17]. FPANVerifier turns
 the tedious, error-prone process of manual rounding error analysis into a fully
 automated computation with rigorous formal correctness guarantees.
 
