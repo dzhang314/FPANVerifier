@@ -788,8 +788,8 @@ end
 
 
 function (checker::LemmaChecker{A,E,T})(
-    state_claims!::Function,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+    state_claims!::F,
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat,F}
     computed_outputs = abstract_outputs(
         checker.eft_abstractions, checker.x, checker.y)
     if isempty(computed_outputs)
@@ -802,10 +802,10 @@ end
 
 
 function (checker::LemmaChecker{A,E,T})(
-    state_claims!::Function,
+    state_claims!::F,
     lemma_name::String,
     hypothesis::Bool,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat,F}
     if hypothesis
         computed_outputs = abstract_outputs(
             checker.eft_abstractions, checker.x, checker.y)
