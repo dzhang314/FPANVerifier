@@ -5,6 +5,10 @@ push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
 
 
+const EXIT_INPUT_FILE_MISSING = 1
+const EXIT_INPUT_FILE_MALFORMED = 2
+
+
 function check_setz_two_sum_lemmas(
     two_sum_abstractions::Vector{TwoSumAbstraction{SETZAbstraction}},
     ::Type{T},
@@ -795,10 +799,6 @@ function check_setz_two_sum_lemmas(
 
     return nothing
 end
-
-
-const EXIT_INPUT_FILE_MISSING = 1
-const EXIT_INPUT_FILE_MALFORMED = 2
 
 
 function main(
