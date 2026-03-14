@@ -523,7 +523,7 @@ function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
     n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     results = Vector{Set{TwoSumAbstraction{A}}}(undef, 1 << n)
-    @threads :dynamic for chunk_index = 1:(1<<n)
+    @threads for chunk_index = 1:(1<<n)
         lo = chunk_size * UInt32(chunk_index - 1)
         hi = chunk_size * UInt32(chunk_index) - 0x00000001
         results[chunk_index] = _chunk(TwoSumAbstraction{A}, T, lo, hi)
@@ -540,7 +540,7 @@ function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
     n = trailing_zeros(nextpow(2, clamp(4 * nthreads(), 4, 65536)))
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     results = Vector{Set{TwoProdAbstraction{A}}}(undef, 1 << n)
-    @threads :dynamic for chunk_index = 1:(1<<n)
+    @threads for chunk_index = 1:(1<<n)
         lo = chunk_size * UInt32(chunk_index - 1)
         hi = chunk_size * UInt32(chunk_index) - 0x00000001
         results[chunk_index] = _chunk(TwoProdAbstraction{A}, T, lo, hi)
@@ -630,7 +630,7 @@ function enumerate_abstractions(
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     mktempdir() do dirpath
         cd(dirpath) do
-            @threads :dynamic for chunk_index = 1:(1<<n)
+            @threads for chunk_index = 1:(1<<n)
                 lo = chunk_size * UInt32(chunk_index - 1)
                 hi = chunk_size * UInt32(chunk_index) - 0x00000001
                 open("0-$chunk_index.bin", "w") do io
@@ -639,7 +639,7 @@ function enumerate_abstractions(
                 end
             end
             for m = 1:n
-                @threads :dynamic for chunk_index = 1:(1<<(n-m))
+                @threads for chunk_index = 1:(1<<(n-m))
                     src1 = "$(m - 1)-$(2 * chunk_index - 1).bin"
                     src2 = "$(m - 1)-$(2 * chunk_index - 0).bin"
                     dst = "$m-$chunk_index.bin"
@@ -669,7 +669,7 @@ function enumerate_abstractions(
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
     mktempdir() do dirpath
         cd(dirpath) do
-            @threads :dynamic for chunk_index = 1:(1<<n)
+            @threads for chunk_index = 1:(1<<n)
                 lo = chunk_size * UInt32(chunk_index - 1)
                 hi = chunk_size * UInt32(chunk_index) - 0x00000001
                 open("0-$chunk_index.bin", "w") do io
@@ -678,7 +678,7 @@ function enumerate_abstractions(
                 end
             end
             for m = 1:n
-                @threads :dynamic for chunk_index = 1:(1<<(n-m))
+                @threads for chunk_index = 1:(1<<(n-m))
                     src1 = "$(m - 1)-$(2 * chunk_index - 1).bin"
                     src2 = "$(m - 1)-$(2 * chunk_index - 0).bin"
                     dst = "$m-$chunk_index.bin"

@@ -1,4 +1,4 @@
-using BFloat16s: BFloat16
+using BFloat16s: BFloat16, NaNB16
 using CRC32c: crc32c
 using Printf: @printf
 
@@ -6,11 +6,41 @@ push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
 
 
-function FloatAbstractions.two_prod(x::BFloat16, y::BFloat16)
-    p64 = Float64(x) * Float64(y)
-    p16 = BFloat16(p64)
-    e64 = p64 - Float64(p16)
-    e16 = BFloat16(e64)
+# Julia 1.12+ flushes subnormal BFloat16s to zero by default. This code
+# restores correct IEEE semantics, which is necessary for our analysis.
+@inline function _bf16_no_ftz(x::Float32)
+    h = reinterpret(UInt32, x)
+    h += 0x7fff + ((h >> 16) & one(h))
+    result = reinterpret(BFloat16, (h >> 16) % UInt16)
+    return ifelse(isnan(x), NaNB16, result)
+end
+
+@inline _bf16_no_ftz(x::Float64) = _bf16_no_ftz(Float32(x))
+
+@inline _sub_no_ftz(x::BFloat16, y::BFloat16) =
+    _bf16_no_ftz(Float32(x) - Float32(y))
+
+@inline _add_no_ftz(x::BFloat16, y::BFloat16) =
+    _bf16_no_ftz(Float32(x) + Float32(y))
+
+@inline function FloatAbstractions.two_sum(x::BFloat16, y::BFloat16)
+    s = _add_no_ftz(x, y)
+    x_prime = _sub_no_ftz(s, y)
+    y_prime = _sub_no_ftz(s, x_prime)
+    x_err = _sub_no_ftz(x, x_prime)
+    y_err = _sub_no_ftz(y, y_prime)
+    e = _add_no_ftz(x_err, y_err)
+    return (s, e)
+end
+
+# BFloat16 to Float64 conversion is broken on Julia 1.11 due to an LLVM bug.
+@inline _fp64(x::BFloat16) = Float64(Float32(x))
+
+@inline function FloatAbstractions.two_prod(x::BFloat16, y::BFloat16)
+    p64 = _fp64(x) * _fp64(y)
+    p16 = _bf16_no_ftz(p64)
+    e64 = p64 - _fp64(p16)
+    e16 = _bf16_no_ftz(e64)
     return (p16, e16)
 end
 
