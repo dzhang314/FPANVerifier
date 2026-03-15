@@ -33,8 +33,12 @@ end
     return (s, e)
 end
 
-# BFloat16 to Float64 conversion is broken on Julia 1.11 due to an LLVM bug.
-@inline _fp64(x::BFloat16) = Float64(Float32(x))
+# BFloat16 to Float64 conversion is broken on Julia 1.11 due to an LLVM 16 bug.
+@static if v"16" <= Base.libllvm_version < v"17"
+    @noinline _fp64(x::BFloat16) = Float64(Float32(x))
+else
+    @inline _fp64(x::BFloat16) = Float64(x)
+end
 
 @inline function FloatAbstractions.two_prod(x::BFloat16, y::BFloat16)
     p64 = _fp64(x) * _fp64(y)
