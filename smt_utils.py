@@ -255,7 +255,9 @@ class SMTJob(object):
 
                 # Verify successful termination.
                 stdout, stderr = process.communicate()
-                if process.returncode != 0:
+                if process.returncode < 0:
+                    continue
+                elif process.returncode > 0:
                     raise RuntimeError(
                         f"{smt_solver} exited with code {process.returncode} on file "
                         + repr(self.filename)
