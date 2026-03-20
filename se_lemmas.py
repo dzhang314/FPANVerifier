@@ -1,4 +1,4 @@
-import z3
+import z3  # pyright: ignore[reportMissingModuleSource]
 from smt_utils import BoolVar, IntVar, FloatVar
 from typing import Callable
 

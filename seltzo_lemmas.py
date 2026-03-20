@@ -1,5 +1,5 @@
 # pyright: reportUnusedParameter=false, reportUnusedVariable=false
-import z3
+import z3  # pyright: ignore[reportMissingModuleSource]
 from smt_utils import BoolVar, IntVar, FloatVar, z3_If
 from typing import Callable
 

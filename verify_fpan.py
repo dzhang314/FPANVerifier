@@ -3,7 +3,7 @@
 import os
 import struct
 import sys
-import z3
+import z3  # pyright: ignore[reportMissingModuleSource]
 
 from time import sleep
 from typing import Callable, cast

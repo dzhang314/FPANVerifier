@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import z3
+import z3  # pyright: ignore[reportMissingModuleSource]
 
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas

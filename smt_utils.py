@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-import z3
+import z3  # pyright: ignore[reportMissingModuleSource]
 
 from random import shuffle
 from time import perf_counter_ns
@@ -89,33 +89,20 @@ def pop_flag(flag: str) -> bool:
 
 
 UNSUPPORTED_LOGICS: dict[str, set[str]] = {
-    # "alt-ergo": {"QF_BVFP"},
     "bitwuzla": {"QF_LIA"},
     "cvc5": set(),
     "mathsat": set(),
     "opensmt": {"QF_BVFP"},
-    # "princess": {"QF_BVFP"},
     "smtinterpol": {"QF_BVFP"},
-    # "smtrat": {"QF_BVFP"},
-    # "stp": {"QF_BVFP", "QF_LIA"},
     "yices-smt2": {"QF_BVFP"},
     "z3": set(),
+    "z3alpha": set(),
 }
 
 
 def detect_smt_solvers(logic: str, exit_code: int) -> set[str]:
 
     result: set[str] = set()
-
-    # if logic not in UNSUPPORTED_LOGICS["alt-ergo"] and not pop_flag("--no-alt-ergo"):
-    #     try:
-    #         alt_ergo_version: str = subprocess.check_output(
-    #             ["alt-ergo", "--version"], text=True
-    #         )
-    #         print("Found Alt-Ergo:", alt_ergo_version.strip())
-    #         result.add("alt-ergo")
-    #     except OSError:
-    #         print("Alt-Ergo not detected.")
 
     if logic not in UNSUPPORTED_LOGICS["bitwuzla"] and not pop_flag("--no-bitwuzla"):
         try:
@@ -157,16 +144,6 @@ def detect_smt_solvers(logic: str, exit_code: int) -> set[str]:
         except OSError:
             print("OpenSMT not detected.")
 
-    # if logic not in UNSUPPORTED_LOGICS["princess"] and not pop_flag("--no-princess"):
-    #     try:
-    #         princess_version: str = subprocess.check_output(
-    #             ["princess", "+version"], text=True
-    #         )
-    #         print("Found Princess:", princess_version.strip())
-    #         result.add("princess")
-    #     except OSError:
-    #         print("Princess not detected.")
-
     if logic not in UNSUPPORTED_LOGICS["smtinterpol"] and not pop_flag(
         "--no-smtinterpol"
     ):
@@ -178,27 +155,6 @@ def detect_smt_solvers(logic: str, exit_code: int) -> set[str]:
             result.add("smtinterpol")
         except OSError:
             print("SMTInterpol not detected.")
-
-    # if logic not in UNSUPPORTED_LOGICS["smtrat"] and not pop_flag("--no-smtrat"):
-    #     try:
-    #         # SMT-RAT returns a nonzero exit code, so check_output fails.
-    #         proc: subprocess.CompletedProcess[str] = subprocess.run(
-    #             ["smtrat", "--version"], capture_output=True, text=True
-    #         )
-    #         print("Found SMT-RAT:", proc.stdout.splitlines()[0].strip())
-    #         result.add("smtrat")
-    #     except OSError:
-    #         print("SMT-RAT not detected.")
-
-    # if logic not in UNSUPPORTED_LOGICS["stp"] and not pop_flag("--no-stp"):
-    #     try:
-    #         stp_version: str = subprocess.check_output(
-    #             ["stp", "--version"], text=True
-    #         )
-    #         print("Found STP:", stp_version.splitlines()[0].strip())
-    #         result.add("stp")
-    #     except OSError:
-    #         print("STP not detected.")
 
     if logic not in UNSUPPORTED_LOGICS["yices-smt2"] and not pop_flag("--no-yices"):
         try:
@@ -217,6 +173,16 @@ def detect_smt_solvers(logic: str, exit_code: int) -> set[str]:
             result.add("z3")
         except OSError:
             print("Z3 not detected.")
+
+    if logic not in UNSUPPORTED_LOGICS["z3alpha"] and not pop_flag("--no-z3alpha"):
+        try:
+            z3alpha_version: str = subprocess.check_output(
+                ["z3alpha", "--version"], text=True
+            )
+            print("Found Z3-alpha:", z3alpha_version.strip())
+            result.add("z3alpha")
+        except (OSError, subprocess.CalledProcessError):
+            print("Z3-alpha not detected.")
 
     if not result:
         print(
@@ -270,8 +236,6 @@ class SMTJob(object):
             command: list[str] = [solver]
             if solver == "cvc5" and self.logic == "QF_BVFP":
                 command.append("--fp-exp")
-            if solver == "princess":
-                command.append("+quiet")
             if solver == "smtinterpol":
                 command.append("-q")
                 command.append("-no-success")

@@ -2,7 +2,7 @@
 
 import os
 import sys
-import z3
+import z3  # pyright: ignore[reportMissingModuleSource]
 
 from operator import eq
 from subprocess import run
