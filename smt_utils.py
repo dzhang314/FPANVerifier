@@ -96,7 +96,6 @@ UNSUPPORTED_LOGICS: dict[str, set[str]] = {
     "smtinterpol": {"QF_BVFP"},
     "yices-smt2": {"QF_BVFP"},
     "z3": set(),
-    "z3alpha": set(),
 }
 
 
@@ -173,16 +172,6 @@ def detect_smt_solvers(logic: str, exit_code: int) -> set[str]:
             result.add("z3")
         except OSError:
             print("Z3 not detected.")
-
-    if logic not in UNSUPPORTED_LOGICS["z3alpha"] and not pop_flag("--no-z3alpha"):
-        try:
-            z3alpha_version: str = subprocess.check_output(
-                ["z3alpha", "--version"], text=True
-            )
-            print("Found Z3-alpha:", z3alpha_version.strip())
-            result.add("z3alpha")
-        except (OSError, subprocess.CalledProcessError):
-            print("Z3-alpha not detected.")
 
     if not result:
         print(
