@@ -1,5 +1,5 @@
 {
-    "cSpell.words": [
+    "words": [
         "bitwuzla",
         "BVFP",
         "calcsize",
@@ -9,13 +9,16 @@
         "dnlb",
         "dntb",
         "equivariant",
+        "finalpath",
         "fpan",
         "FPRM",
         "getfield",
         "ints",
         "isnormal",
+        "libllvm",
         "madd",
         "mathsat",
+        "mmap",
         "nlbe",
         "nlbr",
         "nlbs",
@@ -40,7 +43,6 @@
         "SELTZO",
         "SETZ",
         "smtinterpol",
-        "smtrat",
         "strengthenings",
         "testset",
         "toplevel",

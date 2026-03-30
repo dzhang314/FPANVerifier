@@ -423,15 +423,36 @@ export enumerate_abstractions
 @inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
 
 
-function enumerate_abstractions(::Type{A}, ::Type{T}) where
-{A<:FloatAbstraction,T<:AbstractFloat}
-    @assert isbitstype(T)
-    @assert sizeof(T) == sizeof(UInt16)
+function enumerate_abstractions(
+    ::Type{A},
+    ::Type{T},
+) where {A<:FloatAbstraction,T<:AbstractFloat}
+    U = uinttype(T)
     result = Set{A}()
-    for i = typemin(UInt16):typemax(UInt16)
+    for i = typemin(U):typemax(U)
         x = reinterpret(T, i)
         if _isnormal(x)
             push!(result, A(x))
+        end
+    end
+    return sort!(collect(result))
+end
+
+
+function enumerate_abstractions(
+    ::Type{SELTZOAbstraction},
+    ::Type{T},
+    class::SELTZOClass,
+) where {T<:AbstractFloat}
+    U = uinttype(T)
+    result = Set{SELTZOAbstraction}()
+    for i = typemin(U):typemax(U)
+        x = reinterpret(T, i)
+        if _isnormal(x)
+            a = SELTZOAbstraction(x)
+            if seltzo_classify(a, T) == class
+                push!(result, a)
+            end
         end
     end
     return sort!(collect(result))
@@ -515,8 +536,10 @@ function _chunk(
 end
 
 
-function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
-{A<:FloatAbstraction,T<:AbstractFloat}
+function enumerate_abstractions(
+    ::Type{TwoSumAbstraction{A}},
+    ::Type{T},
+) where {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
     @assert 2 * sizeof(T) == sizeof(UInt32)
     # Run at least 4 chunks per thread.
@@ -532,8 +555,10 @@ function enumerate_abstractions(::Type{TwoSumAbstraction{A}}, ::Type{T}) where
 end
 
 
-function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
-{A<:FloatAbstraction,T<:AbstractFloat}
+function enumerate_abstractions(
+    ::Type{TwoProdAbstraction{A}},
+    ::Type{T},
+) where {A<:FloatAbstraction,T<:AbstractFloat}
     @assert isbitstype(T)
     @assert 2 * sizeof(T) == sizeof(UInt32)
     # Run at least 4 chunks per thread.
@@ -546,6 +571,70 @@ function enumerate_abstractions(::Type{TwoProdAbstraction{A}}, ::Type{T}) where
         results[chunk_index] = _chunk(TwoProdAbstraction{A}, T, lo, hi)
     end
     return sort!(collect(union(results...)))
+end
+
+
+function enumerate_abstractions(
+    ::Type{TwoSumAbstraction{SELTZOAbstraction}},
+    ::Type{T},
+    cx::SELTZOClass,
+    cy::SELTZOClass,
+) where {T<:AbstractFloat}
+    U = uinttype(T)
+    xs = T[]
+    ys = T[]
+    for i = typemin(U):typemax(U)
+        z = reinterpret(T, i)
+        if _isnormal(z)
+            cz = seltzo_classify(SELTZOAbstraction(z), T)
+            if cx == cz
+                push!(xs, z)
+            end
+            if cy == cz
+                push!(ys, z)
+            end
+        end
+    end
+    result = Set{TwoSumAbstraction{SELTZOAbstraction}}()
+    for x in xs, y in ys
+        s, e = two_sum(x, y)
+        if _isnormal(s) & _isnormal(e)
+            push!(result, TwoSumAbstraction{SELTZOAbstraction}(x, y, s, e))
+        end
+    end
+    return sort!(collect(result))
+end
+
+
+function enumerate_abstractions(
+    ::Type{TwoProdAbstraction{SELTZOAbstraction}},
+    ::Type{T},
+    cx::SELTZOClass,
+    cy::SELTZOClass,
+) where {T<:AbstractFloat}
+    U = uinttype(T)
+    xs = T[]
+    ys = T[]
+    for i = typemin(U):typemax(U)
+        z = reinterpret(T, i)
+        if _isnormal(z)
+            cz = seltzo_classify(SELTZOAbstraction(z), T)
+            if cx == cz
+                push!(xs, z)
+            end
+            if cy == cz
+                push!(ys, z)
+            end
+        end
+    end
+    result = Set{TwoProdAbstraction{SELTZOAbstraction}}()
+    for x in xs, y in ys
+        p, e = two_prod(x, y)
+        if _isnormal(p) & _isnormal(e)
+            push!(result, TwoProdAbstraction{SELTZOAbstraction}(x, y, p, e))
+        end
+    end
+    return sort!(collect(result))
 end
 
 

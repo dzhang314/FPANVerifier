@@ -10,5 +10,9 @@ SELTZO-TwoSum-Float16.bin
 SELTZO-TwoSum-BFloat16.bin
 SELTZO-TwoProd-Float16.bin
 SELTZO-TwoProd-BFloat16.bin
+SELTZO-TwoSum-Float16-*.bin
+SELTZO-TwoSum-BFloat16-*.bin
+SELTZO-TwoProd-Float16-*.bin
+SELTZO-TwoProd-BFloat16-*.bin
 /__pycache__
 /smt2
