@@ -802,12 +802,11 @@ end
 
 
 function main(
-    filename::String,
+    ::Type{T},
     expected_count::Int,
     expected_crc::UInt32,
-    ::Type{T},
 ) where {T<:AbstractFloat}
-
+    filename = "SETZ-TwoSum-$T.bin"
     if !isfile(filename)
         println(stderr,
             "ERROR: Input file $filename not found." *
@@ -815,9 +814,9 @@ function main(
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filename) ===
+    valid = (filesize(filename) ==
              expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})) &&
-            (open(crc32c, filename) === expected_crc)
+            (open(crc32c, filename) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -831,12 +830,11 @@ function main(
     check_setz_two_sum_lemmas(two_sum_abstractions, T)
     println("Successfully checked all SETZ-TwoSum-$T lemmas.")
     flush(stdout)
-
     return nothing
 end
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    main("SETZ-TwoSum-Float16.bin", 3_833_700, 0x66E6D552, Float16)
-    main("SETZ-TwoSum-BFloat16.bin", 26_618_866, 0x1DB442CF, BFloat16)
+    main(Float16, 3_833_700, 0x66E6D552)
+    main(BFloat16, 26_618_866, 0x1DB442CF)
 end

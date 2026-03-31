@@ -305,12 +305,11 @@ end
 
 
 function main_two_sum(
-    filename::String,
+    ::Type{T},
     expected_count::Int,
     expected_crc::UInt32,
-    ::Type{T},
 ) where {T<:AbstractFloat}
-
+    filename = "SE-TwoSum-$T.bin"
     if !isfile(filename)
         println(stderr,
             "ERROR: Input file $filename not found." *
@@ -318,9 +317,9 @@ function main_two_sum(
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filename) ===
+    valid = (filesize(filename) ==
              expected_count * sizeof(TwoSumAbstraction{SEAbstraction})) &&
-            (open(crc32c, filename) === expected_crc)
+            (open(crc32c, filename) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -334,18 +333,16 @@ function main_two_sum(
     check_se_two_sum_lemmas(two_sum_abstractions, T)
     println("Successfully checked all SE-TwoSum-$T lemmas.")
     flush(stdout)
-
     return nothing
 end
 
 
 function main_two_prod(
-    filename::String,
+    ::Type{T},
     expected_count::Int,
     expected_crc::UInt32,
-    ::Type{T},
 ) where {T<:AbstractFloat}
-
+    filename = "SE-TwoProd-$T.bin"
     if !isfile(filename)
         println(stderr,
             "ERROR: Input file $filename not found." *
@@ -353,9 +350,9 @@ function main_two_prod(
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filename) ===
+    valid = (filesize(filename) ==
              expected_count * sizeof(TwoProdAbstraction{SEAbstraction})) &&
-            (open(crc32c, filename) === expected_crc)
+            (open(crc32c, filename) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -369,14 +366,13 @@ function main_two_prod(
     check_se_two_prod_lemmas(two_prod_abstractions, T)
     println("Successfully checked all SE-TwoProd-$T lemmas.")
     flush(stdout)
-
     return nothing
 end
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    main_two_sum("SE-TwoSum-Float16.bin", 38_638, 0x18557287, Float16)
-    main_two_sum("SE-TwoSum-BFloat16.bin", 548_026, 0xB20B9481, BFloat16)
-    main_two_prod("SE-TwoProd-Float16.bin", 62_524, 0x194E7F4D, Float16)
-    main_two_prod("SE-TwoProd-BFloat16.bin", 6_053_588, 0x89B01463, BFloat16)
+    main_two_sum(Float16, 38_638, 0x18557287)
+    main_two_sum(BFloat16, 548_026, 0xB20B9481)
+    main_two_prod(Float16, 62_524, 0x194E7F4D)
+    main_two_prod(BFloat16, 6_053_588, 0x89B01463)
 end

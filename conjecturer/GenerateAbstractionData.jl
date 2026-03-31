@@ -66,9 +66,9 @@ function generate_abstraction_data(
     if !isfile(filename)
         println("Generating $filename...")
         flush(stdout)
-        if op === :TwoSum
+        if op == :TwoSum
             enumerate_abstractions(TwoSumAbstraction{A}, T, filename, 64)
-        elseif op === :TwoProd
+        elseif op == :TwoProd
             enumerate_abstractions(TwoProdAbstraction{A}, T, filename, 64)
         else
             error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
@@ -85,17 +85,17 @@ function generate_abstraction_data(
     end
 
     actual_size = filesize(filename)
-    if op === :TwoSum
+    if op == :TwoSum
         expected_size = expected_count * sizeof(TwoSumAbstraction{A})
-        if actual_size !== expected_size
+        if actual_size != expected_size
             println("ERROR: Size of $filename is incorrect.")
             println("Expected size: $expected_size bytes")
             println("Actual size: $actual_size bytes")
             flush(stdout)
         end
-    elseif op === :TwoProd
+    elseif op == :TwoProd
         expected_size = expected_count * sizeof(TwoProdAbstraction{A})
-        if actual_size !== expected_size
+        if actual_size != expected_size
             println("ERROR: Size of $filename is incorrect.")
             println("Expected size: $expected_size bytes")
             println("Actual size: $actual_size bytes")
@@ -106,7 +106,7 @@ function generate_abstraction_data(
     end
 
     actual_crc = open(crc32c, filename)
-    if actual_crc === expected_crc
+    if actual_crc == expected_crc
         println("Successfully verified $filename.")
         flush(stdout)
     else
@@ -138,12 +138,12 @@ function generate_seltzo_data(
         if !isfile(filename)
             println("Generating $filename...")
             flush(stdout)
-            if op === :TwoSum
+            if op == :TwoSum
                 open(filename, "w") do io
                     write(io, enumerate_abstractions(
                         TwoSumAbstraction{SELTZOAbstraction}, T, cx, cy))
                 end
-            elseif op === :TwoProd
+            elseif op == :TwoProd
                 open(filename, "w") do io
                     write(io, enumerate_abstractions(
                         TwoProdAbstraction{SELTZOAbstraction}, T, cx, cy))
@@ -163,19 +163,19 @@ function generate_seltzo_data(
         end
 
         actual_size = filesize(filename)
-        if op === :TwoSum
+        if op == :TwoSum
             expected_size = expected_count[(cx, cy)] * sizeof(
                 TwoSumAbstraction{SELTZOAbstraction})
-            if actual_size !== expected_size
+            if actual_size != expected_size
                 println("ERROR: Size of $filename is incorrect.")
                 println("Expected size: $expected_size bytes")
                 println("Actual size: $actual_size bytes")
                 flush(stdout)
             end
-        elseif op === :TwoProd
+        elseif op == :TwoProd
             expected_size = expected_count[(cx, cy)] * sizeof(
                 TwoProdAbstraction{SELTZOAbstraction})
-            if actual_size !== expected_size
+            if actual_size != expected_size
                 println("ERROR: Size of $filename is incorrect.")
                 println("Expected size: $expected_size bytes")
                 println("Actual size: $actual_size bytes")
@@ -186,7 +186,7 @@ function generate_seltzo_data(
         end
 
         actual_crc = open(crc32c, filename)
-        if actual_crc === expected_crc[(cx, cy)]
+        if actual_crc == expected_crc[(cx, cy)]
             println("Successfully verified $filename.")
             flush(stdout)
         else
