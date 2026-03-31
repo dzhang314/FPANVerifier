@@ -128,7 +128,6 @@ function check_seltzo_two_sum_lemmas(
     xs = [x for x in abstract_inputs if seltzo_classify(x, T) == CLASS_X]
     ys = [y for y in abstract_inputs if seltzo_classify(y, T) == CLASS_Y]
     case_counts = Dict{String,Int}()
-    unverified_counts = Dict{Tuple{SELTZOClass,SELTZOClass},Int}()
     rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(5)
 
     for x in xs, y in ys
@@ -168,11 +167,6 @@ function check_seltzo_two_sum_lemmas(
             #     " are not covered by any lemmas.")
             if !isempty(abstract_outputs(two_sum_abstractions, x, y))
                 push!(rs, (x, y))
-                if haskey(unverified_counts, (cx, cy))
-                    unverified_counts[(cx, cy)] += 1
-                else
-                    unverified_counts[(cx, cy)] = 1
-                end
             end
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
@@ -191,9 +185,6 @@ function check_seltzo_two_sum_lemmas(
 
     println("Unverified cases: $(rs.population_size[])")
     #=
-    for ((cx, cy), case_count) in sort!(collect(unverified_counts))
-        println("    ($cx, $cy): $case_count")
-    end
     for i = 1:min(rs.population_size[], length(rs.reservoir))
         println("Unverified case $i:")
         x, y = rs.reservoir[i]
