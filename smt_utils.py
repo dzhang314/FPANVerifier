@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-import z3  # pyright: ignore[reportMissingModuleSource]
+import z3
 
 from random import shuffle
 from time import perf_counter_ns
