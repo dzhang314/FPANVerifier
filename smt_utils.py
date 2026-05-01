@@ -47,6 +47,25 @@ def count_trailing_ones(b: z3.BitVecRef, result_width: int) -> z3.BitVecRef:
     return result
 
 
+######################################################################## MODEL UTILITIES
+
+
+def to_bool(expr: z3.BoolRef) -> bool:
+    if z3.is_true(expr):
+        return True
+    elif z3.is_false(expr):
+        return False
+    assert False
+
+
+def get_bool(model: z3.ModelRef, expr: z3.BoolRef) -> bool:
+    return to_bool(model.eval(expr, model_completion=True))
+
+
+def get_int(model: z3.ModelRef, expr: z3.ArithRef) -> int:
+    return model.eval(expr, model_completion=True).as_long()
+
+
 ######################################################################### TYPE UTILITIES
 
 

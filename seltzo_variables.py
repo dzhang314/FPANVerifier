@@ -1,8 +1,33 @@
 import z3
+from enum import Enum, auto
+from smt_utils import get_bool, get_int
+
+
+FLOAT16_PRECISION: int = 11
+FLOAT16_ZERO_EXPONENT: int = -15
+FLOAT16_MIN_EXPONENT: int = FLOAT16_ZERO_EXPONENT + 1
 
 
 GLOBAL_PRECISION: z3.ArithRef = z3.Int("PRECISION")
 GLOBAL_ZERO_EXPONENT: z3.ArithRef = z3.Int("ZERO_EXPONENT")
+
+
+class SELTZOClass(Enum):
+    ZERO = auto()
+    POW2 = auto()
+    ALL1 = auto()
+    R0R1 = auto()
+    R1R0 = auto()
+    ONE0 = auto()
+    ONE1 = auto()
+    TWO0 = auto()
+    TWO1 = auto()
+    MM01 = auto()
+    MM10 = auto()
+    G00 = auto()
+    G01 = auto()
+    G10 = auto()
+    G11 = auto()
 
 
 class SELTZOVariable(object):
@@ -195,3 +220,96 @@ class SELTZOVariable(object):
                 self.exponent + self.num_trailing_bits >= other.exponent,
             ),
         )
+
+    def classify(self, model: z3.ModelRef) -> SELTZOClass:
+        if get_bool(model, self.is_zero):
+            return SELTZOClass.ZERO
+        p: int = get_int(model, GLOBAL_PRECISION)
+        lb: bool = get_bool(model, self.leading_bit)
+        tb: bool = get_bool(model, self.trailing_bit)
+        nlb: int = get_int(model, self.num_leading_bits)
+        ntb: int = get_int(model, self.num_trailing_bits)
+        if nlb == p - 1 and ntb == p - 1:
+            if (not lb) and (not tb):
+                return SELTZOClass.POW2
+            if lb and tb:
+                return SELTZOClass.ALL1
+        elif nlb + ntb == p - 1:
+            if (not lb) and tb:
+                return SELTZOClass.R0R1
+            if lb and (not tb):
+                return SELTZOClass.R1R0
+        elif nlb + ntb == p - 2:
+            if lb and tb:
+                return SELTZOClass.ONE0
+            if (not lb) and (not tb):
+                return SELTZOClass.ONE1
+        elif nlb + ntb == p - 3:
+            if lb and tb:
+                return SELTZOClass.TWO0
+            if (not lb) and (not tb):
+                return SELTZOClass.TWO1
+            if lb and (not tb):
+                return SELTZOClass.MM01
+            if (not lb) and tb:
+                return SELTZOClass.MM10
+        elif 1 < nlb + ntb < p - 3:
+            if (not lb) and (not tb):
+                return SELTZOClass.G00
+            if (not lb) and tb:
+                return SELTZOClass.G01
+            if lb and (not tb):
+                return SELTZOClass.G10
+            if lb and tb:
+                return SELTZOClass.G11
+        assert False
+
+    def key(self, model: z3.ModelRef, exponent_offset: int = 0) -> int:
+        # For now, we only support lookup from Float16 data files.
+        assert get_int(model, GLOBAL_PRECISION) == FLOAT16_PRECISION
+        zero_exponent: int = get_int(model, GLOBAL_ZERO_EXPONENT)
+        s: bool = get_bool(model, self.sign_bit)
+        lb: bool = get_bool(model, self.leading_bit)
+        tb: bool = get_bool(model, self.trailing_bit)
+        e: int = get_int(model, self.exponent)
+        if e == zero_exponent:
+            e = FLOAT16_ZERO_EXPONENT
+        else:
+            assert e > zero_exponent
+            e += exponent_offset
+        assert -16383 <= e <= 16384
+        nlb: int = get_int(model, self.num_leading_bits)
+        assert 0 <= nlb <= 127
+        ntb: int = get_int(model, self.num_trailing_bits)
+        assert 0 <= ntb <= 127
+        return (
+            (int(s) << 31)
+            | (int(lb) << 30)
+            | (int(tb) << 29)
+            | ((e + 16383) << 14)
+            | (nlb << 7)
+            | ntb
+        )
+
+
+def seltzo_keys(
+    model: z3.ModelRef,
+    variables: list[SELTZOVariable],
+) -> list[int]:
+    # For now, we only support lookup from Float16 data files.
+    assert get_int(model, GLOBAL_PRECISION) == FLOAT16_PRECISION
+    zero_exponent: int = get_int(model, GLOBAL_ZERO_EXPONENT)
+    nonzero_exponents: list[int] = []
+    for variable in variables:
+        exponent: int = get_int(model, variable.exponent)
+        if exponent != zero_exponent:
+            assert exponent > zero_exponent
+            nonzero_exponents.append(exponent)
+    min_exponent: int = min(nonzero_exponents, default=0)
+    return [
+        variable.key(
+            model,
+            (FLOAT16_MIN_EXPONENT - min_exponent) + (FLOAT16_PRECISION + 1),
+        )
+        for variable in variables
+    ]
