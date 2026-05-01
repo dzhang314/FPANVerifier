@@ -1,4 +1,4 @@
-import z3  # pyright: ignore[reportMissingModuleSource]
+import z3
 
 
 GLOBAL_PRECISION: z3.ArithRef = z3.Int("PRECISION")
