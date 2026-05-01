@@ -3,17 +3,31 @@
 import os
 import struct
 import sys
-import z3  # pyright: ignore[reportMissingModuleSource]
+import z3
 
 from time import sleep
-from typing import Callable, cast
+from typing import BinaryIO, cast
 from uuid import uuid4
 
 from se_lemmas import se_two_prod_lemmas
 from setz_lemmas import setz_two_sum_lemmas
 from seltzo_lemmas import seltzo_two_sum_lemmas
-from seltzo_variables import GLOBAL_PRECISION, GLOBAL_ZERO_EXPONENT, SELTZOVariable
-from smt_utils import SMTJob, detect_smt_solvers, create_smt_job, pop_flag
+from seltzo_variables import (
+    FLOAT16_PRECISION,
+    GLOBAL_PRECISION,
+    GLOBAL_ZERO_EXPONENT,
+    SELTZOClass,
+    SELTZOVariable,
+    seltzo_keys,
+)
+from smt_utils import (
+    SMTJob,
+    get_bool,
+    get_int,
+    pop_flag,
+    detect_smt_solvers,
+    create_smt_job,
+)
 
 
 EXIT_NO_SOLVERS: int = 1
@@ -24,52 +38,79 @@ SOLVER_LEN: int = max(map(len, LIA_SOLVERS))
 SHOW_COUNTEREXAMPLES: bool = pop_flag("--show-counterexamples")
 VERBOSE_COUNTEREXAMPLES: bool = pop_flag("--verbose-counterexamples")
 CHECK_FAST_TWO_SUM: bool = pop_flag("--check-fast-two-sum")
+
 INTERNAL_SEPARATOR: str = "__"
-FLOAT16_PRECISION: int = 11
-FLOAT16_ZERO_EXPONENT: int = -15
-FLOAT16_MIN_EXPONENT: int = FLOAT16_ZERO_EXPONENT + 1
+
+RECORD_FORMAT: str = "<IIII"
+RECORD_SIZE: int = struct.calcsize(RECORD_FORMAT)
+
+DATA_DIR: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conjecturer")
+DATA_PREFIX: str = "SELTZO-TwoSum-Float16-"
+DATA_SUFFIX: str = ".bin"
+
 Z3_ZERO: z3.ArithRef = z3.IntVal(0)
 Z3_ONE: z3.ArithRef = z3.IntVal(1)
 Z3_TWO: z3.ArithRef = z3.IntVal(2)
 Z3_THREE: z3.ArithRef = z3.IntVal(3)
 
 
-def try_open(path: str):
+def load_seltzo_data_files() -> (
+    dict[tuple[SELTZOClass, SELTZOClass], tuple[BinaryIO, int]]
+):
+    result: dict[tuple[SELTZOClass, SELTZOClass], tuple[BinaryIO, int]] = {}
     try:
-        return open(path, "rb")
-    except:
-        return None
+        filenames = os.listdir(DATA_DIR)
+    except OSError:
+        print(f"Directory {repr(DATA_DIR)} not found.")
+        return result
+
+    for filename in sorted(filenames):
+        if filename.startswith(DATA_PREFIX) and filename.endswith(DATA_SUFFIX):
+            stem: str = filename[len(DATA_PREFIX) : -len(DATA_SUFFIX)]
+            parts: list[str] = stem.split("-")
+            if len(parts) != 2:
+                continue
+            try:
+                cx: SELTZOClass = SELTZOClass[parts[0]]
+                cy: SELTZOClass = SELTZOClass[parts[1]]
+            except KeyError:
+                continue
+
+            path: str = os.path.join(DATA_DIR, filename)
+            try:
+                data_file = open(path, "rb")
+            except OSError:
+                print(f"Could not open file {repr(path)}.")
+                continue
+
+            data_size: int = data_file.seek(0, os.SEEK_END)
+            _ = data_file.seek(0, os.SEEK_SET)
+            assert data_size % RECORD_SIZE == 0
+            result[(cx, cy)] = (data_file, data_size // RECORD_SIZE)
+
+    expected_count: int = len(SELTZOClass) ** 2
+    if not result:
+        print(f"No files matching {repr(DATA_PREFIX + '*' + DATA_SUFFIX)} found.")
+    else:
+        total_records: int = sum(num_records for _, num_records in result.values())
+        print(f"Successfully opened {len(result)} SELTZO-TwoSum-Float16 data files.")
+        print(f"Found {total_records} SELTZO-TwoSum-Float16 records.")
+        if len(result) != expected_count:
+            print(
+                f"WARNING: Expected {expected_count} SELTZO-TwoSum-Float16 data files.",
+                file=sys.stderr,
+            )
+
+    return result
 
 
-DATA_PATH: str = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "conjecturer",
-    "SELTZO-TwoSum-Float16.bin",
+DATA_FILES: dict[tuple[SELTZOClass, SELTZOClass], tuple[BinaryIO, int]] = (
+    load_seltzo_data_files()
 )
-DATA_FILE = try_open(DATA_PATH)
-if DATA_FILE is None:
-    print(f"File {repr(DATA_PATH)} not found.")
-else:
-    print(f"Successfully opened {repr(DATA_PATH)}.")
-    DATA_SIZE: int = DATA_FILE.seek(0, os.SEEK_END)
-    _ = DATA_FILE.seek(0, os.SEEK_SET)
-    RECORD_FORMAT: str = "<IIII"
-    RECORD_SIZE: int = struct.calcsize(RECORD_FORMAT)
-    assert DATA_SIZE % RECORD_SIZE == 0
-    NUM_RECORDS: int = DATA_SIZE // RECORD_SIZE
-    print(f"Found {NUM_RECORDS} SELTZO-TwoSum records.")
 
 
 # TODO: Eventually, all `assert` statements should be
 # replaced by informative user-facing error messages.
-
-
-def to_bool(expr: z3.BoolRef) -> bool:
-    if z3.is_true(expr):
-        return True
-    elif z3.is_false(expr):
-        return False
-    assert False
 
 
 def to_digit(bit: bool) -> str:
@@ -87,20 +128,20 @@ def extract_digits(
     variable: SELTZOVariable,
 ) -> dict[int, str]:
 
-    zero_exponent: int = model[GLOBAL_ZERO_EXPONENT].as_long()
-    exponent: int = model[variable.exponent].as_long()
+    zero_exponent: int = get_int(model, GLOBAL_ZERO_EXPONENT)
+    exponent: int = get_int(model, variable.exponent)
     assert zero_exponent <= exponent
 
     digit_dict: dict[int, str] = {}
     if exponent > zero_exponent:
 
-        precision: int = model[GLOBAL_PRECISION].as_long()
+        precision: int = get_int(model, GLOBAL_PRECISION)
         for k in range(precision):
             digit_dict[exponent - k] = "?"
         set_digit(digit_dict, exponent, "1")
 
-        leading_bit: bool = to_bool(model[variable.leading_bit])
-        num_leading_bits: int = model[variable.num_leading_bits].as_long()
+        leading_bit: bool = get_bool(model, variable.leading_bit)
+        num_leading_bits: int = get_int(model, variable.num_leading_bits)
         for k in range(1, num_leading_bits + 1):
             set_digit(digit_dict, exponent - k, to_digit(leading_bit))
         if num_leading_bits < precision - 1:
@@ -110,8 +151,8 @@ def extract_digits(
                 to_digit(not leading_bit),
             )
 
-        trailing_bit: bool = to_bool(model[variable.trailing_bit])
-        num_trailing_bits: int = model[variable.num_trailing_bits].as_long()
+        trailing_bit: bool = get_bool(model, variable.trailing_bit)
+        num_trailing_bits: int = get_int(model, variable.num_trailing_bits)
         for k in range(1, num_trailing_bits + 1):
             set_digit(digit_dict, exponent - (precision - k), to_digit(trailing_bit))
         if num_trailing_bits < precision - 1:
@@ -124,60 +165,24 @@ def extract_digits(
     return digit_dict
 
 
-def seltzo_key(
+def is_identity_case(
     model: z3.ModelRef,
-    variable: SELTZOVariable,
-    exponent_offset: int,
-) -> int:
-    # For now, we only support lookup from Float16 data files.
-    assert model[GLOBAL_PRECISION].as_long() == FLOAT16_PRECISION
-    zero_exponent: int = model[GLOBAL_ZERO_EXPONENT].as_long()
-    s: bool = to_bool(model[variable.sign_bit])
-    lb: bool = to_bool(model[variable.leading_bit])
-    tb: bool = to_bool(model[variable.trailing_bit])
-    e: int = model[variable.exponent].as_long()
-    if e == zero_exponent:
-        e = FLOAT16_ZERO_EXPONENT
-    else:
-        assert e > zero_exponent
-        e += exponent_offset
-    assert -16383 <= e <= 16384
-    nlb: int = model[variable.num_leading_bits].as_long()
-    assert 0 <= nlb <= 127
-    ntb: int = model[variable.num_trailing_bits].as_long()
-    assert 0 <= ntb <= 127
-    return (
-        (int(s) << 31)
-        | (int(lb) << 30)
-        | (int(tb) << 29)
-        | ((e + 16383) << 14)
-        | (nlb << 7)
-        | ntb
+    x: SELTZOVariable,
+    y: SELTZOVariable,
+    s: SELTZOVariable,
+    e: SELTZOVariable,
+) -> bool:
+    nonzero = (not get_bool(model, x.is_zero)) and (not get_bool(model, y.is_zero))
+    x_dominates_y = get_bool(model, x.strongly_dominates(y))
+    y_dominates_x = get_bool(model, y.strongly_dominates(x))
+    s_equals_x = get_bool(model, s.can_equal(x))
+    s_equals_y = get_bool(model, s.can_equal(y))
+    e_equals_x = get_bool(model, e.can_equal(x))
+    e_equals_y = get_bool(model, e.can_equal(y))
+    return nonzero and (
+        (x_dominates_y and s_equals_x and e_equals_y)
+        or (y_dominates_x and s_equals_y and e_equals_x)
     )
-
-
-def seltzo_keys(
-    model: z3.ModelRef,
-    variables: list[SELTZOVariable],
-) -> list[int]:
-    # For now, we only support lookup from Float16 data files.
-    assert model[GLOBAL_PRECISION].as_long() == FLOAT16_PRECISION
-    zero_exponent: int = model[GLOBAL_ZERO_EXPONENT].as_long()
-    nonzero_exponents: list[int] = []
-    for variable in variables:
-        exponent: int = model[variable.exponent].as_long()
-        if exponent != zero_exponent:
-            assert exponent > zero_exponent
-            nonzero_exponents.append(exponent)
-    min_exponent: int = min(nonzero_exponents, default=0)
-    return [
-        seltzo_key(
-            model,
-            variable,
-            (FLOAT16_MIN_EXPONENT - min_exponent) + (FLOAT16_PRECISION + 1),
-        )
-        for variable in variables
-    ]
 
 
 def show_two_sum(
@@ -188,58 +193,69 @@ def show_two_sum(
     e: SELTZOVariable,
     prefix: str = "",
 ) -> None:
-    x_sign: str = "-" if to_bool(model[x.sign_bit]) else "+"
-    y_sign: str = "-" if to_bool(model[y.sign_bit]) else "+"
-    s_sign: str = "-" if to_bool(model[s.sign_bit]) else "+"
-    e_sign: str = "-" if to_bool(model[e.sign_bit]) else "+"
-    x_digits: dict[int, str] = extract_digits(model, x)
-    y_digits: dict[int, str] = extract_digits(model, y)
-    s_digits: dict[int, str] = extract_digits(model, s)
-    e_digits: dict[int, str] = extract_digits(model, e)
-    keys: set[int] = set()
-    keys.update(x_digits.keys())
-    keys.update(y_digits.keys())
-    keys.update(s_digits.keys())
-    keys.update(e_digits.keys())
-    x_seltzo, y_seltzo, s_seltzo, e_seltzo = seltzo_keys(model, [x, y, s, e])
-    if keys:  # at least one number is nonzero
-        max_key: int = max(keys)
-        min_key: int = min(keys)
-        key_range: Callable[[], range] = lambda: range(max_key, min_key - 1, -1)
-        x_str: str = "".join(x_digits.get(k, ".") for k in key_range())
-        y_str: str = "".join(y_digits.get(k, ".") for k in key_range())
-        s_str: str = "".join(s_digits.get(k, ".") for k in key_range())
-        e_str: str = "".join(e_digits.get(k, ".") for k in key_range())
-        print(f"{prefix}{x_sign}{x_str} (0x{x_seltzo:08X})")
-        print(f"{prefix}{y_sign}{y_str} (0x{y_seltzo:08X})")
-        print(prefix + "=" * (max_key - min_key + 2))
-        print(f"{prefix}{s_sign}{s_str} (0x{s_seltzo:08X})")
-        print(f"{prefix}{e_sign}{e_str} (0x{e_seltzo:08X})")
+    cx: SELTZOClass = x.classify(model)
+    cy: SELTZOClass = y.classify(model)
+    cs: SELTZOClass = s.classify(model)
+    ce: SELTZOClass = e.classify(model)
+    dx: dict[int, str] = extract_digits(model, x)
+    dy: dict[int, str] = extract_digits(model, y)
+    ds: dict[int, str] = extract_digits(model, s)
+    de: dict[int, str] = extract_digits(model, e)
+    kx, ky, ks, ke = seltzo_keys(model, [x, y, s, e])
+    sx: str = "-" if get_bool(model, x.sign_bit) else "+"
+    sy: str = "-" if get_bool(model, y.sign_bit) else "+"
+    ss: str = "-" if get_bool(model, s.sign_bit) else "+"
+    se: str = "-" if get_bool(model, e.sign_bit) else "+"
+    if any((dx, dy, ds, de)):  # at least one number is nonzero
+        e_min: int = min(min(d) for d in (dx, dy, ds, de) if d)
+        e_max: int = max(max(d) for d in (dx, dy, ds, de) if d)
+        x_str: str = "".join(dx.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        y_str: str = "".join(dy.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        s_str: str = "".join(ds.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        e_str: str = "".join(de.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        print(f"{prefix}{sx}{x_str} " + f"({cx.name}, 0x{kx:08X})")
+        print(f"{prefix}{sy}{y_str} " + f"({cy.name}, 0x{ky:08X})")
+        print(prefix + "=" * (e_max - e_min + 2))
+        print(f"{prefix}{ss}{s_str} " + f"({cs.name}, 0x{ks:08X})")
+        print(f"{prefix}{se}{e_str} " + f"({ce.name}, 0x{ke:08X})")
     else:  # all numbers are zero
-        print(f"{prefix}{x_sign}0 (0x{x_seltzo:08X})")
-        print(f"{prefix}{y_sign}0 (0x{y_seltzo:08X})")
+        print(f"{prefix}{sx}0 " + f"({cx.name}, 0x{kx:08X})")
+        print(f"{prefix}{sy}0 " + f"({cy.name}, 0x{ky:08X})")
         print(prefix + "=" * 2)
-        print(f"{prefix}{s_sign}0 (0x{s_seltzo:08X})")
-        print(f"{prefix}{e_sign}0 (0x{e_seltzo:08X})")
+        print(f"{prefix}{ss}0 " + f"({cs.name}, 0x{ks:08X})")
+        print(f"{prefix}{se}0 " + f"({ce.name}, 0x{ke:08X})")
 
 
-def exists_in_data(key_x: int, key_y: int, key_s: int, key_e: int) -> bool:
-    assert DATA_FILE is not None
-    target: tuple[int, int, int, int] = (key_x, key_y, key_s, key_e)
+def exists_in_data_file(
+    data_file: BinaryIO,
+    num_records: int,
+    keys: tuple[int, int, int, int],
+) -> bool:
     lo: int = 0
-    hi: int = NUM_RECORDS - 1
+    hi: int = num_records - 1
     while lo <= hi:
         mid: int = (lo + hi) // 2
-        _ = DATA_FILE.seek(mid * RECORD_SIZE)
-        data: bytes = DATA_FILE.read(RECORD_SIZE)
+        _ = data_file.seek(mid * RECORD_SIZE)
+        data: bytes = data_file.read(RECORD_SIZE)
         record: tuple[int, int, int, int] = struct.unpack(RECORD_FORMAT, data)
-        if record < target:
+        if record < keys:
             lo = mid + 1
-        elif record > target:
+        elif record > keys:
             hi = mid - 1
         else:
             return True
     return False
+
+
+def exists_in_data(
+    keys: tuple[int, int, int, int],
+    cx: SELTZOClass,
+    cy: SELTZOClass,
+) -> bool:
+    assert DATA_FILES
+    if (cx, cy) not in DATA_FILES:
+        return False
+    return exists_in_data_file(*DATA_FILES[(cx, cy)], keys)
 
 
 def format_bound(name_a: str, name_b: str, k: int, j: int) -> str:
@@ -407,12 +423,16 @@ class FPANVerifier(object):
                 )
                 counterexample: z3.ModelRef = self.solver.model()
                 for x, y, s, e in self.two_sum_operands:
-                    if DATA_FILE is None:
+                    if not DATA_FILES:
                         print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
                         show_two_sum(counterexample, x, y, s, e, prefix="  ")
                     else:
-                        keys: list[int] = seltzo_keys(counterexample, [x, y, s, e])
-                        is_valid: bool = exists_in_data(*keys)
+                        kx, ky, ks, ke = seltzo_keys(counterexample, [x, y, s, e])
+                        cx = x.classify(counterexample)
+                        cy = y.classify(counterexample)
+                        is_valid: bool = is_identity_case(
+                            counterexample, x, y, s, e
+                        ) or exists_in_data((kx, ky, ks, ke), cx, cy)
                         if VERBOSE_COUNTEREXAMPLES or not is_valid:
                             print(
                                 f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
