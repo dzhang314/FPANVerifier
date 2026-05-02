@@ -710,10 +710,10 @@ end
 function enumerate_abstractions(
     ::Type{TwoSumAbstraction{A}},
     ::Type{T},
-    filename::AbstractString,
+    filepath::AbstractString,
     num_chunks::Int=1024,
 ) where {A<:FloatAbstraction,T<:AbstractFloat}
-    @assert !isfile(filename)
+    @assert !isfile(filepath)
     @assert ispow2(num_chunks)
     n = trailing_zeros(num_chunks)
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
@@ -740,7 +740,7 @@ function enumerate_abstractions(
         end
         finalpath = joinpath(dirpath, "$n-1.bin")
         @assert isfile(finalpath)
-        mv(finalpath, filename)
+        mv(finalpath, filepath)
     end
     return nothing
 end
@@ -749,10 +749,10 @@ end
 function enumerate_abstractions(
     ::Type{TwoProdAbstraction{A}},
     ::Type{T},
-    filename::AbstractString,
+    filepath::AbstractString,
     num_chunks::Int,
 ) where {A<:FloatAbstraction,T<:AbstractFloat}
-    @assert !isfile(filename)
+    @assert !isfile(filepath)
     @assert ispow2(num_chunks)
     n = trailing_zeros(num_chunks)
     chunk_size = (0xFFFFFFFF >> n) + 0x00000001
@@ -779,7 +779,7 @@ function enumerate_abstractions(
         end
         finalpath = joinpath(dirpath, "$n-1.bin")
         @assert isfile(finalpath)
-        mv(finalpath, filename)
+        mv(finalpath, filepath)
     end
     return nothing
 end

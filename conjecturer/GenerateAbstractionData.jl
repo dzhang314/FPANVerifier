@@ -63,13 +63,14 @@ function generate_abstraction_data(
     abstraction_name = abstraction_name[begin:end-length("Abstraction")]
 
     filename = "$abstraction_name-$op-$T.bin"
-    if !isfile(filename)
+    filepath = joinpath("data", filename)
+    if !isfile(filepath)
         println("Generating $filename...")
         flush(stdout)
         if op == :TwoSum
-            enumerate_abstractions(TwoSumAbstraction{A}, T, filename, 64)
+            enumerate_abstractions(TwoSumAbstraction{A}, T, filepath, 64)
         elseif op == :TwoProd
-            enumerate_abstractions(TwoProdAbstraction{A}, T, filename, 64)
+            enumerate_abstractions(TwoProdAbstraction{A}, T, filepath, 64)
         else
             error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
         end
@@ -78,13 +79,13 @@ function generate_abstraction_data(
     println("Verifying $filename...")
     flush(stdout)
 
-    if !isfile(filename)
+    if !isfile(filepath)
         println("ERROR: $filename not found.")
         flush(stdout)
         return nothing
     end
 
-    actual_size = filesize(filename)
+    actual_size = filesize(filepath)
     if op == :TwoSum
         expected_size = expected_count * sizeof(TwoSumAbstraction{A})
         if actual_size != expected_size
@@ -105,7 +106,7 @@ function generate_abstraction_data(
         error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
     end
 
-    actual_crc = open(crc32c, filename)
+    actual_crc = open(crc32c, filepath)
     if actual_crc == expected_crc
         println("Successfully verified $filename.")
         flush(stdout)
@@ -135,16 +136,17 @@ function generate_seltzo_data(
     @threads for (cx, cy) in class_pairs
 
         filename = "SELTZO-$op-$T-$cx-$cy.bin"
-        if !isfile(filename)
+        filepath = joinpath("data", filename)
+        if !isfile(filepath)
             println("Generating $filename...")
             flush(stdout)
             if op == :TwoSum
-                open(filename, "w") do io
+                open(filepath, "w") do io
                     write(io, enumerate_abstractions(
                         TwoSumAbstraction{SELTZOAbstraction}, T, cx, cy))
                 end
             elseif op == :TwoProd
-                open(filename, "w") do io
+                open(filepath, "w") do io
                     write(io, enumerate_abstractions(
                         TwoProdAbstraction{SELTZOAbstraction}, T, cx, cy))
                 end
@@ -156,13 +158,13 @@ function generate_seltzo_data(
         println("Verifying $filename...")
         flush(stdout)
 
-        if !isfile(filename)
+        if !isfile(filepath)
             println("ERROR: $filename not found.")
             flush(stdout)
             continue
         end
 
-        actual_size = filesize(filename)
+        actual_size = filesize(filepath)
         if op == :TwoSum
             expected_size = expected_count[(cx, cy)] * sizeof(
                 TwoSumAbstraction{SELTZOAbstraction})
@@ -185,7 +187,7 @@ function generate_seltzo_data(
             error("Unknown operation: $op (expected :TwoSum or :TwoProd)")
         end
 
-        actual_crc = open(crc32c, filename)
+        actual_crc = open(crc32c, filepath)
         if actual_crc == expected_crc[(cx, cy)]
             println("Successfully verified $filename.")
             flush(stdout)
@@ -835,6 +837,8 @@ const SELTZO_TWO_PROD_BF16_CRC = Dict{Tuple{SELTZOClass,SELTZOClass},UInt32}(
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
+
+    mkpath("data")
 
     generate_abstraction_data(SEAbstraction, :TwoSum, Float16,
         38_638, 0x18557287)
