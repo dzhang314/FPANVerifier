@@ -44,7 +44,11 @@ INTERNAL_SEPARATOR: str = "__"
 RECORD_FORMAT: str = "<IIII"
 RECORD_SIZE: int = struct.calcsize(RECORD_FORMAT)
 
-DATA_DIR: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conjecturer")
+DATA_DIR: str = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "conjecturer",
+    "data",
+)
 DATA_PREFIX: str = "SELTZO-TwoSum-Float16-"
 DATA_SUFFIX: str = ".bin"
 
