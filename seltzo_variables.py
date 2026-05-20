@@ -6,6 +6,7 @@ from smt_utils import get_bool, get_int
 FLOAT16_PRECISION: int = 11
 FLOAT16_ZERO_EXPONENT: int = -15
 FLOAT16_MIN_EXPONENT: int = FLOAT16_ZERO_EXPONENT + 1
+FLOAT16_MAX_EXPONENT: int = 15
 
 
 GLOBAL_PRECISION: z3.ArithRef = z3.Int("PRECISION")
@@ -292,10 +293,10 @@ class SELTZOVariable(object):
         )
 
 
-def seltzo_keys(
+def exponent_offset_range(
     model: z3.ModelRef,
     variables: list[SELTZOVariable],
-) -> list[int]:
+) -> range:
     # For now, we only support lookup from Float16 data files.
     assert get_int(model, GLOBAL_PRECISION) == FLOAT16_PRECISION
     zero_exponent: int = get_int(model, GLOBAL_ZERO_EXPONENT)
@@ -305,11 +306,8 @@ def seltzo_keys(
         if exponent != zero_exponent:
             assert exponent > zero_exponent
             nonzero_exponents.append(exponent)
-    min_exponent: int = min(nonzero_exponents, default=0)
-    return [
-        variable.key(
-            model,
-            (FLOAT16_MIN_EXPONENT - min_exponent) + (FLOAT16_PRECISION + 1),
-        )
-        for variable in variables
-    ]
+    if not nonzero_exponents:
+        return range(1)
+    min_offset: int = FLOAT16_MIN_EXPONENT - min(nonzero_exponents)
+    max_offset: int = FLOAT16_MAX_EXPONENT - max(nonzero_exponents)
+    return range(min_offset, max_offset + 1)

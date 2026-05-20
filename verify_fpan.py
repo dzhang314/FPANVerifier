@@ -18,7 +18,7 @@ from seltzo_variables import (
     GLOBAL_ZERO_EXPONENT,
     SELTZOClass,
     SELTZOVariable,
-    seltzo_keys,
+    exponent_offset_range,
 )
 from smt_utils import (
     SMTJob,
@@ -165,6 +165,55 @@ def extract_digits(
     return digit_dict
 
 
+def show_two_sum(
+    model: z3.ModelRef,
+    x: SELTZOVariable,
+    y: SELTZOVariable,
+    s: SELTZOVariable,
+    e: SELTZOVariable,
+    prefix: str = "",
+) -> None:
+    cx: SELTZOClass = x.classify(model)
+    cy: SELTZOClass = y.classify(model)
+    cs: SELTZOClass = s.classify(model)
+    ce: SELTZOClass = e.classify(model)
+    dx: dict[int, str] = extract_digits(model, x)
+    dy: dict[int, str] = extract_digits(model, y)
+    ds: dict[int, str] = extract_digits(model, s)
+    de: dict[int, str] = extract_digits(model, e)
+    exponent_offsets: range = exponent_offset_range(model, [x, y, s, e])
+    if exponent_offsets:
+        exponent_offset = exponent_offsets[len(exponent_offsets) // 2]
+        kx: str = f"0x{x.key(model, exponent_offset):08X}"
+        ky: str = f"0x{y.key(model, exponent_offset):08X}"
+        ks: str = f"0x{s.key(model, exponent_offset):08X}"
+        ke: str = f"0x{e.key(model, exponent_offset):08X}"
+    else:
+        kx = ky = ks = ke = "out of Float16 range"
+    sx: str = "-" if get_bool(model, x.sign_bit) else "+"
+    sy: str = "-" if get_bool(model, y.sign_bit) else "+"
+    ss: str = "-" if get_bool(model, s.sign_bit) else "+"
+    se: str = "-" if get_bool(model, e.sign_bit) else "+"
+    if any((dx, dy, ds, de)):  # at least one number is nonzero
+        e_min: int = min(min(d) for d in (dx, dy, ds, de) if d)
+        e_max: int = max(max(d) for d in (dx, dy, ds, de) if d)
+        x_str: str = "".join(dx.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        y_str: str = "".join(dy.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        s_str: str = "".join(ds.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        e_str: str = "".join(de.get(e, ".") for e in range(e_max, e_min - 1, -1))
+        print(f"{prefix}{sx}{x_str} " + f"({cx.name}, {kx})")
+        print(f"{prefix}{sy}{y_str} " + f"({cy.name}, {ky})")
+        print(prefix + "=" * (e_max - e_min + 2))
+        print(f"{prefix}{ss}{s_str} " + f"({cs.name}, {ks})")
+        print(f"{prefix}{se}{e_str} " + f"({ce.name}, {ke})")
+    else:  # all numbers are zero
+        print(f"{prefix}{sx}0 " + f"({cx.name}, {kx})")
+        print(f"{prefix}{sy}0 " + f"({cy.name}, {ky})")
+        print(prefix + "=" * 2)
+        print(f"{prefix}{ss}0 " + f"({cs.name}, {ks})")
+        print(f"{prefix}{se}0 " + f"({ce.name}, {ke})")
+
+
 def is_identity_case(
     model: z3.ModelRef,
     x: SELTZOVariable,
@@ -185,52 +234,15 @@ def is_identity_case(
     )
 
 
-def show_two_sum(
-    model: z3.ModelRef,
-    x: SELTZOVariable,
-    y: SELTZOVariable,
-    s: SELTZOVariable,
-    e: SELTZOVariable,
-    prefix: str = "",
-) -> None:
-    cx: SELTZOClass = x.classify(model)
-    cy: SELTZOClass = y.classify(model)
-    cs: SELTZOClass = s.classify(model)
-    ce: SELTZOClass = e.classify(model)
-    dx: dict[int, str] = extract_digits(model, x)
-    dy: dict[int, str] = extract_digits(model, y)
-    ds: dict[int, str] = extract_digits(model, s)
-    de: dict[int, str] = extract_digits(model, e)
-    kx, ky, ks, ke = seltzo_keys(model, [x, y, s, e])
-    sx: str = "-" if get_bool(model, x.sign_bit) else "+"
-    sy: str = "-" if get_bool(model, y.sign_bit) else "+"
-    ss: str = "-" if get_bool(model, s.sign_bit) else "+"
-    se: str = "-" if get_bool(model, e.sign_bit) else "+"
-    if any((dx, dy, ds, de)):  # at least one number is nonzero
-        e_min: int = min(min(d) for d in (dx, dy, ds, de) if d)
-        e_max: int = max(max(d) for d in (dx, dy, ds, de) if d)
-        x_str: str = "".join(dx.get(e, ".") for e in range(e_max, e_min - 1, -1))
-        y_str: str = "".join(dy.get(e, ".") for e in range(e_max, e_min - 1, -1))
-        s_str: str = "".join(ds.get(e, ".") for e in range(e_max, e_min - 1, -1))
-        e_str: str = "".join(de.get(e, ".") for e in range(e_max, e_min - 1, -1))
-        print(f"{prefix}{sx}{x_str} " + f"({cx.name}, 0x{kx:08X})")
-        print(f"{prefix}{sy}{y_str} " + f"({cy.name}, 0x{ky:08X})")
-        print(prefix + "=" * (e_max - e_min + 2))
-        print(f"{prefix}{ss}{s_str} " + f"({cs.name}, 0x{ks:08X})")
-        print(f"{prefix}{se}{e_str} " + f"({ce.name}, 0x{ke:08X})")
-    else:  # all numbers are zero
-        print(f"{prefix}{sx}0 " + f"({cx.name}, 0x{kx:08X})")
-        print(f"{prefix}{sy}0 " + f"({cy.name}, 0x{ky:08X})")
-        print(prefix + "=" * 2)
-        print(f"{prefix}{ss}0 " + f"({cs.name}, 0x{ks:08X})")
-        print(f"{prefix}{se}0 " + f"({ce.name}, 0x{ke:08X})")
-
-
-def exists_in_data_file(
-    data_file: BinaryIO,
-    num_records: int,
+def exists_in_data(
     keys: tuple[int, int, int, int],
+    cx: SELTZOClass,
+    cy: SELTZOClass,
 ) -> bool:
+    assert DATA_FILES
+    if (cx, cy) not in DATA_FILES:
+        return False
+    data_file, num_records = DATA_FILES[(cx, cy)]
     lo: int = 0
     hi: int = num_records - 1
     while lo <= hi:
@@ -247,15 +259,27 @@ def exists_in_data_file(
     return False
 
 
-def exists_in_data(
-    keys: tuple[int, int, int, int],
-    cx: SELTZOClass,
-    cy: SELTZOClass,
+def is_possible_two_sum(
+    model: z3.ModelRef,
+    x: SELTZOVariable,
+    y: SELTZOVariable,
+    s: SELTZOVariable,
+    e: SELTZOVariable,
 ) -> bool:
-    assert DATA_FILES
-    if (cx, cy) not in DATA_FILES:
-        return False
-    return exists_in_data_file(*DATA_FILES[(cx, cy)], keys)
+    if is_identity_case(model, x, y, s, e):
+        return True
+    cx: SELTZOClass = x.classify(model)
+    cy: SELTZOClass = y.classify(model)
+    for exponent_offset in exponent_offset_range(model, [x, y, s, e]):
+        keys: tuple[int, int, int, int] = (
+            x.key(model, exponent_offset),
+            y.key(model, exponent_offset),
+            s.key(model, exponent_offset),
+            e.key(model, exponent_offset),
+        )
+        if exists_in_data(keys, cx, cy):
+            return True
+    return False
 
 
 def format_bound(name_a: str, name_b: str, k: int, j: int) -> str:
@@ -427,16 +451,11 @@ class FPANVerifier(object):
                         print(f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name}):")
                         show_two_sum(counterexample, x, y, s, e, prefix="  ")
                     else:
-                        kx, ky, ks, ke = seltzo_keys(counterexample, [x, y, s, e])
-                        cx = x.classify(counterexample)
-                        cy = y.classify(counterexample)
-                        is_valid: bool = is_identity_case(
-                            counterexample, x, y, s, e
-                        ) or exists_in_data((kx, ky, ks, ke), cx, cy)
-                        if VERBOSE_COUNTEREXAMPLES or not is_valid:
+                        possible: bool = is_possible_two_sum(counterexample, x, y, s, e)
+                        if VERBOSE_COUNTEREXAMPLES or not possible:
                             print(
                                 f"\n({s.name}, {e.name}) := TwoSum({x.name}, {y.name})",
-                                "(valid):" if is_valid else "(invalid):",
+                                "(possible):" if possible else "(impossible):",
                             )
                             show_two_sum(counterexample, x, y, s, e, prefix="  ")
                 print()
