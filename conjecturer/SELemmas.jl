@@ -310,16 +310,17 @@ function main_two_sum(
     expected_crc::UInt32,
 ) where {T<:AbstractFloat}
     filename = "SE-TwoSum-$T.bin"
-    if !isfile(filename)
+    filepath = joinpath("data", filename)
+    if !isfile(filepath)
         println(stderr,
             "ERROR: Input file $filename not found." *
             " Run `julia GenerateAbstractionData.jl` to" *
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filename) ==
+    valid = (filesize(filepath) ==
              expected_count * sizeof(TwoSumAbstraction{SEAbstraction})) &&
-            (open(crc32c, filename) == expected_crc)
+            (open(crc32c, filepath) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -329,7 +330,7 @@ function main_two_sum(
     end
     two_sum_abstractions =
         Vector{TwoSumAbstraction{SEAbstraction}}(undef, expected_count)
-    read!(filename, two_sum_abstractions)
+    read!(filepath, two_sum_abstractions)
     check_se_two_sum_lemmas(two_sum_abstractions, T)
     println("Successfully checked all SE-TwoSum-$T lemmas.")
     flush(stdout)
@@ -343,16 +344,17 @@ function main_two_prod(
     expected_crc::UInt32,
 ) where {T<:AbstractFloat}
     filename = "SE-TwoProd-$T.bin"
-    if !isfile(filename)
+    filepath = joinpath("data", filename)
+    if !isfile(filepath)
         println(stderr,
             "ERROR: Input file $filename not found." *
             " Run `julia GenerateAbstractionData.jl` to" *
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filename) ==
+    valid = (filesize(filepath) ==
              expected_count * sizeof(TwoProdAbstraction{SEAbstraction})) &&
-            (open(crc32c, filename) == expected_crc)
+            (open(crc32c, filepath) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -362,7 +364,7 @@ function main_two_prod(
     end
     two_prod_abstractions =
         Vector{TwoProdAbstraction{SEAbstraction}}(undef, expected_count)
-    read!(filename, two_prod_abstractions)
+    read!(filepath, two_prod_abstractions)
     check_se_two_prod_lemmas(two_prod_abstractions, T)
     println("Successfully checked all SE-TwoProd-$T lemmas.")
     flush(stdout)
