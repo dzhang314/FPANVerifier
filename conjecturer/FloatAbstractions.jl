@@ -898,6 +898,9 @@ function (checker::LemmaChecker{A,E,T})(
     if hypothesis
         computed_outputs = abstract_outputs(
             checker.eft_abstractions, checker.x, checker.y)
+        if isempty(computed_outputs)
+            return nothing
+        end
         lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
         state_claims!(lemma)
         if computed_outputs == sort!(lemma.claimed_outputs)
@@ -1629,6 +1632,11 @@ function check_seltzo_lemma(
                 sy = signbit(y)
                 if xor(sx, sy) == lemma.sxy
                     if _satisfies_bounds(x, y, lemma.bounds, T)
+                        actual_outputs = abstract_outputs(
+                            two_sum_abstractions, x, y)
+                        if isempty(actual_outputs)
+                            continue
+                        end
                         checker = _LemmaOutputs{SELTZOAbstraction,T}(
                             Tuple{SELTZOAbstraction,SELTZOAbstraction}[])
                         for case in lemma.cases
@@ -1658,8 +1666,6 @@ function check_seltzo_lemma(
                             end
                             add_case!(checker, s_range, e_range)
                         end
-                        actual_outputs = abstract_outputs(
-                            two_sum_abstractions, x, y)
                         if actual_outputs != sort!(checker.claimed_outputs)
                             throw(false)
                         end
