@@ -105,16 +105,22 @@ def seltzo_two_sum_lemmas(
     # zeros in the exponent gap.
     result["SELTZO-TwoSum-01A-X"] = z3.Implies(
         z3.And(same_sign, ex >= ey),
-        z3.Or(
-            z3.And(es == ex, f0s <= f0x),
-            z3.And(es == ex + one, f1s <= ey + one),
+        z3.And(
+            ss == sx,
+            z3.Or(
+                z3.And(es == ex, f0s <= f0x),
+                z3.And(es == ex + one, f1s <= ey + one),
+            ),
         ),
     )
     result["SELTZO-TwoSum-01A-Y"] = z3.Implies(
         z3.And(same_sign, ey >= ex),
-        z3.Or(
-            z3.And(es == ey, f0s <= f0y),
-            z3.And(es == ey + one, f1s <= ex + one),
+        z3.And(
+            ss == sy,
+            z3.Or(
+                z3.And(es == ey, f0s <= f0y),
+                z3.And(es == ey + one, f1s <= ex + one),
+            ),
         ),
     )
 
@@ -124,37 +130,43 @@ def seltzo_two_sum_lemmas(
     # have leading ones in the exponent gap.
     result["SELTZO-TwoSum-01B-X"] = z3.Implies(
         z3.And(diff_sign, ex >= ey),
-        z3.Or(
-            z3.And(es == ex, f1s <= f1x),
-            z3.And(es < ex, f0s <= ey),
+        z3.And(
+            z3.Or(ex == ey, ss == sx),
+            z3.Or(
+                z3.And(es == ex, f1s <= f1x),
+                z3.And(es < ex, f0s <= ey),
+            ),
         ),
     )
     result["SELTZO-TwoSum-01B-Y"] = z3.Implies(
         z3.And(diff_sign, ey >= ex),
-        z3.Or(
-            z3.And(es == ey, f1s <= f1y),
-            z3.And(es < ey, f0s <= ex),
+        z3.And(
+            z3.Or(ey == ex, ss == sy),
+            z3.Or(
+                z3.And(es == ey, f1s <= f1y),
+                z3.And(es < ey, f0s <= ex),
+            ),
         ),
     )
 
     # Lemma 02A: A zero between the exponents of the addends
     # insulates the exponent of the sum from increasing.
     result["SELTZO-TwoSum-02A-X"] = z3.Implies(
-        z3.And(same_sign, f0x > ey, xy_nonzero),
+        z3.And(same_sign, f0x > ey, ~y_zero),
         z3.And(ss == sx, es == ex, f1s >= ey),
     )
     result["SELTZO-TwoSum-02A-Y"] = z3.Implies(
-        z3.And(same_sign, f0y > ex, xy_nonzero),
+        z3.And(same_sign, f0y > ex, ~x_zero),
         z3.And(ss == sy, es == ey, f1s >= ex),
     )
 
     result["SELTZO-TwoSum-02A1-X"] = z3.Implies(
         z3.And(same_sign, f0x > ey, z3.Or(f0x > ey + one, g1x > ey)),
-        f0s >= f0x - one,
+        z3.And(ss == sx, f0s >= f0x - one),
     )
     result["SELTZO-TwoSum-02A1-Y"] = z3.Implies(
         z3.And(same_sign, f0y > ex, z3.Or(f0y > ex + one, g1y > ex)),
-        f0s >= f0y - one,
+        z3.And(ss == sy, f0s >= f0y - one),
     )
 
     # Lemma 02B: A one between the exponents of the minuend and subtrahend
@@ -190,31 +202,31 @@ def seltzo_two_sum_lemmas(
 
     # Lemma 04A: Adding into leading ones increases the exponent.
     result["SELTZO-TwoSum-04A-X"] = z3.Implies(
-        z3.And(same_sign, ex >= ey, ey > f0x, xy_nonzero),
+        z3.And(same_sign, ex >= ey, ey > f0x, ~y_zero),
         z3.And(ss == sx, es == ex + one, f1s <= ey),
     )
     result["SELTZO-TwoSum-04A-Y"] = z3.Implies(
-        z3.And(same_sign, ey >= ex, ex > f0y, xy_nonzero),
+        z3.And(same_sign, ey >= ex, ex > f0y, ~x_zero),
         z3.And(ss == sy, es == ey + one, f1s <= ex),
     )
 
     # Lemma 04B: Subtracting from leading zeros decreases the exponent.
     result["SELTZO-TwoSum-04B-X"] = z3.Implies(
-        z3.And(diff_sign, ex > ey + one, ey > f1x, xy_nonzero),
+        z3.And(diff_sign, ex > ey + one, ey > f1x, ~y_zero),
         z3.And(ss == sx, es == ex - one, f0s <= ey),
     )
     result["SELTZO-TwoSum-04B-Y"] = z3.Implies(
-        z3.And(diff_sign, ey > ex + one, ex > f1y, xy_nonzero),
+        z3.And(diff_sign, ey > ex + one, ex > f1y, ~x_zero),
         z3.And(ss == sy, es == ey - one, f0s <= ex),
     )
 
     # Lemma 05: A trailing bit that is not cancelled out must remain intact.
     result["SELTZO-TwoSum-05-X"] = z3.Implies(
-        z3.And(g1x > g1y, xy_nonzero),
+        g1x > g1y,
         z3.Or(g1s == g1y, g1e == g1y),
     )
     result["SELTZO-TwoSum-05-Y"] = z3.Implies(
-        z3.And(g1y > g1x, xy_nonzero),
+        g1y > g1x,
         z3.Or(g1s == g1x, g1e == g1x),
     )
 
@@ -276,36 +288,35 @@ def seltzo_two_sum_lemmas(
 
     result["SELTZO-TwoSum-162-X"] = z3.Implies(
         z3.And(diff_sign, f1x > ey + one),
-        f1s >= f1x - one,
+        z3.And(ss == sx, f1s >= f1x - one),
     )
     result["SELTZO-TwoSum-162-Y"] = z3.Implies(
         z3.And(diff_sign, f1y > ex + one),
-        f1s >= f1y - one,
+        z3.And(ss == sy, f1s >= f1y - one),
     )
 
     result["SELTZO-TwoSum-178-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, ex == ey + p, ~lby, f1y > ey - p),
-        z3.And(~e_zero, se == sy),
+        z3.And(ss == sx, es >= ex - one, es <= ex, ~e_zero, se == sy),
     )
     result["SELTZO-TwoSum-178-Y"] = z3.Implies(
         z3.And(diff_sign, y_pow2, ey == ex + p, ~lbx, f1x > ex - p),
-        z3.And(~e_zero, se == sx),
+        z3.And(ss == sy, es >= ey - one, es <= ey, ~e_zero, se == sx),
     )
 
     result["SELTZO-TwoSum-182-X"] = z3.Implies(
         z3.And(same_sign, ex == ey + one, f0x == ey, es == ex + one),
-        ~lbs,
+        z3.And(ss == sx, ~lbs),
     )
     result["SELTZO-TwoSum-182-Y"] = z3.Implies(
         z3.And(same_sign, ey == ex + one, f0y == ex, es == ey + one),
-        ~lbs,
+        z3.And(ss == sy, ~lbs),
     )
 
     result["SELTZO-TwoSum-183-X"] = z3.Implies(
         z3.And(
             diff_sign,
             ~y_zero,
-            ~y_pow2,
             ex > ey + one,
             f1x < f0y,
             f0y < ex - one,
@@ -316,7 +327,6 @@ def seltzo_two_sum_lemmas(
         z3.And(
             diff_sign,
             ~x_zero,
-            ~x_pow2,
             ey > ex + one,
             f1y < f0x,
             f0x < ey - one,
@@ -325,40 +335,18 @@ def seltzo_two_sum_lemmas(
     )
 
     result["SELTZO-TwoSum-208-X"] = z3.Implies(
-        z3.And(diff_sign, x_r0r1, y_all1, ex == ey + two, f1x == f1y),
-        z3.And(ss == sx, es == ex - one, f1s >= f1x),
-    )
-    result["SELTZO-TwoSum-208-Y"] = z3.Implies(
-        z3.And(diff_sign, y_r0r1, x_all1, ey == ex + two, f1y == f1x),
-        z3.And(ss == sy, es == ey - one, f1s >= f1y),
-    )
-
-    result["SELTZO-TwoSum-213-X"] = z3.Implies(
-        z3.And(diff_sign, x_r0r1, y_all1, ex == ey + two, f1y > f1x),
+        z3.And(diff_sign, x_r0r1, y_all1, ex == ey + two),
         z3.And(ss == sx, es == ex - one, f1s >= f1x, z3.Or(e_zero, se == sx)),
     )
-    result["SELTZO-TwoSum-213-Y"] = z3.Implies(
-        z3.And(diff_sign, y_r0r1, x_all1, ey == ex + two, f1x > f1y),
+    result["SELTZO-TwoSum-208-Y"] = z3.Implies(
+        z3.And(diff_sign, y_r0r1, x_all1, ey == ex + two),
         z3.And(ss == sy, es == ey - one, f1s >= f1y, z3.Or(e_zero, se == sy)),
-    )
-
-    result["SELTZO-TwoSum-214-X"] = z3.Implies(
-        z3.And(diff_sign, x_r0r1, y_all1, ex == ey + two, f1y < f1x),
-        z3.And(ss == sx, es == ex - one, f1s >= f1x),
-    )
-    result["SELTZO-TwoSum-214-Y"] = z3.Implies(
-        z3.And(diff_sign, y_r0r1, x_all1, ey == ex + two, f1x < f1y),
-        z3.And(ss == sy, es == ey - one, f1s >= f1y),
     )
 
     result["SELTZO-TwoSum-231-X"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lbx,
-            ~tbx,
-            nlbx + ntbx <= p - two,
-            lby,
-            tby,
+            ~x_pow2,
             ex == ey + two,
             f1x > f0y,
             f1y > f1x,
@@ -368,11 +356,7 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-231-Y"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lby,
-            ~tby,
-            nlby + ntby <= p - two,
-            lbx,
-            tbx,
+            ~y_pow2,
             ey == ex + two,
             f1y > f0x,
             f1x > f1y,
@@ -383,57 +367,16 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-232-X"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lbx,
-            ~tbx,
-            nlbx + ntbx <= p - two,
-            ~y_zero,
-            ~lby,
+            ~x_pow2,
             ex == ey + two,
-            f1x > f0y,
-            f1y <= f1x - three,
         ),
         z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
     )
     result["SELTZO-TwoSum-232-Y"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lby,
-            ~tby,
-            nlby + ntby <= p - two,
-            ~x_zero,
-            ~lbx,
+            ~y_pow2,
             ey == ex + two,
-            f1y > f0x,
-            f1x <= f1y - three,
-        ),
-        z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
-    )
-
-    result["SELTZO-TwoSum-233-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            ~tbx,
-            nlbx + ntbx <= p - two,
-            ~lby,
-            tby,
-            ex == ey + two,
-            f1x == f0y + one,
-            f1y == f1x - two,
-        ),
-        z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
-    )
-    result["SELTZO-TwoSum-233-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            ~tby,
-            nlby + ntby <= p - two,
-            ~lbx,
-            tbx,
-            ey == ex + two,
-            f1y == f0x + one,
-            f1x == f1y - two,
         ),
         z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
     )
@@ -441,11 +384,6 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-234-X"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lbx,
-            ~tbx,
-            nlbx + ntbx <= p - two,
-            lby,
-            tby,
             ex == ey + two,
             f1x > f0y,
             f1y == f1x,
@@ -455,11 +393,6 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-234-Y"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lby,
-            ~tby,
-            nlby + ntby <= p - two,
-            lbx,
-            tbx,
             ey == ex + two,
             f1y > f0x,
             f1x == f1y,
@@ -467,40 +400,10 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey - one, f1s >= f1y),
     )
 
-    result["SELTZO-TwoSum-235-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            ~tbx,
-            nlbx + ntbx <= p - two,
-            lby,
-            tby,
-            ex == ey + two,
-            f1y < f1x,
-        ),
-        z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
-    )
-    result["SELTZO-TwoSum-235-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            ~tby,
-            nlby + ntby <= p - two,
-            lbx,
-            tbx,
-            ey == ex + two,
-            f1x < f1y,
-        ),
-        z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
-    )
-
     result["SELTZO-TwoSum-236-X"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lbx,
-            ~tbx,
-            nlbx + ntbx <= p - two,
-            lby,
+            ~y_zero,
             ex == ey + two,
             f1x == f0y,
         ),
@@ -509,10 +412,7 @@ def seltzo_two_sum_lemmas(
     result["SELTZO-TwoSum-236-Y"] = z3.Implies(
         z3.And(
             diff_sign,
-            ~lby,
-            ~tby,
-            nlby + ntby <= p - two,
-            lbx,
+            ~x_zero,
             ey == ex + two,
             f1y == f0x,
         ),
@@ -523,8 +423,6 @@ def seltzo_two_sum_lemmas(
         z3.And(
             diff_sign,
             x_r0r1,
-            lby,
-            tby,
             nlby + ntby <= p - two,
             ex == ey + two,
             f1x > f0y,
@@ -536,8 +434,6 @@ def seltzo_two_sum_lemmas(
         z3.And(
             diff_sign,
             y_r0r1,
-            lbx,
-            tbx,
             nlbx + ntbx <= p - two,
             ey == ex + two,
             f1y > f0x,
@@ -547,141 +443,18 @@ def seltzo_two_sum_lemmas(
     )
 
     result["SELTZO-TwoSum-239-X"] = z3.Implies(
-        z3.And(diff_sign, x_r0r1, ~y_zero, ~lby, ex == ey + two, f1x > f0y),
+        z3.And(diff_sign, x_r0r1, ~lby, ex == ey + two, f1x > f0y),
         z3.And(ss == sx, es == ex),
     )
     result["SELTZO-TwoSum-239-Y"] = z3.Implies(
-        z3.And(diff_sign, y_r0r1, ~x_zero, ~lbx, ey == ex + two, f1y > f0x),
+        z3.And(diff_sign, y_r0r1, ~lbx, ey == ex + two, f1y > f0x),
         z3.And(ss == sy, es == ey),
-    )
-
-    result["SELTZO-TwoSum-240-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            tbx,
-            nlbx + ntbx <= p - three,
-            ~y_zero,
-            ~lby,
-            ex == ey + two,
-            f1x == f0y + one,
-            f1y == f1x - two,
-        ),
-        z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
-    )
-    result["SELTZO-TwoSum-240-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            tby,
-            nlby + ntby <= p - three,
-            ~x_zero,
-            ~lbx,
-            ey == ex + two,
-            f1y == f0x + one,
-            f1x == f1y - two,
-        ),
-        z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
-    )
-
-    result["SELTZO-TwoSum-242-X"] = z3.Implies(
-        z3.And(diff_sign, x_r0r1, lby, ex == ey + two, f1x == f0y),
-        z3.And(ss == sx, es == ex - one, f1s > f1x),
-    )
-    result["SELTZO-TwoSum-242-Y"] = z3.Implies(
-        z3.And(diff_sign, y_r0r1, lbx, ey == ex + two, f1y == f0x),
-        z3.And(ss == sy, es == ey - one, f1s > f1y),
-    )
-
-    result["SELTZO-TwoSum-243-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            tbx,
-            nlbx + ntbx <= p - three,
-            ~y_zero,
-            ~lby,
-            ex == ey + two,
-            f1x > f0y,
-            f1y <= f1x - three,
-        ),
-        z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
-    )
-    result["SELTZO-TwoSum-243-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            tby,
-            nlby + ntby <= p - three,
-            ~x_zero,
-            ~lbx,
-            ey == ex + two,
-            f1y > f0x,
-            f1x <= f1y - three,
-        ),
-        z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
-    )
-
-    result["SELTZO-TwoSum-244-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            x_r0r1,
-            lby,
-            tby,
-            nlby + ntby <= p - two,
-            ex == ey + two,
-            f1y < f1x,
-        ),
-        z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
-    )
-    result["SELTZO-TwoSum-244-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            y_r0r1,
-            lbx,
-            tbx,
-            nlbx + ntbx <= p - two,
-            ey == ex + two,
-            f1x < f1y,
-        ),
-        z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
-    )
-
-    result["SELTZO-TwoSum-245-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            tbx,
-            nlbx + ntbx <= p - three,
-            lby,
-            tby,
-            ex == ey + two,
-            f1x > f0y,
-            f1y > f1x,
-        ),
-        z3.And(ss == sx, es == ex - one, f1s >= f1x),
-    )
-    result["SELTZO-TwoSum-245-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            tby,
-            nlby + ntby <= p - three,
-            lbx,
-            tbx,
-            ey == ex + two,
-            f1y > f0x,
-            f1x > f1y,
-        ),
-        z3.And(ss == sy, es == ey - one, f1s >= f1y),
     )
 
     result["SELTZO-TwoSum-246-X"] = z3.Implies(
         z3.And(
             diff_sign,
             x_r0r1,
-            lby,
-            tby,
             nlby + ntby <= p - two,
             ex == ey + two,
             f1x > f0y,
@@ -693,8 +466,6 @@ def seltzo_two_sum_lemmas(
         z3.And(
             diff_sign,
             y_r0r1,
-            lbx,
-            tbx,
             nlbx + ntbx <= p - two,
             ey == ex + two,
             f1y > f0x,
@@ -703,106 +474,25 @@ def seltzo_two_sum_lemmas(
         z3.And(ss == sy, es == ey - one, f1s > f1y),
     )
 
-    result["SELTZO-TwoSum-247-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            tbx,
-            nlbx + ntbx <= p - three,
-            lby,
-            tby,
-            ex == ey + two,
-            f1y < f1x,
-        ),
-        z3.And(ss == sx, z3.Or(es == ex, z3.And(es == ex - one, f1s >= f1x))),
-    )
-    result["SELTZO-TwoSum-247-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            tby,
-            nlby + ntby <= p - three,
-            lbx,
-            tbx,
-            ey == ex + two,
-            f1x < f1y,
-        ),
-        z3.And(ss == sy, z3.Or(es == ey, z3.And(es == ey - one, f1s >= f1y))),
-    )
-
-    result["SELTZO-TwoSum-248-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            tbx,
-            nlbx + ntbx <= p - three,
-            lby,
-            tby,
-            ex == ey + two,
-            f1x > f0y,
-            f1y == f1x,
-        ),
-        z3.And(ss == sx, es == ex - one, f1s >= f1x),
-    )
-    result["SELTZO-TwoSum-248-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            tby,
-            nlby + ntby <= p - three,
-            lbx,
-            tbx,
-            ey == ex + two,
-            f1y > f0x,
-            f1x == f1y,
-        ),
-        z3.And(ss == sy, es == ey - one, f1s >= f1y),
-    )
-
-    result["SELTZO-TwoSum-249-X"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lbx,
-            tbx,
-            nlbx + ntbx <= p - three,
-            lby,
-            ex == ey + two,
-            f1x == f0y,
-        ),
-        z3.And(ss == sx, es == ex - one, f1s > f1x),
-    )
-    result["SELTZO-TwoSum-249-Y"] = z3.Implies(
-        z3.And(
-            diff_sign,
-            ~lby,
-            tby,
-            nlby + ntby <= p - three,
-            lbx,
-            ey == ex + two,
-            f1y == f0x,
-        ),
-        z3.And(ss == sy, es == ey - one, f1s > f1y),
-    )
-
     result["SELTZO-TwoSum-264-X"] = z3.Implies(
         z3.And(diff_sign, x_pow2, ~y_zero, ~lby, ex == ey + one),
-        z3.And(ss == sx, es >= ey - one),
+        z3.And(ss == sx, es >= ey - one, es <= ey),
     )
 
     result["SELTZO-TwoSum-264-Y"] = z3.Implies(
         z3.And(diff_sign, y_pow2, ~x_zero, ~lbx, ey == ex + one),
-        z3.And(ss == sy, es >= ex - one),
+        z3.And(ss == sy, es >= ex - one, es <= ex),
     )
 
     result["SELTZO-TwoSum-271-X"] = z3.Implies(
         z3.And(
-            diff_sign, ~x_zero, ~y_zero, ~lbx, ~lby, ex == ey + two, f1x == ey - one
+            diff_sign, ~y_zero, ~lbx, ~lby, ex == ey + two, f1x == ey - one
         ),
         z3.And(ss == sx, es == ex - one, lbs),
     )
     result["SELTZO-TwoSum-271-Y"] = z3.Implies(
         z3.And(
-            diff_sign, ~x_zero, ~y_zero, ~lbx, ~lby, ey == ex + two, f1y == ex - one
+            diff_sign, ~x_zero, ~lbx, ~lby, ey == ex + two, f1y == ex - one
         ),
         z3.And(ss == sy, es == ey - one, lbs),
     )
@@ -817,11 +507,11 @@ def seltzo_two_sum_lemmas(
     )
 
     result["SELTZO-TwoSum-289-X"] = z3.Implies(
-        z3.And(same_sign, ~x_zero, ~y_zero, ~lbx, ~lby, ex == ey, f1x >= f1y),
+        z3.And(same_sign, ~x_zero, ~lbx, ~lby, ex == ey, f1x >= f1y),
         z3.And(ss == sx, es == ex + one, f1s <= f1x + one),
     )
     result["SELTZO-TwoSum-289-Y"] = z3.Implies(
-        z3.And(same_sign, ~x_zero, ~y_zero, ~lbx, ~lby, ex == ey, f1y >= f1x),
+        z3.And(same_sign, ~y_zero, ~lbx, ~lby, ex == ey, f1y >= f1x),
         z3.And(ss == sy, es == ey + one, f1s <= f1y + one),
     )
 
@@ -855,11 +545,11 @@ def seltzo_two_sum_lemmas(
     )
 
     result["SELTZO-TwoSum-397-X"] = z3.Implies(
-        z3.And(diff_sign, y_pow2, ~x_zero, lbx, ey == ex + one),
+        z3.And(diff_sign, y_pow2, lbx, ey == ex + one),
         z3.And(ss == sy, es >= f0x, es <= f0x + one),
     )
     result["SELTZO-TwoSum-397-Y"] = z3.Implies(
-        z3.And(diff_sign, x_pow2, ~y_zero, lby, ex == ey + one),
+        z3.And(diff_sign, x_pow2, lby, ex == ey + one),
         z3.And(ss == sx, es >= f0y, es <= f0y + one),
     )
 
