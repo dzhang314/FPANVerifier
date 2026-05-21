@@ -807,16 +807,17 @@ function main(
     expected_crc::UInt32,
 ) where {T<:AbstractFloat}
     filename = "SETZ-TwoSum-$T.bin"
-    if !isfile(filename)
+    filepath = joinpath("data", filename)
+    if !isfile(filepath)
         println(stderr,
             "ERROR: Input file $filename not found." *
             " Run `julia GenerateAbstractionData.jl` to" *
             " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filename) ==
+    valid = (filesize(filepath) ==
              expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})) &&
-            (open(crc32c, filename) == expected_crc)
+            (open(crc32c, filepath) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -826,7 +827,7 @@ function main(
     end
     two_sum_abstractions =
         Vector{TwoSumAbstraction{SETZAbstraction}}(undef, expected_count)
-    read!(filename, two_sum_abstractions)
+    read!(filepath, two_sum_abstractions)
     check_setz_two_sum_lemmas(two_sum_abstractions, T)
     println("Successfully checked all SETZ-TwoSum-$T lemmas.")
     flush(stdout)

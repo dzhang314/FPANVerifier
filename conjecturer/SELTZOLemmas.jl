@@ -533,7 +533,8 @@ function main(
     expected_crc_dict::Dict{Tuple{SELTZOClass,SELTZOClass},UInt32},
 ) where {T<:AbstractFloat}
     filename = "SELTZO-TwoSum-$T-$CLASS_X-$CLASS_Y.bin"
-    if !isfile(filename)
+    filepath = joinpath("data", filename)
+    if !isfile(filepath)
         println(stderr,
             "ERROR: Input file $filename not found." *
             " Run `julia GenerateAbstractionData.jl` to" *
@@ -542,9 +543,9 @@ function main(
     end
     expected_count = expected_count_dict[(CLASS_X, CLASS_Y)]
     expected_crc = expected_crc_dict[(CLASS_X, CLASS_Y)]
-    valid = (filesize(filename) ==
+    valid = (filesize(filepath) ==
              expected_count * sizeof(TwoSumAbstraction{SELTZOAbstraction})) &&
-            (open(crc32c, filename) == expected_crc)
+            (open(crc32c, filepath) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
@@ -554,7 +555,7 @@ function main(
     end
     two_sum_abstractions =
         Vector{TwoSumAbstraction{SELTZOAbstraction}}(undef, expected_count)
-    read!(filename, two_sum_abstractions)
+    read!(filepath, two_sum_abstractions)
     check_seltzo_two_sum_lemmas(two_sum_abstractions, T)
     println("Successfully checked $(filename[1:end-4]) lemmas.")
     flush(stdout)
