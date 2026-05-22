@@ -74,7 +74,7 @@ function check_seltzo_two_sum_lemmas!(
     end
     checker("SELTZO-TwoSum-ALL1-R1R0-S1A-Y",
         (CLASS_Y == ALL1) & (CLASS_X == R1R0) &
-        (ey == fx + (p + 1)) & (ey < fx + (p - 1))
+        (ey == fx + (p + 1)) & (ey < ex + (p - 1))
     ) do lemma
         add_case!(lemma,
             SELTZORange(sy, 0, 1, ey + 1, ex, ex + 1),
