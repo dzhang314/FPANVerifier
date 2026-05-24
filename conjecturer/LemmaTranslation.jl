@@ -196,7 +196,7 @@ end
 
 function translate_output(symbol::Symbol)
     @assert symbol == :pos_zero
-    return "()"
+    return "0"
 end
 
 
