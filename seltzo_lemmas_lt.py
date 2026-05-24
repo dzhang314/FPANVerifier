@@ -1,9 +1,5 @@
 import z3
-from smt_utils import BoolVar, IntVar, z3_If
-
-
-def _min(a: IntVar, b: IntVar) -> IntVar:
-    return z3_If(a < b, a, b)
+from smt_utils import BoolVar, IntVar
 
 
 def seltzo_two_sum_lt_lemmas(
@@ -216,19 +212,19 @@ def seltzo_two_sum_lt_lemmas(
         (sy, 0, 0, ey, fy, gx),
     )
     result["SELTZO-TwoSum-TS-L1-G-X"] = seltzo_lemma_zero(
-        (same_sign, lbx, ~tbx, ~tby, _min(fx, gx) > ey, gy + (p - one) > ex),
+        (same_sign, lbx, ~tbx, ~tby, fx > ey, gx > ey, gy + (p - one) > ex),
         (sx, 1, 0, ex, fx, gy),
     )
     result["SELTZO-TwoSum-TS-L1-G-Y"] = seltzo_lemma_zero(
-        (same_sign, lby, ~tby, ~tbx, _min(fy, gy) > ex, gx + (p - one) > ey),
+        (same_sign, lby, ~tby, ~tbx, fy > ex, gy > ex, gx + (p - one) > ey),
         (sy, 1, 0, ey, fy, gx),
     )
     result["SELTZO-TwoSum-TD-L0-G-X"] = seltzo_lemma_zero(
-        (diff_sign, ~lbx, tbx, ~tby, _min(fx, gx) > ey, gy + (p - one) > ex),
+        (diff_sign, ~lbx, tbx, ~tby, fx > ey, gx > ey, gy + (p - one) > ex),
         (sx, 0, 1, ex, fx, gy),
     )
     result["SELTZO-TwoSum-TD-L0-G-Y"] = seltzo_lemma_zero(
-        (diff_sign, ~lby, tby, ~tbx, _min(fy, gy) > ex, gx + (p - one) > ey),
+        (diff_sign, ~lby, tby, ~tbx, fy > ex, gy > ex, gx + (p - one) > ey),
         (sy, 0, 1, ey, fy, gx),
     )
     result["SELTZO-TwoSum-TD-L1-G-X"] = seltzo_lemma_zero(
