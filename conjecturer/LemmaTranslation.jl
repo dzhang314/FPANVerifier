@@ -1,6 +1,22 @@
 module LemmaTranslation
 
 
+const SELTZO_CLASSES = Symbol[
+    :ZERO, :POW2, :ALL1,
+    :R0R1, :R1R0,
+    :ONE0, :ONE1,
+    :TWO0, :TWO1, :MM01, :MM10,
+    :G00, :G01, :G10, :G11,
+]
+
+
+function translate_class_hypothesis(lhs::Symbol, rhs::Symbol)
+    @assert (lhs == :CLASS_X) || (lhs == :CLASS_Y)
+    @assert rhs in SELTZO_CLASSES
+    return (lhs == :CLASS_X ? "x_" : "y_") * lowercase(string(rhs))
+end
+
+
 function translate_sign_expr(expr::Symbol)
     @assert (expr == :sx) || (expr == :sy)
     return string(expr)
@@ -9,9 +25,9 @@ end
 
 function translate_sign_expr(expr::Expr)
     @assert expr.head == :call
-    @assert expr.args[1] == :(~)
     @assert length(expr.args) == 2
-    return "(" * translate_sign_expr(expr.args[2]) * ",)"
+    @assert expr.args[1] == :(~)
+    return "~" * translate_sign_expr(expr.args[2])
 end
 
 
@@ -90,8 +106,14 @@ function translate_range_expr(expr::Expr)
 end
 
 
+const HYPOTHESIS_SYMBOLS = Symbol[
+    :same_sign, :diff_sign, :lbx, :tbx, :lby, :tby,
+    :x_pow2, :y_pow2, :x_all1, :y_all1,
+]
+
+
 function translate_hypothesis(expr::Symbol)
-    @assert expr in Symbol[:same_sign, :diff_sign, :lbx, :tbx, :lby, :tby]
+    @assert expr in HYPOTHESIS_SYMBOLS
     return string(expr)
 end
 
@@ -119,13 +141,9 @@ function translate_hypothesis(expr::Expr)
         @assert length(expr.args) == 3
         lhs = expr.args[2]
         rhs = expr.args[3]
-        if lhs == :cx
-            return "x_" * lowercase(string(rhs))
-        elseif lhs == :cy
-            return "y_" * lowercase(string(rhs))
-        else
-            return translate_int_expr(lhs) * " == " * translate_int_expr(rhs)
-        end
+        return (lhs == :CLASS_X) || (lhs == :CLASS_Y) ?
+               translate_class_hypothesis(lhs, rhs) :
+               translate_int_expr(lhs) * " == " * translate_int_expr(rhs)
     elseif (expr.head == :call) && (expr.args[1] == :(<))
         @assert length(expr.args) == 3
         lhs = expr.args[2]
@@ -138,18 +156,12 @@ function translate_hypothesis(expr::Expr)
         return translate_int_expr(lhs) * " > " * translate_int_expr(rhs)
     elseif (expr.head == :call) && (expr.args[1] == :(~))
         @assert length(expr.args) == 2
-        @assert expr.args[2] isa Symbol
-        @assert expr.args[2] in Symbol[:lbx, :tbx, :lby, :tby]
+        @assert expr.args[2] in HYPOTHESIS_SYMBOLS
         return "~" * string(expr.args[2])
     elseif (expr.head == :call) && (expr.args[1] == :(!=))
         @assert length(expr.args) == 3
-        lhs = expr.args[2]
-        @assert lhs in Symbol[:cx, :cy]
-        rhs = expr.args[3]
-        @assert rhs in Symbol[:POW2, :ALL1]
-        return "~" * string(lhs)[2:end] * "_" * lowercase(string(rhs))
+        return "~" * translate_class_hypothesis(expr.args[2], expr.args[3])
     else
-        println(expr)
         @assert false
     end
 end
@@ -171,18 +183,26 @@ function translate_seltzo_range(expr::Expr)
 end
 
 
-function translate_case(s_range::Expr, e_range::Expr)
-    @assert s_range.head == :call && s_range.args[1] == :SELTZORange
-    @assert e_range.head == :call && e_range.args[1] == :SELTZORange
-    return ("seltzo_case(" * translate_seltzo_range(s_range) *
-            ", " * translate_seltzo_range(e_range) * ")")
+function translate_tuple(items::AbstractVector{<:AbstractString})
+    if isempty(items)
+        return "()"
+    elseif isone(length(items))
+        return "(" * only(items) * ",)"
+    else
+        return "(" * join(items, ", ") * ")"
+    end
 end
 
 
-function translate_case(s_range::Expr, e_range::Symbol)
-    @assert s_range.head == :call && s_range.args[1] == :SELTZORange
-    @assert e_range == :pos_zero
-    return ("seltzo_case_zero(" * translate_seltzo_range(s_range) * ")")
+function translate_output(symbol::Symbol)
+    @assert symbol == :pos_zero
+    return "()"
+end
+
+
+function translate_output(expr::Expr)
+    @assert expr.head == :call && expr.args[1] == :SELTZORange
+    return translate_seltzo_range(expr)
 end
 
 
@@ -230,41 +250,65 @@ function translate_lemma(lemma::Expr)
     end
 
     result = IOBuffer()
-    println(result, "result[\"", lemma_name, "\"] = z3.Implies(")
-    println(result, "    z3.And(",
-        join(translate_hypothesis.(lemma_hypotheses), ", "), "),")
-    if length(lemma_cases) == 1
-        println(result, "    ", translate_case(lemma_cases[1]...), ",")
-    elseif length(lemma_cases) > 1
-        println(result, "    z3.Or(")
-        for (i, c) in enumerate(lemma_cases)
-            if i < length(lemma_cases)
-                println(result, "        ", translate_case(c...), ",")
-            else
-                println(result, "        ", translate_case(c...))
-            end
+    @assert !isempty(lemma_cases)
+    zero_error = all(e == :pos_zero for (_, e) in lemma_cases)
+    println(result, "result[\"", lemma_name,
+        zero_error ? "\"] = seltzo_lemma_zero_error(" : "\"] = seltzo_lemma(")
+    println(result, "    ",
+        translate_tuple(translate_hypothesis.(lemma_hypotheses)), ",")
+    for (s_range, e_range) in lemma_cases
+        println(result, "    ", translate_output(s_range), ",")
+        if !zero_error
+            println(result, "    ", translate_output(e_range), ",")
         end
-        println(result, "    ),")
-    else
-        @assert false
     end
     print(result, ")")
 
-    return lemma_name => String(take!(result))
+    return String(take!(result))
 end
 
 
-function translate_lemmas(lemma_code::String)
-    expressions = Meta.parseall(lemma_code)
-    @assert (expressions isa Expr) && (expressions.head == :toplevel)
-    result = Pair{String,String}[]
-    for expr in expressions.args
-        if (expr isa Expr) && (expr.head == :do)
-            push!(result, translate_lemma(expr))
+function is_lemma(expr::Expr)
+    if (expr.head != :do) || (length(expr.args) != 2)
+        return false
+    end
+    checker_call = expr.args[1]
+    return (checker_call isa Expr) &&
+           (checker_call.head == :call) &&
+           (length(checker_call.args) == 3) &&
+           (checker_call.args[1] == :checker)
+end
+
+
+extract_lemmas!(result::AbstractVector{<:AbstractString}, ::Any) = result
+
+
+function extract_lemmas!(result::AbstractVector{<:AbstractString}, expr::Expr)
+    if is_lemma(expr)
+        push!(result, translate_lemma(expr))
+    else
+        for arg in expr.args
+            extract_lemmas!(result, arg)
         end
     end
     return result
 end
 
 
+function main(args::AbstractVector{<:AbstractString}=ARGS)
+    for path in args
+        lemmas = extract_lemmas!(String[], Meta.parseall(read(path, String)))
+        for lemma in lemmas
+            println(lemma)
+        end
+    end
+    return 0
+end
+
+
 end # module LemmaTranslation
+
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    exit(LemmaTranslation.main())
+end
