@@ -50,6 +50,13 @@ prove a strongly_dominates b
 prove b strongly_dominates c
 prove c strongly_dominates d
 
+# The following TwoSum operations are not part of the add444 algorithm.
+# They are included here for the purpose of analyzing the error terms.
+
+two_sum e g
+two_sum f h
+two_sum e f
+
 bound e / a
 bound f / a
 bound g / a
