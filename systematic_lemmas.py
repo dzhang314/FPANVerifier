@@ -2108,6 +2108,438 @@ def seltzo_two_sum_systematic_lemmas(
         (sy, 1, 1, ey, fy, ex + one),
     )
 
+    # conjecturer/SELTZO-TwoSum-R1R0-R1R0-D.jl
+    implicit_hypothesis = z3.And(xy_nonzero, x_r1r0, y_r1r0, diff_sign)
+    result["SELTZO-TwoSum-R1R0-R1R0-DE0-X"] = seltzo_lemma_zero_error(
+        (ex == ey, fx + one < fy),
+        (sx, 1, 0, fy, fx, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DE0-Y"] = seltzo_lemma_zero_error(
+        (ey == ex, fy + one < fx),
+        (sy, 1, 0, fx, fy, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DE1-X"] = seltzo_lemma_zero_error(
+        (ex == ey, fx + one == fy),
+        (sx, 0, 0, fy, fy - p, fy),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DE1-Y"] = seltzo_lemma_zero_error(
+        (ey == ex, fy + one == fx),
+        (sy, 0, 0, fx, fx - p, fx),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DE2"] = seltzo_lemma_zero_error(
+        (ex == ey, fx == fy),
+        0,
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA0-X"] = seltzo_lemma_zero_error(
+        (ex == ey + one, fx > fy + one, ex > fx + two),
+        (sx, 1, 0, ex - one, fx, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA0-Y"] = seltzo_lemma_zero_error(
+        (ey == ex + one, fy > fx + one, ey > fy + two),
+        (sy, 1, 0, ey - one, fy, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA1-X"] = seltzo_lemma_zero_error(
+        (ex == ey + one, fx == fy + one),
+        (sx, 1, 0, ex - one, fx - one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA1-Y"] = seltzo_lemma_zero_error(
+        (ey == ex + one, fy == fx + one),
+        (sy, 1, 0, ey - one, fy - one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA2-X"] = seltzo_lemma_zero_error(
+        (ex == ey + one, fx == fy),
+        (sx, 0, 0, ex, ex - p, ex),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA2-Y"] = seltzo_lemma_zero_error(
+        (ey == ex + one, fy == fx),
+        (sy, 0, 0, ey, ey - p, ey),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA3-X"] = seltzo_lemma_zero_error(
+        (ex == ey + one, fx > fy + one, ex == fx + two),
+        (sx, 0, 0, ex - one, fy + one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DA3-Y"] = seltzo_lemma_zero_error(
+        (ey == ex + one, fy > fx + one, ey == fy + two),
+        (sy, 0, 0, ey - one, fx + one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1-X"] = seltzo_lemma_zero_error(
+        (ex < fy + p, fx < ey, ex > ey + two, fx > fy),
+        (sx, 1, 0, ex, ey + one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + p, fy < ex, ey > ex + two, fy > fx),
+        (sy, 1, 0, ey, ex + one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1A-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx < ey, ex > ey + two, fx > fy + one),
+        (sx, 1, 1, ex, ey + one, fy + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1A-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy < ex, ey > ex + two, fy > fx + one),
+        (sy, 1, 1, ey, ex + one, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1B-X"] = seltzo_lemma_zero_error(
+        (ex < fy + p, fx < ey, ex == ey + two, fx > fy),
+        (sx, 0, 0, ex, ey, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1B-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + p, fy < ex, ey == ex + two, fy > fx),
+        (sy, 0, 0, ey, ex, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1C-X"] = seltzo_lemma_zero_error(
+        (ex > ey + one, fx == fy),
+        (sx, 1, 0, ex, ey, ey + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1C-Y"] = seltzo_lemma_zero_error(
+        (ey > ex + one, fy == fx),
+        (sy, 1, 0, ey, ex, ex + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1AB-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx < ey, ex == ey + two, fx > fy + one),
+        (sx, 0, 1, ex, ey, fy + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1AB-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy < ex, ey == ex + two, fy > fx + one),
+        (sy, 0, 1, ey, ex, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1AC-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, ex > ey + two, fx == fy + one),
+        (sx, 1, 1, ex, ey + one, ey + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1AC-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, ey > ex + two, fy == fx + one),
+        (sy, 1, 1, ey, ex + one, ex + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1ABC-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, ex == ey + two, fx == fy + one),
+        (sx, 0, 1, ex, ey, ey + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D1ABC-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, ey == ex + two, fy == fx + one),
+        (sy, 0, 1, ey, ex, ex + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2-X"] = seltzo_lemma_zero_error(
+        (ex < fy + p, fx + one > ey, ex > fx + two),
+        (sx, 1, 0, ex, fx + one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + p, fy + one > ex, ey > fy + two),
+        (sy, 1, 0, ey, fy + one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2A-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx + one > ey, ex > fx + two),
+        (sx, 1, 1, ex, fx + one, fy + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2A-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy + one > ex, ey > fy + two),
+        (sy, 1, 1, ey, fy + one, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2C-X"] = seltzo_lemma_zero_error(
+        (ex < fy + p, fx > ey, ex == fx + two),
+        (sx, 0, 0, ex, fx, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2C-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + p, fy > ex, ey == fy + two),
+        (sy, 0, 0, ey, fy, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2AC-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx > ey, ex == fx + two),
+        (sx, 0, 1, ex, fx, fy + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2AC-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy > ex, ey == fy + two),
+        (sy, 0, 1, ey, fy, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2BC-X"] = seltzo_lemma_zero_error(
+        (ex < fy + p, fx == ey, ex == fx + two),
+        (sx, 0, 0, ex, fy + one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2BC-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + p, fy == ex, ey == fy + two),
+        (sy, 0, 0, ey, fx + one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2ABC-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx == ey, ex == fx + two),
+        (sx, 0, 1, ex, fy + one, fy + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D2ABC-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy == ex, ey == fy + two),
+        (sy, 0, 1, ey, fx + one, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3-X"] = seltzo_lemma(
+        (ex > fy + p, fx < ey, ex > ey + two),
+        (sx, 1, 0, ex, ey + one, fx + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3-Y"] = seltzo_lemma(
+        (ey > fx + p, fy < ex, ey > ex + two),
+        (sy, 1, 0, ey, ex + one, fy + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3B-X"] = seltzo_lemma(
+        (ex > fy + p, fx == ey, ex > ey + two),
+        (sx, 1, 0, ex, ey + one, fx + two),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3B-Y"] = seltzo_lemma(
+        (ey > fx + p, fy == ex, ey > ex + two),
+        (sy, 1, 0, ey, ex + one, fy + two),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3AC-X"] = seltzo_lemma(
+        (ex == fy + (p + one), fx < ey, ex == ey + two),
+        (sx, 0, 0, ex, ey, fx + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3AC-Y"] = seltzo_lemma(
+        (ey == fx + (p + one), fy < ex, ey == ex + two),
+        (sy, 0, 0, ey, ex, fy + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3ABC-X"] = seltzo_lemma(
+        (ex == fy + (p + one), fx == ey, ex == ey + two),
+        (sx, 0, 0, ex, ex - p, ex),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D3ABC-Y"] = seltzo_lemma(
+        (ey == fx + (p + one), fy == ex, ey == ex + two),
+        (sy, 0, 0, ey, ey - p, ey),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D4-X"] = seltzo_lemma(
+        (ex > fy + p, fx > ey, ex < ey + p, ex > fx + two),
+        (sx, 1, 0, ex, fx + one, ey + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D4-Y"] = seltzo_lemma(
+        (ey > fx + p, fy > ex, ey < ex + p, ey > fy + two),
+        (sy, 1, 0, ey, fy + one, ex + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D4A-X"] = seltzo_lemma(
+        (ex > fy + p, fx > ey, ex < ey + p, ex == fx + two),
+        (sx, 0, 0, ex, fx, ey + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-D4A-Y"] = seltzo_lemma(
+        (ey > fx + p, fy > ex, ey < ex + p, ey == fy + two),
+        (sy, 0, 0, ey, fy, ex + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DB0-X"] = seltzo_lemma(
+        (ex == ey + p, ex > fx + two),
+        (sx, 1, 1, ex, fx + one, fx + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DB0-Y"] = seltzo_lemma(
+        (ey == ex + p, ey > fy + two),
+        (sy, 1, 1, ey, fy + one, fy + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DB1-X"] = seltzo_lemma(
+        (ex == ey + p, ex == fx + two),
+        (sx, 0, 1, ex, fx, fx + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-DB1-Y"] = seltzo_lemma(
+        (ey == ex + p, ey == fy + two),
+        (sy, 0, 1, ey, fy, fy + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+
+    # conjecturer/SELTZO-TwoSum-R1R0-R1R0-S.jl
+    implicit_hypothesis = z3.And(xy_nonzero, x_r1r0, y_r1r0, same_sign)
+    result["SELTZO-TwoSum-R1R0-R1R0-SE0-X"] = seltzo_lemma_zero_error(
+        (ex == ey, fx > fy, ey < fy + (p - one)),
+        (sx, 1, 0, ex + one, fx + one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-SE0-Y"] = seltzo_lemma_zero_error(
+        (ey == ex, fy > fx, ex < fx + (p - one)),
+        (sy, 1, 0, ey + one, fy + one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-SE1"] = seltzo_lemma_zero_error(
+        (ex == ey, fx == fy),
+        (sx, 1, 0, ex + one, fx + one, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-SE2-X"] = seltzo_lemma_zero_error(
+        (ex == ey, fx > fy, ey == fy + (p - one)),
+        (sx, 1, 1, ex + one, fx + one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-SE2-Y"] = seltzo_lemma_zero_error(
+        (ey == ex, fy > fx, ex == fx + (p - one)),
+        (sy, 1, 1, ey + one, fy + one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1-X"] = seltzo_lemma_zero_error(
+        (ex < fy + (p - one), fx + one < ey, ex > ey, fx > fy),
+        (sx, 0, 0, ex + one, ey, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + (p - one), fy + one < ex, ey > ex, fy > fx),
+        (sy, 0, 0, ey + one, ex, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1A-X"] = seltzo_lemma_zero_error(
+        (ex == fy + (p - one), fx + one < ey, ex > ey, fx > fy),
+        (sx, 0, 1, ex + one, ey, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1A-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + (p - one), fy + one < ex, ey > ex, fy > fx),
+        (sy, 0, 1, ey + one, ex, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1B-X"] = seltzo_lemma_zero_error(
+        (ex < fy + (p - one), fx + one == ey),
+        (sx, 0, 0, ex + one, ey - one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1B-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + (p - one), fy + one == ex),
+        (sy, 0, 0, ey + one, ex - one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1C-X"] = seltzo_lemma_zero_error(
+        (ex < fy + p, fx == ey),
+        (sx, 1, 0, ex, fy, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1C-Y"] = seltzo_lemma_zero_error(
+        (ey < fx + p, fy == ex),
+        (sy, 1, 0, ey, fx, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1AB-X"] = seltzo_lemma_zero_error(
+        (ex == fy + (p - one), fx + one == ey),
+        (sx, 0, 1, ex + one, ey - one, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1AB-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + (p - one), fy + one == ex),
+        (sy, 0, 1, ey + one, ex - one, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1AC-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx == ey),
+        (sx, 1, 1, ex, ex - p, ex),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S1AC-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy == ex),
+        (sy, 1, 1, ey, ey - p, ey),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S2-X"] = seltzo_lemma_zero_error(
+        (ex > ey, fx < fy, ex < fx + (p - one)),
+        (sx, 0, 0, ex + one, ey, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S2-Y"] = seltzo_lemma_zero_error(
+        (ey > ex, fy < fx, ey < fy + (p - one)),
+        (sy, 0, 0, ey + one, ex, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S2A-X"] = seltzo_lemma_zero_error(
+        (ex > ey, fx == fy),
+        (sx, 0, 0, ex + one, ey, fx + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S2A-Y"] = seltzo_lemma_zero_error(
+        (ey > ex, fy == fx),
+        (sy, 0, 0, ey + one, ex, fy + two),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S2B-X"] = seltzo_lemma_zero_error(
+        (ex > ey, fx < fy, ex == fx + (p - one)),
+        (sx, 0, 1, ex + one, ey, fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S2B-Y"] = seltzo_lemma_zero_error(
+        (ey > ex, fy < fx, ey == fy + (p - one)),
+        (sy, 0, 1, ey + one, ex, fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3-X"] = seltzo_lemma(
+        (ex > fy + (p - one), fx < ey, ex < fx + (p - one)),
+        (sx, 0, 0, ex + one, ey, fx + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3-Y"] = seltzo_lemma(
+        (ey > fx + (p - one), fy < ex, ey < fy + (p - one)),
+        (sy, 0, 0, ey + one, ex, fy + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3B-X"] = seltzo_lemma(
+        (ex > fy + p, fx == ey),
+        (sx, 0, 0, ex + one, ex - (p - one), ex + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3B-Y"] = seltzo_lemma(
+        (ey > fx + p, fy == ex),
+        (sy, 0, 0, ey + one, ey - (p - one), ey + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3C-X"] = seltzo_lemma(
+        (ex > fy + p, fx < ey, ex == fx + (p - one)),
+        (sx, 0, 1, ex + one, ey, ey + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3C-Y"] = seltzo_lemma(
+        (ey > fx + p, fy < ex, ey == fy + (p - one)),
+        (sy, 0, 1, ey + one, ex, ex + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3AC-X"] = seltzo_lemma(
+        (ex == fy + p, fx + one < ey, ex == fx + (p - one)),
+        (sx, 0, 0, ex + one, ey, fx + two),
+        (sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3AC-Y"] = seltzo_lemma(
+        (ey == fx + p, fy + one < ex, ey == fy + (p - one)),
+        (sy, 0, 0, ey + one, ex, fy + two),
+        (sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3ABC-X"] = seltzo_lemma(
+        (ex == fy + p, fx + one == ey, ex == fx + (p - one)),
+        (sx, 0, 0, ex + one, ex - (p - one), ex + one),
+        (sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S3ABC-Y"] = seltzo_lemma(
+        (ey == fx + p, fy + one == ex, ey == fy + (p - one)),
+        (sy, 0, 0, ey + one, ey - (p - one), ey + one),
+        (sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4-X"] = seltzo_lemma(
+        (ex > fy + p, fx > ey + one, ex < ey + p),
+        (sx, 1, 0, ex, fx, ey + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4-Y"] = seltzo_lemma(
+        (ey > fx + p, fy > ex + one, ey < ex + p),
+        (sy, 1, 0, ey, fy, ex + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4A-X"] = seltzo_lemma_zero_error(
+        (ex == fy + p, fx > ey),
+        (sx, 1, 1, ex, fx, ey + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4A-Y"] = seltzo_lemma_zero_error(
+        (ey == fx + p, fy > ex),
+        (sy, 1, 1, ey, fy, ex + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4B-X"] = seltzo_lemma(
+        (ex > fy + p, fx == ey + one, ex < ey + p),
+        (sx, 1, 0, ex, fx - one, ey + one),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4B-Y"] = seltzo_lemma(
+        (ey > fx + p, fy == ex + one, ey < ex + p),
+        (sy, 1, 0, ey, fy - one, ex + one),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4C-X"] = seltzo_lemma(
+        (fx > ey + one, ex == ey + p),
+        (sx, 1, 1, ex, fx, ey + two),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4C-Y"] = seltzo_lemma(
+        (fy > ex + one, ey == ex + p),
+        (sy, 1, 1, ey, fy, ex + two),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4BC-X"] = seltzo_lemma(
+        (fx == ey + one, ex == ey + p),
+        (sx, 1, 1, ex, ex - p, ex),
+        (~sy, 0, 0, fy + one, fy - (p - one), fy + one),
+    )
+    result["SELTZO-TwoSum-R1R0-R1R0-S4BC-Y"] = seltzo_lemma(
+        (fy == ex + one, ey == ex + p),
+        (sy, 1, 1, ey, ey - p, ey),
+        (~sx, 0, 0, fx + one, fx - (p - one), fx + one),
+    )
+
     # conjecturer/SELTZO-TwoSum-T.jl
     implicit_hypothesis = xy_nonzero
     result["SELTZO-TwoSum-TS-L0-G-X"] = seltzo_lemma_zero_error(
