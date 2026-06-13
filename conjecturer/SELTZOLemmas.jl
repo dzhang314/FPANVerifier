@@ -75,6 +75,8 @@ const CLASS_Y = parse_seltzo_class(ARGS[2])
 
 @enum SignCondition SAME_SIGN DIFF_SIGN
 include("SELTZO-TwoSum-I.jl")
+include("SELTZO-TwoSum-P.jl")
+include("SELTZO-TwoSum-A.jl")
 include("SELTZO-TwoSum-L.jl")
 include("SELTZO-TwoSum-T.jl")
 @static if (CLASS_X == ZERO) | (CLASS_Y == ZERO)
@@ -136,6 +138,8 @@ function check_seltzo_two_sum_lemmas(
             check_seltzo_two_sum_lemmas_z!(checker, x, y, T)
         elseif CLASS_X == CLASS_Y
             check_seltzo_two_sum_lemmas_i!(checker, x, y, T)
+            check_seltzo_two_sum_lemmas_p!(checker, x, y, T)
+            check_seltzo_two_sum_lemmas_a!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_l!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_t!(checker, x, y, T)
             if signbit(x) == signbit(y)
@@ -147,6 +151,8 @@ function check_seltzo_two_sum_lemmas(
             end
         else
             check_seltzo_two_sum_lemmas_i!(checker, x, y, T)
+            check_seltzo_two_sum_lemmas_p!(checker, x, y, T)
+            check_seltzo_two_sum_lemmas_a!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_l!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_t!(checker, x, y, T)
             if signbit(x) == signbit(y)
