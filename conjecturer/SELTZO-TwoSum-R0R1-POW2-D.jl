@@ -91,20 +91,7 @@ function check_seltzo_two_sum_lemmas!(
         add_case!(lemma, SELTZORange(sy, 0, 0, ey - 1, fy, ey - (p - 1)), pos_zero)
     end
 
-    checker("SELTZO-TwoSum-R0R1-POW2-DB1-X",
-        (CLASS_X == R0R1) & (CLASS_Y == POW2) &
-        (ex == ey + (p - 1)) & (ex < fx + (p - 1))
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 0, 0, ex, fx, ey + 1), pos_zero)
-    end
-    checker("SELTZO-TwoSum-R0R1-POW2-DB1-Y",
-        (CLASS_Y == R0R1) & (CLASS_X == POW2) &
-        (ey == ex + (p - 1)) & (ey < fy + (p - 1))
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 0, 0, ey, fy, ex + 1), pos_zero)
-    end
-
-    checker("SELTZO-TwoSum-R0R1-POW2-DB20-X",
+    checker("SELTZO-TwoSum-R0R1-POW2-DB0-X",
         (CLASS_X == R0R1) & (CLASS_Y == POW2) &
         (ex == ey + p) & (ex < fx + (p - 1))
     ) do lemma
@@ -112,7 +99,7 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(sx, 0, 0, ex, fx, ey + 2),
             SELTZORange(~sy, 0, 0, ey, ey - p, ey))
     end
-    checker("SELTZO-TwoSum-R0R1-POW2-DB20-Y",
+    checker("SELTZO-TwoSum-R0R1-POW2-DB0-Y",
         (CLASS_Y == R0R1) & (CLASS_X == POW2) &
         (ey == ex + p) & (ey < fy + (p - 1))
     ) do lemma
@@ -121,7 +108,7 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(~sx, 0, 0, ex, ex - p, ex))
     end
 
-    checker("SELTZO-TwoSum-R0R1-POW2-DB21-X",
+    checker("SELTZO-TwoSum-R0R1-POW2-DB1-X",
         (CLASS_X == R0R1) & (CLASS_Y == POW2) &
         (ex == ey + p) & (ex == fx + (p - 1))
     ) do lemma
@@ -129,7 +116,7 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(sx, 0, 0, ex, ex - p, ex),
             SELTZORange(~sy, 0, 0, ey, ey - p, ey))
     end
-    checker("SELTZO-TwoSum-R0R1-POW2-DB21-Y",
+    checker("SELTZO-TwoSum-R0R1-POW2-DB1-Y",
         (CLASS_Y == R0R1) & (CLASS_X == POW2) &
         (ey == ex + p) & (ey == fy + (p - 1))
     ) do lemma

@@ -220,24 +220,13 @@ function check_seltzo_two_sum_lemmas!(
     end
 
     checker("SELTZO-TwoSum-R1R0-R1R0-S4A-X",
-        (ex == fy + p) & (fx > ey)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 1, 1, ex, fx, ey + 1), pos_zero)
-    end
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4A-Y",
-        (ey == fx + p) & (fy > ex)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 1, 1, ey, fy, ex + 1), pos_zero)
-    end
-
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4B-X",
         (ex > fy + p) & (fx == ey + 1) & (ex < ey + p)
     ) do lemma
         add_case!(lemma,
             SELTZORange(sx, 1, 0, ex, fx - 1, ey + 1),
             SELTZORange(~sy, 0, 0, fy + 1, fy - (p - 1), fy + 1))
     end
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4B-Y",
+    checker("SELTZO-TwoSum-R1R0-R1R0-S4A-Y",
         (ey > fx + p) & (fy == ex + 1) & (ey < ex + p)
     ) do lemma
         add_case!(lemma,
@@ -245,14 +234,14 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(~sx, 0, 0, fx + 1, fx - (p - 1), fx + 1))
     end
 
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4C-X",
+    checker("SELTZO-TwoSum-R1R0-R1R0-S4B-X",
         (fx > ey + 1) & (ex == ey + p)
     ) do lemma
         add_case!(lemma,
             SELTZORange(sx, 1, 1, ex, fx, ey + 2),
             SELTZORange(~sy, 0, 0, fy + 1, fy - (p - 1), fy + 1))
     end
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4C-Y",
+    checker("SELTZO-TwoSum-R1R0-R1R0-S4B-Y",
         (fy > ex + 1) & (ey == ex + p)
     ) do lemma
         add_case!(lemma,
@@ -260,14 +249,14 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(~sx, 0, 0, fx + 1, fx - (p - 1), fx + 1))
     end
 
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4BC-X",
+    checker("SELTZO-TwoSum-R1R0-R1R0-S4AB-X",
         (fx == ey + 1) & (ex == ey + p)
     ) do lemma
         add_case!(lemma,
             SELTZORange(sx, 1, 1, ex, ex - p, ex),
             SELTZORange(~sy, 0, 0, fy + 1, fy - (p - 1), fy + 1))
     end
-    checker("SELTZO-TwoSum-R1R0-R1R0-S4BC-Y",
+    checker("SELTZO-TwoSum-R1R0-R1R0-S4AB-Y",
         (fy == ex + 1) & (ey == ex + p)
     ) do lemma
         add_case!(lemma,

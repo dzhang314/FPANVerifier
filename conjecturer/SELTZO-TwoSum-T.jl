@@ -15,6 +15,8 @@ function check_seltzo_two_sum_lemmas_t!(
     y_pow2 = (CLASS_Y == POW2)
     x_all1 = (CLASS_X == ALL1)
     y_all1 = (CLASS_Y == ALL1)
+    x_r1r0 = (CLASS_X == R1R0)
+    y_r1r0 = (CLASS_Y == R1R0)
 
     # Lemmas in family T apply to situations where the smaller addend
     # fits entirely inside the trailing bits of the larger addend.
@@ -31,6 +33,20 @@ function check_seltzo_two_sum_lemmas_t!(
         (gy > ex) & (ey < gx + (p - 1))
     ) do lemma
         add_case!(lemma, SELTZORange(sy, 0, 0, ey, fy, gx), pos_zero)
+    end
+
+    # Larger addend has leading zeros (boundary case).
+    checker("SELTZO-TwoSum-TS-L0-B-X",
+        same_sign & (~lbx) & (~tbx) & (~x_pow2) & (y_pow2 | y_r1r0) &
+        (fx > ey) & (gx > ey + 1) & (ex == gy + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sx, 0, 1, ex, fx, ey + 1), pos_zero)
+    end
+    checker("SELTZO-TwoSum-TS-L0-B-Y",
+        same_sign & (~lby) & (~tby) & (~y_pow2) & (x_pow2 | x_r1r0) &
+        (fy > ex) & (gy > ex + 1) & (ey == gx + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sy, 0, 1, ey, fy, ex + 1), pos_zero)
     end
 
     # Larger addend has leading ones (general case).
@@ -75,6 +91,20 @@ function check_seltzo_two_sum_lemmas_t!(
         add_case!(lemma, SELTZORange(sy, 1, 0, ey, fx, gx), pos_zero)
     end
 
+    # Larger addend has leading ones (boundary case).
+    checker("SELTZO-TwoSum-TS-L1-B-X",
+        same_sign & lbx & (~tbx) & (y_pow2 | y_r1r0) &
+        (fx > ey) & (gx > ey + 1) & (ex == gy + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sx, 1, 1, ex, fx, ey + 1), pos_zero)
+    end
+    checker("SELTZO-TwoSum-TS-L1-B-Y",
+        same_sign & lby & (~tby) & (x_pow2 | x_r1r0) &
+        (fy > ex) & (gy > ex + 1) & (ey == gx + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sy, 1, 1, ey, fy, ex + 1), pos_zero)
+    end
+
     # Larger addend has leading zeros (general case).
     checker("SELTZO-TwoSum-TD-L0-G-X",
         diff_sign & (~lbx) & tbx & (~tby) &
@@ -117,6 +147,20 @@ function check_seltzo_two_sum_lemmas_t!(
         add_case!(lemma, SELTZORange(sy, 0, 1, ey, fx, gx), pos_zero)
     end
 
+    # Larger addend has leading zeros (boundary case).
+    checker("SELTZO-TwoSum-TD-L0-B-X",
+        diff_sign & (~lbx) & tbx & (y_pow2 | y_r1r0) &
+        (fx > ey) & (gx > ey + 1) & (ex == gy + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sx, 0, 0, ex, fx, ey + 1), pos_zero)
+    end
+    checker("SELTZO-TwoSum-TD-L0-B-Y",
+        diff_sign & (~lby) & tby & (x_pow2 | x_r1r0) &
+        (fy > ex) & (gy > ex + 1) & (ey == gx + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sy, 0, 0, ey, fy, ex + 1), pos_zero)
+    end
+
     # Larger addend has leading ones (general case).
     checker("SELTZO-TwoSum-TD-L1-G-X",
         diff_sign & lbx & tbx & (~x_all1) & (~tby) &
@@ -129,6 +173,20 @@ function check_seltzo_two_sum_lemmas_t!(
         (gy > ex) & (ey < gx + (p - 1))
     ) do lemma
         add_case!(lemma, SELTZORange(sy, 1, 1, ey, fy, gx), pos_zero)
+    end
+
+    # Larger addend has leading ones (boundary case).
+    checker("SELTZO-TwoSum-TD-L1-B-X",
+        diff_sign & lbx & tbx & (~x_all1) & (y_pow2 | y_r1r0) &
+        (fx > ey) & (gx > ey + 1) & (ex == gy + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sx, 1, 0, ex, fx, ey + 1), pos_zero)
+    end
+    checker("SELTZO-TwoSum-TD-L1-B-Y",
+        diff_sign & lby & tby & (~y_all1) & (x_pow2 | x_r1r0) &
+        (fy > ex) & (gy > ex + 1) & (ey == gx + (p - 1))
+    ) do lemma
+        add_case!(lemma, SELTZORange(sy, 1, 0, ey, fy, ex + 1), pos_zero)
     end
 
 end
