@@ -79,6 +79,7 @@ include("SELTZO-TwoSum-P.jl")
 include("SELTZO-TwoSum-A.jl")
 include("SELTZO-TwoSum-L.jl")
 include("SELTZO-TwoSum-T.jl")
+include("SELTZO-TwoSum-R.jl")
 @static if (CLASS_X == ZERO) | (CLASS_Y == ZERO)
     include("SELTZO-TwoSum-Z.jl")
 elseif CLASS_X == CLASS_Y
@@ -142,6 +143,7 @@ function check_seltzo_two_sum_lemmas(
             check_seltzo_two_sum_lemmas_a!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_l!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_t!(checker, x, y, T)
+            check_seltzo_two_sum_lemmas_r!(checker, x, y, T)
             if signbit(x) == signbit(y)
                 check_seltzo_two_sum_lemmas!(checker,
                     VAL_CX, VAL_CY, VAL_SS, x, y, T)
@@ -155,6 +157,7 @@ function check_seltzo_two_sum_lemmas(
             check_seltzo_two_sum_lemmas_a!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_l!(checker, x, y, T)
             check_seltzo_two_sum_lemmas_t!(checker, x, y, T)
+            check_seltzo_two_sum_lemmas_r!(checker, x, y, T)
             if signbit(x) == signbit(y)
                 check_seltzo_two_sum_lemmas!(checker,
                     VAL_CX, VAL_CY, VAL_SS, x, y, T)

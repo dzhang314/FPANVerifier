@@ -69,19 +69,6 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(~sx, 0, 0, fx + 1, fx - (p - 1), fx + 1))
     end
 
-    checker("SELTZO-TwoSum-POW2-R1R0-D2-X",
-        (CLASS_X == POW2) & (CLASS_Y == R1R0) &
-        (ex < fy + (p + 1)) & (ex > ey + 2)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 1, 0, ex - 1, ey, fy + 1), pos_zero)
-    end
-    checker("SELTZO-TwoSum-POW2-R1R0-D2-Y",
-        (CLASS_Y == POW2) & (CLASS_X == R1R0) &
-        (ey < fx + (p + 1)) & (ey > ex + 2)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 1, 0, ey - 1, ex, fx + 1), pos_zero)
-    end
-
     checker("SELTZO-TwoSum-POW2-R1R0-D2A-X",
         (CLASS_X == POW2) & (CLASS_Y == R1R0) &
         (ex == fy + (p + 1)) & (ex > ey + 2)
