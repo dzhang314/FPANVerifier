@@ -1,0 +1,8 @@
+variable a
+variable b
+
+assume a can_fast_two_sum b
+
+fast_two_sum a b
+
+prove a strongly_dominates b
