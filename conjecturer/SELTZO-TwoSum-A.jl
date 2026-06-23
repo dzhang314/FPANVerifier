@@ -5,6 +5,7 @@ function check_seltzo_two_sum_lemmas_a!(
     ::Type{T},
 ) where {T<:AbstractFloat}
 
+    p = precision(T)
     pos_zero = SELTZOAbstraction(+zero(T))
     sx, lbx, tbx, ex, fx, gx = unpack(x, T)
     sy, lby, tby, ey, fy, gy = unpack(y, T)
@@ -39,11 +40,29 @@ function check_seltzo_two_sum_lemmas_a!(
         add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey - 1, gy), pos_zero)
     end
 
+    checker("SELTZO-TwoSum-AD-A01-X",
+        diff_sign & x_all1 & (~lby) & tby &
+        (ex == ey + 1) & (fx + 1 < gy)
+    ) do lemma
+        add_case!(lemma,
+            SELTZORange(sx, 0, 0, ex, ey - 1, gy),
+            SELTZORange(sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
+    end
+
     checker("SELTZO-TwoSum-AD-A10-X",
         diff_sign & x_all1 & lby & (~tby) &
         (ex == ey + 1) & (fx + 1 < gy)
     ) do lemma
         add_case!(lemma, SELTZORange(sx, 0, 1, ex, fy, gy), pos_zero)
+    end
+
+    checker("SELTZO-TwoSum-AD-A11-X",
+        diff_sign & x_all1 & lby & tby & (~y_all1) &
+        (ex == ey + 1) & (fx + 1 < gy)
+    ) do lemma
+        add_case!(lemma,
+            SELTZORange(sx, 0, 0, ex, fy, gy),
+            SELTZORange(sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
     end
 
 end

@@ -5,6 +5,7 @@ function check_seltzo_two_sum_lemmas_p!(
     ::Type{T},
 ) where {T<:AbstractFloat}
 
+    p = precision(T)
     pos_zero = SELTZOAbstraction(+zero(T))
     sx, lbx, tbx, ex, fx, gx = unpack(x, T)
     sy, lby, tby, ey, fy, gy = unpack(y, T)
@@ -14,6 +15,7 @@ function check_seltzo_two_sum_lemmas_p!(
     y_pow2 = (CLASS_Y == POW2)
     x_all1 = (CLASS_X == ALL1)
     y_all1 = (CLASS_Y == ALL1)
+    y_r1r0 = (CLASS_Y == R1R0)
 
     # Lemmas in family P apply to situations where the smaller addend
     # fits entirely inside the mantissa of a power of two.
@@ -41,11 +43,29 @@ function check_seltzo_two_sum_lemmas_p!(
         add_case!(lemma, SELTZORange(sx, 1, 0, ex, ey - 1, gy), pos_zero)
     end
 
+    checker("SELTZO-TwoSum-PS-A01-X",
+        same_sign & x_pow2 & (~lby) & tby &
+        (ex == ey + 1) & (fx + 1 < gy) & (ey > gy + 1)
+    ) do lemma
+        add_case!(lemma,
+            SELTZORange(sx, 1, 0, ex, ey - 1, gy),
+            SELTZORange(~sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
+    end
+
     checker("SELTZO-TwoSum-PS-A10-X",
         same_sign & x_pow2 & lby & (~tby) &
         (ex == ey + 1) & (fx + 1 < gy)
     ) do lemma
         add_case!(lemma, SELTZORange(sx, 1, 0, ex, fy, gy), pos_zero)
+    end
+
+    checker("SELTZO-TwoSum-PS-A11-X",
+        same_sign & x_pow2 & lby & tby & (~y_all1) &
+        (ex == ey + 1) & (fx + 1 < gy) & (fy > gy)
+    ) do lemma
+        add_case!(lemma,
+            SELTZORange(sx, 1, 0, ex, fy, gy),
+            SELTZORange(~sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
     end
 
     checker("SELTZO-TwoSum-PD-G0-X",
@@ -78,6 +98,13 @@ function check_seltzo_two_sum_lemmas_p!(
         add_case!(lemma,
             SELTZORange(sx, 0, 0, ex - 1, ey - 1, gy),
             SELTZORange(~sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
+    end
+
+    checker("SELTZO-TwoSum-PD-A10-X",
+        diff_sign & x_pow2 & lby & (~tby) & (~y_r1r0) &
+        (ex == ey + 2) & (fx < gy)
+    ) do lemma
+        add_case!(lemma, SELTZORange(sx, 0, 0, ex - 1, fy, gy), pos_zero)
     end
 
     checker("SELTZO-TwoSum-PD-A11-X",
