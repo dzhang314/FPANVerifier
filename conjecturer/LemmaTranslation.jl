@@ -107,8 +107,10 @@ end
 
 
 const HYPOTHESIS_SYMBOLS = Symbol[
-    :same_sign, :diff_sign, :lbx, :tbx, :lby, :tby,
+    :same_sign, :diff_sign,
+    :lbx, :tbx, :lby, :tby,
     :x_pow2, :y_pow2, :x_all1, :y_all1,
+    :x_r0r1, :y_r0r1, :x_r1r0, :y_r1r0,
 ]
 
 
@@ -144,23 +146,54 @@ function translate_hypothesis(expr::Expr)
         return (lhs == :CLASS_X) || (lhs == :CLASS_Y) ?
                translate_class_hypothesis(lhs, rhs) :
                translate_int_expr(lhs) * " == " * translate_int_expr(rhs)
-    elseif (expr.head == :call) && (expr.args[1] == :(<))
+    elseif (expr.head == :call) && (expr.args[1] == :<)
         @assert length(expr.args) == 3
         lhs = expr.args[2]
         rhs = expr.args[3]
         return translate_int_expr(lhs) * " < " * translate_int_expr(rhs)
-    elseif (expr.head == :call) && (expr.args[1] == (:>))
+    elseif (expr.head == :call) && (expr.args[1] == :>)
         @assert length(expr.args) == 3
         lhs = expr.args[2]
         rhs = expr.args[3]
         return translate_int_expr(lhs) * " > " * translate_int_expr(rhs)
-    elseif (expr.head == :call) && (expr.args[1] == :(~))
+    elseif (expr.head == :call) && (expr.args[1] == :~)
         @assert length(expr.args) == 2
-        @assert expr.args[2] in HYPOTHESIS_SYMBOLS
-        return "~" * string(expr.args[2])
-    elseif (expr.head == :call) && (expr.args[1] == :(!=))
+        arg = expr.args[2]
+        if (arg isa Expr) && (arg.head == :call) && (arg.args[1] == :xor)
+            # ~xor(a, b) -> (a == b)
+            @assert length(arg.args) == 3
+            @assert arg.args[2] in HYPOTHESIS_SYMBOLS
+            @assert arg.args[3] in HYPOTHESIS_SYMBOLS
+            return string(arg.args[2]) * " == " * string(arg.args[3])
+        else
+            @assert arg in HYPOTHESIS_SYMBOLS
+            return "~" * string(arg)
+        end
+    elseif (expr.head == :call) && (expr.args[1] == :!=)
         @assert length(expr.args) == 3
-        return "~" * translate_class_hypothesis(expr.args[2], expr.args[3])
+        lhs = expr.args[2]
+        rhs = expr.args[3]
+        if (lhs == :CLASS_X) || (lhs == :CLASS_Y)
+            return "~" * translate_class_hypothesis(lhs, rhs)
+        else
+            return translate_int_expr(lhs) * " != " * translate_int_expr(rhs)
+        end
+    elseif (expr.head == :call) && (expr.args[1] == :xor)
+        # xor(a, b) -> (a != b)
+        @assert length(expr.args) == 3
+        @assert expr.args[2] in HYPOTHESIS_SYMBOLS
+        @assert expr.args[3] in HYPOTHESIS_SYMBOLS
+        return string(expr.args[2]) * " != " * string(expr.args[3])
+    elseif (expr.head == :call) && (expr.args[1] == :|)
+        @assert length(expr.args) >= 3
+        disjuncts = ["(" * translate_hypothesis(arg) * ")"
+                     for arg in expr.args[2:end]]
+        return join(disjuncts, " | ")
+    elseif (expr.head == :call) && (expr.args[1] == :&)
+        @assert length(expr.args) >= 3
+        conjuncts = ["(" * translate_hypothesis(arg) * ")"
+                     for arg in expr.args[2:end]]
+        return join(conjuncts, " & ")
     else
         @assert false
     end
