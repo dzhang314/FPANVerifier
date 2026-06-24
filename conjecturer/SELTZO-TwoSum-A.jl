@@ -47,20 +47,7 @@ function check_seltzo_two_sum_lemmas_a!(
             SELTZORange(~sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
     end
 
-    checker("SELTZO-TwoSum-AD-A00-X",
-        diff_sign & x_all1 & (~lby) & (~tby) &
-        (ex == ey + 1) & (fx + 1 < gy)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 0, 1, ex, ey - 1, gy), pos_zero)
-    end
-    checker("SELTZO-TwoSum-AD-A00-Y",
-        diff_sign & y_all1 & (~lbx) & (~tbx) &
-        (ey == ex + 1) & (fy + 1 < gx)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex - 1, gx), pos_zero)
-    end
-
-    checker("SELTZO-TwoSum-AD-A01-X",
+    checker("SELTZO-TwoSum-AD-A0-X",
         diff_sign & x_all1 & (~lby) & tby &
         (ex == ey + 1) & (fx + 1 < gy)
     ) do lemma
@@ -68,7 +55,7 @@ function check_seltzo_two_sum_lemmas_a!(
             SELTZORange(sx, 0, 0, ex, ey - 1, gy),
             SELTZORange(sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
     end
-    checker("SELTZO-TwoSum-AD-A01-Y",
+    checker("SELTZO-TwoSum-AD-A0-Y",
         diff_sign & y_all1 & (~lbx) & tbx &
         (ey == ex + 1) & (fy + 1 < gx)
     ) do lemma
@@ -77,20 +64,7 @@ function check_seltzo_two_sum_lemmas_a!(
             SELTZORange(sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
     end
 
-    checker("SELTZO-TwoSum-AD-A10-X",
-        diff_sign & x_all1 & lby & (~tby) &
-        (ex == ey + 1) & (fx + 1 < gy)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 0, 1, ex, fy, gy), pos_zero)
-    end
-    checker("SELTZO-TwoSum-AD-A10-Y",
-        diff_sign & y_all1 & lbx & (~tbx) &
-        (ey == ex + 1) & (fy + 1 < gx)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 0, 1, ey, fx, gx), pos_zero)
-    end
-
-    checker("SELTZO-TwoSum-AD-A11-X",
+    checker("SELTZO-TwoSum-AD-A1-X",
         diff_sign & x_all1 & lby & tby & (~y_all1) &
         (ex == ey + 1) & (fx + 1 < gy)
     ) do lemma
@@ -98,7 +72,7 @@ function check_seltzo_two_sum_lemmas_a!(
             SELTZORange(sx, 0, 0, ex, fy, gy),
             SELTZORange(sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
     end
-    checker("SELTZO-TwoSum-AD-A11-Y",
+    checker("SELTZO-TwoSum-AD-A1-Y",
         diff_sign & y_all1 & lbx & tbx & (~x_all1) &
         (ey == ex + 1) & (fy + 1 < gx)
     ) do lemma

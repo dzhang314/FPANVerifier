@@ -51,51 +51,6 @@ function check_seltzo_two_sum_lemmas_p!(
             SELTZORange(~sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
     end
 
-    checker("SELTZO-TwoSum-PS-A00-X",
-        same_sign & x_pow2 & (~lby) & (~tby) &
-        (ex == ey + 1) & (fx + 1 < gy)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 1, 0, ex, ey - 1, gy), pos_zero)
-    end
-    checker("SELTZO-TwoSum-PS-A00-Y",
-        same_sign & y_pow2 & (~lbx) & (~tbx) &
-        (ey == ex + 1) & (fy + 1 < gx)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex - 1, gx), pos_zero)
-    end
-
-    # PS-A01 is a special case of TS0-A01.
-
-    checker("SELTZO-TwoSum-PS-A10-X",
-        same_sign & x_pow2 & lby & (~tby) &
-        (ex == ey + 1) & (fx + 1 < gy)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sx, 1, 0, ex, fy, gy), pos_zero)
-    end
-    checker("SELTZO-TwoSum-PS-A10-Y",
-        same_sign & y_pow2 & lbx & (~tbx) &
-        (ey == ex + 1) & (fy + 1 < gx)
-    ) do lemma
-        add_case!(lemma, SELTZORange(sy, 1, 0, ey, fx, gx), pos_zero)
-    end
-
-    checker("SELTZO-TwoSum-PS-A11-X",
-        same_sign & x_pow2 & lby & tby &
-        (ex == ey + 1) & (fx + 1 < gy) & (fy > gy)
-    ) do lemma
-        add_case!(lemma,
-            SELTZORange(sx, 1, 0, ex, fy, gy),
-            SELTZORange(~sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
-    end
-    checker("SELTZO-TwoSum-PS-A11-Y",
-        same_sign & y_pow2 & lbx & tbx &
-        (ey == ex + 1) & (fy + 1 < gx) & (fx > gx)
-    ) do lemma
-        add_case!(lemma,
-            SELTZORange(sy, 1, 0, ey, fx, gx),
-            SELTZORange(~sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
-    end
-
     checker("SELTZO-TwoSum-PD-G0-X",
         diff_sign & x_pow2 & (~tby) & (~y_pow2) &
         (ex > ey + 2) & (fx < gy)
