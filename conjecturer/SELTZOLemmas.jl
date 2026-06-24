@@ -71,9 +71,9 @@ end
 
 const CLASS_X = parse_seltzo_class(ARGS[1])
 const CLASS_Y = parse_seltzo_class(ARGS[2])
-
-
 @enum SignCondition SAME_SIGN DIFF_SIGN
+
+
 include("SELTZO-TwoSum-I.jl")
 include("SELTZO-TwoSum-P.jl")
 include("SELTZO-TwoSum-A.jl")

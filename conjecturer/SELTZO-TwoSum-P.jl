@@ -64,22 +64,7 @@ function check_seltzo_two_sum_lemmas_p!(
         add_case!(lemma, SELTZORange(sy, 1, 0, ey, ex - 1, gx), pos_zero)
     end
 
-    checker("SELTZO-TwoSum-PS-A01-X",
-        same_sign & x_pow2 & (~lby) & tby &
-        (ex == ey + 1) & (fx + 1 < gy) & (ey > gy + 1)
-    ) do lemma
-        add_case!(lemma,
-            SELTZORange(sx, 1, 0, ex, ey - 1, gy),
-            SELTZORange(~sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
-    end
-    checker("SELTZO-TwoSum-PS-A01-Y",
-        same_sign & y_pow2 & (~lbx) & tbx &
-        (ey == ex + 1) & (fy + 1 < gx) & (ex > gx + 1)
-    ) do lemma
-        add_case!(lemma,
-            SELTZORange(sy, 1, 0, ey, ex - 1, gx),
-            SELTZORange(~sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
-    end
+    # PS-A01 is a special case of TS0-A01.
 
     checker("SELTZO-TwoSum-PS-A10-X",
         same_sign & x_pow2 & lby & (~tby) &
