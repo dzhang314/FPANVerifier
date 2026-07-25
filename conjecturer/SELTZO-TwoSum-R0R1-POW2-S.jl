@@ -35,7 +35,7 @@ function check_seltzo_two_sum_lemmas!(
         (ex == ey) & (ex == fx + (p - 1))
     ) do lemma
         add_case!(lemma,
-            SELTZORange(sx, 0, 0, ex + 1, fx, ex + 1),
+            SELTZORange(sx, 0, 0, ex + 1, ex - (p - 1), ex + 1),
             SELTZORange(sy, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
     end
     checker("SELTZO-TwoSum-R0R1-POW2-SE1-Y",
@@ -43,7 +43,7 @@ function check_seltzo_two_sum_lemmas!(
         (ey == ex) & (ey == fy + (p - 1))
     ) do lemma
         add_case!(lemma,
-            SELTZORange(sy, 0, 0, ey + 1, fy, ey + 1),
+            SELTZORange(sy, 0, 0, ey + 1, ey - (p - 1), ey + 1),
             SELTZORange(sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
     end
 

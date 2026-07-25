@@ -32,6 +32,4 @@ function check_seltzo_two_sum_lemmas!(
         add_case!(lemma, SELTZORange(sy, 0, 1, ey, ex, ex + 1), pos_zero)
     end
 
-    # Remaining POW2-POW2-S lemmas have been subsumed by L lemmas.
-
 end
