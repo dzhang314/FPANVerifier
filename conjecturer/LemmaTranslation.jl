@@ -64,6 +64,12 @@ end
 function translate_int_expr(expr::Expr)
     @assert expr.head == :call
     if expr.args[1] == :(+)
+        if length(expr.args) == 4
+            @assert expr.args[2] == :p
+            @assert expr.args[3] == :p
+            @assert expr.args[4] in (1, 2)
+            return "p + p + " * translate_int_expr(expr.args[4])
+        end
         @assert length(expr.args) == 3
         lhs = expr.args[2]
         rhs = expr.args[3]
