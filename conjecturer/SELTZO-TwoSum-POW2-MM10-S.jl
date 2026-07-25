@@ -104,7 +104,7 @@ function check_seltzo_two_sum_lemmas!(
     ) do lemma
         add_case!(lemma,
             SELTZORange(sx, 0, 1, ex, ey, fy + 1),
-            SELTZORange(sy, 0, 0, ex - (p + 1), ex - (p + (p + 1)), ex - (p + 1)))
+            SELTZORange(sy, 0, 0, ex - (p + 1), ex - (p + p + 1), ex - (p + 1)))
     end
     checker("SELTZO-TwoSum-POW2-MM10-S2A1-Y",
         (CLASS_Y == POW2) & (CLASS_X == MM10) &
@@ -112,7 +112,7 @@ function check_seltzo_two_sum_lemmas!(
     ) do lemma
         add_case!(lemma,
             SELTZORange(sy, 0, 1, ey, ex, fx + 1),
-            SELTZORange(sx, 0, 0, ey - (p + 1), ey - (p + (p + 1)), ey - (p + 1)))
+            SELTZORange(sx, 0, 0, ey - (p + 1), ey - (p + p + 1), ey - (p + 1)))
     end
 
     checker("SELTZO-TwoSum-POW2-MM10-S3A0-X",
