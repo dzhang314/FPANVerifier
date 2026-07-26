@@ -19,7 +19,7 @@ function check_seltzo_two_sum_lemmas_e!(
     end
     checker("SELTZO-TwoSum-E-X0-Y",
         diff_sign & lby & (~lbx) & (~xor(tby, tbx)) &
-        (ex == ey) & (gy > fx) & (ey > fy + 2) & (fy + 1 > gy) & (fx + 1 > gx)
+        (ey == ex) & (gy > fx) & (ey > fy + 2) & (fy + 1 > gy) & (fx + 1 > gx)
     ) do lemma
         add_case!(lemma, SELTZORange(sy, 1, 0, ey - 1, fy, gx), pos_zero)
     end
@@ -32,7 +32,7 @@ function check_seltzo_two_sum_lemmas_e!(
     end
     checker("SELTZO-TwoSum-E-X1-Y",
         diff_sign & lby & (~lbx) & xor(tby, tbx) &
-        (ex == ey) & (gy > fx) & (ey > fy + 2) & (fy + 1 > gy)
+        (ey == ex) & (gy > fx) & (ey > fy + 2) & (fy + 1 > gy)
     ) do lemma
         add_case!(lemma, SELTZORange(sy, 1, 0, ey - 1, fy, ex - (p - 1)), pos_zero)
     end
