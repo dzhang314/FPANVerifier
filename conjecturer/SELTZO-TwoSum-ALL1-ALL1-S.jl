@@ -34,14 +34,14 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(sx, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
     end
 
-    checker("SELTZO-TwoSum-ALL1-ALL1-S1-X",
+    checker("SELTZO-TwoSum-ALL1-ALL1-SG-X",
         (ex > ey + 1) & (ex < ey + (p - 1))
     ) do lemma
         add_case!(lemma,
             SELTZORange(sx, 0, 1, ex + 1, ey, ey + 1),
             SELTZORange(sy, 1, 0, ex - p, ey - p, ey - (p - 1)))
     end
-    checker("SELTZO-TwoSum-ALL1-ALL1-S1-Y",
+    checker("SELTZO-TwoSum-ALL1-ALL1-SG-Y",
         (ey > ex + 1) & (ey < ex + (p - 1))
     ) do lemma
         add_case!(lemma,

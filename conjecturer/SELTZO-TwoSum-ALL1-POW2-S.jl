@@ -30,7 +30,7 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(~sx, 0, 0, ey - (p - 1), ey - (p + p - 1), ey - (p - 1)))
     end
 
-    checker("SELTZO-TwoSum-ALL1-POW2-S1-X",
+    checker("SELTZO-TwoSum-ALL1-POW2-SG-X",
         (CLASS_X == ALL1) & (CLASS_Y == POW2) &
         (ex > ey) & (ex < ey + (p - 2))
     ) do lemma
@@ -38,7 +38,7 @@ function check_seltzo_two_sum_lemmas!(
             SELTZORange(sx, 0, 0, ex + 1, ey, ey),
             SELTZORange(~sy, 0, 0, ex - (p - 1), ex - (p + p - 1), ex - (p - 1)))
     end
-    checker("SELTZO-TwoSum-ALL1-POW2-S1-Y",
+    checker("SELTZO-TwoSum-ALL1-POW2-SG-Y",
         (CLASS_Y == ALL1) & (CLASS_X == POW2) &
         (ey > ex) & (ey < ex + (p - 2))
     ) do lemma
