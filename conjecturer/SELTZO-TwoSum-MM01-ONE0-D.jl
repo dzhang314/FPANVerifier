@@ -41,26 +41,26 @@ function check_seltzo_two_sum_lemmas!(
 
     checker("SELTZO-TwoSum-MM01-ONE0-DE20-X",
         (CLASS_X == MM01) & (CLASS_Y == ONE0) &
-        (ex == ey) & (fx + 1 == fy) & (ey + 1 < fy + (p - 3))
+        (ex == ey) & (fx + 1 == fy) & (ex < fx + (p - 3))
     ) do lemma
         add_case!(lemma, SELTZORange(sx, 0, 0, fy - 2, ey - (p - 1), ey - (p - 1)), pos_zero)
     end
     checker("SELTZO-TwoSum-MM01-ONE0-DE20-Y",
         (CLASS_Y == MM01) & (CLASS_X == ONE0) &
-        (ey == ex) & (fy + 1 == fx) & (ex + 1 < fx + (p - 3))
+        (ey == ex) & (fy + 1 == fx) & (ey < fy + (p - 3))
     ) do lemma
         add_case!(lemma, SELTZORange(sy, 0, 0, fx - 2, ex - (p - 1), ex - (p - 1)), pos_zero)
     end
 
     checker("SELTZO-TwoSum-MM01-ONE0-DE21-X",
         (CLASS_X == MM01) & (CLASS_Y == ONE0) &
-        (ex == ey) & (fx + 1 == fy) & (ey + 1 == fy + (p - 3))
+        (ex == ey) & (fx + 1 == fy) & (ex == fx + (p - 3))
     ) do lemma
         add_case!(lemma, SELTZORange(sx, 1, 0, fy - 2, ey - p, ey - (p - 1)), pos_zero)
     end
     checker("SELTZO-TwoSum-MM01-ONE0-DE21-Y",
         (CLASS_Y == MM01) & (CLASS_X == ONE0) &
-        (ey == ex) & (fy + 1 == fx) & (ex + 1 == fx + (p - 3))
+        (ey == ex) & (fy + 1 == fx) & (ey == fy + (p - 3))
     ) do lemma
         add_case!(lemma, SELTZORange(sy, 1, 0, fx - 2, ex - p, ex - (p - 1)), pos_zero)
     end
