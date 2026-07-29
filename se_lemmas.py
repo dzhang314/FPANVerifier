@@ -351,11 +351,11 @@ def se_two_prod_lemmas(
     # Lemmas in Family Z (for "zero") apply
     # when one or both addends are zero.
 
-    result["SE-TwoSum-ZS"] = z3.Implies(
+    result["SE-TwoProd-ZS"] = z3.Implies(
         z3.And(~xy_nonzero, same_sign),
         z3.And(s_pos_zero, e_pos_zero),
     )
-    result["SE-TwoSum-ZD"] = z3.Implies(
+    result["SE-TwoProd-ZD"] = z3.Implies(
         z3.And(~xy_nonzero, diff_sign),
         z3.And(s_neg_zero, e_pos_zero),
     )
