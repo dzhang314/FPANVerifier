@@ -60,7 +60,7 @@ function generate_abstraction_data(
 
     abstraction_name = string(A)
     @assert endswith(abstraction_name, "Abstraction")
-    abstraction_name = abstraction_name[begin:end-length("Abstraction")]
+    abstraction_name = abstraction_name[begin:(end-length("Abstraction"))]
 
     filename = "$abstraction_name-$op-$T.bin"
     filepath = joinpath("data", filename)
@@ -857,6 +857,15 @@ if abspath(PROGRAM_FILE) == @__FILE__
         11_454_024, 0x8182FE97)
     generate_abstraction_data(SETZAbstraction, :TwoProd, BFloat16,
         313_420_440, 0x897409CD)
+
+    generate_abstraction_data(SELBTZAbstraction, :TwoSum, Float16,
+        162_402_402, 0xC788157C)
+    generate_abstraction_data(SELBTZAbstraction, :TwoSum, BFloat16,
+        598_064_646, 0xF47A2B31)
+    generate_abstraction_data(SELBTZAbstraction, :TwoProd, Float16,
+        731_247_728, 0x9CBB66D8)
+    generate_abstraction_data(SELBTZAbstraction, :TwoProd, BFloat16,
+        2_828_656_544, 0x7C7B245B)
 
     # generate_abstraction_data(SELTZOAbstraction, :TwoSum, Float16,
     #     319_985_950, 0xCC55FA4F)
