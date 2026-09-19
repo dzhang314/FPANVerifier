@@ -75,8 +75,8 @@ end
 ################################################### ABSTRACTION TYPE DEFINITIONS
 
 
-export FloatAbstraction, SEAbstraction, SETZAbstraction, SELTZOAbstraction,
-    EFTAbstraction, TwoSumAbstraction, TwoProdAbstraction
+export FloatAbstraction, EFTAbstraction, TwoSumAbstraction, TwoProdAbstraction,
+    SEAbstraction, SETZAbstraction, SELBTZAbstraction, SELTZOAbstraction
 
 
 # Our packed FloatAbstraction representation assumes that:
@@ -88,29 +88,6 @@ export FloatAbstraction, SEAbstraction, SETZAbstraction, SELTZOAbstraction,
 
 
 abstract type FloatAbstraction end
-
-
-struct SEAbstraction <: FloatAbstraction
-    data::UInt32
-end
-
-
-struct SETZAbstraction <: FloatAbstraction
-    data::UInt32
-end
-
-
-struct SELTZOAbstraction <: FloatAbstraction
-    data::UInt32
-end
-
-
-@inline Base.isless(a::SEAbstraction, b::SEAbstraction) =
-    isless(a.data, b.data)
-@inline Base.isless(a::SETZAbstraction, b::SETZAbstraction) =
-    isless(a.data, b.data)
-@inline Base.isless(a::SELTZOAbstraction, b::SELTZOAbstraction) =
-    isless(a.data, b.data)
 
 
 abstract type EFTAbstraction{A<:FloatAbstraction} end
@@ -138,6 +115,36 @@ end
 {A<:FloatAbstraction} = isless((a.x, a.y, a.p, a.e), (b.x, b.y, b.p, b.e))
 
 
+struct SEAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+struct SETZAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+struct SELBTZAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+struct SELTZOAbstraction <: FloatAbstraction
+    data::UInt32
+end
+
+
+@inline Base.isless(a::SEAbstraction, b::SEAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SETZAbstraction, b::SETZAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SELBTZAbstraction, b::SELBTZAbstraction) =
+    isless(a.data, b.data)
+@inline Base.isless(a::SELTZOAbstraction, b::SELTZOAbstraction) =
+    isless(a.data, b.data)
+
+
 ####################################################### ABSTRACTION CONSTRUCTORS
 
 
@@ -156,8 +163,26 @@ end
     if !(0 <= tz <= 127)
         throw(DomainError(tz, "Number of trailing zeros out of range."))
     end
-    return SETZAbstraction(
-        (UInt32(s) << 31) | (UInt32(e + 16383) << 14) | UInt32(tz))
+    return SETZAbstraction((UInt32(s) << 31) |
+        (UInt32(e + 16383) << 14) | UInt32(tz))
+end
+
+
+@inline function SELBTZAbstraction(
+    s::Bool, lb::Bool,
+    e::Int, nlb::Int, ntz::Int,
+)
+    if !(-16383 <= e <= 16384)
+        throw(DomainError(e, "Exponent out of range."))
+    end
+    if !(0 <= nlb <= 127)
+        throw(DomainError(nlb, "Number of leading bits out of range."))
+    end
+    if !(0 <= ntz <= 127)
+        throw(DomainError(ntz, "Number of trailing zeros out of range."))
+    end
+    return SELBTZAbstraction((UInt32(s) << 31) | (UInt32(lb) << 30) |
+        (UInt32(e + 16383) << 14) | (UInt32(nlb) << 7) | UInt32(ntz))
 end
 
 
@@ -176,7 +201,7 @@ end
     end
     return SELTZOAbstraction(
         (UInt32(s) << 31) | (UInt32(lb) << 30) | (UInt32(tb) << 29) |
-        (UInt32(e + 16383) << 14) | UInt32(nlb << 7) | UInt32(ntb))
+            (UInt32(e + 16383) << 14) | (UInt32(nlb) << 7) | UInt32(ntb))
 end
 
 
@@ -186,6 +211,11 @@ end
 
 @inline SETZAbstraction(x::AbstractFloat) = SETZAbstraction(
     signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
+
+
+@inline SELBTZAbstraction(x::AbstractFloat) = SELBTZAbstraction(
+    signbit(x), mantissa_leading_bit(x),
+    unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_zeros(x))
 
 
 @inline SELTZOAbstraction(x::AbstractFloat) = SELTZOAbstraction(
@@ -208,6 +238,7 @@ end
 
 @inline Base.signbit(x::SEAbstraction) = isone(x.data >> 31)
 @inline Base.signbit(x::SETZAbstraction) = isone(x.data >> 31)
+@inline Base.signbit(x::SELBTZAbstraction) = isone(x.data >> 31)
 @inline Base.signbit(x::SELTZOAbstraction) = isone(x.data >> 31)
 
 
@@ -215,25 +246,40 @@ end
     Int((x.data >> 14) & 0x00007FFF) - 16383
 @inline unsafe_exponent(x::SETZAbstraction) =
     Int((x.data >> 14) & 0x00007FFF) - 16383
+@inline unsafe_exponent(x::SELBTZAbstraction) =
+    Int((x.data >> 14) & 0x00007FFF) - 16383
 @inline unsafe_exponent(x::SELTZOAbstraction) =
     Int((x.data >> 14) & 0x00007FFF) - 16383
 
 
-@inline mantissa_trailing_zeros(x::SETZAbstraction) = Int(x.data & 0x0000007F)
+@inline mantissa_trailing_zeros(x::SETZAbstraction) =
+    Int(x.data & 0x0000007F)
+@inline mantissa_trailing_zeros(x::SELBTZAbstraction) =
+    Int(x.data & 0x0000007F)
 
 
+@inline mantissa_leading_bit(x::SELBTZAbstraction) =
+    isone((x.data >> 30) & 0x00000001)
 @inline mantissa_leading_bit(x::SELTZOAbstraction) =
     isone((x.data >> 30) & 0x00000001)
-@inline mantissa_trailing_bit(x::SELTZOAbstraction) =
-    isone((x.data >> 29) & 0x00000001)
+@inline mantissa_leading_bits(x::SELBTZAbstraction) =
+    Int((x.data >> 7) & 0x0000007F)
 @inline mantissa_leading_bits(x::SELTZOAbstraction) =
     Int((x.data >> 7) & 0x0000007F)
-@inline mantissa_trailing_bits(x::SELTZOAbstraction) =
-    Int(x.data & 0x0000007F)
+@inline mantissa_leading_zeros(x::SELBTZAbstraction) =
+    ifelse(mantissa_leading_bit(x), 0, mantissa_leading_bits(x))
 @inline mantissa_leading_zeros(x::SELTZOAbstraction) =
     ifelse(mantissa_leading_bit(x), 0, mantissa_leading_bits(x))
+@inline mantissa_leading_ones(x::SELBTZAbstraction) =
+    ifelse(mantissa_leading_bit(x), mantissa_leading_bits(x), 0)
 @inline mantissa_leading_ones(x::SELTZOAbstraction) =
     ifelse(mantissa_leading_bit(x), mantissa_leading_bits(x), 0)
+
+
+@inline mantissa_trailing_bit(x::SELTZOAbstraction) =
+    isone((x.data >> 29) & 0x00000001)
+@inline mantissa_trailing_bits(x::SELTZOAbstraction) =
+    Int(x.data & 0x0000007F)
 @inline mantissa_trailing_zeros(x::SELTZOAbstraction) =
     ifelse(mantissa_trailing_bit(x), 0, mantissa_trailing_bits(x))
 @inline mantissa_trailing_ones(x::SELTZOAbstraction) =
@@ -283,14 +329,17 @@ end
     nlb = mantissa_leading_bits(x)
     ntb = mantissa_trailing_bits(x)
     if nlb == ntb == p - 1
-        return ((~lb & ~tb) ? POW2 : (lb & tb) ? ALL1 :
-                throw(DomainError(x, "Invalid SELTZOAbstraction.")))
+        return (~lb & ~tb) ? POW2 :
+               (lb & tb) ? ALL1 :
+               throw(DomainError(x, "Invalid SELTZOAbstraction."))
     elseif nlb + ntb == p - 1
-        return ((~lb & tb) ? R0R1 : (lb & ~tb) ? R1R0 :
-                throw(DomainError(x, "Invalid SELTZOAbstraction.")))
+        return (~lb & tb) ? R0R1 :
+               (lb & ~tb) ? R1R0 :
+               throw(DomainError(x, "Invalid SELTZOAbstraction."))
     elseif nlb + ntb == p - 2
-        return ((lb & tb) ? ONE0 : (~lb & ~tb) ? ONE1 :
-                throw(DomainError(x, "Invalid SELTZOAbstraction.")))
+        return (lb & tb) ? ONE0 :
+               (~lb & ~tb) ? ONE1 :
+               throw(DomainError(x, "Invalid SELTZOAbstraction."))
     elseif nlb + ntb == p - 3
         return lb ? (tb ? TWO0 : MM01) : (tb ? MM10 : TWO1)
     elseif 1 < nlb + ntb < p - 3
@@ -301,14 +350,12 @@ end
 end
 
 
-@inline mantissa_leading_bit(t::SELTZOClass) =
-    (t == ALL1) | (t == R1R0) | (t == ONE0) | (t == TWO0) |
-    (t == MM01) | (t == G10) | (t == G11)
+@inline mantissa_leading_bit(t::SELTZOClass) = (t == ALL1) | (t == R1R0) |
+    (t == ONE0) | (t == TWO0) | (t == MM01) | (t == G10) | (t == G11)
 
 
-@inline mantissa_trailing_bit(t::SELTZOClass) =
-    (t == ALL1) | (t == R0R1) | (t == ONE0) | (t == TWO0) |
-    (t == MM10) | (t == G01) | (t == G11)
+@inline mantissa_trailing_bit(t::SELTZOClass) = (t == ALL1) | (t == R0R1) |
+    (t == ONE0) | (t == TWO0) | (t == MM10) | (t == G01) | (t == G11)
 
 
 ########################################################## ABSTRACTION UNPACKING
@@ -367,6 +414,48 @@ end
     e = unsafe_exponent(x)
     f = e - ((p - 1) - mantissa_trailing_zeros(x))
     return (e, f)
+end
+
+
+@inline unpack(x::SELBTZAbstraction) = (
+    signbit(x),
+    mantissa_leading_bit(x),
+    unsafe_exponent(x),
+    mantissa_leading_bits(x),
+    mantissa_trailing_zeros(x),
+)
+
+@inline function unpack(
+    x::SELBTZAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    s = signbit(x)
+    lb = mantissa_leading_bit(x)
+    e = unsafe_exponent(x)
+    f = e - (mantissa_leading_bits(x) + 1)
+    g = e - ((p - 1) - mantissa_trailing_zeros(x))
+    return (s, lb, e, f, g)
+end
+
+@inline unpack_bools(x::SELBTZAbstraction) =
+    (signbit(x), mantissa_leading_bit(x))
+
+@inline unpack_bools(x::SELBTZAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+    (signbit(x), mantissa_leading_bit(x))
+
+@inline unpack_ints(x::SELBTZAbstraction) =
+    (unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_zeros(x))
+
+@inline function unpack_ints(
+    x::SELBTZAbstraction,
+    ::Type{T},
+) where {T<:AbstractFloat}
+    p = precision(T)
+    e = unsafe_exponent(x)
+    f = e - (mantissa_leading_bits(x) + 1)
+    g = e - ((p - 1) - mantissa_trailing_zeros(x))
+    return (e, f, g)
 end
 
 
@@ -847,7 +936,7 @@ end
 ################################################################# LEMMA CHECKING
 
 
-export LemmaChecker, add_case!, SELTZORange
+export LemmaChecker, add_case!, SELBTZRange, SELTZORange
 
 
 struct LemmaChecker{A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
@@ -913,7 +1002,7 @@ function (checker::LemmaChecker{A,E,T})(
         else
             println(stderr,
                 "ERROR: Claimed outputs of lemma $lemma_name" *
-                " do not match actual computed outputs.")
+                    " do not match actual computed outputs.")
             println(stderr, "Input 1: $(unpack(checker.x, T)) [$(checker.x)]")
             println(stderr, "Input 2: $(unpack(checker.y, T)) [$(checker.y)]")
             println(stderr, "Claimed outputs:")
@@ -1061,6 +1150,95 @@ function add_case!(
 end
 
 
+@inline _to_range(n::Int) = n:n
+@inline _to_range(r::UnitRange{Int}) = r
+
+
+struct SELBTZRange
+    s_range::UnitRange{Bool}
+    lb_range::UnitRange{Bool}
+    e_range::UnitRange{Int}
+    f_range::UnitRange{Int}
+    g_range::UnitRange{Int}
+end
+
+
+@inline function SELBTZRange(
+    s::Bool,
+    lb::Int,
+    e::_IntRange,
+    f::_IntRange,
+    g::_IntRange,
+)
+    if !(iszero(lb) | isone(lb))
+        throw(DomainError(lb, "Leading bit must be 0 or 1."))
+    end
+    return SELBTZRange(s:s, Bool(lb):Bool(lb),
+        _to_range(e), _to_range(f), _to_range(g))
+end
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SELBTZAbstraction,T},
+    r::SELBTZRange,
+    e::SELBTZAbstraction,
+) where {T<:AbstractFloat}
+    p = precision(T)
+    for sr in r.s_range
+        for lbr in r.lb_range
+            for er in _lemma_range_e(r.e_range, T)
+                for fr in r.f_range
+                    for gr in _lemma_range_t(r.g_range, T)
+                        nlbr = (er - fr) - 1
+                        ntzr = (p - 1) - (er - gr)
+                        push!(lemma.claimed_outputs, (
+                            SELBTZAbstraction(sr, lbr, er, nlbr, ntzr), e))
+                    end
+                end
+            end
+        end
+    end
+    return lemma
+end
+
+
+function add_case!(
+    lemma::_LemmaOutputs{SELBTZAbstraction,T},
+    r::SELBTZRange,
+    e::SELBTZRange,
+) where {T<:AbstractFloat}
+    p = precision(T)
+    for sr in r.s_range
+        for lbr in r.lb_range
+            for er in _lemma_range_e(r.e_range, T)
+                for fr in r.f_range
+                    for gr in _lemma_range_t(r.g_range, T)
+                        for se in e.s_range
+                            for lbe in e.lb_range
+                                for ee in _lemma_range_e(e.e_range, T)
+                                    for fe in e.f_range
+                                        for ge in _lemma_range_t(e.g_range, T)
+                                            nlbr = (er - fr) - 1
+                                            ntzr = (p - 1) - (er - gr)
+                                            nlbe = (ee - fe) - 1
+                                            ntze = (p - 1) - (ee - ge)
+                                            push!(lemma.claimed_outputs, (
+                                                SELBTZAbstraction(sr, lbr, er, nlbr, ntzr),
+                                                SELBTZAbstraction(se, lbe, ee, nlbe, ntze)))
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return lemma
+end
+
+
 struct SELTZORange
     s_range::UnitRange{Bool}
     lb_range::UnitRange{Bool}
@@ -1069,10 +1247,6 @@ struct SELTZORange
     f_range::UnitRange{Int}
     g_range::UnitRange{Int}
 end
-
-
-@inline _to_range(n::Int) = n:n
-@inline _to_range(r::UnitRange{Int}) = r
 
 
 @inline function SELTZORange(
@@ -1089,14 +1263,8 @@ end
     if !(iszero(tb) | isone(tb))
         throw(DomainError(tb, "Trailing bit must be 0 or 1."))
     end
-    return SELTZORange(
-        s:s,
-        Bool(lb):Bool(lb),
-        Bool(tb):Bool(tb),
-        _to_range(e),
-        _to_range(f),
-        _to_range(g)
-    )
+    return SELTZORange(s:s, Bool(lb):Bool(lb), Bool(tb):Bool(tb),
+        _to_range(e), _to_range(f), _to_range(g))
 end
 
 
@@ -1222,7 +1390,7 @@ end
             # Try to combine v[i] with v[i+1], v[i+2], ...
             item = v[i]
             combined_indices = BitSet()
-            for j = i+1:lastindex(v)
+            for j = (i+1):lastindex(v)
                 next = _combine(item, v[j])
                 if !isnothing(next)
                     found = true
@@ -1562,7 +1730,7 @@ end
 
 Base.:(==)(a::SELTZOLemma, b::SELTZOLemma) =
     ((a.sxy == b.sxy) & (a.cx == b.cx) & (a.cy == b.cy)) &&
-    (a.bounds == b.bounds) && (a.cases == b.cases)
+        (a.bounds == b.bounds) && (a.cases == b.cases)
 
 
 function Base.hash(lemma::SELTZOLemma, h::UInt)

@@ -12,21 +12,29 @@ function verify_exhaustive(::Type{T}, ::Type{U}) where {T,U}
         x = reinterpret(T, i)
         se = SEAbstraction(x)
         setz = SETZAbstraction(x)
+        selbtz = SELBTZAbstraction(x)
         seltzo = SELTZOAbstraction(x)
 
         @assert signbit(x) === signbit(se)
         @assert signbit(x) === signbit(setz)
+        @assert signbit(x) === signbit(selbtz)
         @assert signbit(x) === signbit(seltzo)
 
         @assert unsafe_exponent(x) === unsafe_exponent(se)
         @assert unsafe_exponent(x) === unsafe_exponent(setz)
+        @assert unsafe_exponent(x) === unsafe_exponent(selbtz)
         @assert unsafe_exponent(x) === unsafe_exponent(seltzo)
 
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(setz)
+        @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(selbtz)
 
+        @assert mantissa_leading_bit(x) === mantissa_leading_bit(selbtz)
         @assert mantissa_leading_bit(x) === mantissa_leading_bit(seltzo)
+        @assert mantissa_leading_bits(x) === mantissa_leading_bits(selbtz)
         @assert mantissa_leading_bits(x) === mantissa_leading_bits(seltzo)
+        @assert mantissa_leading_zeros(x) === mantissa_leading_zeros(selbtz)
         @assert mantissa_leading_zeros(x) === mantissa_leading_zeros(seltzo)
+        @assert mantissa_leading_ones(x) === mantissa_leading_ones(selbtz)
         @assert mantissa_leading_ones(x) === mantissa_leading_ones(seltzo)
 
         @assert mantissa_trailing_bit(x) === mantissa_trailing_bit(seltzo)
@@ -43,17 +51,21 @@ function verify_exhaustive(::Type{T}, ::Type{U}) where {T,U}
         end
 
         @assert unpack(se) ===
-                (unpack_bools(se)..., unpack_ints(se)...)
+            (unpack_bools(se)..., unpack_ints(se)...)
         @assert unpack(se, T) ===
-                (unpack_bools(se, T)..., unpack_ints(se, T)...)
+            (unpack_bools(se, T)..., unpack_ints(se, T)...)
         @assert unpack(setz) ===
-                (unpack_bools(setz)..., unpack_ints(setz)...)
+            (unpack_bools(setz)..., unpack_ints(setz)...)
         @assert unpack(setz, T) ===
-                (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
+            (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
+        @assert unpack(selbtz) ===
+            (unpack_bools(selbtz)..., unpack_ints(selbtz)...)
+        @assert unpack(selbtz, T) ===
+            (unpack_bools(selbtz, T)..., unpack_ints(selbtz, T)...)
         @assert unpack(seltzo) ===
-                (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
+            (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
         @assert unpack(seltzo, T) ===
-                (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
+            (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
     end
     return true
 end
@@ -71,21 +83,29 @@ function verify_random(::Type{T}, ::Type{U}, n::Int) where {T,U}
         x = reinterpret(T, rand(U))
         se = SEAbstraction(x)
         setz = SETZAbstraction(x)
+        selbtz = SELBTZAbstraction(x)
         seltzo = SELTZOAbstraction(x)
 
         @assert signbit(x) === signbit(se)
         @assert signbit(x) === signbit(setz)
+        @assert signbit(x) === signbit(selbtz)
         @assert signbit(x) === signbit(seltzo)
 
         @assert unsafe_exponent(x) === unsafe_exponent(se)
         @assert unsafe_exponent(x) === unsafe_exponent(setz)
+        @assert unsafe_exponent(x) === unsafe_exponent(selbtz)
         @assert unsafe_exponent(x) === unsafe_exponent(seltzo)
 
         @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(setz)
+        @assert mantissa_trailing_zeros(x) === mantissa_trailing_zeros(selbtz)
 
+        @assert mantissa_leading_bit(x) === mantissa_leading_bit(selbtz)
         @assert mantissa_leading_bit(x) === mantissa_leading_bit(seltzo)
+        @assert mantissa_leading_bits(x) === mantissa_leading_bits(selbtz)
         @assert mantissa_leading_bits(x) === mantissa_leading_bits(seltzo)
+        @assert mantissa_leading_zeros(x) === mantissa_leading_zeros(selbtz)
         @assert mantissa_leading_zeros(x) === mantissa_leading_zeros(seltzo)
+        @assert mantissa_leading_ones(x) === mantissa_leading_ones(selbtz)
         @assert mantissa_leading_ones(x) === mantissa_leading_ones(seltzo)
 
         @assert mantissa_trailing_bit(x) === mantissa_trailing_bit(seltzo)
@@ -99,17 +119,21 @@ function verify_random(::Type{T}, ::Type{U}, n::Int) where {T,U}
         @assert mantissa_trailing_bit(x) === mantissa_trailing_bit(seltzo_type)
 
         @assert unpack(se) ===
-                (unpack_bools(se)..., unpack_ints(se)...)
+            (unpack_bools(se)..., unpack_ints(se)...)
         @assert unpack(se, T) ===
-                (unpack_bools(se, T)..., unpack_ints(se, T)...)
+            (unpack_bools(se, T)..., unpack_ints(se, T)...)
         @assert unpack(setz) ===
-                (unpack_bools(setz)..., unpack_ints(setz)...)
+            (unpack_bools(setz)..., unpack_ints(setz)...)
         @assert unpack(setz, T) ===
-                (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
+            (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
+        @assert unpack(selbtz) ===
+            (unpack_bools(selbtz)..., unpack_ints(selbtz)...)
+        @assert unpack(selbtz, T) ===
+            (unpack_bools(selbtz, T)..., unpack_ints(selbtz, T)...)
         @assert unpack(seltzo) ===
-                (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
+            (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
         @assert unpack(seltzo, T) ===
-                (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
+            (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
     end
     return true
 end
