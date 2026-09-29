@@ -34,24 +34,13 @@ function check_setz_two_sum_lemmas(
         #! format: off
         if x_zero | y_zero ################################## LEMMA FAMILY Z (2)
 
-            # Lemmas in Family Z (for "zero") apply
-            # when one or both addends are zero.
-
-            # Lemma Z1: Both addends are zero.
-            checker("SETZ-TwoSum-Z1-PP", (x == pos_zero) & (y == pos_zero)) do lemma
+            checker("SETZ-TwoSum-Z1-P", x_zero & y_zero & ((x == pos_zero) | (y == pos_zero))) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SETZ-TwoSum-Z1-PN", (x == pos_zero) & (y == neg_zero)) do lemma
-                add_case!(lemma, pos_zero, pos_zero)
-            end
-            checker("SETZ-TwoSum-Z1-NP", (x == neg_zero) & (y == pos_zero)) do lemma
-                add_case!(lemma, pos_zero, pos_zero)
-            end
-            checker("SETZ-TwoSum-Z1-NN", (x == neg_zero) & (y == neg_zero)) do lemma
+            checker("SETZ-TwoSum-Z1-N", (x == neg_zero) & (y == neg_zero)) do lemma
                 add_case!(lemma, neg_zero, pos_zero)
             end
 
-            # Lemma Z2: One addend is zero.
             checker("SETZ-TwoSum-Z2-X", y_zero & !x_zero) do lemma
                 add_case!(lemma, x, pos_zero)
             end
@@ -61,720 +50,527 @@ function check_setz_two_sum_lemmas(
 
         else ############################################ NONZERO LEMMA FAMILIES
 
-            # From this point onward, all lemmas implicitly
-            # assume that both addends are nonzero.
-
-            ######################################################## LEMMA I (1)
-
-            # Lemmas in Family I (for "identical") apply
-            # to addends unchanged by the TwoSum algorithm.
-
             checker("SETZ-TwoSum-I-X",
                 (ex > ey + (p+1)) |
-                ((ex == ey + (p+1)) & ((ey == fy) | same_sign | (ex > fx))) |
-                ((ex == ey + p) & (ey == fy) & (same_sign | (ex > fx)) & (ex < fx + (p-1)))
+                ((ex == ey + (p+1)) & (same_sign | (ex > fx) | (ey == fy))) |
+                ((ex == ey + p) & (same_sign | (ex > fx)) & (ey == fy) & (ex < fx + (p-1)))
             ) do lemma
                 add_case!(lemma, x, y)
             end
             checker("SETZ-TwoSum-I-Y",
                 (ey > ex + (p+1)) |
-                ((ey == ex + (p+1)) & ((ex == fx) | same_sign | (ey > fy))) |
-                ((ey == ex + p) & (ex == fx) & (same_sign | (ey > fy)) & (ey < fy + (p-1)))
+                ((ey == ex + (p+1)) & (same_sign | (ey > fy) | (ex == fx))) |
+                ((ey == ex + p) & (same_sign | (ey > fy)) & (ex == fx) & (ey < fy + (p-1)))
             ) do lemma
                 add_case!(lemma, y, x)
             end
 
-            ################################################# LEMMA FAMILY F (7)
+            checker("SETZ-TwoSum-LS-X", same_sign & (ex > ey) & (fx < fy) & (ex < fx + (p-1))) do lemma
+                add_case!(lemma, (sx, ex:ex+1, fx), pos_zero)
+            end
+            checker("SETZ-TwoSum-LS-Y", same_sign & (ey > ex) & (fy < fx) & (ey < fy + (p-1))) do lemma
+                add_case!(lemma, (sy, ey:ey+1, fy), pos_zero)
+            end
 
-            # Lemmas in Family F apply to addends with
-            # the same trailing exponent (fx == fy).
+            checker("SETZ-TwoSum-LSA0-X", same_sign & (ex > ey) & (fx < fy) & (ex == fx + (p-1)) & (ey > fy)) do lemma
+                add_case!(lemma, (sx, ex  , fx     ), pos_zero)
+                add_case!(lemma, (sx, ex+1, fx+2:ey), (± , fx, fx))
+                add_case!(lemma, (sx, ex+1, ex+1   ), (sy, fx, fx))
+            end
+            checker("SETZ-TwoSum-LSA0-Y", same_sign & (ey > ex) & (fy < fx) & (ey == fy + (p-1)) & (ex > fx)) do lemma
+                add_case!(lemma, (sy, ey  , fy     ), pos_zero)
+                add_case!(lemma, (sy, ey+1, fy+2:ex), (± , fy, fy))
+                add_case!(lemma, (sy, ey+1, ey+1   ), (sx, fy, fy))
+            end
 
-            # The trailing exponent of a floating-point number x, denoted by
-            # fx, is the place value of the last nonzero bit in its mantissa.
+            checker("SETZ-TwoSum-LSA1-X", same_sign & (ex > ey) & (fx < fy) & (ex == fx + (p-1)) & (ey == fy)) do lemma
+                add_case!(lemma, (sx, ex  , fx       ), pos_zero)
+                add_case!(lemma, (sx, ex+1, fx+2:ey-1), ( sy, fx, fx))
+                add_case!(lemma, (sx, ex+1, fx+2:ey  ), (~sy, fx, fx))
+                add_case!(lemma, (sx, ex+1, ex+1     ), ( sy, fx, fx))
+            end
+            checker("SETZ-TwoSum-LSA1-Y", same_sign & (ey > ex) & (fy < fx) & (ey == fy + (p-1)) & (ex == fx)) do lemma
+                add_case!(lemma, (sy, ey  , fy       ), pos_zero)
+                add_case!(lemma, (sy, ey+1, fy+2:ex-1), ( sx, fy, fy))
+                add_case!(lemma, (sy, ey+1, fy+2:ex  ), (~sx, fy, fy))
+                add_case!(lemma, (sy, ey+1, ey+1     ), ( sx, fy, fy))
+            end
 
-            checker("SETZ-TwoSum-FS0-X", same_sign & (fx == fy) & (ex > ey + 1)) do lemma
+            checker("SETZ-TwoSum-LSB0-X", same_sign & (ex > ey + 1) & (fx == fy)) do lemma
                 add_case!(lemma, (sx, ex  , fx+1:ex-1), pos_zero)
                 add_case!(lemma, (sx, ex+1, fx+1:ey  ), pos_zero)
                 add_case!(lemma, (sx, ex+1, ex+1     ), pos_zero)
             end
-            checker("SETZ-TwoSum-FS0-Y", same_sign & (fx == fy) & (ey > ex + 1)) do lemma
+            checker("SETZ-TwoSum-LSB0-Y", same_sign & (ey > ex + 1) & (fy == fx)) do lemma
                 add_case!(lemma, (sy, ey  , fy+1:ey-1), pos_zero)
                 add_case!(lemma, (sy, ey+1, fy+1:ex  ), pos_zero)
                 add_case!(lemma, (sy, ey+1, ey+1     ), pos_zero)
             end
 
-            checker("SETZ-TwoSum-FS1-X", same_sign & (fx == fy) & (ex == ey + 1)) do lemma
+            checker("SETZ-TwoSum-LSB1-X", same_sign & (ex == ey + 1) & (fx == fy)) do lemma
                 add_case!(lemma, (sx, ex  , fx+1:ex-2), pos_zero)
                 add_case!(lemma, (sx, ex+1, fx+1:ey  ), pos_zero)
                 add_case!(lemma, (sx, ex+1, ex+1     ), pos_zero)
             end
-            checker("SETZ-TwoSum-FS1-Y", same_sign & (fx == fy) & (ey == ex + 1)) do lemma
+            checker("SETZ-TwoSum-LSB1-Y", same_sign & (ey == ex + 1) & (fy == fx)) do lemma
                 add_case!(lemma, (sy, ey  , fy+1:ey-2), pos_zero)
                 add_case!(lemma, (sy, ey+1, fy+1:ex  ), pos_zero)
                 add_case!(lemma, (sy, ey+1, ey+1     ), pos_zero)
             end
 
-            checker("SETZ-TwoSum-FS2", same_sign & (fx == fy) & (ex == ey) & (ex > fx)) do lemma
-                add_case!(lemma, (sx, ex+1, fx+1:ex), pos_zero)
+            checker("SETZ-TwoSum-LSB2", same_sign & (ex == ey) & (fx == fy)) do lemma
+                add_case!(lemma, (sx, ex+1, fx+1   ), pos_zero)
+                add_case!(lemma, (sx, ex+1, fx+2:ex), pos_zero)
             end
 
-            checker("SETZ-TwoSum-FS3", same_sign & (fx == fy) & (ex == ey) & (ex == fx)) do lemma
-                add_case!(lemma, (sx, ex+1, ex+1), pos_zero)
+            checker("SETZ-TwoSum-LD-X", diff_sign & (ex > ey + 1) & (fx < fy)) do lemma
+                add_case!(lemma, (sx, ex-1:ex, fx), pos_zero)
+            end
+            checker("SETZ-TwoSum-LD-Y", diff_sign & (ey > ex + 1) & (fy < fx)) do lemma
+                add_case!(lemma, (sy, ey-1:ey, fy), pos_zero)
             end
 
-            checker("SETZ-TwoSum-FD0-X", diff_sign & (fx == fy) & (ex > ey + 1)) do lemma
+            checker("SETZ-TwoSum-LDA-X", diff_sign & (ex > ey + 1) & (fx == fy)) do lemma
                 add_case!(lemma, (sx, ex-1, fx+1:ey), pos_zero)
                 add_case!(lemma, (sx, ex  , fx+1:ex), pos_zero)
             end
-            checker("SETZ-TwoSum-FD0-Y", diff_sign & (fx == fy) & (ey > ex + 1)) do lemma
+            checker("SETZ-TwoSum-LDA-Y", diff_sign & (ey > ex + 1) & (fy == fx)) do lemma
                 add_case!(lemma, (sy, ey-1, fy+1:ex), pos_zero)
                 add_case!(lemma, (sy, ey  , fy+1:ey), pos_zero)
             end
 
-            checker("SETZ-TwoSum-FD1-X", diff_sign & (fx == fy) & (ex == ey + 1)) do lemma
+            checker("SETZ-TwoSum-LDB-X", diff_sign & (ex == ey + 1) & (fx < fy)) do lemma
+                add_case!(lemma, (sx, fy:ex, fx), pos_zero)
+            end
+            checker("SETZ-TwoSum-LDB-Y", diff_sign & (ey == ex + 1) & (fy < fx)) do lemma
+                add_case!(lemma, (sy, fx:ey, fy), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-LDC0-X", diff_sign & (ex == ey) & (fx < fy) & (ey > fy + 1)) do lemma
+                add_case!(lemma, (±, fx:ex-1, fx), pos_zero)
+            end
+            checker("SETZ-TwoSum-LDC0-Y", diff_sign & (ey == ex) & (fy < fx) & (ex > fx + 1)) do lemma
+                add_case!(lemma, (±, fy:ey-1, fy), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-LDC1-X", diff_sign & (ex == ey) & (fx < fy) & (ey == fy + 1)) do lemma
+                add_case!(lemma, (±, fx:ex-2, fx), pos_zero)
+            end
+            checker("SETZ-TwoSum-LDC1-Y", diff_sign & (ey == ex) & (fy < fx) & (ex == fx + 1)) do lemma
+                add_case!(lemma, (±, fy:ey-2, fy), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-LDC2-X", diff_sign & (ex == ey) & (fx < fy) & (ey == fy)) do lemma
+                add_case!(lemma, (sx, fx:ex-1, fx), pos_zero)
+            end
+            checker("SETZ-TwoSum-LDC2-Y", diff_sign & (ey == ex) & (fy < fx) & (ex == fx)) do lemma
+                add_case!(lemma, (sy, fy:ey-1, fy), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-LDAB-X", diff_sign & (ex == ey + 1) & (fx == fy)) do lemma
                 for k = fx+1:ex-1
                     add_case!(lemma, (sx, k, fx+1:k), pos_zero)
                 end
                 add_case!(lemma, (sx, ex, fx+1:ex-2), pos_zero)
-                add_case!(lemma, (sx, ex, ex       ), pos_zero)
+                add_case!(lemma, (sx, ex,      ex  ), pos_zero)
             end
-            checker("SETZ-TwoSum-FD1-Y", diff_sign & (fx == fy) & (ey == ex + 1)) do lemma
+            checker("SETZ-TwoSum-LDAB-Y", diff_sign & (ey == ex + 1) & (fy == fx)) do lemma
                 for k = fy+1:ey-1
                     add_case!(lemma, (sy, k, fy+1:k), pos_zero)
                 end
                 add_case!(lemma, (sy, ey, fy+1:ey-2), pos_zero)
-                add_case!(lemma, (sy, ey, ey       ), pos_zero)
+                add_case!(lemma, (sy, ey,      ey  ), pos_zero)
             end
 
-            checker("SETZ-TwoSum-FD2", diff_sign & (fx == fy) & (ex == ey)) do lemma
+            checker("SETZ-TwoSum-LDAC", diff_sign & (ex == ey) & (fx == fy)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
                 for k = fx+1:ex-1
                     add_case!(lemma, (±, k, fx+1:k), pos_zero)
                 end
             end
 
-            ################################################ LEMMA FAMILY E (15)
-
-            # Lemmas in Family E (for "exact") apply to addends with
-            # different trailing exponents whose floating-point sum is exact.
-
-            # Lemma EN0: Addends do not overlap.
-            checker("SETZ-TwoSum-EN0-X", (same_sign | (ex > fx)) & (fx > ey) & (ex < fy + p)) do lemma
-                add_case!(lemma, (sx, ex, fy), pos_zero)
-            end
-            checker("SETZ-TwoSum-EN0-Y", (same_sign | (ey > fy)) & (fy > ex) & (ey < fx + p)) do lemma
-                add_case!(lemma, (sy, ey, fx), pos_zero)
-            end
-
-            # Lemma EN1: Boundary case of EN0.
-            checker("SETZ-TwoSum-EN1-X", diff_sign & (
-                ((ex == fx) & (fx > ey + 1) & (ex < fy + (p+1))) |
-                ((ex == fx + 1) & (fx == ey) & (ey > fy))
-            )) do lemma
-                add_case!(lemma, (sx, ex-1, fy), pos_zero)
-            end
-            checker("SETZ-TwoSum-EN1-Y", diff_sign & (
-                ((ey == fy) & (fy > ex + 1) & (ey < fx + (p+1))) |
-                ((ey == fy + 1) & (fy == ex) & (ex > fx))
-            )) do lemma
-                add_case!(lemma, (sy, ey-1, fx), pos_zero)
-            end
-
-            # Lemma ESP0: Addends have same sign and partially overlap.
-            checker("SETZ-TwoSum-ESP0-X", same_sign & ((ex > ey > fx > fy) | (ex > ey + 1 > fx > fy)) & (ex < fy + (p-1))) do lemma
+            checker("SETZ-TwoSum-CS-X", same_sign & (ex > ey) & (fx > fy) & (ex < fy + (p-1)) & (fx < ey + 1) & (ex > fx + 1)) do lemma
                 add_case!(lemma, (sx, ex:ex+1, fy), pos_zero)
             end
-            checker("SETZ-TwoSum-ESP0-Y", same_sign & ((ey > ex > fy > fx) | (ey > ex + 1 > fy > fx)) & (ey < fx + (p-1))) do lemma
+            checker("SETZ-TwoSum-CS-Y", same_sign & (ey > ex) & (fy > fx) & (ey < fx + (p-1)) & (fy < ex + 1) & (ey > fy + 1)) do lemma
                 add_case!(lemma, (sy, ey:ey+1, fx), pos_zero)
             end
 
-            # Lemma ESP1: Boundary case of ESP0 with guaranteed carry.
-            checker("SETZ-TwoSum-ESP1-X", same_sign & (ex == ey + 1) & (ey == fx > fy) & (ex < fy + (p-1))) do lemma
+            checker("SETZ-TwoSum-CSA0-X", same_sign & (ex > ey) & (fx > fy) & (ex == fy + (p-1)) & (fx < ey)) do lemma
+                add_case!(lemma, (sx, ex  , fy     ), pos_zero)
+                add_case!(lemma, (sx, ex+1, fy+2:ey), ( ± , fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1   ), ( sy, fy, fy))
+            end
+            checker("SETZ-TwoSum-CSA0-Y", same_sign & (ey > ex) & (fy > fx) & (ey == fx + (p-1)) & (fy < ex)) do lemma
+                add_case!(lemma, (sy, ey  , fx     ), pos_zero)
+                add_case!(lemma, (sy, ey+1, fx+2:ex), ( ± , fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1   ), ( sx, fx, fx))
+            end
+
+            checker("SETZ-TwoSum-CSA1-X", same_sign & (ex > ey + 1) & (fx > fy) & (ex == fy + (p-1)) & (fx == ey)) do lemma
+                add_case!(lemma, (sx, ex  , fy       ), pos_zero)
+                add_case!(lemma, (sx, ex+1, fy+2:ey-1), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex+1, fy+2:ey  ), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1     ), ( sy, fy, fy))
+            end
+            checker("SETZ-TwoSum-CSA1-Y", same_sign & (ey > ex + 1) & (fy > fx) & (ey == fx + (p-1)) & (fy == ex)) do lemma
+                add_case!(lemma, (sy, ey  , fx       ), pos_zero)
+                add_case!(lemma, (sy, ey+1, fx+2:ex-1), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey+1, fx+2:ex  ), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1     ), ( sx, fx, fx))
+            end
+
+            checker("SETZ-TwoSum-CSB-X", same_sign & ((ex == ey) | ((ex == ey + 1) & (fx == ey))) & (fx > fy) & (ex < fy + (p-1))) do lemma
                 add_case!(lemma, (sx, ex+1, fy), pos_zero)
             end
-            checker("SETZ-TwoSum-ESP1-Y", same_sign & (ey == ex + 1) & (ex == fy > fx) & (ey < fx + (p-1))) do lemma
+            checker("SETZ-TwoSum-CSB-Y", same_sign & ((ey == ex) | ((ey == ex + 1) & (fy == ex))) & (fy > fx) & (ey < fx + (p-1))) do lemma
                 add_case!(lemma, (sy, ey+1, fx), pos_zero)
             end
 
-            # Lemma ESC: Addends have same sign and completely overlap.
-            checker("SETZ-TwoSum-ESC-X", same_sign & (ex > ey) & (fx < fy) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex:ex+1, fx), pos_zero)
+            checker("SETZ-TwoSum-CSAB0-X", same_sign & (ex == ey) & (fx > fy) & (ex == fy + (p-1)) & (fx < ey)) do lemma
+                add_case!(lemma, (sx, ex+1, fy+2:ex), (±, fy, fy))
             end
-            checker("SETZ-TwoSum-ESC-Y", same_sign & (ey > ex) & (fy < fx) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey:ey+1, fy), pos_zero)
-            end
-
-            # Lemma ESS: Addends have same sign and exponent.
-            checker("SETZ-TwoSum-ESS-X", same_sign & (ex == ey) & (fx < fy) & (ex < fx + (p-1)) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex+1, fx), pos_zero)
-            end
-            checker("SETZ-TwoSum-ESS-Y", same_sign & (ex == ey) & (fx > fy) & (ex < fx + (p-1)) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey+1, fy), pos_zero)
+            checker("SETZ-TwoSum-CSAB0-Y", same_sign & (ey == ex) & (fy > fx) & (ey == fx + (p-1)) & (fy < ex)) do lemma
+                add_case!(lemma, (sy, ey+1, fx+2:ey), (±, fx, fx))
             end
 
-            # Lemma EDP0: Addends have different signs and partially overlap.
-            checker("SETZ-TwoSum-EDP0-X", diff_sign & (ex > ey + 1 > fx > fy) & (ex < fy + p)) do lemma
+            checker("SETZ-TwoSum-CSAB1-X", same_sign & ((ex == ey) | (ex == ey + 1)) & (ex == fy + (p-1)) & (fx == ey)) do lemma
+                add_case!(lemma, (sx, ex+1, fy+2:ey-1), ( ± , fy, fy))
+                add_case!(lemma, (sx, ex+1,      ey  ), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1     ), ( sy, fy, fy))
+            end
+            checker("SETZ-TwoSum-CSAB1-Y", same_sign & ((ey == ex) | (ey == ex + 1)) & (ey == fx + (p-1)) & (fy == ex)) do lemma
+                add_case!(lemma, (sy, ey+1, fx+2:ex-1), ( ± , fx, fx))
+                add_case!(lemma, (sy, ey+1,      ex  ), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1     ), ( sx, fx, fx))
+            end
+
+            checker("SETZ-TwoSum-CD0-X", diff_sign & (ex > ey + 1) & (fx > fy) & (ex < fy + p) & (fx < ey + 1)) do lemma
                 add_case!(lemma, (sx, ex-1:ex, fy), pos_zero)
             end
-            checker("SETZ-TwoSum-EDP0-Y", diff_sign & (ey > ex + 1 > fy > fx) & (ey < fx + p)) do lemma
+            checker("SETZ-TwoSum-CD0-Y", diff_sign & (ey > ex + 1) & (fy > fx) & (ey < fx + p) & (fy < ex + 1)) do lemma
                 add_case!(lemma, (sy, ey-1:ey, fx), pos_zero)
             end
 
-            # Lemma EDP1: Boundary case of EDP0 with more possible cancellation.
-            checker("SETZ-TwoSum-EDP1-X", diff_sign & (ex == ey + 1) & (ey > fx > fy) & (ex < fy + p)) do lemma
+            checker("SETZ-TwoSum-CD1-X", diff_sign & (ex == ey + 1) & (fx > fy) & (ex < fy + p) & (fx < ey)) do lemma
                 add_case!(lemma, (sx, fx:ex, fy), pos_zero)
             end
-            checker("SETZ-TwoSum-EDP1-Y", diff_sign & (ey == ex + 1) & (ex > fy > fx) & (ey < fx + p)) do lemma
+            checker("SETZ-TwoSum-CD1-Y", diff_sign & (ey == ex + 1) & (fy > fx) & (ey < fx + p) & (fy < ex)) do lemma
                 add_case!(lemma, (sy, fy:ey, fx), pos_zero)
             end
 
-            # Lemma EDP2: Boundary case of EDP1 with guaranteed cancellation.
-            checker("SETZ-TwoSum-EDP2-X", diff_sign & (ex == ey + 1 == fx) & (fx > fy + 1)) do lemma
+            checker("SETZ-TwoSum-CD2-X", diff_sign & (ex == ey + 1) & (fx > fy) & (fx == ey)) do lemma
+                add_case!(lemma, (sx, ex-1, fy), pos_zero)
+            end
+            checker("SETZ-TwoSum-CD2-Y", diff_sign & (ey == ex + 1) & (fy > fx) & (fy == ex)) do lemma
+                add_case!(lemma, (sy, ey-1, fx), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-T0-X", (same_sign | (ex > fx)) & (ex < fy + p) & (fx > ey)) do lemma
+                add_case!(lemma, (sx, ex, fy), pos_zero)
+            end
+            checker("SETZ-TwoSum-T0-Y", (same_sign | (ey > fy)) & (ey < fx + p) & (fy > ex)) do lemma
+                add_case!(lemma, (sy, ey, fx), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-T1-X", diff_sign & (ex == fx) & (ex < fy + (p+1)) & (fx > ey + 1)) do lemma
+                add_case!(lemma, (sx, ex-1, fy), pos_zero)
+            end
+            checker("SETZ-TwoSum-T1-Y", diff_sign & (ey == fy) & (ey < fx + (p+1)) & (fy > ex + 1)) do lemma
+                add_case!(lemma, (sy, ey-1, fx), pos_zero)
+            end
+
+            checker("SETZ-TwoSum-T2-X", diff_sign & (ex == fx) & (fx == ey + 1) & (ey > fy)) do lemma
                 add_case!(lemma, (sx, fy:ex-2, fy), pos_zero)
             end
-            checker("SETZ-TwoSum-EDP2-Y", diff_sign & (ey == ex + 1 == fy) & (fy > fx + 1)) do lemma
+            checker("SETZ-TwoSum-T2-Y", diff_sign & (ey == fy) & (fy == ex + 1) & (ex > fx)) do lemma
                 add_case!(lemma, (sy, fx:ey-2, fx), pos_zero)
             end
 
-            # Lemma EDP3: Boundary case of EDP2 with less guaranteed cancellation.
-            checker("SETZ-TwoSum-EDP3-X", diff_sign & (ex == ey + 1 == fx == fy + 1)) do lemma
-                add_case!(lemma, (sx, fy:ex-1, fy), pos_zero)
+            checker("SETZ-TwoSum-T3-X", diff_sign & (ex == fx) & (fx == ey + 1) & (ey == fy)) do lemma
+                add_case!(lemma, (sx, ex-1, fy), pos_zero)
             end
-            checker("SETZ-TwoSum-EDP3-Y", diff_sign & (ey == ex + 1 == fy == fx + 1)) do lemma
-                add_case!(lemma, (sy, fx:ey-1, fx), pos_zero)
-            end
-
-            # Lemma EDC0: Addends have different signs and completely overlap.
-            checker("SETZ-TwoSum-EDC0-X", diff_sign & (ex > ey + 1) & (fx < fy)) do lemma
-                add_case!(lemma, (sx, ex-1:ex, fx), pos_zero)
-            end
-            checker("SETZ-TwoSum-EDC0-Y", diff_sign & (ey > ex + 1) & (fy < fx)) do lemma
-                add_case!(lemma, (sy, ey-1:ey, fy), pos_zero)
+            checker("SETZ-TwoSum-T3-Y", diff_sign & (ey == fy) & (fy == ex + 1) & (ex == fx)) do lemma
+                add_case!(lemma, (sy, ey-1, fx), pos_zero)
             end
 
-            # Lemma EDC1: Boundary case of EDC0 with more possible cancellation.
-            checker("SETZ-TwoSum-EDC1-X", diff_sign & (ex == ey + 1) & (fx < fy)) do lemma
-                add_case!(lemma, (sx, fy:ex, fx), pos_zero)
+            checker("SETZ-TwoSum-1-X", (same_sign | (ex > fx)) & (ex > fy + p) & (fx > ey + 1) & (ex < ey + (p+1))) do lemma
+                add_case!(lemma, (sx, ex, ex-(p-1):ey-1), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex, ex-(p-1):ey  ), ( sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex,          ey+1), (~sy, fy:ex-(p+1), fy))
             end
-            checker("SETZ-TwoSum-EDC1-Y", diff_sign & (ey == ex + 1) & (fy < fx)) do lemma
-                add_case!(lemma, (sy, fx:ey, fy), pos_zero)
-            end
-
-            # Lemma EDC2: Boundary case of EDC0 with guaranteed cancellation.
-            checker("SETZ-TwoSum-EDC2-X", diff_sign & (ex == ey == fy) & (fx < fy)) do lemma
-                add_case!(lemma, (sx, fx:ex-1, fx), pos_zero)
-            end
-            checker("SETZ-TwoSum-EDC2-Y", diff_sign & (ey == ex == fx) & (fy < fx)) do lemma
-                add_case!(lemma, (sy, fy:ey-1, fy), pos_zero)
+            checker("SETZ-TwoSum-1-Y", (same_sign | (ey > fy)) & (ey > fx + p) & (fy > ex + 1) & (ey < ex + (p+1))) do lemma
+                add_case!(lemma, (sy, ey, ey-(p-1):ex-1), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey, ey-(p-1):ex  ), ( sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey,          ex+1), (~sx, fx:ey-(p+1), fx))
             end
 
-            # Lemma EDS0: Addends have same exponent and different signs.
-            checker("SETZ-TwoSum-EDS0-X", diff_sign & (ex == ey) & (fx < fy) & (ex > fx + 1) & (ey > fy + 1)) do lemma
-                add_case!(lemma, (±, fx:ex-1, fx), pos_zero)
+            checker("SETZ-TwoSum-1A-X", same_sign & (ex > fy + p) & (fx == ey + 1)) do lemma
+                add_case!(lemma, (sx, ex  , ex-(p-1):ey-1), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex  , ex-(p-1):ey  ), ( sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex  , ey+2    :ex-1), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), (~sy, fy:ex-(p+1), fy))
             end
-            checker("SETZ-TwoSum-EDS0-Y", diff_sign & (ex == ey) & (fx > fy) & (ex > fx + 1) & (ey > fy + 1)) do lemma
-                add_case!(lemma, (±, fy:ey-1, fy), pos_zero)
-            end
-
-            # Lemma EDS1: Boundary case of EDS0 where two leading bits cancel.
-            checker("SETZ-TwoSum-EDS1-X", diff_sign & (ex == ey) & (ex > fx + 1) & (ey == fy + 1)) do lemma
-                add_case!(lemma, (±, fx:ex-2, fx), pos_zero)
-            end
-            checker("SETZ-TwoSum-EDS1-Y", diff_sign & (ex == ey) & (ex == fx + 1) & (ey > fy + 1)) do lemma
-                add_case!(lemma, (±, fy:ey-2, fy), pos_zero)
+            checker("SETZ-TwoSum-1A-Y", same_sign & (ey > fx + p) & (fy == ex + 1)) do lemma
+                add_case!(lemma, (sy, ey  , ey-(p-1):ex-1), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey  , ey-(p-1):ex  ), ( sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey  , ex+2    :ey-1), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), (~sx, fx:ey-(p+1), fx))
             end
 
-            ################################################# LEMMA FAMILY O (3)
-
-            # Lemmas in Family O (for "overlap") apply to addends
-            # that completely overlap but cannot be summed exactly.
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-O0-X", same_sign & (ex == fx + (p-1)) & (ex > ey > fy > fx)) do lemma
-                add_case!(lemma, (sx, ex  , fx         ), pos_zero             )
-                add_case!(lemma, (sx, ex+1, ex-(p-3):ey), (± , fx:ex-(p-1), fx))
-                add_case!(lemma, (sx, ex+1, ex+1       ), (sy, fx:ex-(p-1), fx))
+            checker("SETZ-TwoSum-1B-X", diff_sign & (ex > fy + p) & (fx == ey + 1)) do lemma
+                add_case!(lemma, (sx, ex, ex-(p-1):ey-1), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex, ex-(p-1):ey  ), ( sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex, ey+2    :ex  ), (~sy, fy:ex-(p+1), fy))
             end
-            checker("SETZ-TwoSum-O0-Y", same_sign & (ey == fy + (p-1)) & (ey > ex > fx > fy)) do lemma
-                add_case!(lemma, (sy, ey  , fy         ), pos_zero             )
-                add_case!(lemma, (sy, ey+1, ey-(p-3):ex), (± , fy:ey-(p-1), fy))
-                add_case!(lemma, (sy, ey+1, ey+1       ), (sx, fy:ey-(p-1), fy))
+            checker("SETZ-TwoSum-1B-Y", diff_sign & (ey > fx + p) & (fy == ex + 1)) do lemma
+                add_case!(lemma, (sy, ey, ey-(p-1):ex-1), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey, ey-(p-1):ex  ), ( sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey, ex+2    :ey  ), (~sx, fx:ey-(p+1), fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-O1-X", same_sign & (ex == fx + (p-1)) & (ex > ey == fy > fx + 1)) do lemma
-                add_case!(lemma, (sx, ex  , fx           ), pos_zero              )
-                add_case!(lemma, (sx, ex+1, ex-(p-3):ey-1), ( ± , fx:ex-(p-1), fx))
-                add_case!(lemma, (sx, ex+1, ey           ), (~sy, fx:ex-(p-1), fx))
-                add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fx:ex-(p-1), fx))
+            checker("SETZ-TwoSum-1C-X", (same_sign | (ex > fx)) & (ex == fy + p) & (fx > ey + 1) & (ex < ey + p)) do lemma
+                add_case!(lemma, (sx, ex, ex-(p-2):ey-1), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex, ex-(p-2):ey  ), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex,          ey+1), (~sy, fy, fy))
             end
-            checker("SETZ-TwoSum-O1-Y", same_sign & (ey == fy + (p-1)) & (ey > ex == fx > fy + 1)) do lemma
-                add_case!(lemma, (sy, ey  , fy           ), pos_zero              )
-                add_case!(lemma, (sy, ey+1, ey-(p-3):ex-1), ( ± , fy:ey-(p-1), fy))
-                add_case!(lemma, (sy, ey+1, ex           ), (~sx, fy:ey-(p-1), fy))
-                add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fy:ey-(p-1), fy))
+            checker("SETZ-TwoSum-1C-Y", (same_sign | (ey > fy)) & (ey == fx + p) & (fy > ex + 1) & (ey < ex + p)) do lemma
+                add_case!(lemma, (sy, ey, ey-(p-2):ex-1), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey, ey-(p-2):ex  ), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey,          ex+1), (~sx, fx, fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-O2-X", same_sign & (ex == fx + (p-1)) & (ey == fy == fx + 1)) do lemma
-                add_case!(lemma, (sx, ex  , fx  ), pos_zero             )
-                add_case!(lemma, (sx, ex+1, ex+1), (sy, fx:ex-(p-1), fx))
+            checker("SETZ-TwoSum-1D0-X", diff_sign & (ex == fx) & (ex > fy + (p+1)) & (ex < ey + (p+2))) do lemma
+                add_case!(lemma, (sx, ex-1, ex-p:ey-1), (~sy, fy:ex-(p+2), fy))
+                add_case!(lemma, (sx, ex-1, ex-p:ey  ), ( sy, fy:ex-(p+2), fy))
+                add_case!(lemma, (sx, ex-1,      ey+1), (~sy, fy:ex-(p+2), fy))
             end
-            checker("SETZ-TwoSum-O2-Y", same_sign & (ey == fy + (p-1)) & (ex == fx == fy + 1)) do lemma
-                add_case!(lemma, (sy, ey  , fy  ), pos_zero             )
-                add_case!(lemma, (sy, ey+1, ey+1), (sx, fy:ey-(p-1), fy))
-            end
-
-            ################################################# LEMMA FAMILY 1 (4)
-
-            checker("SETZ-TwoSum-1-X", (ex < ey + p) & (ex > fy + p) & (fx > ey + 1) & ((ex > fx) | same_sign)) do lemma
-                add_case!(lemma, (sx, ex, ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex, ey           ), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex, ey+1         ), (~sy, fy:ex-(p+1), fy))
-            end
-            checker("SETZ-TwoSum-1-Y", (ey < ex + p) & (ey > fx + p) & (fy > ex + 1) & ((ey > fy) | same_sign)) do lemma
-                add_case!(lemma, (sy, ey, ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey, ex           ), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey, ex+1         ), (~sx, fx:ey-(p+1), fx))
+            checker("SETZ-TwoSum-1D0-Y", diff_sign & (ey == fy) & (ey > fx + (p+1)) & (ey < ex + (p+2))) do lemma
+                add_case!(lemma, (sy, ey-1, ey-p:ex-1), (~sx, fx:ey-(p+2), fx))
+                add_case!(lemma, (sy, ey-1, ey-p:ex  ), ( sx, fx:ey-(p+2), fx))
+                add_case!(lemma, (sy, ey-1,      ex+1), (~sx, fx:ey-(p+2), fx))
             end
 
-            checker("SETZ-TwoSum-1A-X", (ex == ey + p) & (ex > fy + p) & (fx > ey + 1) & ((ex > fx) | same_sign)) do lemma
-                add_case!(lemma, (sx, ex, ey+1), (~sy, fy:ex-(p+1), fy))
+            checker("SETZ-TwoSum-1D1-X", diff_sign & (ex == fx) & (ex == fy + (p+1)) & (ex < ey + (p+1))) do lemma
+                add_case!(lemma, (sx, ex-1, ex-(p-1):ey-1), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex-1, ex-(p-1):ey  ), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex-1,          ey+1), (~sy, fy, fy))
             end
-            checker("SETZ-TwoSum-1A-Y", (ey == ex + p) & (ey > fx + p) & (fy > ex + 1) & ((ey > fy) | same_sign)) do lemma
-                add_case!(lemma, (sy, ey, ex+1), (~sx, fx:ey-(p+1), fx))
-            end
-
-            checker("SETZ-TwoSum-1B0-X", (ex < ey + (p-1)) & (ex == fy + p) & (fx > ey + 1) & ((ex > fx) | same_sign)) do lemma
-                add_case!(lemma, (sx, ex, ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex, ey           ), ( sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex, ey+1         ), (~sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-1B0-Y", (ey < ex + (p-1)) & (ey == fx + p) & (fy > ex + 1) & ((ey > fy) | same_sign)) do lemma
-                add_case!(lemma, (sy, ey, ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey, ex           ), ( sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey, ex+1         ), (~sx, fx:ey-p, fx))
+            checker("SETZ-TwoSum-1D1-Y", diff_sign & (ey == fy) & (ey == fx + (p+1)) & (ey < ex + (p+1))) do lemma
+                add_case!(lemma, (sy, ey-1, ey-(p-1):ex-1), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey-1, ey-(p-1):ex  ), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey-1,          ex+1), (~sx, fx, fx))
             end
 
-            checker("SETZ-TwoSum-1B1-X", (ex == ey + (p-1)) & (ex == fy + p) & (fx > ey + 1) & ((ex > fx) | same_sign)) do lemma
-                add_case!(lemma, (sx, ex, ey+1), (~sy, fy:ex-p, fy))
+            checker("SETZ-TwoSum-1AC-X", same_sign & (ex == fy + p) & (fx == ey + 1)) do lemma
+                add_case!(lemma, (sx, ex  , ex-(p-2):ey-1), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex  , ex-(p-2):ey  ), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex  , ey+2    :ex-1), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), (~sy, fy, fy))
             end
-            checker("SETZ-TwoSum-1B1-Y", (ey == ex + (p-1)) & (ey == fx + p) & (fy > ex + 1) & ((ey > fy) | same_sign)) do lemma
-                add_case!(lemma, (sy, ey, ex+1), (~sx, fx:ey-p, fx))
+            checker("SETZ-TwoSum-1AC-Y", same_sign & (ey == fx + p) & (fy == ex + 1)) do lemma
+                add_case!(lemma, (sy, ey  , ey-(p-2):ex-1), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey  , ey-(p-2):ex  ), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey  , ex+2    :ey-1), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), (~sx, fx, fx))
             end
 
-            ################################################ LEMMA FAMILY 2 (18)
+            checker("SETZ-TwoSum-1BC-X", diff_sign & (ex == fy + p) & (fx == ey + 1) & (ex > fx)) do lemma
+                add_case!(lemma, (sx, ex, ex-(p-2):ey-1), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex, ex-(p-2):ey  ), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex, ey+2    :ex  ), (~sy, fy, fy))
+            end
+            checker("SETZ-TwoSum-1BC-Y", diff_sign & (ey == fx + p) & (fy == ex + 1) & (ey > fy)) do lemma
+                add_case!(lemma, (sy, ey, ey-(p-2):ex-1), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey, ey-(p-2):ex  ), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey, ex+2    :ey  ), (~sx, fx, fx))
+            end
 
-            # All hypotheses are strictly necessary.
             checker("SETZ-TwoSum-2-X", same_sign & (ex > fy + p) & (fx < ey)) do lemma
                 add_case!(lemma, (sx, ex  , ex-(p-1):ex-1), ( ± , fy:ex-(p+1), fy))
                 add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), ( ± , fy:ex-p    , fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), (~sy, fy:ex-(p+1), fy))
                 add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy:ex-p    , fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), (~sy, fy:ex-(p+1), fy))
             end
             checker("SETZ-TwoSum-2-Y", same_sign & (ey > fx + p) & (fy < ex)) do lemma
                 add_case!(lemma, (sy, ey  , ey-(p-1):ey-1), ( ± , fx:ey-(p+1), fx))
                 add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), ( ± , fx:ey-p    , fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), (~sx, fx:ey-(p+1), fx))
                 add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx:ey-p    , fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), (~sx, fx:ey-(p+1), fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2A0-X", same_sign & (ex == fy + p) & (fx < ey) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ex-(p-2):ex-1), (±, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (±, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), (±, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2A0-Y", same_sign & (ey == fx + p) & (fy < ex) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ey-(p-2):ey-1), (±, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (±, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), (±, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-2A1-X", same_sign & (ex == fy + p) & (fx + 1 < ey) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ex-(p-2):ex-2), (±, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (±, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), (±, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2A1-Y", same_sign & (ey == fx + p) & (fy + 1 < ex) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ey-(p-2):ey-2), (±, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (±, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), (±, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-2A2-X", same_sign & (ex == fy + p) & (fx + 1 == ey) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ex-(p-2):ey-2), (± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey-1         ), (sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), (± , fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2A2-Y", same_sign & (ey == fx + p) & (fy + 1 == ex) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ey-(p-2):ex-2), (± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex-1         ), (sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), (± , fx:ey-p, fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2B0-X", same_sign & (ex > fy + p) & (fx == ey) & (ex < fx + (p-1))) do lemma
+            checker("SETZ-TwoSum-2A-X", same_sign & (ex > fy + p) & (fx == ey)) do lemma
                 add_case!(lemma, (sx, ex  , ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey           ), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey+1:ex-1    ), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex+1, ex-(p-2):ey-1), ( ± , fy:ex-p    , fy))
-                add_case!(lemma, (sx, ex+1, ey           ), (~sy, fy:ex-p    , fy))
+                add_case!(lemma, (sx, ex  ,          ey  ), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex  , ey+1    :ex-1), ( sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex+1, ex-(p-2):ey-1), ( sy, fy:ex-p    , fy))
+                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (~sy, fy:ex-p    , fy))
                 add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy:ex-p    , fy))
             end
-            checker("SETZ-TwoSum-2B0-Y", same_sign & (ey > fx + p) & (fy == ex) & (ey < fy + (p-1))) do lemma
+            checker("SETZ-TwoSum-2A-Y", same_sign & (ey > fx + p) & (fy == ex)) do lemma
                 add_case!(lemma, (sy, ey  , ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex           ), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex+1:ey-1    ), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey+1, ey-(p-2):ex-1), ( ± , fx:ey-p    , fx))
-                add_case!(lemma, (sy, ey+1, ex           ), (~sx, fx:ey-p    , fx))
+                add_case!(lemma, (sy, ey  ,          ex  ), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey  , ex+1    :ey-1), ( sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey+1, ey-(p-2):ex-1), ( sx, fx:ey-p    , fx))
+                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (~sx, fx:ey-p    , fx))
                 add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx:ey-p    , fx))
             end
 
-            checker("SETZ-TwoSum-2B1-X", same_sign & (ex > fy + p) & (fx == ey) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ey       ), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey+1:ex-1), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex+1, ex+1     ), ( sy, fy:ex-p    , fy))
+            checker("SETZ-TwoSum-2B0-X", same_sign & (ex == fy + p) & (fx < ey) & (ex > ey + 1)) do lemma
+                add_case!(lemma, (sx, ex  , ex-(p-2):ex-1), (±, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (±, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), (±, fy, fy))
             end
-            checker("SETZ-TwoSum-2B1-Y", same_sign & (ey > fx + p) & (fy == ex) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ex       ), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex+1:ey-1), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey+1, ey+1     ), ( sx, fx:ey-p    , fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2C0-X", same_sign & (ex == fy + (p-1)) & (fx < ey) & (ex < fx + (p-1)) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , fy         ), pos_zero             )
-                add_case!(lemma, (sx, ex+1, ex-(p-3):ey), (± , fy:ex-(p-1), fy))
-                add_case!(lemma, (sx, ex+1, ex+1       ), (sy, fy:ex-(p-1), fy))
-            end
-            checker("SETZ-TwoSum-2C0-Y", same_sign & (ey == fx + (p-1)) & (fy < ex) & (ey < fy + (p-1)) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , fx         ), pos_zero             )
-                add_case!(lemma, (sy, ey+1, ey-(p-3):ex), (± , fx:ey-(p-1), fx))
-                add_case!(lemma, (sy, ey+1, ey+1       ), (sx, fx:ey-(p-1), fx))
+            checker("SETZ-TwoSum-2B0-Y", same_sign & (ey == fx + p) & (fy < ex) & (ey > ex + 1)) do lemma
+                add_case!(lemma, (sy, ey  , ey-(p-2):ey-1), (±, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (±, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), (±, fx, fx))
             end
 
-            checker("SETZ-TwoSum-2C1-X", same_sign & (ex == fy + (p-1)) & (fx < ey) & (ex < fx + (p-1)) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex+1, ex-(p-3):ey), (±, fy:ex-(p-1), fy))
+            checker("SETZ-TwoSum-2B1-X", same_sign & (ex == fy + p) & (fx + 1 < ey) & (ex == ey + 1)) do lemma
+                add_case!(lemma, (sx, ex  , ex-(p-2):ex-2), (±, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (±, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), (±, fy, fy))
             end
-            checker("SETZ-TwoSum-2C1-Y", same_sign & (ey == fx + (p-1)) & (fy < ex) & (ey < fy + (p-1)) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey+1, ey-(p-3):ex), (±, fx:ey-(p-1), fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2D0-X", same_sign & (ex > fy + p) & (fx == ey + 1) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey           ), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey+2:ex-1    ), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), (~sy, fy:ex-(p+1), fy))
-            end
-            checker("SETZ-TwoSum-2D0-Y", same_sign & (ey > fx + p) & (fy == ex + 1) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex           ), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex+2:ey-1    ), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), (~sx, fx:ey-(p+1), fx))
+            checker("SETZ-TwoSum-2B1-Y", same_sign & (ey == fx + p) & (fy + 1 < ex) & (ey == ex + 1)) do lemma
+                add_case!(lemma, (sy, ey  , ey-(p-2):ey-2), (±, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (±, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), (±, fx, fx))
             end
 
-            checker("SETZ-TwoSum-2D1-X", same_sign & (ex > fy + p) & (fx == ey + 1) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ey+2:ex-1), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex+1, ex+1     ), (~sy, fy:ex-(p+1), fy))
+            checker("SETZ-TwoSum-2B2-X", same_sign & (ex == fy + p) & (fx + 1 == ey) & (ex == ey + 1)) do lemma
+                add_case!(lemma, (sx, ex  , ex-(p-2):ex-3), (± , fy, fy))
+                add_case!(lemma, (sx, ex  ,          ex-2), (sy, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex-(p-2):ey  ), (± , fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), (± , fy, fy))
             end
-            checker("SETZ-TwoSum-2D1-Y", same_sign & (ey > fx + p) & (fy == ex + 1) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ex+2:ey-1), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey+1, ey+1     ), (~sx, fx:ey-(p+1), fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2AB0-X", same_sign & (ex == fy + p) & (fx == ey) & (ex < fx + (p-1)) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey           ), (~sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey+1:ex-1    ), ( sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ey           ), (~sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2AB0-Y", same_sign & (ey == fx + p) & (fy == ex) & (ey < fy + (p-1)) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex           ), (~sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex+1:ey-1    ), ( sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ex           ), (~sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx:ey-p, fx))
+            checker("SETZ-TwoSum-2B2-Y", same_sign & (ey == fx + p) & (fy + 1 == ex) & (ey == ex + 1)) do lemma
+                add_case!(lemma, (sy, ey  , ey-(p-2):ey-3), (± , fx, fx))
+                add_case!(lemma, (sy, ey  ,          ey-2), (sx, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey-(p-2):ex  ), (± , fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), (± , fx, fx))
             end
 
-            checker("SETZ-TwoSum-2AB1-X", same_sign & (ex == fy + p) & (fx == ey) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex  , ey+1:ex-1), (sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1     ), (sy, fy:ex-p, fy))
+            checker("SETZ-TwoSum-2AB0-X", same_sign & (ex == fy + p) & (fx == ey) & (ex > ey + 1)) do lemma
+                add_case!(lemma, (sx, ex:ex+1, ex-(p-2):ey-1), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex:ex+1, ex-(p-2):ey  ), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex     , ey+1    :ex-1), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex+1   , ex+1         ), ( sy, fy, fy))
             end
-            checker("SETZ-TwoSum-2AB1-Y", same_sign & (ey == fx + p) & (fy == ex) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey  , ex+1:ey-1), (sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1     ), (sx, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-2AB2-X", same_sign & (ex == fy + p) & (fx == ey) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex+1, ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ey           ), (~sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2AB2-Y", same_sign & (ey == fx + p) & (fy == ex) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey+1, ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ex           ), (~sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx:ey-p, fx))
+            checker("SETZ-TwoSum-2AB0-Y", same_sign & (ey == fx + p) & (fy == ex) & (ey > ex + 1)) do lemma
+                add_case!(lemma, (sy, ey:ey+1, ey-(p-2):ex-1), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey:ey+1, ey-(p-2):ex  ), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey     , ex+1    :ey-1), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey+1   , ey+1         ), ( sx, fx, fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2BC0-X", same_sign & (ex == fy + (p-1)) & (fx == ey) & (ey > fy + 1) & (ey < fy + (p-2))) do lemma
-                add_case!(lemma, (sx, ex  , fy           ), pos_zero              )
-                add_case!(lemma, (sx, ex+1, ex-(p-3):ey-1), ( ± , fy:ex-(p-1), fy))
-                add_case!(lemma, (sx, ex+1, ey           ), (~sy, fy:ex-(p-1), fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy:ex-(p-1), fy))
+            checker("SETZ-TwoSum-2AB1-X", same_sign & (ex == fy + p) & (fx == ey) & (ex == ey + 1)) do lemma
+                add_case!(lemma, (sx, ex+1, ex-(p-2):ey-1), ( ± , fy, fy))
+                add_case!(lemma, (sx, ex+1,          ey  ), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy, fy))
             end
-            checker("SETZ-TwoSum-2BC0-Y", same_sign & (ey == fx + (p-1)) & (fy == ex) & (ex > fx + 1) & (ex < fx + (p-2))) do lemma
-                add_case!(lemma, (sy, ey  , fx           ), pos_zero              )
-                add_case!(lemma, (sy, ey+1, ey-(p-3):ex-1), ( ± , fx:ey-(p-1), fx))
-                add_case!(lemma, (sy, ey+1, ex           ), (~sx, fx:ey-(p-1), fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx:ey-(p-1), fx))
+            checker("SETZ-TwoSum-2AB1-Y", same_sign & (ey == fx + p) & (fy == ex) & (ey == ex + 1)) do lemma
+                add_case!(lemma, (sy, ey+1, ey-(p-2):ex-1), ( ± , fx, fx))
+                add_case!(lemma, (sy, ey+1,          ex  ), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx, fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2BC1-X", same_sign & (ex == fy + (p-1)) & (fx == ey) & (ey > fy + (p-3))) do lemma
-                add_case!(lemma, (sx, ex+1, ex-(p-3):ey-1), ( ± , fy:ex-(p-1), fy))
-                add_case!(lemma, (sx, ex+1, ey           ), (~sy, fy:ex-(p-1), fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), ( sy, fy:ex-(p-1), fy))
-            end
-            checker("SETZ-TwoSum-2BC1-Y", same_sign & (ey == fx + (p-1)) & (fy == ex) & (ex > fx + (p-3))) do lemma
-                add_case!(lemma, (sy, ey+1, ey-(p-3):ex-1), ( ± , fx:ey-(p-1), fx))
-                add_case!(lemma, (sy, ey+1, ex           ), (~sx, fx:ey-(p-1), fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), ( sx, fx:ey-(p-1), fx))
-            end
-
-            checker("SETZ-TwoSum-2BC2-X", same_sign & (ex == fy + (p-1)) & (fx == ey) & (ey == fy + 1)) do lemma
-                add_case!(lemma, (sx, ex  , fy  ), pos_zero             )
-                add_case!(lemma, (sx, ex+1, ex+1), (sy, fy:ex-(p-1), fy))
-            end
-            checker("SETZ-TwoSum-2BC2-Y", same_sign & (ey == fx + (p-1)) & (fy == ex) & (ex == fx + 1)) do lemma
-                add_case!(lemma, (sy, ey  , fx  ), pos_zero             )
-                add_case!(lemma, (sy, ey+1, ey+1), (sx, fx:ey-(p-1), fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-2AD0-X", same_sign & (ex == fy + p) & (fx == ey + 1) & (ex < fx + (p-2))) do lemma
-                add_case!(lemma, (sx, ex  , ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey           ), ( sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey+2:ex-1    ), (~sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1         ), (~sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2AD0-Y", same_sign & (ey == fx + p) & (fy == ex + 1) & (ey < fy + (p-2))) do lemma
-                add_case!(lemma, (sy, ey  , ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex           ), ( sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex+2:ey-1    ), (~sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1         ), (~sx, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-2AD1-X", same_sign & (ex == fy + p) & (fx == ey + 1) & (ex > fx + (p-3))) do lemma
-                add_case!(lemma, (sx, ex  , ey+2:ex-1), (~sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex+1, ex+1     ), (~sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-2AD1-Y", same_sign & (ey == fx + p) & (fy == ex + 1) & (ey > fy + (p-3))) do lemma
-                add_case!(lemma, (sy, ey  , ex+2:ey-1), (~sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey+1, ey+1     ), (~sx, fx:ey-p, fx))
-            end
-
-            ################################################ LEMMA FAMILY 3 (13)
-
-            # All hypotheses are strictly necessary.
             checker("SETZ-TwoSum-3-X", diff_sign & (ex > fy + (p+1)) & (fx < ey)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-p:ey      ), ( ± , fy:ex-(p+2), fy))
+                add_case!(lemma, (sx, ex-1, ex-p    :ey  ), ( ± , fy:ex-(p+2), fy))
                 add_case!(lemma, (sx, ex  , ex-(p-1):ex-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ex           ), ( sy, fy:ex-(p+2), fy))
-                add_case!(lemma, (sx, ex  , ex           ), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex  ,          ex  ), ( sy, fy:ex-(p+2), fy))
+                add_case!(lemma, (sx, ex  ,          ex  ), (~sy, fy:ex-(p+1), fy))
             end
             checker("SETZ-TwoSum-3-Y", diff_sign & (ey > fx + (p+1)) & (fy < ex)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-p:ex      ), ( ± , fx:ey-(p+2), fx))
+                add_case!(lemma, (sy, ey-1, ey-p    :ex  ), ( ± , fx:ey-(p+2), fx))
                 add_case!(lemma, (sy, ey  , ey-(p-1):ey-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ey           ), ( sx, fx:ey-(p+2), fx))
-                add_case!(lemma, (sy, ey  , ey           ), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey  ,          ey  ), ( sx, fx:ey-(p+2), fx))
+                add_case!(lemma, (sy, ey  ,          ey  ), (~sx, fx:ey-(p+1), fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-3A-X", diff_sign & (ex == fy + (p+1)) & (fx < ey)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-(p-1):ey), (±, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ex-(p-1):ex), (±, fy:ex-(p+1), fy))
-            end
-            checker("SETZ-TwoSum-3A-Y", diff_sign & (ey == fx + (p+1)) & (fy < ex)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-(p-1):ex), (±, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ey-(p-1):ey), (±, fx:ey-(p+1), fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-3B-X", diff_sign & (ex > fy + (p+1)) & (fx == ey)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-p:ey-1    ), ( ± , fy:ex-(p+2), fy))
-                add_case!(lemma, (sx, ex-1, ey           ), (~sy, fy:ex-(p+2), fy))
+            checker("SETZ-TwoSum-3A-X", diff_sign & (ex > fy + (p+1)) & (fx == ey)) do lemma
+                add_case!(lemma, (sx, ex-1, ex-p    :ey-1), ( ± , fy:ex-(p+2), fy))
+                add_case!(lemma, (sx, ex-1,          ey  ), (~sy, fy:ex-(p+2), fy))
                 add_case!(lemma, (sx, ex  , ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey           ), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey+1:ex-1    ), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ex           ), ( sy, fy:ex-(p+2), fy))
+                add_case!(lemma, (sx, ex  ,          ey  ), (~sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex  , ey+1    :ex-1), ( sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex  ,          ex  ), ( sy, fy:ex-(p+2), fy))
             end
-            checker("SETZ-TwoSum-3B-Y", diff_sign & (ey > fx + (p+1)) & (fy == ex)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-p:ex-1    ), ( ± , fx:ey-(p+2), fx))
-                add_case!(lemma, (sy, ey-1, ex           ), (~sx, fx:ey-(p+2), fx))
+            checker("SETZ-TwoSum-3A-Y", diff_sign & (ey > fx + (p+1)) & (fy == ex)) do lemma
+                add_case!(lemma, (sy, ey-1, ey-p    :ex-1), ( ± , fx:ey-(p+2), fx))
+                add_case!(lemma, (sy, ey-1,          ex  ), (~sx, fx:ey-(p+2), fx))
                 add_case!(lemma, (sy, ey  , ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex           ), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex+1:ey-1    ), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ey           ), ( sx, fx:ey-(p+2), fx))
+                add_case!(lemma, (sy, ey  ,          ex  ), (~sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey  , ex+1    :ey-1), ( sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey  ,          ey  ), ( sx, fx:ey-(p+2), fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-3C0-X", diff_sign & (ex == fy + p) & (fx < ey) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex-1, fy           ), pos_zero          )
-                add_case!(lemma, (sx, ex  , ex-(p-2):ex-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ex           ), (~sy, fy:ex-p, fy))
+            checker("SETZ-TwoSum-3B-X", diff_sign & (ex == fy + (p+1)) & (fx < ey)) do lemma
+                add_case!(lemma, (sx, ex-1, ex-(p-1):ey), (±, fy, fy))
+                add_case!(lemma, (sx, ex  , ex-(p-1):ex), (±, fy, fy))
             end
-            checker("SETZ-TwoSum-3C0-Y", diff_sign & (ey == fx + p) & (fy < ex) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey-1, fx           ), pos_zero          )
-                add_case!(lemma, (sy, ey  , ey-(p-2):ey-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ey           ), (~sx, fx:ey-p, fx))
+            checker("SETZ-TwoSum-3B-Y", diff_sign & (ey == fx + (p+1)) & (fy < ex)) do lemma
+                add_case!(lemma, (sy, ey-1, ey-(p-1):ex), (±, fx, fx))
+                add_case!(lemma, (sy, ey  , ey-(p-1):ey), (±, fx, fx))
             end
 
-            checker("SETZ-TwoSum-3C1-X", diff_sign & (ex == fy + p) & (fx + 1 < ey) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sx, fx:ex-1, fy           ), pos_zero          )
-                add_case!(lemma, (sx, ex     , ex-(p-2):ex-2), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex     , ex           ), (~sy, fy:ex-p, fy))
+            checker("SETZ-TwoSum-3C0-X", diff_sign & (ex == fy + p) & (fx < ey) & (ex > ey + 1)) do lemma
+                add_case!(lemma, (sx, ex-1, fy           ), pos_zero)
+                add_case!(lemma, (sx, ex  , ex-(p-2):ex-1), ( ± , fy, fy))
+                add_case!(lemma, (sx, ex  ,          ex  ), (~sy, fy, fy))
             end
-            checker("SETZ-TwoSum-3C1-Y", diff_sign & (ey == fx + p) & (fy + 1 < ex) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sy, fy:ey-1, fx           ), pos_zero          )
-                add_case!(lemma, (sy, ey     , ey-(p-2):ey-2), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey     , ey           ), (~sx, fx:ey-p, fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-3C2-X", diff_sign & (ex == fy + p) & (fx + 1 == ey) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sx, ex-2:ex-1, fy           ), pos_zero          )
-                add_case!(lemma, (sx, ex       , ex-(p-2):ey-2), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex       , ey-1         ), ( sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex       , ex           ), (~sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-3C2-Y", diff_sign & (ey == fx + p) & (fy + 1 == ex) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sy, ey-2:ey-1, fx           ), pos_zero          )
-                add_case!(lemma, (sy, ey       , ey-(p-2):ex-2), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey       , ex-1         ), ( sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey       , ey           ), (~sx, fx:ey-p, fx))
+            checker("SETZ-TwoSum-3C0-Y", diff_sign & (ey == fx + p) & (fy < ex) & (ey > ex + 1)) do lemma
+                add_case!(lemma, (sy, ey-1, fx           ), pos_zero)
+                add_case!(lemma, (sy, ey  , ey-(p-2):ey-1), ( ± , fx, fx))
+                add_case!(lemma, (sy, ey  ,          ey  ), (~sx, fx, fx))
             end
 
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-3D0-X", diff_sign & (ex > fy + p) & (fx == ey + 1) & (ex < fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex, ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex, ey           ), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex, ey+2:ex      ), (~sy, fy:ex-(p+1), fy))
+            checker("SETZ-TwoSum-3C1-X", diff_sign & (ex == fy + p) & (fx + 1 < ey) & (ex == ey + 1)) do lemma
+                add_case!(lemma, (sx, fx:ex-1, fy           ), pos_zero)
+                add_case!(lemma, (sx, ex     , ex-(p-2):ex-2), ( ± , fy, fy))
+                add_case!(lemma, (sx, ex     ,          ex  ), (~sy, fy, fy))
             end
-            checker("SETZ-TwoSum-3D0-Y", diff_sign & (ey > fx + p) & (fy == ex + 1) & (ey < fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey, ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey, ex           ), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey, ex+2:ey      ), (~sx, fx:ey-(p+1), fx))
-            end
-
-            # All hypotheses are strictly necessary.
-            checker("SETZ-TwoSum-3D1-X", diff_sign & (ex > fy + p) & (fx == ey + 1) & (ex == fx + (p-1))) do lemma
-                add_case!(lemma, (sx, ex, ey+2:ex), (~sy, fy:ex-(p+1), fy))
-            end
-            checker("SETZ-TwoSum-3D1-Y", diff_sign & (ey > fx + p) & (fy == ex + 1) & (ey == fy + (p-1))) do lemma
-                add_case!(lemma, (sy, ey, ex+2:ey), (~sx, fx:ey-(p+1), fx))
+            checker("SETZ-TwoSum-3C1-Y", diff_sign & (ey == fx + p) & (fy + 1 < ex) & (ey == ex + 1)) do lemma
+                add_case!(lemma, (sy, fy:ey-1, fx           ), pos_zero)
+                add_case!(lemma, (sy, ey     , ey-(p-2):ey-2), ( ± , fx, fx))
+                add_case!(lemma, (sy, ey     ,          ey  ), (~sx, fx, fx))
             end
 
-            # All hypotheses are strictly necessary.
+            checker("SETZ-TwoSum-3C2-X", diff_sign & (ex == fy + p) & (fx + 1 == ey) & (ex == ey + 1)) do lemma
+                add_case!(lemma, (sx, fx:ex-1, fy           ), pos_zero)
+                add_case!(lemma, (sx, ex     , ex-(p-2):ex-3), ( ± , fy, fy))
+                add_case!(lemma, (sx, ex     ,          ex-2), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex     ,          ex  ), (~sy, fy, fy))
+            end
+            checker("SETZ-TwoSum-3C2-Y", diff_sign & (ey == fx + p) & (fy + 1 == ex) & (ey == ex + 1)) do lemma
+                add_case!(lemma, (sy, fy:ey-1, fx           ), pos_zero)
+                add_case!(lemma, (sy, ey     , ey-(p-2):ey-3), ( ± , fx, fx))
+                add_case!(lemma, (sy, ey     ,          ey-2), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey     ,          ey  ), (~sx, fx, fx))
+            end
+
             checker("SETZ-TwoSum-3AB-X", diff_sign & (ex == fy + (p+1)) & (fx == ey)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex-1, ey           ), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey           ), (~sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex  , ey+1:ex      ), ( sy, fy:ex-(p+1), fy))
+                add_case!(lemma, (sx, ex-1:ex, ex-(p-1):ey-1), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex-1:ex, ex-(p-1):ey  ), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex     , ey+1    :ex  ), ( sy, fy, fy))
             end
             checker("SETZ-TwoSum-3AB-Y", diff_sign & (ey == fx + (p+1)) & (fy == ex)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey-1, ex           ), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex           ), (~sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey  , ex+1:ey      ), ( sx, fx:ey-(p+1), fx))
+                add_case!(lemma, (sy, ey-1:ey, ey-(p-1):ex-1), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey-1:ey, ey-(p-1):ex  ), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey     , ex+1    :ey  ), ( sx, fx, fx))
             end
 
-            checker("SETZ-TwoSum-3BC0-X", diff_sign & (ex == fy + p) & (fx == ey) & (ex > fx + 1) & (ey > fy + 1)) do lemma
-                add_case!(lemma, (sx, ex-1, fy           ), pos_zero          )
-                add_case!(lemma, (sx, ex  , ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey           ), (~sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex  , ey+1:ex-1    ), ( sy, fy:ex-p, fy))
+            checker("SETZ-TwoSum-3AC-X", diff_sign & (ex == fy + p) & (fx == ey) & (ex > ey + 1)) do lemma
+                add_case!(lemma, (sx, ex-1, fy           ), pos_zero)
+                add_case!(lemma, (sx, ex  , ex-(p-2):ey-1), ( sy, fy, fy))
+                add_case!(lemma, (sx, ex  , ex-(p-2):ey  ), (~sy, fy, fy))
+                add_case!(lemma, (sx, ex  , ey+1    :ex-1), ( sy, fy, fy))
             end
-            checker("SETZ-TwoSum-3BC0-Y", diff_sign & (ey == fx + p) & (fy == ex) & (ey > fy + 1) & (ex > fx + 1)) do lemma
-                add_case!(lemma, (sy, ey-1, fx           ), pos_zero          )
-                add_case!(lemma, (sy, ey  , ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex           ), (~sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey  , ex+1:ey-1    ), ( sx, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-3BC1-X", diff_sign & (ex == fy + p) & (fx == ey) & (ey == fy + 1)) do lemma
-                add_case!(lemma, (sx, ex-1, fy       ), pos_zero         )
-                add_case!(lemma, (sx, ex  , ey+1:ex-1), (sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-3BC1-Y", diff_sign & (ey == fx + p) & (fy == ex) & (ex == fx + 1)) do lemma
-                add_case!(lemma, (sy, ey-1, fx       ), pos_zero         )
-                add_case!(lemma, (sy, ey  , ex+1:ey-1), (sx, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-3CD0-X", diff_sign & (ex == fy + p) & (fx == ey + 1) & (ex > fx) & (ey > fy + 1)) do lemma
-                add_case!(lemma, (sx, ex, ex-(p-2):ey-1), ( ± , fy:ex-p, fy))
-                add_case!(lemma, (sx, ex, ey           ), ( sy, fy:ex-p, fy))
-                add_case!(lemma, (sx, ex, ey+2:ex      ), (~sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-3CD0-Y", diff_sign & (ey == fx + p) & (fy == ex + 1) & (ey > fy) & (ex > fx + 1)) do lemma
-                add_case!(lemma, (sy, ey, ey-(p-2):ex-1), ( ± , fx:ey-p, fx))
-                add_case!(lemma, (sy, ey, ex           ), ( sx, fx:ey-p, fx))
-                add_case!(lemma, (sy, ey, ex+2:ey      ), (~sx, fx:ey-p, fx))
-            end
-
-            checker("SETZ-TwoSum-3CD1-X", diff_sign & (ex == fy + p) & (fx == ey + 1) & (ey < fy + 2)) do lemma
-                add_case!(lemma, (sx, ex, ey+2:ex), (~sy, fy:ex-p, fy))
-            end
-            checker("SETZ-TwoSum-3CD1-Y", diff_sign & (ey == fx + p) & (fy == ex + 1) & (ex < fx + 2)) do lemma
-                add_case!(lemma, (sy, ey, ex+2:ey), (~sx, fx:ey-p, fx))
-            end
-
-            ################################################# LEMMA FAMILY 4 (4)
-
-            checker("SETZ-TwoSum-4-X", diff_sign & (ex > fy + (p+1)) & (fx < ey + (p+1)) & (ex == fx)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-p:ey-1), ( ± , fy:ex-(p+2), fy))
-                add_case!(lemma, (sx, ex-1, ey       ), ( sy, fy:ex-(p+2), fy))
-                add_case!(lemma, (sx, ex-1, ey+1     ), (~sy, fy:ex-(p+2), fy))
-            end
-            checker("SETZ-TwoSum-4-Y", diff_sign & (ey > fx + (p+1)) & (fy < ex + (p+1)) & (ey == fy)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-p:ex-1), ( ± , fx:ey-(p+2), fx))
-                add_case!(lemma, (sy, ey-1, ex       ), ( sx, fx:ey-(p+2), fx))
-                add_case!(lemma, (sy, ey-1, ex+1     ), (~sx, fx:ey-(p+2), fx))
-            end
-
-            checker("SETZ-TwoSum-4A0-X", diff_sign & (ex == fy + (p+1)) & (fx < ey + p) & (ex == fx)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-(p-1):ey-1), ( ± , fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex-1, ey           ), ( sy, fy:ex-(p+1), fy))
-                add_case!(lemma, (sx, ex-1, ey+1         ), (~sy, fy:ex-(p+1), fy))
-            end
-            checker("SETZ-TwoSum-4A0-Y", diff_sign & (ey == fx + (p+1)) & (fy < ex + p) & (ey == fy)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-(p-1):ex-1), ( ± , fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey-1, ex           ), ( sx, fx:ey-(p+1), fx))
-                add_case!(lemma, (sy, ey-1, ex+1         ), (~sx, fx:ey-(p+1), fx))
-            end
-
-            checker("SETZ-TwoSum-4A1-X", diff_sign & (ex == fy + (p+1)) & (fx == ey + p) & (ex == fx)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-(p-1):ey+1), (~sy, fy:ex-(p+1), fy))
-            end
-            checker("SETZ-TwoSum-4A1-Y", diff_sign & (ey == fx + (p+1)) & (fy == ex + p) & (ey == fy)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-(p-1):ex+1), (~sx, fx:ey-(p+1), fx))
-            end
-
-            checker("SETZ-TwoSum-4B-X", diff_sign & (ex > fy + (p+1)) & (fx == ey + (p+1)) & (ex == fx)) do lemma
-                add_case!(lemma, (sx, ex-1, ex-p:ey+1), (~sy, fy:ex-(p+2), fy))
-            end
-            checker("SETZ-TwoSum-4B-Y", diff_sign & (ey > fx + (p+1)) & (fy == ex + (p+1)) & (ey == fy)) do lemma
-                add_case!(lemma, (sy, ey-1, ey-p:ex+1), (~sx, fx:ey-(p+2), fx))
+            checker("SETZ-TwoSum-3AC-Y", diff_sign & (ey == fx + p) & (fy == ex) & (ey > ex + 1)) do lemma
+                add_case!(lemma, (sy, ey-1, fx           ), pos_zero)
+                add_case!(lemma, (sy, ey  , ey-(p-2):ex-1), ( sx, fx, fx))
+                add_case!(lemma, (sy, ey  , ey-(p-2):ex  ), (~sx, fx, fx))
+                add_case!(lemma, (sy, ey  , ex+1    :ey-1), ( sx, fx, fx))
             end
 
         end
@@ -783,11 +579,11 @@ function check_setz_two_sum_lemmas(
         if isempty(checker.covering_lemmas)
             println(stderr,
                 "ERROR: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
-                " are not covered by any lemmas.")
+                    " are not covered by any lemmas.")
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
                 "WARNING: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
-                " are covered by multiple lemmas.")
+                    " are covered by multiple lemmas.")
         end
     end
 
@@ -811,18 +607,18 @@ function main(
     if !isfile(filepath)
         println(stderr,
             "ERROR: Input file $filename not found." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
+                " Run `julia GenerateAbstractionData.jl` to" *
+                " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
-    valid = (filesize(filepath) ==
-             expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})) &&
-            (open(crc32c, filepath) == expected_crc)
+    expected_size = expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})
+    valid = (filesize(filepath) == expected_size) &&
+        (open(crc32c, filepath) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
+                " Run `julia GenerateAbstractionData.jl` to" *
+                " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MALFORMED)
     end
     two_sum_abstractions =
