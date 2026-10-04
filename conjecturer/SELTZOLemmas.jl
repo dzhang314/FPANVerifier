@@ -85,13 +85,13 @@ include("SELTZO-TwoSum-V.jl")
 @static if (CLASS_X == ZERO) | (CLASS_Y == ZERO)
     include("SELTZO-TwoSum-Z.jl")
 elseif CLASS_X == CLASS_Y
-    include("SELTZO-TwoSum-$CLASS_X-$CLASS_Y-S.jl")
-    include("SELTZO-TwoSum-$CLASS_X-$CLASS_Y-D.jl")
+    include(joinpath("seltzo", "SELTZO-TwoSum-$CLASS_X-$CLASS_Y-S.jl"))
+    include(joinpath("seltzo", "SELTZO-TwoSum-$CLASS_X-$CLASS_Y-D.jl"))
 else
-    include("SELTZO-TwoSum-$CLASS_X-$CLASS_Y-S.jl")
-    include("SELTZO-TwoSum-$CLASS_X-$CLASS_Y-D.jl")
-    include("SELTZO-TwoSum-$CLASS_Y-$CLASS_X-S.jl")
-    include("SELTZO-TwoSum-$CLASS_Y-$CLASS_X-D.jl")
+    include(joinpath("seltzo", "SELTZO-TwoSum-$CLASS_X-$CLASS_Y-S.jl"))
+    include(joinpath("seltzo", "SELTZO-TwoSum-$CLASS_X-$CLASS_Y-D.jl"))
+    include(joinpath("seltzo", "SELTZO-TwoSum-$CLASS_Y-$CLASS_X-S.jl"))
+    include(joinpath("seltzo", "SELTZO-TwoSum-$CLASS_Y-$CLASS_X-D.jl"))
 end
 
 
