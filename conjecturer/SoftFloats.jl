@@ -60,7 +60,7 @@ end
 ################################################################################
 
 
-export two_sum
+export two_sum, two_prod
 
 
 const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
@@ -83,8 +83,7 @@ const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
     if iszero(_leading_bit & Base.mantissa(x) & Base.mantissa(y))
         s = ifelse(iszero(x), y, x)
         signed_zero = ifelse(signbit(x) & signbit(y), -_zero, _zero)
-        s = ifelse(iszero(s), signed_zero, s)
-        return (s, _zero)
+        return (ifelse(iszero(s), signed_zero, s), _zero)
     end
 
     # Order addends by magnitude.
@@ -105,7 +104,7 @@ const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
     sb = _signbit_u64(b)
     ma = (Base.mantissa(a) % UInt64) << (de & 63)
     mb = (Base.mantissa(b) % UInt64)
-    ms = ifelse(iszero(xor(sa, sb)), ma + mb, ma - mb)
+    ms = ifelse(sa == sb, ma + mb, ma - mb)
 
     # Return early if no rounding is necessary.
     num_bits = 64 - leading_zeros(ms)
@@ -114,35 +113,73 @@ const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
     elseif num_bits <= P
         shift = P - num_bits
         es = eb - shift
-        ms <<= (shift & 63)
-        s = SoftFloat{P}(sa, es, ms)
-        return (s, _zero)
+        ms <<= shift & 63
+        return (SoftFloat{P}(sa, es, ms), _zero)
     end
 
     # Compute rounding direction and round exact sum.
     num_rounded = num_bits - P
     me = ms << (64 - num_rounded)
-    ms >>= (num_rounded & 63)
-    round_up = me + (ms & one(UInt64)) > _ROUNDING_MIDPOINT
+    ms >>= num_rounded & 63
+    round_up = me > _ROUNDING_MIDPOINT - (ms & one(UInt64))
     ms += round_up
 
     # Detect and correct rounding-induced carry.
     carry = ms >> P
     es = eb + num_rounded + (carry % Int)
-    ms >>= (carry & 63)
+    ms >>= carry & 63
 
     # Return early if rounded-off bits are all zero.
-    s = SoftFloat{P}(sa, es, ms)
     if iszero(me)
-        return (s, _zero)
+        return (SoftFloat{P}(sa, es, ms), _zero)
     end
 
     # Construct and return rounding error term.
     abs_me = abs(me % Int64) % UInt64
+    se = xor(sa, (round_up % UInt64) << 63)
     ee = eb + num_rounded - (P + leading_zeros(abs_me))
     me = (abs_me << leading_zeros(abs_me)) >> (64 - P)
-    e = SoftFloat{P}(xor(sa, (round_up % UInt64) << 63), ee, me)
-    return (s, e)
+    return (SoftFloat{P}(sa, es, ms), SoftFloat{P}(se, ee, me))
+
+end
+
+
+@inline function two_prod(x::SoftFloat{P}, y::SoftFloat{P}) where {P}
+
+    # Define compile-time constants.
+    _zero = zero(SoftFloat{P})
+    _ez = exponent(_zero)
+
+    # Compute exact product, widening mantissas before multiplication.
+    sp = xor(_signbit_u64(x), _signbit_u64(y))
+    mp = (Base.mantissa(x) % UInt64) * (Base.mantissa(y) % UInt64)
+    mp_iszero = iszero(mp)
+
+    # Determine the presence of an extra bit and adjust exponents accordingly.
+    extra_bit = (mp >> (2 * P - 1)) & one(UInt64)
+    ep = exponent(x) + exponent(y) + (extra_bit % Int)
+    ee = ep - P
+
+    # Compute rounding direction and round exact product.
+    num_rounded = (P - 1) + (extra_bit % Int)
+    me = mp << (64 - num_rounded)
+    mp >>= (num_rounded & 63)
+    round_up = me > _ROUNDING_MIDPOINT - (mp & one(UInt64))
+    mp += round_up
+
+    # Detect and correct rounding-induced carry.
+    carry = mp >> P
+    ep += carry % Int
+    mp >>= carry & 63
+
+    # Construct and return rounding error term.
+    abs_me = abs(me % Int64) % UInt64
+    se = xor(sp, (round_up % UInt64) << 63)
+    ee -= leading_zeros(abs_me)
+    me = (abs_me << (leading_zeros(abs_me) & 63)) >> (64 - P)
+    pz = SoftFloat{P}(sp, _ez, zero(UInt64))
+    return (ifelse(mp_iszero, pz, SoftFloat{P}(sp, ep, mp)),
+        ifelse(iszero(abs_me), _zero, SoftFloat{P}(se, ee, me)))
 
 end
 
