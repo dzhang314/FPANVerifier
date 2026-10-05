@@ -47,9 +47,9 @@
         "smtinterpol",
         "strengthenings",
         "testset",
-        "toplevel",
         "uinttype",
         "unsat",
+        "vifelse",
         "yices"
     ]
 }
