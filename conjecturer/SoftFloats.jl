@@ -64,10 +64,9 @@ export two_sum, two_prod
 
     # Define compile-time constants.
     _zero = zero(SoftFloat{P})
-    _leading_bit = one(UInt64) << (P - 1)
 
     # Return early if at least one addend is zero.
-    if iszero(_leading_bit & Base.mantissa(x) & Base.mantissa(y))
+    if iszero(Base.mantissa(x) & Base.mantissa(y))
         s = ifelse(iszero(x), y, x)
         sz = ifelse(signbit(x) & signbit(y), -_zero, _zero)
         return (ifelse(iszero(s), sz, s), _zero)
@@ -305,12 +304,10 @@ end
 
     # Widen mantissas and compute exact product.
     sp = xor(_signbit_u16(x), _signbit_u16(y))
-    mx = ifelse(iszero(x), zero(UInt32),
-        _leading_bit | (Base.mantissa(x) % UInt32))
-    my = ifelse(iszero(y), zero(UInt32),
-        _leading_bit | (Base.mantissa(y) % UInt32))
+    mx = _leading_bit | (Base.mantissa(x) % UInt32)
+    my = _leading_bit | (Base.mantissa(y) % UInt32)
     mp = mx * my
-    mp_iszero = iszero(mp)
+    mp_iszero = iszero(x) | iszero(y)
 
     # Determine the presence of an extra bit and adjust exponents accordingly.
     extra_bit = (mp >> (2 * P - 1)) & one(UInt32)
@@ -432,8 +429,10 @@ end
     b = TinyFloatVec{M,P}(vifelse(in_order, y.data, x.data))
 
     # Determine whether exponents are too far apart to interact.
-    ea = exponent(a)
-    eb = exponent(b)
+    ex = exponent(x)
+    ey = exponent(y)
+    ea = max(ex, ey)
+    eb = min(ex, ey)
     de = ea - eb
     far = de > Int16(P + 1)
 
