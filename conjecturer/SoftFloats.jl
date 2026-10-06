@@ -53,11 +53,11 @@ end
 export two_sum, two_prod
 
 
-@inline _signbit_u64(x::SoftFloat) = (x.data & 0x8000_0000_0000_0000)
+@inline _signbit_u64(x::SoftFloat) = x.data & 0x8000_0000_0000_0000
 
 
 @inline _abs_ge(x::SoftFloat{P}, y::SoftFloat{P}) where {P} =
-    (reinterpret(Int64, x.data << 1) >= reinterpret(Int64, y.data << 1))
+    reinterpret(Int64, x.data << 1) >= reinterpret(Int64, y.data << 1)
 
 
 @inline function two_sum(x::SoftFloat{P}, y::SoftFloat{P}) where {P}
@@ -86,7 +86,7 @@ export two_sum, two_prod
         return (a, b)
     end
 
-    # Compute exact sum, widening mantissas before alignment.
+    # Widen and align mantissas and compute exact sum.
     sa = _signbit_u64(a)
     sb = _signbit_u64(b)
     ma = (Base.mantissa(a) % UInt64) << (de & 63)
@@ -104,10 +104,12 @@ export two_sum, two_prod
         return (SoftFloat{P}(sa, es, ms), _zero)
     end
 
-    # Compute rounding direction and round exact sum.
+    # Split exact sum into rounded sum and round-off error.
     num_rounded = num_bits - P
     me = ms << (64 - num_rounded)
     ms >>= num_rounded & 63
+
+    # Compute rounding direction and round exact sum.
     round_up = me > 0x8000_0000_0000_0000 - (ms & one(UInt64))
     ms += round_up
 
@@ -116,12 +118,12 @@ export two_sum, two_prod
     es = eb + num_rounded + (carry % Int)
     ms >>= carry & 63
 
-    # Return early if rounded-off bits are all zero.
+    # Return early if round-off bits are all zero.
     if iszero(me)
         return (SoftFloat{P}(sa, es, ms), _zero)
     end
 
-    # Construct and return rounding error term.
+    # Compute and return exact rounding error.
     abs_me = reinterpret(UInt64, abs(reinterpret(Int64, me)))
     se = xor(sa, (round_up % UInt64) << 63)
     ee = eb + num_rounded - (P + leading_zeros(abs_me))
@@ -137,7 +139,7 @@ end
     _zero = zero(SoftFloat{P})
     _ez = exponent(_zero)
 
-    # Compute exact product, widening mantissas before multiplication.
+    # Widen mantissas and compute exact product.
     sp = xor(_signbit_u64(x), _signbit_u64(y))
     mp = (Base.mantissa(x) % UInt64) * (Base.mantissa(y) % UInt64)
     mp_iszero = iszero(mp)
@@ -159,7 +161,7 @@ end
     ep += carry % Int
     mp >>= carry & 63
 
-    # Construct and return rounding error term.
+    # Compute and return exact rounding error.
     abs_me = reinterpret(UInt64, abs(reinterpret(Int64, me)))
     se = xor(sp, (round_up % UInt64) << 63)
     ee -= leading_zeros(abs_me)
@@ -215,11 +217,11 @@ end
 ################################################################################
 
 
-@inline _signbit_u16(x::TinyFloat) = (x.data & 0x8000)
+@inline _signbit_u16(x::TinyFloat) = x.data & 0x8000
 
 
 @inline _abs_ge(x::TinyFloat{P}, y::TinyFloat{P}) where {P} =
-    (reinterpret(Int16, x.data << 1) >= reinterpret(Int16, y.data << 1))
+    reinterpret(Int16, x.data << 1) >= reinterpret(Int16, y.data << 1)
 
 
 @inline function two_sum(x::TinyFloat{P}, y::TinyFloat{P}) where {P}
@@ -248,7 +250,7 @@ end
         return (a, b)
     end
 
-    # Reconstruct implicit leading bits and compute the exact aligned sum.
+    # Widen and align mantissas and compute exact sum.
     sa = _signbit_u16(a)
     sb = _signbit_u16(b)
     ma = (_leading_bit | (Base.mantissa(a) % UInt32)) << (de & 31)
@@ -266,23 +268,24 @@ end
         return (TinyFloat{P}(sa, es, ms), _zero)
     end
 
-    # Compute rounding direction and round exact sum.
+    # Split exact sum into rounded sum and round-off error.
     num_rounded = num_bits - P
     me = ms << (32 - num_rounded)
     ms >>= num_rounded & 31
+
+    # Compute rounding direction and round exact sum.
     round_up = me > 0x8000_0000 - (ms & one(UInt32))
     ms += round_up
 
-    # Correct the exponent after a rounding-induced carry.
-    carry = ms >> P
-    es = eb + num_rounded + (carry % Int)
+    # Detect and correct rounding-induced carry.
+    es = eb + num_rounded + ((ms >> P) % Int)
 
-    # Return early if rounded-off bits are all zero.
+    # Return early if round-off bits are all zero.
     if iszero(me)
         return (TinyFloat{P}(sa, es, ms), _zero)
     end
 
-    # Construct and return rounding error term.
+    # Compute and return exact rounding error.
     abs_me = reinterpret(UInt32, abs(reinterpret(Int32, me)))
     se = xor(sa, (round_up % UInt16) << 15)
     ee = eb + num_rounded - (P + leading_zeros(abs_me))
@@ -298,7 +301,7 @@ end
     _zero = zero(TinyFloat{P})
     _leading_bit = one(UInt32) << (P - 1)
 
-    # Reconstruct implicit leading bits and multiply exact mantissas.
+    # Widen mantissas and compute exact product.
     sp = xor(_signbit_u16(x), _signbit_u16(y))
     mx = ifelse(iszero(x), zero(UInt32),
         _leading_bit | (Base.mantissa(x) % UInt32))
@@ -319,11 +322,10 @@ end
     round_up = me > 0x8000_0000 - (mp & one(UInt32))
     mp += round_up
 
-    # Correct the exponent after a rounding-induced carry.
-    carry = mp >> P
-    ep += carry % Int
+    # Detect and correct rounding-induced carry.
+    ep += (mp >> P) % Int
 
-    # Construct and return rounding error term.
+    # Compute and return exact rounding error.
     abs_me = reinterpret(UInt32, abs(reinterpret(Int32, me)))
     se = xor(sp, (round_up % UInt16) << 15)
     ee -= leading_zeros(abs_me)
@@ -390,6 +392,89 @@ end
     y::Union{Vec{M},TinyFloatVec{M}},
 ) where {M,P} = TinyFloatVec{M,P}(
     (x.data & 0x7FFF) | (convert(Vec{M,UInt16}, signbit(y)) << 15))
+
+
+################################################################################
+
+
+@inline _signbit_u16(x::TinyFloatVec) = x.data & 0x8000
+
+
+@inline _abs_ge(x::TinyFloatVec{M,P}, y::TinyFloatVec{M,P}) where {M,P} =
+    reinterpret(Vec{M,Int16}, x.data << 1) >=
+        reinterpret(Vec{M,Int16}, y.data << 1)
+
+
+@inline function _normalize(x::Vec{M,UInt16}) where {M}
+    y = x
+    y |= y >> 1
+    y |= y >> 2
+    y |= y >> 4
+    y |= y >> 8
+    num_leading_zeros = count_ones(~y)
+    return (x << (num_leading_zeros & 0x000F), num_leading_zeros)
+end
+
+
+@inline function two_sum(x::TinyFloatVec{M,P}, y::TinyFloatVec{M,P}) where {M,P}
+
+    # Define compile-time constants.
+    _zero = zero(TinyFloatVec{M,P})
+    _leading_bit = one(UInt16) << (P - 1)
+
+    # Order addends by magnitude.
+    in_order = _abs_ge(x, y)
+    a = TinyFloatVec{M,P}(vifelse(in_order, x.data, y.data))
+    b = TinyFloatVec{M,P}(vifelse(in_order, y.data, x.data))
+
+    # Determine whether exponents are too far apart to interact.
+    ea = exponent(a)
+    eb = exponent(b)
+    de = ea - eb
+    far = de > Int16(P + 1)
+
+    # Align mantissas and compute exact sum.
+    sa = _signbit_u16(a)
+    sb = _signbit_u16(b)
+    ma = vifelse(iszero(a), 0x0000, _leading_bit | Base.mantissa(a))
+    mb = vifelse(iszero(b), 0x0000, _leading_bit | Base.mantissa(b))
+    ma <<= reinterpret(Vec{M,UInt16}, de) & 0x000F
+    ms = vifelse(sa == sb, ma + mb, ma - mb)
+    ms_iszero = iszero(ms)
+
+    # Split exact sum into rounded sum and round-off error.
+    ms, leading_zeros_ms = _normalize(ms)
+    es = eb + Int16(16 - P) - reinterpret(Vec{M,Int16}, leading_zeros_ms)
+    ee = es - Int16(P)
+    me = ms << P
+    ms >>= 16 - P
+
+    # Compute rounding direction and round exact sum.
+    round_up = me > 0x8000 - (ms & one(UInt16))
+    ms += convert(Vec{M,UInt16}, round_up)
+
+    # Detect and correct rounding-induced carry.
+    es += reinterpret(Vec{M,Int16}, ms >> P)
+
+    # Compute and normalize exact rounding error.
+    abs_me = reinterpret(Vec{M,UInt16}, abs(reinterpret(Vec{M,Int16}, me)))
+    me, leading_zeros_me = _normalize(abs_me)
+    se = xor(sa, convert(Vec{M,UInt16}, round_up) << 15)
+    ee -= reinterpret(Vec{M,Int16}, leading_zeros_me)
+    me >>= 16 - P
+
+    # Assemble and return vector results.
+    sz = (sa & sb) | _zero.data
+    s = TinyFloatVec{M,P}(sa, es, ms)
+    s = TinyFloatVec{M,P}(vifelse(ms_iszero, sz, s.data))
+    s = TinyFloatVec{M,P}(vifelse(far, a.data, s.data))
+    ez = vifelse(iszero(b), _zero.data, b.data)
+    e = TinyFloatVec{M,P}(se, ee, me)
+    e = TinyFloatVec{M,P}(vifelse(iszero(abs_me), _zero.data, e.data))
+    e = TinyFloatVec{M,P}(vifelse(far, ez, e.data))
+    return (s, e)
+
+end
 
 
 ################################################################################
