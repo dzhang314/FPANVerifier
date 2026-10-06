@@ -36,7 +36,7 @@ end
     SoftFloat{P}(one(UInt64) << (P - 1))
 @inline Base.iszero(x::SoftFloat) = iszero(Base.mantissa(x))
 @inline Base.isone(x::SoftFloat{P}) where {P} =
-    (x.data == (one(UInt64) << (P - 1)))
+    x.data == (one(UInt64) << (P - 1))
 
 
 @inline Base.:-(x::SoftFloat{P}) where {P} =
@@ -149,10 +149,12 @@ end
     ep = exponent(x) + exponent(y) + (extra_bit % Int)
     ee = ep - P
 
-    # Compute rounding direction and round exact product.
+    # Split exact product into rounded product and round-off error.
     num_rounded = (P - 1) + (extra_bit % Int)
     me = mp << (64 - num_rounded)
-    mp >>= (num_rounded & 63)
+    mp >>= num_rounded & 63
+
+    # Compute rounding direction and round exact product.
     round_up = me > 0x8000_0000_0000_0000 - (mp & one(UInt64))
     mp += round_up
 
@@ -315,10 +317,12 @@ end
     ep = exponent(x) + exponent(y) + (extra_bit % Int)
     ee = ep - P
 
-    # Compute rounding direction and round exact product.
+    # Split exact product into rounded product and round-off error.
     num_rounded = (P - 1) + (extra_bit % Int)
     me = mp << (32 - num_rounded)
     mp >>= num_rounded & 31
+
+    # Compute rounding direction and round exact product.
     round_up = me > 0x8000_0000 - (mp & one(UInt32))
     mp += round_up
 
