@@ -16,12 +16,12 @@ end
 
 @inline SoftFloat{P}(s::Bool, e::Integer, m::Integer) where {P} =
     SoftFloat{P}(((s % UInt64) << 63) |
-        (((e % UInt64) & 0x0000_0000_7FFF_FFFF) << 32) |
+        (((e % UInt64) << 32) & 0x7FFF_FFFF_0000_0000) |
         (m % UInt32 % UInt64))
 
 
 @inline SoftFloat{P}(s::UInt64, e::Integer, m::UInt64) where {P} =
-    SoftFloat{P}(s | (((e % UInt64) & 0x0000_0000_7FFF_FFFF) << 32) | m)
+    SoftFloat{P}(s | (((e % UInt64) << 32) & 0x7FFF_FFFF_0000_0000) | m)
 
 
 @inline Base.signbit(x::SoftFloat) = !iszero(x.data >> 63)
@@ -49,21 +49,7 @@ end
 ################################################################################
 
 
-export SoftFloatVec
-
-
-struct SoftFloatVec{M,P}
-    data::Vec{M,UInt64}
-end
-
-
-################################################################################
-
-
 export two_sum, two_prod
-
-
-const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
 
 
 @inline _signbit_u64(x::SoftFloat) = (x.data & 0x8000_0000_0000_0000)
@@ -82,8 +68,8 @@ const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
     # Return early if at least one addend is zero.
     if iszero(_leading_bit & Base.mantissa(x) & Base.mantissa(y))
         s = ifelse(iszero(x), y, x)
-        signed_zero = ifelse(signbit(x) & signbit(y), -_zero, _zero)
-        return (ifelse(iszero(s), signed_zero, s), _zero)
+        sz = ifelse(signbit(x) & signbit(y), -_zero, _zero)
+        return (ifelse(iszero(s), sz, s), _zero)
     end
 
     # Order addends by magnitude.
@@ -121,7 +107,7 @@ const _ROUNDING_MIDPOINT = 0x8000_0000_0000_0000
     num_rounded = num_bits - P
     me = ms << (64 - num_rounded)
     ms >>= num_rounded & 63
-    round_up = me > _ROUNDING_MIDPOINT - (ms & one(UInt64))
+    round_up = me > 0x8000_0000_0000_0000 - (ms & one(UInt64))
     ms += round_up
 
     # Detect and correct rounding-induced carry.
@@ -164,7 +150,7 @@ end
     num_rounded = (P - 1) + (extra_bit % Int)
     me = mp << (64 - num_rounded)
     mp >>= (num_rounded & 63)
-    round_up = me > _ROUNDING_MIDPOINT - (mp & one(UInt64))
+    round_up = me > 0x8000_0000_0000_0000 - (mp & one(UInt64))
     mp += round_up
 
     # Detect and correct rounding-induced carry.
@@ -180,6 +166,170 @@ end
     pz = SoftFloat{P}(sp, _ez, zero(UInt64))
     return (ifelse(mp_iszero, pz, SoftFloat{P}(sp, ep, mp)),
         ifelse(iszero(abs_me), _zero, SoftFloat{P}(se, ee, me)))
+
+end
+
+
+################################################################################
+
+
+export TinyFloat
+
+
+struct TinyFloat{P}
+    data::UInt16
+end
+
+
+@inline TinyFloat{P}(s::Bool, e::Integer, m::Integer) where {P} =
+    TinyFloat{P}(((s % UInt16) << 15) |
+        (((e % UInt16) << (P - 1)) & 0x7FFF) |
+        ((m % UInt16) & ((one(UInt16) << (P - 1)) - one(UInt16))))
+
+
+@inline TinyFloat{P}(s::UInt16, e::Integer, m::Integer) where {P} =
+    TinyFloat{P}(s | (((e % UInt16) << (P - 1)) & 0x7FFF) |
+        ((m % UInt16) & ((one(UInt16) << (P - 1)) - one(UInt16))))
+
+
+@inline Base.signbit(x::TinyFloat) = !iszero(x.data >> 15)
+@inline Base.exponent(x::TinyFloat{P}) where {P} =
+    (((x.data << 1) % Int16) >> P) % Int
+@inline Base.mantissa(x::TinyFloat{P}) where {P} =
+    x.data & ((one(UInt16) << (P - 1)) - one(UInt16))
+
+
+@inline Base.zero(::Type{TinyFloat{P}}) where {P} = TinyFloat{P}(0x4000)
+@inline Base.one(::Type{TinyFloat{P}}) where {P} = TinyFloat{P}(0x0000)
+@inline Base.iszero(x::TinyFloat) = (x.data & 0x7FFF) == 0x4000
+@inline Base.isone(x::TinyFloat) = iszero(x.data)
+
+
+@inline Base.:-(x::TinyFloat{P}) where {P} = TinyFloat{P}(xor(x.data, 0x8000))
+
+@inline Base.copysign(x::TinyFloat{P}, y::Any) where {P} =
+    TinyFloat{P}((x.data & 0x7FFF) | ((signbit(y) % UInt16) << 15))
+
+
+################################################################################
+
+
+@inline _signbit_u16(x::TinyFloat) = (x.data & 0x8000)
+
+
+@inline _abs_ge(x::TinyFloat{P}, y::TinyFloat{P}) where {P} =
+    (((x.data << 1) % Int16) >= ((y.data << 1) % Int16))
+
+
+@inline function two_sum(x::TinyFloat{P}, y::TinyFloat{P}) where {P}
+
+    # Define compile-time constants.
+    _zero = zero(TinyFloat{P})
+    _leading_bit = one(UInt32) << (P - 1)
+
+    # Return early if at least one addend is zero.
+    if iszero(x) | iszero(y)
+        s = ifelse(iszero(x), y, x)
+        sz = ifelse(signbit(x) & signbit(y), -_zero, _zero)
+        return (ifelse(iszero(s), sz, s), _zero)
+    end
+
+    # Order addends by magnitude.
+    in_order = _abs_ge(x, y)
+    a = ifelse(in_order, x, y)
+    b = ifelse(in_order, y, x)
+
+    # Return early if exponents are too far apart to interact.
+    ea = exponent(a)
+    eb = exponent(b)
+    de = ea - eb
+    if de > P + 1
+        return (a, b)
+    end
+
+    # Reconstruct implicit leading bits and compute the exact aligned sum.
+    sa = _signbit_u16(a)
+    sb = _signbit_u16(b)
+    ma = (_leading_bit | (Base.mantissa(a) % UInt32)) << (de & 31)
+    mb = (_leading_bit | (Base.mantissa(b) % UInt32))
+    ms = ifelse(sa == sb, ma + mb, ma - mb)
+
+    # Return early if no rounding is necessary.
+    num_bits = 32 - leading_zeros(ms)
+    if iszero(num_bits)
+        return (_zero, _zero)
+    elseif num_bits <= P
+        shift = P - num_bits
+        es = eb - shift
+        ms <<= shift & 31
+        return (TinyFloat{P}(sa, es, ms), _zero)
+    end
+
+    # Compute rounding direction and round exact sum.
+    num_rounded = num_bits - P
+    me = ms << (32 - num_rounded)
+    ms >>= num_rounded & 31
+    round_up = me > 0x8000_0000 - (ms & one(UInt32))
+    ms += round_up
+
+    # Correct the exponent after a rounding-induced carry.
+    carry = ms >> P
+    es = eb + num_rounded + (carry % Int)
+
+    # Return early if rounded-off bits are all zero.
+    if iszero(me)
+        return (TinyFloat{P}(sa, es, ms), _zero)
+    end
+
+    # Construct and return rounding error term.
+    abs_me = abs(me % Int32) % UInt32
+    se = xor(sa, (round_up % UInt16) << 15)
+    ee = eb + num_rounded - (P + leading_zeros(abs_me))
+    me = (abs_me << leading_zeros(abs_me)) >> (32 - P)
+    return (TinyFloat{P}(sa, es, ms), TinyFloat{P}(se, ee, me))
+
+end
+
+
+@inline function two_prod(x::TinyFloat{P}, y::TinyFloat{P}) where {P}
+
+    # Define compile-time constants.
+    _zero = zero(TinyFloat{P})
+    _leading_bit = one(UInt32) << (P - 1)
+
+    # Reconstruct implicit leading bits and multiply exact mantissas.
+    sp = xor(_signbit_u16(x), _signbit_u16(y))
+    mx = ifelse(iszero(x), zero(UInt32),
+        _leading_bit | (Base.mantissa(x) % UInt32))
+    my = ifelse(iszero(y), zero(UInt32),
+        _leading_bit | (Base.mantissa(y) % UInt32))
+    mp = mx * my
+    mp_iszero = iszero(mp)
+
+    # Determine the presence of an extra bit and adjust exponents accordingly.
+    extra_bit = (mp >> (2 * P - 1)) & one(UInt32)
+    ep = exponent(x) + exponent(y) + (extra_bit % Int)
+    ee = ep - P
+
+    # Compute rounding direction and round exact product.
+    num_rounded = (P - 1) + (extra_bit % Int)
+    me = mp << (32 - num_rounded)
+    mp >>= num_rounded & 31
+    round_up = me > 0x8000_0000 - (mp & one(UInt32))
+    mp += round_up
+
+    # Correct the exponent after a rounding-induced carry.
+    carry = mp >> P
+    ep += carry % Int
+
+    # Construct and return rounding error term.
+    abs_me = abs(me % Int32) % UInt32
+    se = xor(sp, (round_up % UInt16) << 15)
+    ee -= leading_zeros(abs_me)
+    me = (abs_me << (leading_zeros(abs_me) & 31)) >> (32 - P)
+    pz = TinyFloat{P}(_zero.data | sp)
+    return (ifelse(mp_iszero, pz, TinyFloat{P}(sp, ep, mp)),
+        ifelse(iszero(abs_me), _zero, TinyFloat{P}(se, ee, me)))
 
 end
 
