@@ -24,8 +24,9 @@ end
     SoftFloat{P}(s | (((e % UInt64) << 32) & 0x7FFF_FFFF_0000_0000) | m)
 
 
-@inline Base.signbit(x::SoftFloat) = !iszero(x.data >> 63)
-@inline Base.exponent(x::SoftFloat) = (((x.data << 1) % Int64) >> 33) % Int
+@inline Base.signbit(x::SoftFloat) = x.data >= 0x8000_0000_0000_0000
+@inline Base.exponent(x::SoftFloat) =
+    (reinterpret(Int64, x.data << 1) >> 33) % Int
 @inline Base.mantissa(x::SoftFloat) = x.data % UInt32
 
 
@@ -56,7 +57,7 @@ export two_sum, two_prod
 
 
 @inline _abs_ge(x::SoftFloat{P}, y::SoftFloat{P}) where {P} =
-    (((x.data << 1) % Int64) >= ((y.data << 1) % Int64))
+    (reinterpret(Int64, x.data << 1) >= reinterpret(Int64, y.data << 1))
 
 
 @inline function two_sum(x::SoftFloat{P}, y::SoftFloat{P}) where {P}
@@ -121,7 +122,7 @@ export two_sum, two_prod
     end
 
     # Construct and return rounding error term.
-    abs_me = abs(me % Int64) % UInt64
+    abs_me = reinterpret(UInt64, abs(reinterpret(Int64, me)))
     se = xor(sa, (round_up % UInt64) << 63)
     ee = eb + num_rounded - (P + leading_zeros(abs_me))
     me = (abs_me << leading_zeros(abs_me)) >> (64 - P)
@@ -159,7 +160,7 @@ end
     mp >>= carry & 63
 
     # Construct and return rounding error term.
-    abs_me = abs(me % Int64) % UInt64
+    abs_me = reinterpret(UInt64, abs(reinterpret(Int64, me)))
     se = xor(sp, (round_up % UInt64) << 63)
     ee -= leading_zeros(abs_me)
     me = (abs_me << (leading_zeros(abs_me) & 63)) >> (64 - P)
@@ -192,9 +193,9 @@ end
         ((m % UInt16) & ((one(UInt16) << (P - 1)) - one(UInt16))))
 
 
-@inline Base.signbit(x::TinyFloat) = !iszero(x.data >> 15)
+@inline Base.signbit(x::TinyFloat) = x.data >= 0x8000
 @inline Base.exponent(x::TinyFloat{P}) where {P} =
-    (((x.data << 1) % Int16) >> P) % Int
+    (reinterpret(Int16, x.data << 1) >> P) % Int
 @inline Base.mantissa(x::TinyFloat{P}) where {P} =
     x.data & ((one(UInt16) << (P - 1)) - one(UInt16))
 
@@ -218,7 +219,7 @@ end
 
 
 @inline _abs_ge(x::TinyFloat{P}, y::TinyFloat{P}) where {P} =
-    (((x.data << 1) % Int16) >= ((y.data << 1) % Int16))
+    (reinterpret(Int16, x.data << 1) >= reinterpret(Int16, y.data << 1))
 
 
 @inline function two_sum(x::TinyFloat{P}, y::TinyFloat{P}) where {P}
@@ -282,7 +283,7 @@ end
     end
 
     # Construct and return rounding error term.
-    abs_me = abs(me % Int32) % UInt32
+    abs_me = reinterpret(UInt32, abs(reinterpret(Int32, me)))
     se = xor(sa, (round_up % UInt16) << 15)
     ee = eb + num_rounded - (P + leading_zeros(abs_me))
     me = (abs_me << leading_zeros(abs_me)) >> (32 - P)
@@ -323,7 +324,7 @@ end
     ep += carry % Int
 
     # Construct and return rounding error term.
-    abs_me = abs(me % Int32) % UInt32
+    abs_me = reinterpret(UInt32, abs(reinterpret(Int32, me)))
     se = xor(sp, (round_up % UInt16) << 15)
     ee -= leading_zeros(abs_me)
     me = (abs_me << (leading_zeros(abs_me) & 31)) >> (32 - P)
@@ -332,6 +333,63 @@ end
         ifelse(iszero(abs_me), _zero, TinyFloat{P}(se, ee, me)))
 
 end
+
+
+################################################################################
+
+
+export TinyFloatVec
+
+
+struct TinyFloatVec{M,P}
+    data::Vec{M,UInt16}
+end
+
+
+@inline TinyFloatVec{M,P}(
+    s::Vec{M,Bool},
+    e::Vec{M,<:Integer},
+    m::Vec{M,<:Integer},
+) where {M,P} = TinyFloatVec{M,P}((convert(Vec{M,UInt16}, s) << 15) |
+    ((convert(Vec{M,UInt16}, e) << (P - 1)) & 0x7FFF) |
+    (convert(Vec{M,UInt16}, m) & ((one(UInt16) << (P - 1)) - one(UInt16))))
+
+
+@inline TinyFloatVec{M,P}(
+    s::Vec{M,UInt16},
+    e::Vec{M,<:Integer},
+    m::Vec{M,<:Integer},
+) where {M,P} = TinyFloatVec{M,P}(s |
+    ((convert(Vec{M,UInt16}, e) << (P - 1)) & 0x7FFF) |
+    (convert(Vec{M,UInt16}, m) & ((one(UInt16) << (P - 1)) - one(UInt16))))
+
+
+@inline Base.signbit(x::TinyFloatVec) = x.data >= 0x8000
+@inline Base.exponent(x::TinyFloatVec{M,P}) where {M,P} =
+    reinterpret(Vec{M,Int16}, x.data << 1) >> P
+@inline Base.mantissa(x::TinyFloatVec{M,P}) where {M,P} =
+    x.data & ((one(UInt16) << (P - 1)) - one(UInt16))
+
+
+@inline Base.zero(::Type{TinyFloatVec{M,P}}) where {M,P} =
+    TinyFloatVec{M,P}(Vec{M,UInt16}(0x4000))
+@inline Base.one(::Type{TinyFloatVec{M,P}}) where {M,P} =
+    TinyFloatVec{M,P}(Vec{M,UInt16}(0x0000))
+@inline Base.iszero(x::TinyFloatVec) = (x.data & 0x7FFF) == 0x4000
+@inline Base.isone(x::TinyFloatVec) = iszero(x.data)
+
+
+@inline Base.:-(x::TinyFloatVec{M,P}) where {M,P} =
+    TinyFloatVec{M,P}(xor(x.data, 0x8000))
+
+@inline Base.copysign(x::TinyFloatVec{M,P}, y::Any) where {M,P} =
+    TinyFloatVec{M,P}((x.data & 0x7FFF) | ((signbit(y) % UInt16) << 15))
+
+@inline Base.copysign(
+    x::TinyFloatVec{M,P},
+    y::Union{Vec{M},TinyFloatVec{M}},
+) where {M,P} = TinyFloatVec{M,P}(
+    (x.data & 0x7FFF) | (convert(Vec{M,UInt16}, signbit(y)) << 15))
 
 
 ################################################################################
