@@ -1,7 +1,6 @@
 # pyright: reportUnusedParameter=false, reportUnusedVariable=false
 import z3
 from smt_utils import BoolVar, IntVar, FloatVar, z3_If
-from systematic_lemmas import seltzo_two_sum_systematic_lemmas
 from typing import Callable
 
 
@@ -99,56 +98,6 @@ def seltzo_two_sum_lemmas(
     g1y: IntVar = ey - (p - z3_If(tby, one, ntby + one))
     g1s: IntVar = es - (p - z3_If(tbs, one, ntbs + one))
     g1e: IntVar = ee - (p - z3_If(tbe, one, ntbe + one))
-
-    result.update(
-        seltzo_two_sum_systematic_lemmas(
-            sx,
-            sy,
-            ss,
-            se,
-            lbx,
-            lby,
-            lbs,
-            lbe,
-            tbx,
-            tby,
-            tbs,
-            tbe,
-            ex,
-            ey,
-            es,
-            ee,
-            fx,
-            fy,
-            nlbx,
-            nlby,
-            nlbs,
-            nlbe,
-            ntbx,
-            ntby,
-            ntbs,
-            ntbe,
-            same_sign,
-            diff_sign,
-            xy_nonzero,
-            x_zero,
-            y_zero,
-            x_pow2,
-            y_pow2,
-            x_all1,
-            y_all1,
-            x_r0r1,
-            y_r0r1,
-            x_r1r0,
-            y_r1r0,
-            s_pos_zero,
-            e_pos_zero,
-            p,
-            one,
-            two,
-            three,
-        )
-    )
 
     # Lemma 01A: Addition either preserves the exponent of the larger addend,
     # in which case the sum has at least as many leading ones as that addend,
