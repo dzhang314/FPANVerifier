@@ -24,6 +24,10 @@ end
     SoftFloat{P}(s | (((e % UInt64) << 32) & 0x7FFF_FFFF_0000_0000) | m)
 
 
+@inline Base.precision(::Type{SoftFloat{P}}) where {P} = P
+@inline Base.precision(::SoftFloat{P}) where {P} = P
+
+
 @inline Base.signbit(x::SoftFloat) = x.data >= 0x8000_0000_0000_0000
 @inline Base.exponent(x::SoftFloat) =
     (reinterpret(Int64, x.data << 1) >> 33) % Int
