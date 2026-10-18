@@ -54,6 +54,48 @@ end
 ################################################################################
 
 
+@inline function _from_native(::Type{SoftFloat{P}}, x::T) where {P,T}
+    # @assert P == precision(T)
+    _zero = zero(SoftFloat{P})
+    _leading_bit = one(UInt32) << (P - 1)
+    # @assert isfinite(x) && !issubnormal(x)
+    u = reinterpret(Unsigned, x)
+    e = Int((u & Base.exponent_mask(T)) >> (P - 1))
+    if iszero(e)
+        return copysign(_zero, x)
+    end
+    m = _leading_bit | ((u & Base.significand_mask(T)) % UInt32)
+    return SoftFloat{P}(signbit(x), e - Base.exponent_bias(T), m)
+end
+
+
+@inline SoftFloat{8}(x::BFloat16) = _from_native(SoftFloat{8}, x)
+@inline SoftFloat{11}(x::Float16) = _from_native(SoftFloat{11}, x)
+@inline SoftFloat{24}(x::Float32) = _from_native(SoftFloat{24}, x)
+
+
+const BITS_PER_BYTE = div(Sys.WORD_SIZE, sizeof(UInt))
+
+@inline function _to_native(::Type{T}, x::SoftFloat{P}) where {T,P}
+    # @assert P == precision(T)
+    U = Base.uinttype(T)
+    # @assert iszero(x) || isone(Base.mantissa(x) >> (P - 1))
+    # @assert iszero(x) || floatmin(T) <= abs(x) <= floatmax(T)
+    s = (signbit(x) % U) << (BITS_PER_BYTE * sizeof(T) - 1)
+    e = ((exponent(x) + Base.exponent_bias(T)) % U) << (P - 1)
+    m = (Base.mantissa(x) % U) & Base.significand_mask(T)
+    return reinterpret(T, ifelse(iszero(x), s, s | e | m))
+end
+
+
+@inline BFloat16(x::SoftFloat{8}) = _to_native(BFloat16, x)
+@inline Base.Float16(x::SoftFloat{11}) = _to_native(Float16, x)
+@inline Base.Float32(x::SoftFloat{24}) = _to_native(Float32, x)
+
+
+################################################################################
+
+
 export two_sum, two_prod
 
 
