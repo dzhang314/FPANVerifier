@@ -49,23 +49,6 @@ function verify_exhaustive(::Type{T}, ::Type{U}) where {T,U}
         if isfinite(x) & !issubnormal(x)
             @assert ((seltzo_type === POW2) === ispow2(abs(x)))
         end
-
-        @assert unpack(se) ===
-            (unpack_bools(se)..., unpack_ints(se)...)
-        @assert unpack(se, T) ===
-            (unpack_bools(se, T)..., unpack_ints(se, T)...)
-        @assert unpack(setz) ===
-            (unpack_bools(setz)..., unpack_ints(setz)...)
-        @assert unpack(setz, T) ===
-            (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
-        @assert unpack(selbtz) ===
-            (unpack_bools(selbtz)..., unpack_ints(selbtz)...)
-        @assert unpack(selbtz, T) ===
-            (unpack_bools(selbtz, T)..., unpack_ints(selbtz, T)...)
-        @assert unpack(seltzo) ===
-            (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
-        @assert unpack(seltzo, T) ===
-            (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
     end
     return true
 end
@@ -117,23 +100,6 @@ function verify_random(::Type{T}, ::Type{U}, n::Int) where {T,U}
         @assert (seltzo_type === ZERO) === iszero(x)
         @assert mantissa_leading_bit(x) === mantissa_leading_bit(seltzo_type)
         @assert mantissa_trailing_bit(x) === mantissa_trailing_bit(seltzo_type)
-
-        @assert unpack(se) ===
-            (unpack_bools(se)..., unpack_ints(se)...)
-        @assert unpack(se, T) ===
-            (unpack_bools(se, T)..., unpack_ints(se, T)...)
-        @assert unpack(setz) ===
-            (unpack_bools(setz)..., unpack_ints(setz)...)
-        @assert unpack(setz, T) ===
-            (unpack_bools(setz, T)..., unpack_ints(setz, T)...)
-        @assert unpack(selbtz) ===
-            (unpack_bools(selbtz)..., unpack_ints(selbtz)...)
-        @assert unpack(selbtz, T) ===
-            (unpack_bools(selbtz, T)..., unpack_ints(selbtz, T)...)
-        @assert unpack(seltzo) ===
-            (unpack_bools(seltzo)..., unpack_ints(seltzo)...)
-        @assert unpack(seltzo, T) ===
-            (unpack_bools(seltzo, T)..., unpack_ints(seltzo, T)...)
     end
     return true
 end

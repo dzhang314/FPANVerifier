@@ -7,6 +7,7 @@ using Mmap: mmap
 using Random: shuffle!
 
 using SoftFloats: SoftFloat
+import SoftFloats: two_sum, two_prod
 
 ################################################ FLOATING-POINT BIT MANIPULATION
 
@@ -232,12 +233,12 @@ end
 
 
 @inline TwoSumAbstraction{A}(x::T, y::T, s::T, e::T) where
-{A<:FloatAbstraction,T<:AbstractFloat} =
+{A<:FloatAbstraction,T<:_AnyFloat} =
     TwoSumAbstraction{A}(A(x), A(y), A(s), A(e))
 
 
 @inline TwoProdAbstraction{A}(x::T, y::T, p::T, e::T) where
-{A<:FloatAbstraction,T<:AbstractFloat} =
+{A<:FloatAbstraction,T<:_AnyFloat} =
     TwoProdAbstraction{A}(A(x), A(y), A(p), A(e))
 
 
@@ -324,9 +325,9 @@ end
 @inline function seltzo_classify(
     x::SELTZOAbstraction,
     ::Type{T},
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     _zero = zero(T)
-    pos_zero = SELTZOAbstraction(+_zero)
+    pos_zero = SELTZOAbstraction(_zero)
     neg_zero = SELTZOAbstraction(-_zero)
     if (x == pos_zero) | (x == neg_zero)
         return ZERO
@@ -369,59 +370,25 @@ end
 ########################################################## ABSTRACTION UNPACKING
 
 
-export unpack, unpack_bools, unpack_ints
+export unpack
 
 
 @inline unpack(x::SEAbstraction) =
     (signbit(x), unsafe_exponent(x))
 
-@inline unpack(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
+@inline unpack(x::SEAbstraction, ::Type{T}) where {T<:_AnyFloat} =
     (signbit(x), unsafe_exponent(x))
-
-@inline unpack_bools(x::SEAbstraction) =
-    (signbit(x),)
-
-@inline unpack_bools(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x),)
-
-@inline unpack_ints(x::SEAbstraction) =
-    (unsafe_exponent(x),)
-
-@inline unpack_ints(x::SEAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (unsafe_exponent(x),)
 
 
 @inline unpack(x::SETZAbstraction) =
     (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
 
-@inline function unpack(
-    x::SETZAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
+@inline function unpack(x::SETZAbstraction, ::Type{T}) where {T<:_AnyFloat}
     p = precision(T)
     s = signbit(x)
     e = unsafe_exponent(x)
     f = e - ((p - 1) - mantissa_trailing_zeros(x))
     return (s, e, f)
-end
-
-@inline unpack_bools(x::SETZAbstraction) =
-    (signbit(x),)
-
-@inline unpack_bools(x::SETZAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x),)
-
-@inline unpack_ints(x::SETZAbstraction) =
-    (unsafe_exponent(x), mantissa_trailing_zeros(x))
-
-@inline function unpack_ints(
-    x::SETZAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    e = unsafe_exponent(x)
-    f = e - ((p - 1) - mantissa_trailing_zeros(x))
-    return (e, f)
 end
 
 
@@ -433,10 +400,7 @@ end
     mantissa_trailing_zeros(x),
 )
 
-@inline function unpack(
-    x::SELBTZAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
+@inline function unpack(x::SELBTZAbstraction, ::Type{T}) where {T<:_AnyFloat}
     p = precision(T)
     s = signbit(x)
     lb = mantissa_leading_bit(x)
@@ -444,26 +408,6 @@ end
     f = e - (mantissa_leading_bits(x) + 1)
     g = e - ((p - 1) - mantissa_trailing_zeros(x))
     return (s, lb, e, f, g)
-end
-
-@inline unpack_bools(x::SELBTZAbstraction) =
-    (signbit(x), mantissa_leading_bit(x))
-
-@inline unpack_bools(x::SELBTZAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x), mantissa_leading_bit(x))
-
-@inline unpack_ints(x::SELBTZAbstraction) =
-    (unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_zeros(x))
-
-@inline function unpack_ints(
-    x::SELBTZAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    e = unsafe_exponent(x)
-    f = e - (mantissa_leading_bits(x) + 1)
-    g = e - ((p - 1) - mantissa_trailing_zeros(x))
-    return (e, f, g)
 end
 
 
@@ -476,10 +420,7 @@ end
     mantissa_trailing_bits(x),
 )
 
-@inline function unpack(
-    x::SELTZOAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
+@inline function unpack(x::SELTZOAbstraction, ::Type{T}) where {T<:_AnyFloat}
     p = precision(T)
     s = signbit(x)
     lb = mantissa_leading_bit(x)
@@ -490,31 +431,11 @@ end
     return (s, lb, tb, e, f, g)
 end
 
-@inline unpack_bools(x::SELTZOAbstraction) =
-    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
-
-@inline unpack_bools(x::SELTZOAbstraction, ::Type{T}) where {T<:AbstractFloat} =
-    (signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x))
-
-@inline unpack_ints(x::SELTZOAbstraction) =
-    (unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
-
-@inline function unpack_ints(
-    x::SELTZOAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    e = unsafe_exponent(x)
-    f = e - (mantissa_leading_bits(x) + 1)
-    g = e - ((p - 1) - mantissa_trailing_bits(x))
-    return (e, f, g)
-end
-
 
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
-export enumerate_abstractions
+export enumerate_abstractions, two_sum, two_prod
 
 
 @inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
@@ -885,7 +806,7 @@ end
 ################################################################## OUTPUT LOOKUP
 
 
-export abstract_outputs, classified_outputs
+export abstract_outputs
 
 
 function abstract_outputs(
@@ -909,35 +830,6 @@ function abstract_outputs(
     v = view(two_prod_abstractions,
         searchsorted(two_prod_abstractions, target; by=(a -> (a.x, a.y))))
     return [(a.p, a.e) for a in v]
-end
-
-
-function classified_outputs(
-    two_sum_abstractions::AbstractVector{TwoSumAbstraction{SELTZOAbstraction}},
-    x::SELTZOAbstraction,
-    y::SELTZOAbstraction,
-    ::Type{T},
-) where {T<:AbstractFloat}
-    result = Dict{
-        Tuple{Bool,SELTZOClass,Bool,SELTZOClass},
-        Vector{NTuple{6,Int}}}()
-    for (s, e) in abstract_outputs(two_sum_abstractions, x, y)
-        ss = signbit(s)
-        cs = seltzo_classify(s, T)
-        se = signbit(e)
-        ce = seltzo_classify(e, T)
-        key = (ss, cs, se, ce)
-        value = (unpack_ints(s, T)..., unpack_ints(e, T)...)
-        if haskey(result, key)
-            push!(result[key], value)
-        else
-            result[key] = [value]
-        end
-    end
-    for (_, v) in result
-        sort!(v)
-    end
-    return result
 end
 
 

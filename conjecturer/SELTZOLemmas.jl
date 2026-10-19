@@ -23,8 +23,8 @@ const SELTZO_CLASS_LIST = """
 if length(ARGS) != 2
     println(stderr,
         "Usage: julia $(basename(PROGRAM_FILE)) CLASS_X CLASS_Y\n" *
-        "CLASS_X and CLASS_Y must be one of the following SELTZO classes:\n" *
-        SELTZO_CLASS_LIST)
+            "CLASS_X and CLASS_Y must be one of the following SELTZO classes:\n" *
+            SELTZO_CLASS_LIST)
     exit(EXIT_INVALID_ARGS)
 end
 
@@ -63,7 +63,7 @@ function parse_seltzo_class(s::AbstractString)
     else
         println(stderr,
             "ERROR: Unrecognized SELTZO class \"$s\".\n" *
-            "Valid SELTZO classes are:\n" * SELTZO_CLASS_LIST)
+                "Valid SELTZO classes are:\n" * SELTZO_CLASS_LIST)
         exit(EXIT_INVALID_CLASS)
     end
 end
@@ -186,7 +186,7 @@ function check_seltzo_two_sum_lemmas(
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
                 "WARNING: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
-                " are covered by multiple lemmas:")
+                    " are covered by multiple lemmas:")
             for name in checker.covering_lemmas
                 println(stderr, "    ", name)
             end
@@ -199,28 +199,6 @@ function check_seltzo_two_sum_lemmas(
     end
 
     println("Unverified cases: $(rs.population_size[])")
-    #=
-    for i = 1:min(rs.population_size[], length(rs.reservoir))
-        println("Unverified case $i:")
-        x, y = rs.reservoir[i]
-        cx = seltzo_classify(x, T)
-        cy = seltzo_classify(y, T)
-        sx, lbx, tbx, ex, fx, gx = unpack(x, T)
-        sy, lby, tby, ey, fy, gy = unpack(y, T)
-        sx_str = sx ? '-' : '+'
-        sy_str = sy ? '-' : '+'
-        println("    $sx_str$cx: (ex = $ex, fx = $fx, gx = $gx) [$x]")
-        println("    $sy_str$cy: (ey = $ey, fy = $fy, gy = $gy) [$y]")
-        println("    SELTZO Outputs:")
-        output_classes = classified_outputs(two_sum_abstractions, x, y, T)
-        for ((ss, cs, se, ce), outputs) in output_classes
-            ss_str = ss ? '-' : '+'
-            se_str = se ? '-' : '+'
-            println("        ($ss_str$cs, $se_str$ce): $(length(outputs))")
-        end
-    end
-    flush(stdout)
-    =#
 
     return nothing
 end
@@ -552,20 +530,20 @@ function main(
     if !isfile(filepath)
         println(stderr,
             "ERROR: Input file $filename not found." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
+                " Run `julia GenerateAbstractionData.jl` to" *
+                " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MISSING)
     end
     expected_count = expected_count_dict[(CLASS_X, CLASS_Y)]
     expected_crc = expected_crc_dict[(CLASS_X, CLASS_Y)]
     valid = (filesize(filepath) ==
-             expected_count * sizeof(TwoSumAbstraction{SELTZOAbstraction})) &&
-            (open(crc32c, filepath) == expected_crc)
+        expected_count * sizeof(TwoSumAbstraction{SELTZOAbstraction})) &&
+        (open(crc32c, filepath) == expected_crc)
     if !valid
         println(stderr,
             "ERROR: Input file $filename is malformed." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
+                " Run `julia GenerateAbstractionData.jl` to" *
+                " generate the input files for this program.")
         exit(EXIT_INPUT_FILE_MALFORMED)
     end
     two_sum_abstractions =
