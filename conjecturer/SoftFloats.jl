@@ -74,14 +74,14 @@ end
 @inline SoftFloat{24}(x::Float32) = _from_native(SoftFloat{24}, x)
 
 
-const BITS_PER_BYTE = div(Sys.WORD_SIZE, sizeof(UInt))
+const _BITS_PER_BYTE = div(Sys.WORD_SIZE, sizeof(UInt))
 
 @inline function _to_native(::Type{T}, x::SoftFloat{P}) where {T,P}
     # @assert P == precision(T)
     U = Base.uinttype(T)
     # @assert iszero(x) || isone(Base.mantissa(x) >> (P - 1))
     # @assert iszero(x) || floatmin(T) <= abs(x) <= floatmax(T)
-    s = (signbit(x) % U) << (BITS_PER_BYTE * sizeof(T) - 1)
+    s = (signbit(x) % U) << (_BITS_PER_BYTE * sizeof(T) - 1)
     e = ((exponent(x) + Base.exponent_bias(T)) % U) << (P - 1)
     m = (Base.mantissa(x) % U) & Base.significand_mask(T)
     return reinterpret(T, ifelse(iszero(x), s, s | e | m))

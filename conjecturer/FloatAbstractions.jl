@@ -6,70 +6,78 @@ using Base.Threads: @threads, nthreads
 using Mmap: mmap
 using Random: shuffle!
 
+using SoftFloats: SoftFloat
+
 ################################################ FLOATING-POINT BIT MANIPULATION
 
 
 export unsafe_exponent,
-    mantissa_leading_bit, mantissa_leading_bits,
-    mantissa_leading_zeros, mantissa_leading_ones,
-    mantissa_trailing_bit, mantissa_trailing_bits,
-    mantissa_trailing_zeros, mantissa_trailing_ones
+    mantissa_leading_bit, mantissa_trailing_bit,
+    mantissa_leading_zeros, mantissa_trailing_zeros,
+    mantissa_leading_ones, mantissa_trailing_ones,
+    mantissa_leading_bits, mantissa_trailing_bits
 
-
-const _BITS_PER_BYTE = div(64, sizeof(UInt64))
-@assert _BITS_PER_BYTE * sizeof(UInt32) == 32
-@assert _BITS_PER_BYTE * sizeof(UInt64) == 64
+const _AnyFloat = Union{AbstractFloat,SoftFloat}
+const _BITS_PER_BYTE = div(Sys.WORD_SIZE, sizeof(UInt))
 
 
 @inline function unsafe_exponent(x::T) where {T<:AbstractFloat}
-    raw_exponent = reinterpret(Unsigned, x) & exponent_mask(T)
-    raw_exponent >>= significand_bits(T)
-    return Int(raw_exponent) - exponent_bias(T)
+    exponent_bits = reinterpret(Unsigned, x) & exponent_mask(T)
+    return Int(exponent_bits >> significand_bits(T)) - exponent_bias(T)
 end
+
+@inline unsafe_exponent(x::SoftFloat) = ifelse(iszero(x), -16383, exponent(x))
 
 
 @inline mantissa_leading_bit(x::T) where {T<:AbstractFloat} = !iszero(
-    (reinterpret(Unsigned, x) >> (significand_bits(T) - 1)) & one(uinttype(T)))
+    (Base.mantissa(x) >> (significand_bits(T) - 1)) & one(uinttype(T)))
+
+@inline mantissa_leading_bit(x::SoftFloat{P}) where {P} = !iszero(
+    (Base.mantissa(x) >> (P - 2)) & one(UInt32))
+
+
+@inline mantissa_trailing_bit(x::_AnyFloat) = isodd(Base.mantissa(x))
 
 
 @inline function mantissa_leading_zeros(x::T) where {T<:AbstractFloat}
-    shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
-    shifted_mask = significand_mask(T) << shift
-    return leading_zeros((reinterpret(Unsigned, x) << shift) | ~shifted_mask)
+    _shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
+    _shifted_mask = significand_mask(T) << _shift
+    return leading_zeros((Base.mantissa(x) << _shift) | ~_shifted_mask)
 end
+
+@inline mantissa_leading_zeros(x::SoftFloat{P}) where {P} =
+    min(leading_zeros(Base.mantissa(x) << (33 - P)), P - 1)
+
+
+@inline mantissa_trailing_zeros(x::T) where {T<:AbstractFloat} =
+    trailing_zeros(Base.mantissa(x) | ~significand_mask(T))
+
+@inline mantissa_trailing_zeros(x::SoftFloat{P}) where {P} =
+    min(trailing_zeros(Base.mantissa(x)), P - 1)
 
 
 @inline function mantissa_leading_ones(x::T) where {T<:AbstractFloat}
-    shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
-    shifted_mask = significand_mask(T) << shift
-    return leading_ones((reinterpret(Unsigned, x) << shift) & shifted_mask)
+    _shift = _BITS_PER_BYTE * sizeof(T) - significand_bits(T)
+    return leading_ones(Base.mantissa(x) << _shift)
 end
 
-
-@inline mantissa_leading_bits(x::AbstractFloat) = ifelse(
-    mantissa_leading_bit(x),
-    mantissa_leading_ones(x),
-    mantissa_leading_zeros(x))
+@inline mantissa_leading_ones(x::SoftFloat{P}) where {P} =
+    leading_ones(Base.mantissa(x) << (33 - P))
 
 
-@inline mantissa_trailing_bit(x::T) where {T<:AbstractFloat} = !iszero(
-    reinterpret(Unsigned, x) & one(uinttype(T)))
+@inline mantissa_trailing_ones(x::T) where {T<:AbstractFloat} =
+    trailing_ones(Base.mantissa(x))
+
+@inline mantissa_trailing_ones(x::SoftFloat{P}) where {P} =
+    min(trailing_ones(Base.mantissa(x)), P - 1)
 
 
-@inline function mantissa_trailing_zeros(x::T) where {T<:AbstractFloat}
-    return trailing_zeros(reinterpret(Unsigned, x) | ~significand_mask(T))
-end
+@inline mantissa_leading_bits(x::_AnyFloat) = ifelse(mantissa_leading_bit(x),
+    mantissa_leading_ones(x), mantissa_leading_zeros(x))
 
 
-@inline function mantissa_trailing_ones(x::T) where {T<:AbstractFloat}
-    return trailing_ones(reinterpret(Unsigned, x) & significand_mask(T))
-end
-
-
-@inline mantissa_trailing_bits(x::AbstractFloat) = ifelse(
-    mantissa_trailing_bit(x),
-    mantissa_trailing_ones(x),
-    mantissa_trailing_zeros(x))
+@inline mantissa_trailing_bits(x::_AnyFloat) = ifelse(mantissa_trailing_bit(x),
+    mantissa_trailing_ones(x), mantissa_trailing_zeros(x))
 
 
 ################################################### ABSTRACTION TYPE DEFINITIONS
@@ -205,20 +213,20 @@ end
 end
 
 
-@inline SEAbstraction(x::AbstractFloat) = SEAbstraction(
+@inline SEAbstraction(x::_AnyFloat) = SEAbstraction(
     signbit(x), unsafe_exponent(x))
 
 
-@inline SETZAbstraction(x::AbstractFloat) = SETZAbstraction(
+@inline SETZAbstraction(x::_AnyFloat) = SETZAbstraction(
     signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
 
 
-@inline SELBTZAbstraction(x::AbstractFloat) = SELBTZAbstraction(
+@inline SELBTZAbstraction(x::_AnyFloat) = SELBTZAbstraction(
     signbit(x), mantissa_leading_bit(x),
     unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_zeros(x))
 
 
-@inline SELTZOAbstraction(x::AbstractFloat) = SELTZOAbstraction(
+@inline SELTZOAbstraction(x::_AnyFloat) = SELTZOAbstraction(
     signbit(x), mantissa_leading_bit(x), mantissa_trailing_bit(x),
     unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
 
