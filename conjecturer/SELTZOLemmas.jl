@@ -173,14 +173,11 @@ function check_seltzo_two_sum_lemmas(
             end
         end
         if isempty(checker.covering_lemmas)
-            # println(stderr,
-            #     "ERROR: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
-            #     " are not covered by any lemmas.")
             push!(rs, (x, y))
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
-                "WARNING: Abstract SELTZO-TwoSum-$T inputs ($x, $y)" *
-                    " are covered by multiple lemmas:")
+                "WARNING: Abstract SELTZO-TwoSum-$T inputs ($x, $y) " *
+                    "are covered by multiple lemmas:")
             for name in checker.covering_lemmas
                 println(stderr, "    ", name)
             end

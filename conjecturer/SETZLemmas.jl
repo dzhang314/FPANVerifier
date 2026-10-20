@@ -570,14 +570,9 @@ function check_setz_two_sum_lemmas(
         end
         #! format: on
 
-        if isempty(checker.covering_lemmas)
-            println(stderr,
-                "ERROR: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
-                    " are not covered by any lemmas.")
-        elseif !isone(length(checker.covering_lemmas))
-            println(stderr,
-                "WARNING: Abstract SETZ-TwoSum-$T inputs ($x, $y)" *
-                    " are covered by multiple lemmas.")
+        if !isone(length(checker.covering_lemmas))
+            error("Abstract SETZ-TwoSum-$T inputs ($x, $y) are not covered " *
+                "by exactly one lemma.")
         end
     end
 

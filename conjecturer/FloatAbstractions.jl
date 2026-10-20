@@ -610,9 +610,6 @@ function (checker::LemmaChecker{A,E,T})(
                 checker.total_counts[lemma_name] = 1
             end
         else
-            println(stderr,
-                "ERROR: Claimed outputs of lemma $lemma_name" *
-                    " do not match actual computed outputs.")
             println(stderr, "Input 1: $(unpack(checker.x, T)) [$(checker.x)]")
             println(stderr, "Input 2: $(unpack(checker.y, T)) [$(checker.y)]")
             println(stderr, "Claimed outputs:")
@@ -623,7 +620,8 @@ function (checker::LemmaChecker{A,E,T})(
             for (r, e) in computed_outputs
                 println(stderr, "    $(unpack(r, T)), $(unpack(e, T))")
             end
-            flush(stderr)
+            error("Claimed outputs of lemma $lemma_name " *
+                "do not match actual computed outputs.")
         end
     end
     return nothing
