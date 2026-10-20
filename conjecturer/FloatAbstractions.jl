@@ -433,7 +433,8 @@ end
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
-export enumerate_abstractions, compute_value_map, two_sum, two_prod
+export enumerate_abstractions, compute_value_map, two_sum, two_prod,
+    two_sum_abstractions
 
 
 @inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
@@ -513,6 +514,24 @@ function two_prod(x::T, y::T) where {T}
     p = x * y
     e = fma(x, y, -p)
     return (p, e)
+end
+
+
+function two_sum_abstractions(
+    value_map::Dict{A,Vector{T}},
+    x::A,
+    y::A,
+) where {A<:FloatAbstraction,T<:_AnyFloat}
+    outputs = Set{UInt64}()
+    for a in value_map[x]
+        for b in value_map[y]
+            s, e = two_sum(a, b)
+            push!(outputs, (UInt64(A(s).data) << 32) | UInt64(A(e).data))
+        end
+    end
+    return sort!([
+        TwoSumAbstraction{A}(x, y, A((w >> 32) % UInt32), A(w % UInt32))
+        for w in outputs])
 end
 
 
