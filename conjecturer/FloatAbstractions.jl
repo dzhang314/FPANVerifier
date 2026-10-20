@@ -433,7 +433,7 @@ end
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
-export enumerate_abstractions, two_sum, two_prod
+export enumerate_abstractions, compute_value_map, two_sum, two_prod
 
 
 @inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
@@ -472,6 +472,29 @@ function enumerate_abstractions(
         end
     end
     return sort!(collect(result))
+end
+
+
+function compute_value_map(
+    ::Type{A},
+    ::Type{SoftFloat{P}},
+    e_min::Int,
+    e_max::Int,
+) where {A<:FloatAbstraction,P}
+    _pos_zero = zero(SoftFloat{P})
+    _neg_zero = -_pos_zero
+    result = Dict{A,Vector{SoftFloat{P}}}()
+    result[A(_pos_zero)] = [_pos_zero]
+    result[A(_neg_zero)] = [_neg_zero]
+    for s = false:true
+        for e = e_min:e_max
+            for m = (1<<(P-1)):((1<<P)-1)
+                x = SoftFloat{P}(s, e, m)
+                push!(get!(Vector{SoftFloat{P}}, result, A(x)), x)
+            end
+        end
+    end
+    return result
 end
 
 
