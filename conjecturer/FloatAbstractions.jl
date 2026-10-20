@@ -2,7 +2,6 @@ module FloatAbstractions
 
 using Base: exponent_bias, exponent_mask, significand_bits, significand_mask,
     uinttype
-using Random: shuffle!
 
 using SoftFloats: SoftFloat
 import SoftFloats: two_sum, two_prod
@@ -433,47 +432,8 @@ end
 ######################################################### EXHAUSTIVE ENUMERATION
 
 
-export enumerate_abstractions, compute_value_map, two_sum, two_prod,
+export compute_value_map, two_sum, two_prod,
     two_sum_abstractions, two_prod_abstractions
-
-
-@inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
-
-
-function enumerate_abstractions(
-    ::Type{A},
-    ::Type{T},
-) where {A<:FloatAbstraction,T<:AbstractFloat}
-    U = uinttype(T)
-    result = Set{A}()
-    for i = typemin(U):typemax(U)
-        x = reinterpret(T, i)
-        if _isnormal(x)
-            push!(result, A(x))
-        end
-    end
-    return sort!(collect(result))
-end
-
-
-function enumerate_abstractions(
-    ::Type{SELTZOAbstraction},
-    ::Type{T},
-    class::SELTZOClass,
-) where {T<:AbstractFloat}
-    U = uinttype(T)
-    result = Set{SELTZOAbstraction}()
-    for i = typemin(U):typemax(U)
-        x = reinterpret(T, i)
-        if _isnormal(x)
-            a = SELTZOAbstraction(x)
-            if seltzo_classify(a, T) == class
-                push!(result, a)
-            end
-        end
-    end
-    return sort!(collect(result))
-end
 
 
 function compute_value_map(
