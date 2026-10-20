@@ -3,10 +3,10 @@ function check_seltzo_two_sum_lemmas_v!(
     x::SELTZOAbstraction,
     y::SELTZOAbstraction,
     ::Type{T},
-) where {T<:AbstractFloat}
+) where {T}
 
     p = precision(T)
-    pos_zero = SELTZOAbstraction(+zero(T))
+    pos_zero = SELTZOAbstraction(zero(T))
     sx, lbx, tbx, ex, fx, gx = unpack(x, T)
     sy, lby, tby, ey, fy, gy = unpack(y, T)
     same_sign = (sx == sy)

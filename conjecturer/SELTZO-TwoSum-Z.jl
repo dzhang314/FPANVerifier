@@ -3,9 +3,9 @@ function check_seltzo_two_sum_lemmas_z!(
     x::SELTZOAbstraction,
     y::SELTZOAbstraction,
     ::Type{T},
-) where {T<:AbstractFloat}
+) where {T}
 
-    pos_zero = SELTZOAbstraction(+zero(T))
+    pos_zero = SELTZOAbstraction(zero(T))
     neg_zero = SELTZOAbstraction(-zero(T))
     x_zero = (x == pos_zero) | (x == neg_zero)
     y_zero = (y == pos_zero) | (y == neg_zero)

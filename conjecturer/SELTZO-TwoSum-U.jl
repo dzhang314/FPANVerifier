@@ -3,7 +3,7 @@ function check_seltzo_two_sum_lemmas_u!(
     x::SELTZOAbstraction,
     y::SELTZOAbstraction,
     ::Type{T},
-) where {T<:AbstractFloat}
+) where {T}
 
     p = precision(T)
     sx, lbx, tbx, ex, fx, gx = unpack(x, T)

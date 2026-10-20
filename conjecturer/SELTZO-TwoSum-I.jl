@@ -3,7 +3,7 @@ function check_seltzo_two_sum_lemmas_i!(
     x::SELTZOAbstraction,
     y::SELTZOAbstraction,
     ::Type{T},
-) where {T<:AbstractFloat}
+) where {T}
 
     p = precision(T)
     ex = unsafe_exponent(x)
