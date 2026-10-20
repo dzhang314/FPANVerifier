@@ -1,24 +1,17 @@
-using BFloat16s: BFloat16
-using CRC32c: crc32c
-
 push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
-
-
-const EXIT_INPUT_FILE_MISSING = 1
-const EXIT_INPUT_FILE_MALFORMED = 2
+using SoftFloats: SoftFloat
 
 
 function check_setz_two_sum_lemmas(
-    two_sum_abstractions::Vector{TwoSumAbstraction{SETZAbstraction}},
-    ::Type{T},
-) where {T<:AbstractFloat}
+    value_map::Dict{SETZAbstraction,Vector{T}},
+) where {T}
 
     ± = false:true
     p = precision(T)
-    pos_zero = SETZAbstraction(+zero(T))
+    pos_zero = SETZAbstraction(zero(T))
     neg_zero = SETZAbstraction(-zero(T))
-    abstract_inputs = enumerate_abstractions(SETZAbstraction, T)
+    abstract_inputs = sort!(collect(keys(value_map)))
     lemma_counts = Dict{String,Int}()
 
     for x in abstract_inputs, y in abstract_inputs
@@ -29,7 +22,8 @@ function check_setz_two_sum_lemmas(
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
-        checker = LemmaChecker(two_sum_abstractions, x, y, T, lemma_counts)
+        checker = LemmaChecker(
+            two_sum_abstractions(value_map, x, y), x, y, T, lemma_counts)
 
         #! format: off
         if x_zero | y_zero ################################## LEMMA FAMILY Z (2)
@@ -597,41 +591,17 @@ function check_setz_two_sum_lemmas(
 end
 
 
-function main(
-    ::Type{T},
-    expected_count::Int,
-    expected_crc::UInt32,
-) where {T<:AbstractFloat}
-    filename = "SETZ-TwoSum-$T.bin"
-    filepath = joinpath("data", filename)
-    if !isfile(filepath)
-        println(stderr,
-            "ERROR: Input file $filename not found." *
-                " Run `julia GenerateAbstractionData.jl` to" *
-                " generate the input files for this program.")
-        exit(EXIT_INPUT_FILE_MISSING)
-    end
-    expected_size = expected_count * sizeof(TwoSumAbstraction{SETZAbstraction})
-    valid = (filesize(filepath) == expected_size) &&
-        (open(crc32c, filepath) == expected_crc)
-    if !valid
-        println(stderr,
-            "ERROR: Input file $filename is malformed." *
-                " Run `julia GenerateAbstractionData.jl` to" *
-                " generate the input files for this program.")
-        exit(EXIT_INPUT_FILE_MALFORMED)
-    end
-    two_sum_abstractions =
-        Vector{TwoSumAbstraction{SETZAbstraction}}(undef, expected_count)
-    read!(filepath, two_sum_abstractions)
-    check_setz_two_sum_lemmas(two_sum_abstractions, T)
-    println("Successfully checked all SETZ-TwoSum-$T lemmas.")
+function main(::Type{SoftFloat{P}}) where {P}
+    value_map = compute_value_map(SETZAbstraction, SoftFloat{P}, -2, P)
+    check_setz_two_sum_lemmas(value_map)
+    println("Successfully checked all SETZ-TwoSum lemmas at precision $P.")
     flush(stdout)
     return nothing
 end
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    main(Float16, 3_833_700, 0x66E6D552)
-    main(BFloat16, 26_618_866, 0x1DB442CF)
+    for P = 8:12
+        main(SoftFloat{P})
+    end
 end

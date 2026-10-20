@@ -1,24 +1,17 @@
-using BFloat16s: BFloat16
-using CRC32c: crc32c
-
 push!(LOAD_PATH, @__DIR__)
 using FloatAbstractions
-
-
-const EXIT_INPUT_FILE_MISSING = 1
-const EXIT_INPUT_FILE_MALFORMED = 2
+using SoftFloats: SoftFloat
 
 
 function check_se_two_sum_lemmas(
-    two_sum_abstractions::Vector{TwoSumAbstraction{SEAbstraction}},
-    ::Type{T},
-) where {T<:AbstractFloat}
+    value_map::Dict{SEAbstraction,Vector{T}},
+) where {T}
 
     ± = false:true
     p = precision(T)
-    pos_zero = SEAbstraction(+zero(T))
+    pos_zero = SEAbstraction(zero(T))
     neg_zero = SEAbstraction(-zero(T))
-    abstract_inputs = enumerate_abstractions(SEAbstraction, T)
+    abstract_inputs = sort!(collect(keys(value_map)))
     lemma_counts = Dict{String,Int}()
 
     for x in abstract_inputs, y in abstract_inputs
@@ -29,7 +22,8 @@ function check_se_two_sum_lemmas(
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
-        checker = LemmaChecker(two_sum_abstractions, x, y, T, lemma_counts)
+        checker = LemmaChecker(
+            two_sum_abstractions(value_map, x, y), x, y, T, lemma_counts)
 
         #! format: off
         if x_zero | y_zero ###################################### LEMMA FAMILY Z
@@ -186,11 +180,11 @@ function check_se_two_sum_lemmas(
         if isempty(checker.covering_lemmas)
             println(stderr,
                 "ERROR: Abstract SE-TwoSum-$T inputs ($x, $y)" *
-                " are not covered by any lemmas.")
+                    " are not covered by any lemmas.")
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
                 "WARNING: Abstract SE-TwoSum-$T inputs ($x, $y)" *
-                " are covered by multiple lemmas.")
+                    " are covered by multiple lemmas.")
         end
     end
 
@@ -205,29 +199,26 @@ end
 
 
 function check_se_two_prod_lemmas(
-    two_prod_abstractions::Vector{TwoProdAbstraction{SEAbstraction}},
-    ::Type{T},
-) where {T<:AbstractFloat}
+    value_map::Dict{SEAbstraction,Vector{T}},
+) where {T}
 
     ± = false:true
     p = precision(T)
-    e_min = exponent(floatmin(T))
-    pos_zero = SEAbstraction(+zero(T))
+    pos_zero = SEAbstraction(zero(T))
     neg_zero = SEAbstraction(-zero(T))
-    abstract_inputs = enumerate_abstractions(SEAbstraction, T)
+    abstract_inputs = sort!(collect(keys(value_map)))
     lemma_counts = Dict{String,Int}()
 
     for x in abstract_inputs, y in abstract_inputs
 
-        sx = signbit(x)
-        sy = signbit(y)
-        ex = unsafe_exponent(x)
-        ey = unsafe_exponent(y)
+        sx, ex = unpack(x, T)
+        sy, ey = unpack(y, T)
         same_sign = (sx == sy)
         diff_sign = (sx != sy)
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
-        checker = LemmaChecker(two_prod_abstractions, x, y, T, lemma_counts)
+        checker = LemmaChecker(
+            two_prod_abstractions(value_map, x, y), x, y, T, lemma_counts)
 
         #! format: off
         if x_zero | y_zero ###################################### LEMMA FAMILY Z
@@ -247,34 +238,7 @@ function check_se_two_prod_lemmas(
             # From this point onward, all lemmas implicitly
             # assume that both factors are nonzero.
 
-            ##################################################### LEMMA FAMILY U
-
-            # Lemmas in Family U (for "underflow") apply to nonzero factors
-            # whose product is too small to have a normalized representation.
-
-            checker("SE-TwoProd-US", same_sign & (ex + ey < e_min - (p-1))) do lemma
-                add_case!(lemma, pos_zero, pos_zero)
-            end
-            checker("SE-TwoProd-UD", diff_sign & (ex + ey < e_min - (p-1))) do lemma
-                add_case!(lemma, neg_zero, neg_zero)
-            end
-
-            ##################################################### LEMMA FAMILY P
-
-            # Lemma P1 applies to cases where the product
-            # is normalized but the error term may underflow.
-
-            checker("SE-TwoProd-P1", (ex + ey > e_min - p) & (ex + ey < e_min + (p-1))) do lemma
-                add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), pos_zero                      )
-                add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), neg_zero                      )
-                add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-(p+p-2):ex+ey-p    ))
-                add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-(p+p-2):ex+ey-(p-1)))
-            end
-
-            # Lemma P2 applies to cases where the product
-            # and error term are both normalized.
-
-            checker("SE-TwoProd-P2", (ex + ey > e_min + (p-2))) do lemma
+            checker("SE-TwoProd-P", true) do lemma
                 add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), pos_zero                      )
                 add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-(p+p-2):ex+ey-p    ))
                 add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-(p+p-2):ex+ey-(p-1)))
@@ -286,11 +250,11 @@ function check_se_two_prod_lemmas(
         if isempty(checker.covering_lemmas)
             println(stderr,
                 "ERROR: Abstract SE-TwoProd-$T inputs ($x, $y)" *
-                " are not covered by any lemmas.")
+                    " are not covered by any lemmas.")
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
                 "WARNING: Abstract SE-TwoProd-$T inputs ($x, $y)" *
-                " are covered by multiple lemmas.")
+                    " are covered by multiple lemmas.")
         end
     end
 
@@ -304,77 +268,27 @@ function check_se_two_prod_lemmas(
 end
 
 
-function main_two_sum(
-    ::Type{T},
-    expected_count::Int,
-    expected_crc::UInt32,
-) where {T<:AbstractFloat}
-    filename = "SE-TwoSum-$T.bin"
-    filepath = joinpath("data", filename)
-    if !isfile(filepath)
-        println(stderr,
-            "ERROR: Input file $filename not found." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
-        exit(EXIT_INPUT_FILE_MISSING)
-    end
-    valid = (filesize(filepath) ==
-             expected_count * sizeof(TwoSumAbstraction{SEAbstraction})) &&
-            (open(crc32c, filepath) == expected_crc)
-    if !valid
-        println(stderr,
-            "ERROR: Input file $filename is malformed." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
-        exit(EXIT_INPUT_FILE_MALFORMED)
-    end
-    two_sum_abstractions =
-        Vector{TwoSumAbstraction{SEAbstraction}}(undef, expected_count)
-    read!(filepath, two_sum_abstractions)
-    check_se_two_sum_lemmas(two_sum_abstractions, T)
-    println("Successfully checked all SE-TwoSum-$T lemmas.")
+function main_two_sum(::Type{SoftFloat{P}}) where {P}
+    value_map = compute_value_map(SEAbstraction, SoftFloat{P}, -2, P)
+    check_se_two_sum_lemmas(value_map)
+    println("Successfully checked all SE-TwoSum lemmas at precision $P.")
     flush(stdout)
     return nothing
 end
 
 
-function main_two_prod(
-    ::Type{T},
-    expected_count::Int,
-    expected_crc::UInt32,
-) where {T<:AbstractFloat}
-    filename = "SE-TwoProd-$T.bin"
-    filepath = joinpath("data", filename)
-    if !isfile(filepath)
-        println(stderr,
-            "ERROR: Input file $filename not found." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
-        exit(EXIT_INPUT_FILE_MISSING)
-    end
-    valid = (filesize(filepath) ==
-             expected_count * sizeof(TwoProdAbstraction{SEAbstraction})) &&
-            (open(crc32c, filepath) == expected_crc)
-    if !valid
-        println(stderr,
-            "ERROR: Input file $filename is malformed." *
-            " Run `julia GenerateAbstractionData.jl` to" *
-            " generate the input files for this program.")
-        exit(EXIT_INPUT_FILE_MALFORMED)
-    end
-    two_prod_abstractions =
-        Vector{TwoProdAbstraction{SEAbstraction}}(undef, expected_count)
-    read!(filepath, two_prod_abstractions)
-    check_se_two_prod_lemmas(two_prod_abstractions, T)
-    println("Successfully checked all SE-TwoProd-$T lemmas.")
+function main_two_prod(::Type{SoftFloat{P}}) where {P}
+    value_map = compute_value_map(SEAbstraction, SoftFloat{P}, -2, 2)
+    check_se_two_prod_lemmas(value_map)
+    println("Successfully checked all SE-TwoProd lemmas at precision $P.")
     flush(stdout)
     return nothing
 end
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    main_two_sum(Float16, 38_638, 0x18557287)
-    main_two_sum(BFloat16, 548_026, 0xB20B9481)
-    main_two_prod(Float16, 62_524, 0x194E7F4D)
-    main_two_prod(BFloat16, 6_053_588, 0x89B01463)
+    for P = 8:12
+        main_two_sum(SoftFloat{P})
+        main_two_prod(SoftFloat{P})
+    end
 end
