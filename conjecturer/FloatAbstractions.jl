@@ -434,7 +434,7 @@ end
 
 
 export enumerate_abstractions, compute_value_map, two_sum, two_prod,
-    two_sum_abstractions
+    two_sum_abstractions, two_prod_abstractions
 
 
 @inline _isnormal(x::AbstractFloat) = isfinite(x) & !issubnormal(x)
@@ -531,6 +531,24 @@ function two_sum_abstractions(
     end
     return sort!([
         TwoSumAbstraction{A}(x, y, A((w >> 32) % UInt32), A(w % UInt32))
+        for w in outputs])
+end
+
+
+function two_prod_abstractions(
+    value_map::Dict{A,Vector{T}},
+    x::A,
+    y::A,
+) where {A<:FloatAbstraction,T<:_AnyFloat}
+    outputs = Set{UInt64}()
+    for a in value_map[x]
+        for b in value_map[y]
+            p, e = two_prod(a, b)
+            push!(outputs, (UInt64(A(p).data) << 32) | UInt64(A(e).data))
+        end
+    end
+    return sort!([
+        TwoProdAbstraction{A}(x, y, A((w >> 32) % UInt32), A(w % UInt32))
         for w in outputs])
 end
 
