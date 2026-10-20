@@ -639,6 +639,7 @@ end
 
 
 const _BoolRange = Union{Bool,UnitRange{Bool}}
+const _BitRange = Union{Int,Bool,UnitRange{Bool}}
 const _IntRange = Union{Int,UnitRange{Int}}
 const _SERange = Tuple{_BoolRange,_IntRange}
 const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
@@ -646,6 +647,16 @@ const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
 
 @inline _to_range(x::T) where {T} = x:x
 @inline _to_range(r::UnitRange{T}) where {T} = r
+
+
+@inline _to_bit_range(b::_BoolRange) = _to_range(b)
+
+@inline function _to_bit_range(b::Int)
+    if !(iszero(b) | isone(b))
+        throw(DomainError(b, "Bit must be 0 or 1."))
+    end
+    return _to_range(isone(b))
+end
 
 
 function add_case!(
@@ -732,20 +743,11 @@ struct SELBTZRange
     e_range::UnitRange{Int}
     f_range::UnitRange{Int}
     g_range::UnitRange{Int}
-end
 
-
-@inline function SELBTZRange(
-    s::Bool,
-    lb::Int,
-    e::_IntRange,
-    f::_IntRange,
-    g::_IntRange,
-)
-    if !(iszero(lb) | isone(lb))
-        throw(DomainError(lb, "Leading bit must be 0 or 1."))
-    end
-    return SELBTZRange(s:s, Bool(lb):Bool(lb),
+    @inline SELBTZRange(
+        s::_BoolRange, lb::_BitRange,
+        e::_IntRange, f::_IntRange, g::_IntRange,
+    ) = new(_to_range(s), _to_bit_range(lb),
         _to_range(e), _to_range(f), _to_range(g))
 end
 
@@ -818,24 +820,11 @@ struct SELTZORange
     e_range::UnitRange{Int}
     f_range::UnitRange{Int}
     g_range::UnitRange{Int}
-end
 
-
-@inline function SELTZORange(
-    s::Bool,
-    lb::Int,
-    tb::Int,
-    e::_IntRange,
-    f::_IntRange,
-    g::_IntRange,
-)
-    if !(iszero(lb) | isone(lb))
-        throw(DomainError(lb, "Leading bit must be 0 or 1."))
-    end
-    if !(iszero(tb) | isone(tb))
-        throw(DomainError(tb, "Trailing bit must be 0 or 1."))
-    end
-    return SELTZORange(s:s, Bool(lb):Bool(lb), Bool(tb):Bool(tb),
+    @inline SELTZORange(
+        s::_BoolRange, lb::_BitRange, tb::_BitRange,
+        e::_IntRange, f::_IntRange, g::_IntRange,
+    ) = new(_to_range(s), _to_bit_range(lb), _to_bit_range(tb),
         _to_range(e), _to_range(f), _to_range(g))
 end
 
