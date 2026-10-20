@@ -32,16 +32,10 @@ function check_se_two_sum_lemmas(
             # when one or both addends are zero.
 
             # Lemma Z1: Both addends are zero.
-            checker("SE-TwoSum-Z1-PP", (x == pos_zero) & (y == pos_zero)) do lemma
+            checker("SE-TwoSum-Z1-P", x_zero & y_zero & !(sx & sy)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-TwoSum-Z1-PN", (x == pos_zero) & (y == neg_zero)) do lemma
-                add_case!(lemma, pos_zero, pos_zero)
-            end
-            checker("SE-TwoSum-Z1-NP", (x == neg_zero) & (y == pos_zero)) do lemma
-                add_case!(lemma, pos_zero, pos_zero)
-            end
-            checker("SE-TwoSum-Z1-NN", (x == neg_zero) & (y == neg_zero)) do lemma
+            checker("SE-TwoSum-Z1-N", x_zero & y_zero & sx & sy) do lemma
                 add_case!(lemma, neg_zero, pos_zero)
             end
 

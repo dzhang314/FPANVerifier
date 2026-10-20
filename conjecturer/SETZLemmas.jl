@@ -28,10 +28,10 @@ function check_setz_two_sum_lemmas(
         #! format: off
         if x_zero | y_zero ################################## LEMMA FAMILY Z (2)
 
-            checker("SETZ-TwoSum-Z1-P", x_zero & y_zero & ((x == pos_zero) | (y == pos_zero))) do lemma
+            checker("SETZ-TwoSum-Z1-P", x_zero & y_zero & !(sx & sy)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SETZ-TwoSum-Z1-N", (x == neg_zero) & (y == neg_zero)) do lemma
+            checker("SETZ-TwoSum-Z1-N", x_zero & y_zero & sx & sy) do lemma
                 add_case!(lemma, neg_zero, pos_zero)
             end
 
