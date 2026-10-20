@@ -26,7 +26,7 @@ function check_selbtz_two_sum_lemmas(
             two_sum_abstractions(value_map, x, y), x, y, T, lemma_counts)
 
         #! format: off
-        if x_zero | y_zero
+        if x_zero | y_zero ###################################### LEMMA FAMILY Z
 
             checker("SELBTZ-TwoSum-Z1-P", x_zero & y_zero & !(sx & sy)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
@@ -42,7 +42,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, y, pos_zero)
             end
 
-        else
+        else ############################################ NONZERO LEMMA FAMILIES
 
             ###################################################### CODIMENSION 0
 

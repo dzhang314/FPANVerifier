@@ -26,7 +26,7 @@ function check_setz_two_sum_lemmas(
             two_sum_abstractions(value_map, x, y), x, y, T, lemma_counts)
 
         #! format: off
-        if x_zero | y_zero ################################## LEMMA FAMILY Z (2)
+        if x_zero | y_zero ###################################### LEMMA FAMILY Z
 
             checker("SETZ-TwoSum-Z1-P", x_zero & y_zero & !(sx & sy)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
