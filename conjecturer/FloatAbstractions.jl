@@ -571,7 +571,7 @@ end
 export LemmaChecker, add_case!, SELBTZRange, SELTZORange
 
 
-struct LemmaChecker{A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+struct LemmaChecker{A<:FloatAbstraction,E<:EFTAbstraction{A},T<:_AnyFloat}
     eft_abstractions::Vector{E}
     x::A
     y::A
@@ -586,20 +586,20 @@ function LemmaChecker(
     y::A,
     ::Type{T},
     total_counts::Dict{String,Int},
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat}
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:_AnyFloat}
     return LemmaChecker{A,E,T}(
         eft_abstractions, x, y, Set{String}(), total_counts)
 end
 
 
-struct _LemmaOutputs{A<:FloatAbstraction,T<:AbstractFloat}
+struct _LemmaOutputs{A<:FloatAbstraction,T<:_AnyFloat}
     claimed_outputs::Vector{Tuple{A,A}}
 end
 
 
 function (checker::LemmaChecker{A,E,T})(
     state_claims!::F,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat,F}
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:_AnyFloat,F}
     computed_outputs = abstract_outputs(
         checker.eft_abstractions, checker.x, checker.y)
     if isempty(computed_outputs)
@@ -615,7 +615,7 @@ function (checker::LemmaChecker{A,E,T})(
     state_claims!::F,
     lemma_name::String,
     hypothesis::Bool,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:AbstractFloat,F}
+) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:_AnyFloat,F}
     if hypothesis
         computed_outputs = abstract_outputs(
             checker.eft_abstractions, checker.x, checker.y)
@@ -656,7 +656,7 @@ function add_case!(
     lemma::_LemmaOutputs{A,T},
     r::A,
     e::A,
-) where {A<:FloatAbstraction,T<:AbstractFloat}
+) where {A<:FloatAbstraction,T<:_AnyFloat}
     push!(lemma.claimed_outputs, (r, e))
     return lemma
 end
@@ -676,7 +676,7 @@ function add_case!(
     lemma::_LemmaOutputs{SEAbstraction,T},
     (sr_range, er_range)::_SERange,
     e::SEAbstraction
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     for sr in _to_range(sr_range)
         for er in _to_range(er_range)
             r = SEAbstraction(sr, er)
@@ -691,7 +691,7 @@ function add_case!(
     lemma::_LemmaOutputs{SEAbstraction,T},
     (sr_range, er_range)::_SERange,
     (se_range, ee_range)::_SERange,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     for sr in _to_range(sr_range)
         for er in _to_range(er_range)
             for se in _to_range(se_range)
@@ -711,7 +711,7 @@ function add_case!(
     lemma::_LemmaOutputs{SETZAbstraction,T},
     (sr_range, er_range, fr_range)::_SETZRange,
     e::SETZAbstraction,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     p = precision(T)
     for sr in _to_range(sr_range)
         for er in _to_range(er_range)
@@ -729,7 +729,7 @@ function add_case!(
     lemma::_LemmaOutputs{SETZAbstraction,T},
     (sr_range, er_range, fr_range)::_SETZRange,
     (se_range, ee_range, fe_range)::_SETZRange,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     p = precision(T)
     for sr in _to_range(sr_range)
         for er in _to_range(er_range)
@@ -778,7 +778,7 @@ function add_case!(
     lemma::_LemmaOutputs{SELBTZAbstraction,T},
     r::SELBTZRange,
     e::SELBTZAbstraction,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     p = precision(T)
     for sr in r.s_range
         for lbr in r.lb_range
@@ -802,7 +802,7 @@ function add_case!(
     lemma::_LemmaOutputs{SELBTZAbstraction,T},
     r::SELBTZRange,
     e::SELBTZRange,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     p = precision(T)
     for sr in r.s_range
         for lbr in r.lb_range
@@ -868,7 +868,7 @@ function add_case!(
     lemma::_LemmaOutputs{SELTZOAbstraction,T},
     r::SELTZORange,
     e::SELTZOAbstraction,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     p = precision(T)
     for sr in r.s_range
         for lbr in r.lb_range
@@ -894,7 +894,7 @@ function add_case!(
     lemma::_LemmaOutputs{SELTZOAbstraction,T},
     r::SELTZORange,
     e::SELTZORange,
-) where {T<:AbstractFloat}
+) where {T<:_AnyFloat}
     p = precision(T)
     for sr in r.s_range
         for lbr in r.lb_range
