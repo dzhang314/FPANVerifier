@@ -664,27 +664,12 @@ end
 
 const _BoolRange = Union{Bool,UnitRange{Bool}}
 const _IntRange = Union{Int,UnitRange{Int}}
-
-
-@inline _lemma_range_s(b::Bool) = b:b
-
-@inline _lemma_range_s(r::UnitRange{Bool}) = r
-
-
-@inline function _lemma_range_e(
-    r::UnitRange{Int},
-    ::Type{T},
-) where {T<:AbstractFloat}
-    e_min = exponent(floatmin(T))
-    e_max = exponent(floatmax(T))
-    return max(r.start, e_min):min(r.stop, e_max)
-end
-
-@inline _lemma_range_e(i::Int, ::Type{T}) where {T<:AbstractFloat} =
-    _lemma_range_e(i:i, T)
-
-
 const _SERange = Tuple{_BoolRange,_IntRange}
+const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
+
+
+@inline _to_range(x::T) where {T} = x:x
+@inline _to_range(r::UnitRange{T}) where {T} = r
 
 
 function add_case!(
@@ -692,8 +677,8 @@ function add_case!(
     (sr_range, er_range)::_SERange,
     e::SEAbstraction
 ) where {T<:AbstractFloat}
-    for sr in _lemma_range_s(sr_range)
-        for er in _lemma_range_e(er_range, T)
+    for sr in _to_range(sr_range)
+        for er in _to_range(er_range)
             r = SEAbstraction(sr, er)
             push!(lemma.claimed_outputs, (r, e))
         end
@@ -707,10 +692,10 @@ function add_case!(
     (sr_range, er_range)::_SERange,
     (se_range, ee_range)::_SERange,
 ) where {T<:AbstractFloat}
-    for sr in _lemma_range_s(sr_range)
-        for er in _lemma_range_e(er_range, T)
-            for se in _lemma_range_s(se_range)
-                for ee in _lemma_range_e(ee_range, T)
+    for sr in _to_range(sr_range)
+        for er in _to_range(er_range)
+            for se in _to_range(se_range)
+                for ee in _to_range(ee_range)
                     r = SEAbstraction(sr, er)
                     e = SEAbstraction(se, ee)
                     push!(lemma.claimed_outputs, (r, e))
@@ -722,32 +707,15 @@ function add_case!(
 end
 
 
-@inline function _lemma_range_t(
-    r::UnitRange{Int},
-    ::Type{T},
-) where {T<:AbstractFloat}
-    p = precision(T)
-    t_min = exponent(floatmin(T)) - (p - 1)
-    t_max = exponent(floatmax(T))
-    return max(r.start, t_min):min(r.stop, t_max)
-end
-
-@inline _lemma_range_t(i::Int, ::Type{T}) where {T<:AbstractFloat} =
-    _lemma_range_t(i:i, T)
-
-
-const _SETZRange = Tuple{_BoolRange,_IntRange,_IntRange}
-
-
 function add_case!(
     lemma::_LemmaOutputs{SETZAbstraction,T},
     (sr_range, er_range, fr_range)::_SETZRange,
     e::SETZAbstraction,
 ) where {T<:AbstractFloat}
     p = precision(T)
-    for sr in _lemma_range_s(sr_range)
-        for er in _lemma_range_e(er_range, T)
-            for fr in _lemma_range_t(fr_range, T)
+    for sr in _to_range(sr_range)
+        for er in _to_range(er_range)
+            for fr in _to_range(fr_range)
                 r = SETZAbstraction(sr, er, (p - 1) - (er - fr))
                 push!(lemma.claimed_outputs, (r, e))
             end
@@ -763,12 +731,12 @@ function add_case!(
     (se_range, ee_range, fe_range)::_SETZRange,
 ) where {T<:AbstractFloat}
     p = precision(T)
-    for sr in _lemma_range_s(sr_range)
-        for er in _lemma_range_e(er_range, T)
-            for fr in _lemma_range_t(fr_range, T)
-                for se in _lemma_range_s(se_range)
-                    for ee in _lemma_range_e(ee_range, T)
-                        for fe in _lemma_range_t(fe_range, T)
+    for sr in _to_range(sr_range)
+        for er in _to_range(er_range)
+            for fr in _to_range(fr_range)
+                for se in _to_range(se_range)
+                    for ee in _to_range(ee_range)
+                        for fe in _to_range(fe_range)
                             r = SETZAbstraction(sr, er, (p - 1) - (er - fr))
                             e = SETZAbstraction(se, ee, (p - 1) - (ee - fe))
                             push!(lemma.claimed_outputs, (r, e))
@@ -780,10 +748,6 @@ function add_case!(
     end
     return lemma
 end
-
-
-@inline _to_range(n::Int) = n:n
-@inline _to_range(r::UnitRange{Int}) = r
 
 
 struct SELBTZRange
@@ -818,9 +782,9 @@ function add_case!(
     p = precision(T)
     for sr in r.s_range
         for lbr in r.lb_range
-            for er in _lemma_range_e(r.e_range, T)
+            for er in r.e_range
                 for fr in r.f_range
-                    for gr in _lemma_range_t(r.g_range, T)
+                    for gr in r.g_range
                         nlbr = (er - fr) - 1
                         ntzr = (p - 1) - (er - gr)
                         push!(lemma.claimed_outputs, (
@@ -842,14 +806,14 @@ function add_case!(
     p = precision(T)
     for sr in r.s_range
         for lbr in r.lb_range
-            for er in _lemma_range_e(r.e_range, T)
+            for er in r.e_range
                 for fr in r.f_range
-                    for gr in _lemma_range_t(r.g_range, T)
+                    for gr in r.g_range
                         for se in e.s_range
                             for lbe in e.lb_range
-                                for ee in _lemma_range_e(e.e_range, T)
+                                for ee in e.e_range
                                     for fe in e.f_range
-                                        for ge in _lemma_range_t(e.g_range, T)
+                                        for ge in e.g_range
                                             nlbr = (er - fr) - 1
                                             ntzr = (p - 1) - (er - gr)
                                             nlbe = (ee - fe) - 1
@@ -909,9 +873,9 @@ function add_case!(
     for sr in r.s_range
         for lbr in r.lb_range
             for tbr in r.tb_range
-                for er in _lemma_range_e(r.e_range, T)
+                for er in r.e_range
                     for fr in r.f_range
-                        for gr in _lemma_range_t(r.g_range, T)
+                        for gr in r.g_range
                             nlbr = (er - fr) - 1
                             ntbr = (p - 1) - (er - gr)
                             push!(lemma.claimed_outputs, (
@@ -935,15 +899,15 @@ function add_case!(
     for sr in r.s_range
         for lbr in r.lb_range
             for tbr in r.tb_range
-                for er in _lemma_range_e(r.e_range, T)
+                for er in r.e_range
                     for fr in r.f_range
-                        for gr in _lemma_range_t(r.g_range, T)
+                        for gr in r.g_range
                             for se in e.s_range
                                 for lbe in e.lb_range
                                     for tbe in e.tb_range
-                                        for ee in _lemma_range_e(e.e_range, T)
+                                        for ee in e.e_range
                                             for fe in e.f_range
-                                                for ge in _lemma_range_t(e.g_range, T)
+                                                for ge in e.g_range
                                                     nlbr = (er - fr) - 1
                                                     ntbr = (p - 1) - (er - gr)
                                                     nlbe = (ee - fe) - 1
