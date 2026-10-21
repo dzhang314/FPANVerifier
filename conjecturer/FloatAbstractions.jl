@@ -229,16 +229,6 @@ end
     unsafe_exponent(x), mantissa_leading_bits(x), mantissa_trailing_bits(x))
 
 
-@inline TwoSumAbstraction{A}(x::T, y::T, s::T, e::T) where
-{A<:FloatAbstraction,T<:_AnyFloat} =
-    TwoSumAbstraction{A}(A(x), A(y), A(s), A(e))
-
-
-@inline TwoProdAbstraction{A}(x::T, y::T, p::T, e::T) where
-{A<:FloatAbstraction,T<:_AnyFloat} =
-    TwoProdAbstraction{A}(A(x), A(y), A(p), A(e))
-
-
 ##################################################### ABSTRACTION DATA ACCESSORS
 
 
@@ -370,15 +360,9 @@ end
 export unpack
 
 
-@inline unpack(x::SEAbstraction) =
-    (signbit(x), unsafe_exponent(x))
-
 @inline unpack(x::SEAbstraction, ::Type{T}) where {T<:_AnyFloat} =
     (signbit(x), unsafe_exponent(x))
 
-
-@inline unpack(x::SETZAbstraction) =
-    (signbit(x), unsafe_exponent(x), mantissa_trailing_zeros(x))
 
 @inline function unpack(x::SETZAbstraction, ::Type{T}) where {T<:_AnyFloat}
     p = precision(T)
@@ -388,14 +372,6 @@ export unpack
     return (s, e, f)
 end
 
-
-@inline unpack(x::SELBTZAbstraction) = (
-    signbit(x),
-    mantissa_leading_bit(x),
-    unsafe_exponent(x),
-    mantissa_leading_bits(x),
-    mantissa_trailing_zeros(x),
-)
 
 @inline function unpack(x::SELBTZAbstraction, ::Type{T}) where {T<:_AnyFloat}
     p = precision(T)
@@ -407,15 +383,6 @@ end
     return (s, lb, e, f, g)
 end
 
-
-@inline unpack(x::SELTZOAbstraction) = (
-    signbit(x),
-    mantissa_leading_bit(x),
-    mantissa_trailing_bit(x),
-    unsafe_exponent(x),
-    mantissa_leading_bits(x),
-    mantissa_trailing_bits(x),
-)
 
 @inline function unpack(x::SELTZOAbstraction, ::Type{T}) where {T<:_AnyFloat}
     p = precision(T)
@@ -584,9 +551,6 @@ function (checker::LemmaChecker{A,E,T})(
     if hypothesis
         computed_outputs = abstract_outputs(
             checker.eft_abstractions, checker.x, checker.y)
-        if isempty(computed_outputs)
-            return nothing
-        end
         lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
         state_claims!(lemma)
         sort!(lemma.claimed_outputs)
