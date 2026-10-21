@@ -30927,7 +30927,7 @@ function check_selbtz_two_sum_lemmas(
 end
 
 
-function main(::Type{SoftFloat{P}}) where {P}
+function main_two_sum(::Type{SoftFloat{P}}) where {P}
     value_map = compute_value_map(SELBTZAbstraction, SoftFloat{P}, -2, P)
     check_selbtz_two_sum_lemmas(value_map)
     println("Successfully checked all SELBTZ-TwoSum lemmas at precision $P.")
@@ -30937,7 +30937,7 @@ end
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    for P = 8:12
-        main(SoftFloat{P})
+    for P = 7:12
+        main_two_sum(SoftFloat{P})
     end
 end
