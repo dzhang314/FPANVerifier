@@ -91,29 +91,6 @@ else
 end
 
 
-struct ReservoirSampler{T}
-    reservoir::Vector{T}
-    population_size::Array{Int,0}
-
-    @inline ReservoirSampler{T}(k::Int) where {T} =
-        new{T}(Vector{T}(undef, k), fill(0))
-end
-
-
-function Base.push!(rs::ReservoirSampler{T}, x::T) where {T}
-    rs.population_size[] += 1
-    if rs.population_size[] <= length(rs.reservoir)
-        rs.reservoir[rs.population_size[]] = x
-    else
-        i = rand(1:rs.population_size[])
-        if i <= length(rs.reservoir)
-            rs.reservoir[i] = x
-        end
-    end
-    return rs
-end
-
-
 const VAL_CX = Val{CLASS_X}()
 const VAL_CY = Val{CLASS_Y}()
 const VAL_SS = Val{SAME_SIGN}()
@@ -128,7 +105,7 @@ function check_seltzo_two_sum_lemmas(
     xs = [x for x in abstract_inputs if seltzo_classify(x, T) == CLASS_X]
     ys = [y for y in abstract_inputs if seltzo_classify(y, T) == CLASS_Y]
     case_counts = Dict{String,Int}()
-    rs = ReservoirSampler{Tuple{SELTZOAbstraction,SELTZOAbstraction}}(5)
+    unverified_count = 0
 
     for x in xs, y in ys
         checker = LemmaChecker(
@@ -173,7 +150,7 @@ function check_seltzo_two_sum_lemmas(
             end
         end
         if isempty(checker.covering_lemmas)
-            push!(rs, (x, y))
+            unverified_count += 1
         elseif !isone(length(checker.covering_lemmas))
             println(stderr,
                 "WARNING: Abstract SELTZO-TwoSum-$T inputs ($x, $y) " *
@@ -189,7 +166,7 @@ function check_seltzo_two_sum_lemmas(
         println("    $name: $n")
     end
 
-    println("Unverified cases: $(rs.population_size[])")
+    println("Unverified cases: $unverified_count")
 
     return nothing
 end
