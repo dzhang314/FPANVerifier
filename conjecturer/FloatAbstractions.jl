@@ -577,22 +577,9 @@ end
 
 function (checker::LemmaChecker{A,E,T})(
     state_claims!::F,
-) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:_AnyFloat,F}
-    computed_outputs = abstract_outputs(
-        checker.eft_abstractions, checker.x, checker.y)
-    if isempty(computed_outputs)
-        return false
-    end
-    lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
-    state_claims!(lemma)
-    return computed_outputs == sort!(lemma.claimed_outputs)
-end
-
-
-function (checker::LemmaChecker{A,E,T})(
-    state_claims!::F,
     lemma_name::String,
-    hypothesis::Bool,
+    hypothesis::Bool;
+    exact::Bool=true,
 ) where {A<:FloatAbstraction,E<:EFTAbstraction{A},T<:_AnyFloat,F}
     if hypothesis
         computed_outputs = abstract_outputs(
@@ -602,7 +589,10 @@ function (checker::LemmaChecker{A,E,T})(
         end
         lemma = _LemmaOutputs{A,T}(Tuple{A,A}[])
         state_claims!(lemma)
-        if computed_outputs == sort!(lemma.claimed_outputs)
+        sort!(lemma.claimed_outputs)
+        valid = exact ? (computed_outputs == lemma.claimed_outputs) :
+                issubset(computed_outputs, lemma.claimed_outputs)
+        if valid
             push!(checker.covering_lemmas, lemma_name)
             if haskey(checker.total_counts, lemma_name)
                 checker.total_counts[lemma_name] += 1
@@ -620,8 +610,13 @@ function (checker::LemmaChecker{A,E,T})(
             for (r, e) in computed_outputs
                 println(stderr, "    $(unpack(r, T)), $(unpack(e, T))")
             end
-            error("Claimed outputs of lemma $lemma_name " *
-                "do not match actual computed outputs.")
+            if exact
+                error("Claimed outputs of lemma $lemma_name " *
+                    "do not match actual computed outputs.")
+            else
+                error("Claimed outputs of lemma $lemma_name " *
+                    "do not contain all computed outputs.")
+            end
         end
     end
     return nothing
