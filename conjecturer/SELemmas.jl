@@ -77,40 +77,31 @@ function check_se_two_sum_lemmas(
                 add_case!(lemma, y            , x                   )
             end
 
-            checker("SE-TwoSum-S2-X", same_sign & (ex == ey + (p-1))) do lemma
-                add_case!(lemma, (sx, ex:ex+1), pos_zero          )
-                add_case!(lemma, (sx, ex:ex+1), (±, ey-(p-1):ex-p))
+            checker("SE-TwoSum-S2-X", same_sign & ((ex == ey + (p-1)) | (ex == ey + (p-2)))) do lemma
+                add_case!(lemma, (sx, ex:ex+1), pos_zero)
+                add_case!(lemma, (sx, ex     ), ( ± , ey-(p-1):ex-p))
+                add_case!(lemma, (sx, ex+1   ), (~sy, ey-(p-1):ex-p))
+                add_case!(lemma, (sx, ex+1   ), ( sy, ey-(p-1):ey-1))
             end
-            checker("SE-TwoSum-S2-Y", same_sign & (ey == ex + (p-1))) do lemma
-                add_case!(lemma, (sy, ey:ey+1), pos_zero          )
-                add_case!(lemma, (sy, ey:ey+1), (±, ex-(p-1):ey-p))
-            end
-
-            checker("SE-TwoSum-S3-X", same_sign & (ex == ey + (p-2))) do lemma
-                add_case!(lemma, (sx, ex:ex+1), pos_zero                )
-                add_case!(lemma, (sx, ex:ex+1), (~sy, ey-(p-1):ex-p    ))
-                add_case!(lemma, (sx, ex     ), ( sy, ey-(p-1):ex-p    ))
-                add_case!(lemma, (sx, ex+1   ), ( sy, ey-(p-1):ex-(p-1)))
-            end
-            checker("SE-TwoSum-S3-Y", same_sign & (ey == ex + (p-2))) do lemma
-                add_case!(lemma, (sy, ey:ey+1), pos_zero                )
-                add_case!(lemma, (sy, ey:ey+1), (~sx, ex-(p-1):ey-p    ))
-                add_case!(lemma, (sy, ey     ), ( sx, ex-(p-1):ey-p    ))
-                add_case!(lemma, (sy, ey+1   ), ( sx, ex-(p-1):ey-(p-1)))
+            checker("SE-TwoSum-S2-Y", same_sign & ((ey == ex + (p-1)) | (ey == ex + (p-2)))) do lemma
+                add_case!(lemma, (sy, ey:ey+1), pos_zero)
+                add_case!(lemma, (sy, ey     ), ( ± , ex-(p-1):ey-p))
+                add_case!(lemma, (sy, ey+1   ), (~sx, ex-(p-1):ey-p))
+                add_case!(lemma, (sy, ey+1   ), ( sx, ex-(p-1):ex-1))
             end
 
-            checker("SE-TwoSum-S4-X", same_sign & (ex > ey) & (ex < ey + (p-2))) do lemma
-                add_case!(lemma, (sx, ex:ex+1), pos_zero              )
+            checker("SE-TwoSum-S3-X", same_sign & (ex > ey) & (ex < ey + (p-2))) do lemma
+                add_case!(lemma, (sx, ex:ex+1), pos_zero)
                 add_case!(lemma, (sx, ex     ), (±, ey-(p-1):ex-p    ))
                 add_case!(lemma, (sx, ex+1   ), (±, ey-(p-1):ex-(p-1)))
             end
-            checker("SE-TwoSum-S4-Y", same_sign & (ey > ex) & (ey < ex + (p-2))) do lemma
-                add_case!(lemma, (sy, ey:ey+1), pos_zero              )
+            checker("SE-TwoSum-S3-Y", same_sign & (ey > ex) & (ey < ex + (p-2))) do lemma
+                add_case!(lemma, (sy, ey:ey+1), pos_zero)
                 add_case!(lemma, (sy, ey     ), (±, ex-(p-1):ey-p    ))
                 add_case!(lemma, (sy, ey+1   ), (±, ex-(p-1):ey-(p-1)))
             end
 
-            checker("SE-TwoSum-S5", same_sign & (ex == ey)) do lemma
+            checker("SE-TwoSum-S4", same_sign & (ex == ey)) do lemma
                 add_case!(lemma, (sx, ex+1), pos_zero)
                 add_case!(lemma, (sx, ex+1), (±, ex-(p-1)))
             end
@@ -129,14 +120,14 @@ function check_se_two_sum_lemmas(
             end
 
             checker("SE-TwoSum-D2-X", diff_sign & (ex == ey + p)) do lemma
-                add_case!(lemma, (sx, ex-1), pos_zero                )
+                add_case!(lemma, (sx, ex-1), pos_zero)
                 add_case!(lemma, (sx, ex-1), ( sy, ey-(p-1):ex-(p+2)))
                 add_case!(lemma, (sx, ex-1), (~sy, ey-(p-1):ex-(p+1)))
                 add_case!(lemma, (sx, ex  ), (~sy, ey-(p-1):ex-p    ))
                 add_case!(lemma, x         , y                       )
             end
             checker("SE-TwoSum-D2-Y", diff_sign & (ey == ex + p)) do lemma
-                add_case!(lemma, (sy, ey-1), pos_zero                )
+                add_case!(lemma, (sy, ey-1), pos_zero)
                 add_case!(lemma, (sy, ey-1), ( sx, ex-(p-1):ey-(p+2)))
                 add_case!(lemma, (sy, ey-1), (~sx, ex-(p-1):ey-(p+1)))
                 add_case!(lemma, (sy, ey  ), (~sx, ex-(p-1):ey-p    ))
@@ -144,22 +135,22 @@ function check_se_two_sum_lemmas(
             end
 
             checker("SE-TwoSum-D3-X", diff_sign & (ex > ey + 1) & (ex < ey + p)) do lemma
-                add_case!(lemma, (sx, ex-1:ex), pos_zero              )
+                add_case!(lemma, (sx, ex-1:ex), pos_zero)
                 add_case!(lemma, (sx, ex-1   ), (±, ey-(p-1):ex-(p+1)))
                 add_case!(lemma, (sx, ex     ), (±, ey-(p-1):ex-p    ))
             end
             checker("SE-TwoSum-D3-Y", diff_sign & (ey > ex + 1) & (ey < ex + p)) do lemma
-                add_case!(lemma, (sy, ey-1:ey), pos_zero              )
+                add_case!(lemma, (sy, ey-1:ey), pos_zero)
                 add_case!(lemma, (sy, ey-1   ), (±, ex-(p-1):ey-(p+1)))
                 add_case!(lemma, (sy, ey     ), (±, ex-(p-1):ey-p    ))
             end
 
             checker("SE-TwoSum-D4-X", diff_sign & (ex == ey + 1)) do lemma
-                add_case!(lemma, (sx, ex-p:ex), pos_zero )
+                add_case!(lemma, (sx, ex-p:ex), pos_zero)
                 add_case!(lemma, (sx, ex     ), (±, ex-p))
             end
             checker("SE-TwoSum-D4-Y", diff_sign & (ey == ex + 1)) do lemma
-                add_case!(lemma, (sy, ey-p:ey), pos_zero )
+                add_case!(lemma, (sy, ey-p:ey), pos_zero)
                 add_case!(lemma, (sy, ey     ), (±, ey-p))
             end
 
@@ -202,8 +193,8 @@ function check_se_two_prod_lemmas(
 
         sx, ex = unpack(x, T)
         sy, ey = unpack(y, T)
-        same_sign = (sx == sy)
-        diff_sign = (sx != sy)
+        sp = xor(sx, sy)
+        exy = ex + ey
         x_zero = (x == pos_zero) | (x == neg_zero)
         y_zero = (y == pos_zero) | (y == neg_zero)
         checker = LemmaChecker(
@@ -215,10 +206,10 @@ function check_se_two_prod_lemmas(
             # Lemmas in Family Z (for "zero") apply
             # when one or both factors are zero.
 
-            checker("SE-TwoProd-ZS", same_sign) do lemma
+            checker("SE-TwoProd-ZS", !sp) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
-            checker("SE-TwoProd-ZD", diff_sign) do lemma
+            checker("SE-TwoProd-ZD", sp) do lemma
                 add_case!(lemma, neg_zero, pos_zero)
             end
 
@@ -228,9 +219,9 @@ function check_se_two_prod_lemmas(
             # assume that both factors are nonzero.
 
             checker("SE-TwoProd-P", true) do lemma
-                add_case!(lemma, (xor(sx, sy), ex+ey:ex+ey+1), pos_zero                      )
-                add_case!(lemma, (xor(sx, sy), ex+ey        ), (±, ex+ey-(p+p-2):ex+ey-p    ))
-                add_case!(lemma, (xor(sx, sy), ex+ey+1      ), (±, ex+ey-(p+p-2):ex+ey-(p-1)))
+                add_case!(lemma, (sp, exy:exy+1), pos_zero)
+                add_case!(lemma, (sp, exy      ), (±, exy-(p+p-2):exy-p    ))
+                add_case!(lemma, (sp, exy+1    ), (±, exy-(p+p-2):exy-(p-1)))
             end
 
         end
@@ -271,8 +262,10 @@ end
 
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    for P = 8:12
+    for P = 4:12
         main_two_sum(SoftFloat{P})
+    end
+    for P = 5:12
         main_two_prod(SoftFloat{P})
     end
 end
