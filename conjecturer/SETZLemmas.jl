@@ -162,15 +162,15 @@ function check_setz_two_sum_lemmas(
             end
 
             checker("SETZ-TwoSum-LDAB-X", diff_sign & (ex == ey + 1) & (fx == fy)) do lemma
-                for k = fx+1:ex-1
-                    add_case!(lemma, (sx, k, fx+1:k), pos_zero)
+                for es = fx+1:ex-1
+                    add_case!(lemma, (sx, es, fx+1:es), pos_zero)
                 end
                 add_case!(lemma, (sx, ex, fx+1:ex-2), pos_zero)
                 add_case!(lemma, (sx, ex,      ex  ), pos_zero)
             end
             checker("SETZ-TwoSum-LDAB-Y", diff_sign & (ey == ex + 1) & (fy == fx)) do lemma
-                for k = fy+1:ey-1
-                    add_case!(lemma, (sy, k, fy+1:k), pos_zero)
+                for es = fy+1:ey-1
+                    add_case!(lemma, (sy, es, fy+1:es), pos_zero)
                 end
                 add_case!(lemma, (sy, ey, fy+1:ey-2), pos_zero)
                 add_case!(lemma, (sy, ey,      ey  ), pos_zero)
@@ -178,8 +178,8 @@ function check_setz_two_sum_lemmas(
 
             checker("SETZ-TwoSum-LDAC", diff_sign & (ex == ey) & (fx == fy)) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
-                for k = fx+1:ex-1
-                    add_case!(lemma, (±, k, fx+1:k), pos_zero)
+                for es = fx+1:ex-1
+                    add_case!(lemma, (±, es, fx+1:es), pos_zero)
                 end
             end
 
@@ -586,7 +586,126 @@ function check_setz_two_sum_lemmas(
 end
 
 
-function main(::Type{SoftFloat{P}}) where {P}
+function check_setz_two_prod_lemmas(
+    value_map::Dict{SETZAbstraction,Vector{T}},
+) where {T}
+
+    ± = false:true
+    p = precision(T)
+    pos_zero = SETZAbstraction(zero(T))
+    neg_zero = SETZAbstraction(-zero(T))
+    abstract_inputs = sort!(collect(keys(value_map)))
+    lemma_counts = Dict{String,Int}()
+
+    for x in abstract_inputs, y in abstract_inputs
+
+        sx, ex, fx = unpack(x, T)
+        sy, ey, fy = unpack(y, T)
+        sp = xor(sx, sy)
+        exy = ex + ey
+        fxy = fx + fy
+        x_zero = (x == pos_zero) | (x == neg_zero)
+        y_zero = (y == pos_zero) | (y == neg_zero)
+        checker = LemmaChecker(
+            two_prod_abstractions(value_map, x, y), x, y, T, lemma_counts)
+
+        #! format: off
+        if x_zero | y_zero ###################################### LEMMA FAMILY Z
+
+            checker("SETZ-TwoProd-ZS", ~sp) do lemma
+                add_case!(lemma, pos_zero, pos_zero)
+            end
+            checker("SETZ-TwoProd-ZD", sp) do lemma
+                add_case!(lemma, neg_zero, pos_zero)
+            end
+
+        else ############################################ NONZERO LEMMA FAMILIES
+
+            checker("SETZ-TwoProd-1", (ex > fx) & (ey > fy) & (exy > fxy + 2) & (exy < fxy + (p-1))) do lemma
+                add_case!(lemma, (sp, exy:exy+1, fxy), pos_zero)
+            end
+
+            checker("SETZ-TwoProd-1A", (ex > fx + 2) & (ey > fy + 2) & (exy == fxy + (p-1)); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy        ), pos_zero)
+                add_case!(lemma, (sp, exy+1, fxy+2:exy  ), (± , fxy, fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), (sp, fxy, fxy))
+            end
+
+            checker("SETZ-TwoProd-1A1", ((ex == fx + 1) | (ey == fy + 1)) & (exy == fxy + (p-1)); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy        ), pos_zero)
+                add_case!(lemma, (sp, exy+1, fxy+2:exy-1), (± , fxy, fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), (sp, fxy, fxy))
+            end
+
+            checker("SETZ-TwoProd-1A2", (ex > fx + 1) & (ey > fy + 1) & ((ex == fx + 2) | (ey == fy + 2)) & (exy == fxy + (p-1)); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy        ), pos_zero)
+                add_case!(lemma, (sp, exy+1, fxy+2:exy-2), (± , fxy, fxy))
+                add_case!(lemma, (sp, exy+1, exy-1:exy+1), (sp, fxy, fxy))
+            end
+
+            checker("SETZ-TwoProd-1B0", (ex == fx) | (ey == fy)) do lemma
+                add_case!(lemma, (sp, exy, fxy), pos_zero)
+            end
+
+            checker("SETZ-TwoProd-1B1", (ex == fx + 1) & (ey == fy + 1)) do lemma
+                add_case!(lemma, (sp, exy+1, fxy), pos_zero)
+            end
+
+            checker("SETZ-TwoProd-2", (ex > fx + 2) & (ey > fy + 2) & (exy > fxy + p); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , exy-(p-1):exy-1), ( ± , fxy:exy-(p+1), fxy))
+                add_case!(lemma, (sp, exy+1, exy-(p-2):exy  ), ( ± , fxy:exy-p    , fxy))
+                add_case!(lemma, (sp, exy+1,           exy+1), ( sp, fxy:exy-p    , fxy))
+                add_case!(lemma, (sp, exy+1,           exy+1), (~sp, fxy:exy-(p+1), fxy))
+            end
+
+            checker("SETZ-TwoProd-2A", (ex > fx + 2) & (ey > fy + 2) & (exy == fxy + p); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy+2:exy-1), (±, fxy, fxy))
+                add_case!(lemma, (sp, exy+1, fxy+2:exy  ), (±, fxy, fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), (±, fxy, fxy))
+            end
+
+            checker("SETZ-TwoProd-2A1", ((ex == fx + 1) | (ey == fy + 1)) & (exy == fxy + p); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy+2:exy-2), (±, fxy, fxy))
+                add_case!(lemma, (sp, exy+1, fxy+2:exy-1), (±, fxy, fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), (±, fxy, fxy))
+            end
+
+            checker("SETZ-TwoProd-2A2", (ex > fx + 1) & (ey > fy + 1) & ((ex == fx + 2) | (ey == fy + 2)) & (exy == fxy + p); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy+2:exy-1), ( ± , fxy, fxy))
+                add_case!(lemma, (sp, exy+1, fxy+2:exy-2), ( ± , fxy, fxy))
+                add_case!(lemma, (sp, exy+1, exy-1:exy+1), ( sp, fxy, fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), (~sp, fxy, fxy))
+            end
+
+            checker("SETZ-TwoProd-2B", ((ex == fx + 2) | (ey == fy + 2)) & (exy == fxy + (p+1)); exact=false) do lemma
+                add_case!(lemma, (sp, exy  , fxy+2:exy-1), ( ± , fxy      , fxy))
+                add_case!(lemma, (sp, exy+1, fxy+3:exy-2), ( ± , fxy:fxy+1, fxy))
+                add_case!(lemma, (sp, exy+1, exy-1:exy  ), ( sp, fxy      , fxy))
+                add_case!(lemma, (sp, exy+1, exy-1:exy  ), (~sp, fxy+1    , fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), ( sp, fxy:fxy+1, fxy))
+                add_case!(lemma, (sp, exy+1,       exy+1), (~sp, fxy      , fxy))
+            end
+
+        end
+        #! format: on
+
+        if !isone(length(checker.covering_lemmas))
+            error("Abstract SETZ-TwoProd-$T inputs ($x, $y) are not covered " *
+                "by exactly one lemma.")
+        end
+    end
+
+    println("SETZ-TwoProd-$T lemmas:")
+    for (name, n) in sort!(collect(lemma_counts))
+        println("    $name: $n")
+    end
+    flush(stdout)
+
+    return nothing
+end
+
+
+function main_two_sum(::Type{SoftFloat{P}}) where {P}
     value_map = compute_value_map(SETZAbstraction, SoftFloat{P}, -2, P)
     check_setz_two_sum_lemmas(value_map)
     println("Successfully checked all SETZ-TwoSum lemmas at precision $P.")
@@ -595,8 +714,20 @@ function main(::Type{SoftFloat{P}}) where {P}
 end
 
 
+function main_two_prod(::Type{SoftFloat{P}}) where {P}
+    value_map = compute_value_map(SETZAbstraction, SoftFloat{P}, -2, 2)
+    check_setz_two_prod_lemmas(value_map)
+    println("Successfully checked all SETZ-TwoProd lemmas at precision $P.")
+    flush(stdout)
+    return nothing
+end
+
+
 if abspath(PROGRAM_FILE) == @__FILE__
-    for P = 8:12
-        main(SoftFloat{P})
+    for P = 4:12
+        main_two_sum(SoftFloat{P})
+    end
+    for P = 4:12
+        main_two_prod(SoftFloat{P})
     end
 end

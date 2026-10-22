@@ -206,7 +206,7 @@ function check_se_two_prod_lemmas(
             # Lemmas in Family Z (for "zero") apply
             # when one or both factors are zero.
 
-            checker("SE-TwoProd-ZS", !sp) do lemma
+            checker("SE-TwoProd-ZS", ~sp) do lemma
                 add_case!(lemma, pos_zero, pos_zero)
             end
             checker("SE-TwoProd-ZD", sp) do lemma
