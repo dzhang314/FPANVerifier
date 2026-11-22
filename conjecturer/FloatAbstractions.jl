@@ -696,6 +696,9 @@ function add_case!(
 end
 
 
+const _ALL_INT = typemin(Int):typemax(Int)
+
+
 struct SELBTZRange
     s_range::UnitRange{Bool}
     lb_range::UnitRange{Bool}
@@ -708,6 +711,22 @@ struct SELBTZRange
         e::_IntRange, f::_IntRange, g::_IntRange,
     ) = new(_to_range(s), _to_bit_range(lb),
         _to_range(e), _to_range(f), _to_range(g))
+
+    @inline SELBTZRange(s::_BoolRange, e::_IntRange, g::_IntRange) =
+        new(_to_range(s), false:true, _to_range(e), _ALL_INT, _to_range(g))
+end
+
+
+@inline function _f_range(r::SELBTZRange, lb::Bool, e::Int, g::Int, p::Int)
+    if r.f_range != _ALL_INT
+        return r.f_range
+    elseif lb
+        return (g-1):(e-2)
+    elseif e == g
+        return (e-p):(e-p)
+    else
+        return g:(e-2)
+    end
 end
 
 
@@ -720,8 +739,11 @@ function add_case!(
     for sr in r.s_range
         for lbr in r.lb_range
             for er in r.e_range
-                for fr in r.f_range
-                    for gr in r.g_range
+                for gr in r.g_range
+                    for fr in _f_range(r, lbr, er, gr, p)
+                        if (r.f_range == _ALL_INT) & lbr & (fr == gr)
+                            continue
+                        end
                         nlbr = (er - fr) - 1
                         ntzr = (p - 1) - (er - gr)
                         push!(lemma.claimed_outputs, (
@@ -744,13 +766,19 @@ function add_case!(
     for sr in r.s_range
         for lbr in r.lb_range
             for er in r.e_range
-                for fr in r.f_range
-                    for gr in r.g_range
+                for gr in r.g_range
+                    for fr in _f_range(r, lbr, er, gr, p)
+                        if (r.f_range == _ALL_INT) & lbr & (fr == gr)
+                            continue
+                        end
                         for se in e.s_range
                             for lbe in e.lb_range
                                 for ee in e.e_range
-                                    for fe in e.f_range
-                                        for ge in e.g_range
+                                    for ge in e.g_range
+                                        for fe in _f_range(e, lbe, ee, ge, p)
+                                            if (e.f_range == _ALL_INT) & lbe & (fe == ge)
+                                                continue
+                                            end
                                             nlbr = (er - fr) - 1
                                             ntzr = (p - 1) - (er - gr)
                                             nlbe = (ee - fe) - 1
