@@ -95,22 +95,22 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-Lc-X",
                 same_sign & lbx &
-                (ex + 1 > ey) & (fx + 1 > fy) & (gx < gy) &
+                (ex + 1 > ey) & (gx < gy) &
                 (ex < gx + (p-1)) &
                 (
-                    (!lby & (fx + 1 < ey) & ((fy == gy) | (fx > fy))) |
-                    (lby & (fx + 1 == ey) & (fx == gy) & (gy == fy + 1))
+                    (!lby & (fx + 1 < ey) & ((fx > fy) | ((fx == fy) & (fx == gy)))) |
+                    (lby & (fx + 1 == ey) & (fx == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-Lc-Y",
                 same_sign & lby &
-                (ey + 1 > ex) & (fy + 1 > fx) & (gy < gx) &
+                (ey + 1 > ex) & (gy < gx) &
                 (ey < gy + (p-1)) &
                 (
-                    (!lbx & (fy + 1 < ex) & ((fx == gx) | (fy > fx))) |
-                    (lbx & (fy + 1 == ex) & (fy == gx) & (gx == fx + 1))
+                    (!lbx & (fy + 1 < ex) & ((fy > fx) | ((fy == fx) & (fy == gx)))) |
+                    (lbx & (fy + 1 == ex) & (fy == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gy), pos_zero)
@@ -138,7 +138,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 1) & (gx < gy) &
                 (
                     (!lby & (fx + 1 < ey) & ((fx > fy) | ((fx == fy) & (fx == gy)))) |
-                    (lby & (fx + 1 == ey) & (fx == gy) & (fy + 1 == gy))
+                    (lby & (fx + 1 == ey) & (fx == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx), pos_zero)
@@ -148,7 +148,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 1) & (gy < gx) &
                 (
                     (!lbx & (fy + 1 < ex) & ((fy > fx) | ((fy == fx) & (fy == gx)))) |
-                    (lbx & (fy + 1 == ex) & (fy == gx) & (fx + 1 == gx))
+                    (lbx & (fy + 1 == ex) & (fy == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gy), pos_zero)
@@ -200,7 +200,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 2) & (fx > gx) & (fx < ey + 1) & (fx > fy) &
                 (lby | (fx == ey))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA1-Y",
                 (same_sign != lby) &
@@ -208,14 +208,14 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 2) & (fy > gy) & (fy < ex + 1) & (fy > fx) &
                 (lbx | (fy == ex))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gy+1:fy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LA2-X",
                 (same_sign != lbx) & !lby &
                 (gx == gy) &
                 (ex > ey + 1) & (fx + 1 < ey) &
-                ((fx > fy) | (same_sign & !lbx & (gx == fy)))
+                ((fx > fy) | (same_sign & !lbx & (fx == fy) & (fx == gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), pos_zero)
@@ -224,7 +224,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & !lbx &
                 (gy == gx) &
                 (ey > ex + 1) & (fy + 1 < ex) &
-                ((fy > fx) | (same_sign & !lby & (gy == fx)))
+                ((fy > fx) | (same_sign & !lby & (fy == fx) & (fy == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, fy+1), pos_zero)
@@ -250,16 +250,16 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LA4-X",
                 same_sign & (lbx != lby) &
                 (gx == gy) &
-                (ex + 1 > ey) & (fx + 1 < ey) & (fx > fy) & (fx > gx) &
-                ((lbx & !lby) | (ex == ey))
+                (fx + 1 < ey) & (fx > fy) & (fx > gx) &
+                ((lbx & !lby & (ex > ey)) | (ex == ey))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lby, ex+1, ey-1, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA4-Y",
                 same_sign & (lby != lbx) &
                 (gy == gx) &
-                (ey + 1 > ex) & (fy + 1 < ex) & (fy > fx) & (fy > gy) &
-                ((lby & !lbx) | (ey == ex))
+                (fy + 1 < ex) & (fy > fx) & (fy > gy) &
+                ((lby & !lbx & (ey > ex)) | (ey == ex))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lbx, ey+1, ex-1, gy+1:fy), pos_zero)
             end
@@ -273,7 +273,7 @@ function check_selbtz_two_sum_lemmas(
                     (lby & (fx == fy))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA5-Y",
                 same_sign & lby &
@@ -284,7 +284,7 @@ function check_selbtz_two_sum_lemmas(
                     (lbx & (fy == fx))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:fx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LA6-X",
@@ -315,7 +315,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx == gy) &
                 (ex > ey) & (fx + 1 < ey) & (fx > fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA7-Y",
@@ -323,7 +323,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy == gx) &
                 (ey > ex) & (fy + 1 < ex) & (fy > fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), pos_zero)
             end
 
@@ -419,16 +419,16 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LB1-X",
                 (same_sign != lbx) & !lby &
                 (ex == ey + 1) &
-                (fx + 1 < ey) & (gx < gy) &
-                ((fx < gy) | ((ex > fx + 3) & (ex > fy + 3)))
+                (gx < gy) &
+                (((ex > fx + 2) & (fx < gy)) | ((ex > fx + 3) & (ex > fy + 3)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB1-Y",
                 (same_sign != lby) & !lbx &
                 (ey == ex + 1) &
-                (fy + 1 < ex) & (gy < gx) &
-                ((fy < gx) | ((ey > fy + 3) & (ey > fx + 3)))
+                (gy < gx) &
+                (((ey > fy + 2) & (fy < gx)) | ((ey > fy + 3) & (ey > fx + 3)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy), pos_zero)
             end
@@ -452,7 +452,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & lby &
                 (ex == ey + 1) &
                 (fx > fy + 1) & (gx < gy) &
-                (gx + (p-2) > ey)
+                (ex < gx + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1:fx, gx), pos_zero)
             end
@@ -460,7 +460,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby & lbx &
                 (ey == ex + 1) &
                 (fy > fx + 1) & (gy < gx) &
-                (gy + (p-2) > ex)
+                (ey < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy-1:fy, gy), pos_zero)
             end
@@ -611,9 +611,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE0-X",
                 (fx + 1 < fy) & (fx + 1 > gy) & (gx < gy) &
-                (gx + (p-1) > ey) &
                 (
-                    (same_sign & lbx & !lby & (ex + 1 == ey)) |
+                    (same_sign & lbx & !lby & (ex + 1 == ey) & (gx + (p-1) > ey)) |
                     ((same_sign != lbx) & lby & (ex == ey + 1))
                 )
             ) do lemma
@@ -621,9 +620,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE0-Y",
                 (fy + 1 < fx) & (fy + 1 > gx) & (gy < gx) &
-                (gy + (p-1) > ex) &
                 (
-                    (same_sign & lby & !lbx & (ey + 1 == ex)) |
+                    (same_sign & lby & !lbx & (ey + 1 == ex) & (gy + (p-1) > ex)) |
                     ((same_sign != lby) & lbx & (ey == ex + 1))
                 )
             ) do lemma
@@ -632,20 +630,20 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE1-X",
                 diff_sign & !lby &
-                (fx < gy) & (gx < gy) & (ey > fy + 2) & (fy + 1 > gy) &
+                (fx < gy) & (gx < gy) & (ey > fy + 2) &
                 (
                     (!lbx & (ex == ey + 1) & (fy > gy)) |
-                    (lbx & (ex == ey))
+                    (lbx & (ex == ey) & (fy + 1 > gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ey-1, fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LE1-Y",
                 diff_sign & !lbx &
-                (fy < gx) & (gy < gx) & (ex > fx + 2) & (fx + 1 > gx) &
+                (fy < gx) & (gy < gx) & (ex > fx + 2) &
                 (
                     (!lby & (ey == ex + 1) & (fx > gx)) |
-                    (lby & (ey == ex))
+                    (lby & (ey == ex) & (fx + 1 > gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ex-1, fx, gy), pos_zero)
@@ -653,20 +651,20 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE2-X",
                 diff_sign & (lbx != lby) &
-                (fx + 1 < ey) & (fx > fy) & (fx > gy) & (gx < gy) &
+                (ex > fx + 3) & (fx > fy) & (fx > gy) & (gx < gy) &
                 (
-                    (lbx & !lby & (ex == ey) & (fx + 3 < ey)) |
-                    (!lbx & lby & (ex == ey + 2))
+                    (!lbx & lby & (ex == ey + 2)) |
+                    (lbx & !lby & (ex == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex-1, fx:fx+1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LE2-Y",
                 diff_sign & (lby != lbx) &
-                (fy + 1 < ex) & (fy > fx) & (fy > gx) & (gy < gx) &
+                (ey > fy + 3) & (fy > fx) & (fy > gx) & (gy < gx) &
                 (
-                    (lby & !lbx & (ey == ex) & (fy + 3 < ex)) |
-                    (!lby & lbx & (ey == ex + 2))
+                    (!lby & lbx & (ey == ex + 2)) |
+                    (lby & !lbx & (ey == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey-1, fy:fy+1, gy), pos_zero)
@@ -702,8 +700,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, fy, gy:fy-2, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, ~lbx, fy, gy+1:fy-2, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, ~lbx, fy, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, fy, gy+1:fy-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LE4-Y",
                 diff_sign & lbx &
@@ -714,16 +712,16 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, fx, gx:fx-2, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, ~lby, fx, gx+1:fx-2, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, ~lby, fx, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, fx, gx+1:fx-2, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LF0-X",
                 same_sign & !lby &
-                (ex > fy + 3) & (gx < gy) & (gy < fy) &
+                (gx < gy) & (gy < fy) &
                 (ex < gx + (p-1)) &
                 (
-                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
@@ -733,10 +731,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LF0-Y",
                 same_sign & !lbx &
-                (ey > fx + 3) & (gy < gx) & (gx < fx) &
+                (gy < gx) & (gx < fx) &
                 (ey < gy + (p-1)) &
                 (
-                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
@@ -747,10 +745,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LF1-X",
                 diff_sign & !lby &
-                (fx > fy + 1) & (gx < gy) & (gy < fy) &
+                (gx < gy) & (gy < fy) &
                 (
                     (!lbx & (fx == ey)) |
-                    (lbx & (ex == ey + 1) & (fx + 1 == ey))
+                    (lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gx), pos_zero)
@@ -759,10 +757,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LF1-Y",
                 diff_sign & !lbx &
-                (fy > fx + 1) & (gy < gx) & (gx < fx) &
+                (gy < gx) & (gx < fx) &
                 (
                     (!lby & (fy == ex)) |
-                    (lby & (ey == ex + 1) & (fy + 1 == ex))
+                    (lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fy-1, gy), pos_zero)
@@ -839,7 +837,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LH1-X",
                 diff_sign & !lbx & lby &
                 (fx == ey) &
-                (gx < gy) & (ey > gy + 1)
+                (fx > gy + 1) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fy, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), pos_zero)
@@ -848,7 +846,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LH1-Y",
                 diff_sign & !lby & lbx &
                 (fy == ex) &
-                (gy < gx) & (ex > gx + 1)
+                (fy > gx + 1) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fx, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), pos_zero)
@@ -1004,14 +1002,14 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE6-X",
                 diff_sign & (lbx != lby) &
-                (ex > fy + 3) & (fx < fy + 1) & (gx < gy) &
+                (gx < gy) &
                 (
                     (!lbx & lby & (ex == ey + 2)) |
-                    (lbx & !lby & (ex == ey))
+                    (lbx & !lby & (ex == ey) & (ey > fy + 3))
                 ) &
                 (
-                    (!lbx & lby & (fy + 1 == gy)) |
-                    ((fx == fy) & (fx + 1 > gy)) |
+                    (!lbx & lby & (fx < gy) & (fy + 1 == gy)) |
+                    ((fx == fy) & (fy + 1 > gy)) |
                     ((fx == gy) & (fy == gy + 1))
                 )
             ) do lemma
@@ -1019,14 +1017,14 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE6-Y",
                 diff_sign & (lby != lbx) &
-                (ey > fx + 3) & (fy < fx + 1) & (gy < gx) &
+                (gy < gx) &
                 (
                     (!lby & lbx & (ey == ex + 2)) |
-                    (lby & !lbx & (ey == ex))
+                    (lby & !lbx & (ey == ex) & (ex > fx + 3))
                 ) &
                 (
-                    (!lby & lbx & (fx + 1 == gx)) |
-                    ((fy == fx) & (fy + 1 > gx)) |
+                    (!lby & lbx & (fy < gx) & (fx + 1 == gx)) |
+                    ((fy == fx) & (fx + 1 > gx)) |
                     ((fy == gx) & (fx == gx + 1))
                 )
             ) do lemma
@@ -1060,7 +1058,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & !lby &
                 (ex == ey + 1) & (gx == gy) &
                 (ex > fx + 3) &
-                ((fx > fy) | (same_sign & !lbx & (gx == fy)))
+                ((fx > fy) | (same_sign & !lbx & (fx == fy) & (fx == gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx+1:fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, fx+1), pos_zero)
@@ -1069,7 +1067,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & !lbx &
                 (ey == ex + 1) & (gy == gx) &
                 (ey > fy + 3) &
-                ((fy > fx) | (same_sign & !lby & (gy == fx)))
+                ((fy > fx) | (same_sign & !lby & (fy == fx) & (fy == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy+1:fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, fy+1), pos_zero)
@@ -1097,16 +1095,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (gx == gy) &
                 (fx > fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAB2-Y",
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (gy == gx) &
                 (fy > fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gy+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy-1, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gy+1:fy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAB3-X",
@@ -1151,8 +1149,10 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, fy+1, fy+1), pos_zero)
-                for gs = gx+1:fy-1
+                for gs = gx+1:fx
                     add_case!(lemma, SELBTZRange(sx, 0, fy+1, gs:fx, gs), pos_zero)
+                end
+                for gs = gx+1:fy-1
                     add_case!(lemma, SELBTZRange(sx, 1, fy, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, fy, gs+1:fy-2, gs), pos_zero)
                 end
@@ -1167,8 +1167,10 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, fx+1, fx+1), pos_zero)
-                for gs = gy+1:fx-1
+                for gs = gy+1:fy
                     add_case!(lemma, SELBTZRange(sy, 0, fx+1, gs:fy, gs), pos_zero)
+                end
+                for gs = gy+1:fx-1
                     add_case!(lemma, SELBTZRange(sy, 1, fx, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, fx, gs+1:fx-2, gs), pos_zero)
                 end
@@ -1184,8 +1186,10 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, fx+1, fx+1), pos_zero)
-                for gs = gx+1:fy+1
+                for gs = gx+1:fy
                     add_case!(lemma, SELBTZRange(sx, 0, fx+1, gs:fy, gs), pos_zero)
+                end
+                for gs = gx+1:fy+1
                     add_case!(lemma, SELBTZRange(sx, 1, fx, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, fx, gs+1:fx-2, gs), pos_zero)
                 end
@@ -1199,8 +1203,10 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, fy+1, fy+1), pos_zero)
-                for gs = gy+1:fx+1
+                for gs = gy+1:fx
                     add_case!(lemma, SELBTZRange(sy, 0, fy+1, gs:fx, gs), pos_zero)
+                end
+                for gs = gy+1:fx+1
                     add_case!(lemma, SELBTZRange(sy, 1, fy, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, fy, gs+1:fy-2, gs), pos_zero)
                 end
@@ -1346,18 +1352,18 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 == ey) & (gx == gy) &
                 (ex > ey + 2) & (fx > fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, gy+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gy+1:ey-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAD0-Y",
                 same_sign & !lby & !lbx &
                 (fy + 1 == ex) & (gy == gx) &
                 (ey > ex + 2) & (fy > fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, gx+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gx+1:ex-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAD1-X",
@@ -1365,24 +1371,24 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 == ey) & (gx == gy) &
                 (fy + 1 > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, gx+1:fy-1), pos_zero)
                 for fs = fy+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, fs, gx+1:fs), pos_zero)
                 end
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAD1-Y",
                 same_sign & lby & !lbx &
                 (fy + 1 == ex) & (gy == gx) &
                 (fx + 1 > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, gy+1:fx-1), pos_zero)
                 for fs = fx+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, fs, gy+1:fs), pos_zero)
                 end
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAD2-X",
@@ -1390,18 +1396,18 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 == ey) & (gx == gy) &
                 (fx > fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fx-1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:ey-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAD2-Y",
                 same_sign & lby & lbx &
                 (fy + 1 == ex) & (gy == gx) &
                 (fy > fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:fy-1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:ex-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAD3-X",
@@ -1468,10 +1474,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAE0-X",
                 (same_sign != lbx) &
                 (gx == gy) &
-                (fx > gx) & (fx < ey) &
+                (fx > gx) &
                 (
                     (!lby & (ex == ey + 1) & (fx == fy) & (ex > fx + 3)) |
-                    (lby & (ex == ey + 2) & (fx > fy))
+                    (lby & (ex == ey + 2) & (fx > fy) & (ex > fx + 2))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx+1:fx), pos_zero)
@@ -1479,10 +1485,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAE0-Y",
                 (same_sign != lby) &
                 (gy == gx) &
-                (fy > gy) & (fy < ex) &
+                (fy > gy) &
                 (
                     (!lbx & (ey == ex + 1) & (fy == fx) & (ey > fy + 3)) |
-                    (lbx & (ey == ex + 2) & (fy > fx))
+                    (lbx & (ey == ex + 2) & (fy > fx) & (ey > fy + 2))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy+1:fy), pos_zero)
@@ -1520,7 +1526,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx == gy) &
                 (fx > fy + 1) &
                 (
-                    (diff_sign & lby & (ex == ey + 1) & (ex > fx + 2)) |
+                    (diff_sign & lby & (ex == ey + 1) & (fx + 1 < ey)) |
                     (same_sign & !lby & (ex + 1 == ey))
                 )
             ) do lemma
@@ -1533,7 +1539,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy == gx) &
                 (fy > fx + 1) &
                 (
-                    (diff_sign & lbx & (ey == ex + 1) & (ey > fy + 2)) |
+                    (diff_sign & lbx & (ey == ex + 1) & (fy + 1 < ex)) |
                     (same_sign & !lbx & (ey + 1 == ex))
                 )
             ) do lemma
@@ -1551,12 +1557,14 @@ function check_selbtz_two_sum_lemmas(
                     (lbx & (fx == ey))
                 )
             ) do lemma
-                for gs = gy+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), pos_zero)
+                for gs = gx+1:fx-1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), pos_zero)
+                end
+                for gs = gx+1:fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), pos_zero)
+                end
             end
             checker("SELBTZ-TwoSum-LAF0-Y",
                 same_sign & !lbx &
@@ -1567,12 +1575,14 @@ function check_selbtz_two_sum_lemmas(
                     (lby & (fy == ex))
                 )
             ) do lemma
-                for gs = gx+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), pos_zero)
+                for gs = gy+1:fy-1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), pos_zero)
+                end
+                for gs = gy+1:fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), pos_zero)
+                end
             end
 
             checker("SELBTZ-TwoSum-LAF1-X",
@@ -1585,11 +1595,11 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), pos_zero)
-                for gs = gy+1:fy
+                for gs = gx+1:fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), pos_zero)
                 end
-                for gs = gy+1:fx-1
+                for gs = gx+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fx-1, gs), pos_zero)
                 end
             end
@@ -1603,11 +1613,11 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), pos_zero)
-                for gs = gx+1:fx
+                for gs = gy+1:fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), pos_zero)
                 end
-                for gs = gx+1:fy-1
+                for gs = gy+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fy-1, gs), pos_zero)
                 end
             end
@@ -1632,18 +1642,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 2) & (gx == gy) &
                 (fx + 1 < ey) & (fx > fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, fx+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAG1-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (gy == gx) &
                 (fy + 1 < ex) & (fy > fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, fy+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, fy+1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAH0-X",
@@ -1651,13 +1661,13 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (gx == gy) &
                 (fx > fy + 2)
             ) do lemma
-                for gs = gy+1:ey-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:ey-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), pos_zero)
-                for gs = gy+1:fy
+                for gs = gx+1:fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy, gs), pos_zero)
+                end
+                for gs = gx+1:fx-1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LAH0-Y",
@@ -1665,13 +1675,13 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (gy == gx) &
                 (fy > fx + 2)
             ) do lemma
-                for gs = gx+1:ex-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:ex-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), pos_zero)
-                for gs = gx+1:fx
+                for gs = gy+1:fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx, gs), pos_zero)
+                end
+                for gs = gy+1:fy-1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), pos_zero)
                 end
             end
 
@@ -1680,24 +1690,28 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (gx == gy) &
                 (fx > fy + 2)
             ) do lemma
-                for gs = gx+1:ey-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:ey-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sx, ex, ex), pos_zero)
+                for gs = gx+1:fx-1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fx-1, gs), pos_zero)
+                end
+                for gs = gx+1:fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), pos_zero)
+                end
             end
             checker("SELBTZ-TwoSum-LAH1-Y",
                 diff_sign & !lby & lbx &
                 (fy == ex) & (gy == gx) &
                 (fy > fx + 2)
             ) do lemma
-                for gs = gy+1:ex-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:ex-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sy, ey, ey), pos_zero)
+                for gs = gy+1:fy-1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fy-1, gs), pos_zero)
+                end
+                for gs = gy+1:fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), pos_zero)
+                end
             end
 
             checker("SELBTZ-TwoSum-LAJ0-X",
@@ -1705,16 +1719,16 @@ function check_selbtz_two_sum_lemmas(
                 (fx == fy) & (gx == gy) &
                 (ex > ey + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAJ0-Y",
                 diff_sign & !lby & !lbx &
                 (fy == fx) & (gy == gx) &
                 (ey > ex + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAJ1-X",
@@ -1722,16 +1736,16 @@ function check_selbtz_two_sum_lemmas(
                 (fx == fy) & (gx == gy) &
                 (ex > ey + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAJ1-Y",
                 diff_sign & lby & lbx &
                 (fy == fx) & (gy == gx) &
                 (ey > ex + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAL-X",
@@ -1790,16 +1804,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (ey == fy + 2) &
                 (fx + 1 < fy) & (fx > gy) & (gx < gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex-2, fy-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex-2, fx:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-2, fx:fy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBI1-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + 1) & (ex == fx + 2) &
                 (fy + 1 < fx) & (fy > gx) & (gy < gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey-2, fx-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey-2, fy:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-2, fy:fx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-2, fx-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LBI2-X",
@@ -1837,20 +1851,20 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx + 1 == gy) &
                 (gx < gy) & (gy < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, fy, fx+1:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fy, gy:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fy, gx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy, gx+1:fx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy, gy+1:fy-2, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, fy, gx-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBK-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 1) & (fy + 1 == gx) &
                 (gy < gx) & (gx < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, fx, fy+1:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fx, gx:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fx, gy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx, gy+1:fy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx, gx+1:fx-2, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, fx, gy-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LBL0-X",
@@ -1885,9 +1899,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LBL1-X",
                 diff_sign & lbx &
                 (ex == ey + 1) &
-                (gx < gy) & (fy > gy + 1) &
+                (gx < gy) & (gy + 1 < fy) &
                 (
-                    (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
+                    (!lby & (ex == fy + 3) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
             ) do lemma
@@ -1898,9 +1912,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LBL1-Y",
                 diff_sign & lby &
                 (ey == ex + 1) &
-                (gy < gx) & (fx > gx + 1) &
+                (gy < gx) & (gx + 1 < fx) &
                 (
-                    (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
+                    (!lbx & (ey == fx + 3) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
             ) do lemma
@@ -2056,16 +2070,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (ey == fy + 2) &
                 (fx + 1 < gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gy+1:ex-3, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ey-1, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ey-1, gy+1:ey-3, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCI1-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (ex == fx + 2) &
                 (fy + 1 < gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gx+1:ey-3, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ex-1, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ex-1, gx+1:ex-3, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LCJ-X",
@@ -2090,7 +2104,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCK0-X",
                 diff_sign & lbx & lby &
                 (ex == ey) & (fx + 1 == gy) &
-                (fx + 1 < fy) & (fx > gx)
+                (fx > gx) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, fy, gx:fx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, fy, gy+1:fy-2, gx), pos_zero)
@@ -2099,7 +2113,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCK0-Y",
                 diff_sign & lby & lbx &
                 (ey == ex) & (fy + 1 == gx) &
-                (fy + 1 < fx) & (fy > gy)
+                (fy > gy) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, fx, gy:fy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, fx, gx+1:fx-2, gy), pos_zero)
@@ -2149,7 +2163,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCO-X",
                 diff_sign & !lbx & !lby &
                 (ex == ey) & (fy == gy) &
-                (fx > fy + 1) & (gx < fy)
+                (fx > fy + 1) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, fx-1, gx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fx-1, gx+1:fy-1, gx), pos_zero)
@@ -2159,7 +2173,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCO-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex) & (fx == gx) &
-                (fy > fx + 1) & (gy < fx)
+                (fy > fx + 1) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, fy-1, gy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fy-1, gy+1:fx-1, gy), pos_zero)
@@ -2172,32 +2186,32 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx == gy) &
                 (fx + 1 < fy) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, fy, fx+1:fy-2, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, fy, fx, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy-1, gx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy-1, gx+1:fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fy, fx:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fy, fx+1:fy-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCP-Y",
                 diff_sign & lby & lbx &
                 (ey == ex) & (fy == gx) &
                 (fy + 1 < fx) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, fx, fy+1:fx-2, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, fx, fy, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx-1, gy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx-1, gy+1:fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fx, fy:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fx, fy+1:fx-2, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LCR-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fy + 3) &
+                (ex == ey) & (ey == fy + 3) &
                 (fx < fy) & (fx + 1 > gy) & (gx < gy) & (fy > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex-1, ex-3, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCR-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fx + 3) &
+                (ey == ex) & (ex == fx + 3) &
                 (fy < fx) & (fy + 1 > gx) & (gy < gx) & (fx > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ±, ey-1, ey-3, gy), pos_zero)
@@ -2239,14 +2253,13 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LEL-X",
                 (gx < gy) &
-                (gx + (p-1) > ey) &
                 (
-                    ((same_sign != lbx) & !lby & (ex == ey + 1) & (ex == fy + 3) & (fx == fy)) |
+                    ((same_sign != lbx) & !lby & (ex == ey + 1) & (ey == fy + 2) & (fx == fy)) |
                     (
                         (fx + 1 == fy) &
                         (fx > gy) &
                         (
-                            (same_sign & lbx & !lby & (ex + 1 == ey)) |
+                            (same_sign & lbx & !lby & (ex + 1 == ey) & (gx + (p-1) > ey)) |
                             ((same_sign != lbx) & lby & (ex == ey + 1))
                         )
                     )
@@ -2256,14 +2269,13 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LEL-Y",
                 (gy < gx) &
-                (gy + (p-1) > ex) &
                 (
-                    ((same_sign != lby) & !lbx & (ey == ex + 1) & (ey == fx + 3) & (fy == fx)) |
+                    ((same_sign != lby) & !lbx & (ey == ex + 1) & (ex == fx + 2) & (fy == fx)) |
                     (
                         (fy + 1 == fx) &
                         (fy > gx) &
                         (
-                            (same_sign & lby & !lbx & (ey + 1 == ex)) |
+                            (same_sign & lby & !lbx & (ey + 1 == ex) & (gy + (p-1) > ex)) |
                             ((same_sign != lby) & lbx & (ey == ex + 1))
                         )
                     )
@@ -2275,10 +2287,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LFO0-X",
                 same_sign & !lby &
                 (fy == gy) &
-                (fx > fy + 1) & (gx < gy) &
+                (gx < gy) &
                 (ex < gx + (p-1)) &
                 (
-                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
@@ -2289,10 +2301,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LFO0-Y",
                 same_sign & !lbx &
                 (fx == gx) &
-                (fy > fx + 1) & (gy < gx) &
+                (gy < gx) &
                 (ey < gy + (p-1)) &
                 (
-                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
@@ -2304,28 +2316,28 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LFO1-X",
                 diff_sign & !lby &
                 (fy == gy) &
-                (ex > fy + 3) & (gx < gy) &
+                (gx < gy) &
                 (
                     (!lbx & (fx == ey)) |
-                    (lbx & (ex == ey + 1) & (fx + 1 == ey))
+                    (lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LFO1-Y",
                 diff_sign & !lbx &
                 (fx == gx) &
-                (ey > fx + 3) & (gy < gx) &
+                (gy < gx) &
                 (
                     (!lby & (fy == ex)) |
-                    (lby & (ey == ex + 1) & (fy + 1 == ex))
+                    (lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fx-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LGH0-X",
@@ -2333,14 +2345,14 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 2) & (fx == ey) &
                 (gx < gy) & (fy + 1 > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-3:ex-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx-1:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LGH0-Y",
                 (same_sign != lby) & !lbx &
                 (ey == ex + 2) & (fy == ex) &
                 (gy < gx) & (fx + 1 > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-3:ey-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy-1:fy, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LGH1-X",
@@ -2377,7 +2389,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LK0-X",
                 same_sign &
-                (gx < gy) & ((!lby & (ey == gy) & (ey == fy + p)) | (!lbx & lby & (fy + 1 == gy))) &
+                (gx < gy) & ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) &
                 (
                     (!lbx & (ex == ey + 1) & (fx + 1 == gy)) |
                     (lbx & !lby & (fx == gy))
@@ -2388,7 +2400,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LK0-Y",
                 same_sign &
-                (gy < gx) & ((!lbx & (ex == gx) & (ex == fx + p)) | (!lby & lbx & (fx + 1 == gx))) &
+                (gy < gx) & ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) &
                 (
                     (!lby & (ey == ex + 1) & (fy + 1 == gx)) |
                     (lby & !lbx & (fy == gx))
@@ -2400,7 +2412,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LK1-X",
                 diff_sign &
-                (fx > gx) & ((!lby & (ey == gy) & (ey == fy + p)) | (lbx & lby & (fy + 1 == gy))) &
+                (fx > gx) & ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) &
                 (
                     (!lbx & !lby & (fx == gy)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == gy))
@@ -2410,7 +2422,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LK1-Y",
                 diff_sign &
-                (fy > gy) & ((!lbx & (ex == gx) & (ex == fx + p)) | (lby & lbx & (fx + 1 == gx))) &
+                (fy > gy) & ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) &
                 (
                     (!lby & !lbx & (fy == gx)) |
                     (lby & (ey == ex + 1) & (fy + 1 == gx))
@@ -2492,7 +2504,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lbx &
                 (ex == ey) & (fx + 2 == gy) &
                 (fx > gx) &
-                ((lby & (fx + 1 == fy)) | (!lby & (ex == gy) & (ey == fy + p)))
+                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, fx+1, gx:fx-1, gx), pos_zero)
             end
@@ -2500,7 +2512,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lby &
                 (ey == ex) & (fy + 2 == gx) &
                 (fy > gy) &
-                ((lbx & (fy + 1 == fx)) | (!lbx & (ey == gx) & (ex == fx + p)))
+                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, fy+1, gy:fy-1, gy), pos_zero)
             end
@@ -2563,24 +2575,24 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx + 1 == ey) & (gx == gy) &
                 (fx > fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx-1, fx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx-1, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gx+1:fy-1), pos_zero)
                 for fs = fy+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex-1, fs, gy+1:fs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 0, ex-1, fs, gx+1:fs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx-1, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx-1, fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LABD1-Y",
                 diff_sign & lby & lbx &
                 (ey == ex + 1) & (fy + 1 == ex) & (gy == gx) &
                 (fy > fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy-1, fy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy-1, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gy+1:fx-1), pos_zero)
                 for fs = fx+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey-1, fs, gx+1:fs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 0, ey-1, fs, gy+1:fs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy-1, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy-1, fy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LABI0-X",
@@ -2588,8 +2600,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (gx == gy) & (ey == fy + 2) &
                 (fx + 1 < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1, fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1, fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex-2, fx, gx+1:fx-1), pos_zero)
                 for fs = fx+1:fy-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex-2, fs, gx+1:fs), pos_zero)
@@ -2600,8 +2612,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 1) & (gy == gx) & (ex == fx + 2) &
                 (fy + 1 < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-2, fx-1, fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-2, fx-1, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-2, fx-1, fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey-2, fy, gy+1:fy-1), pos_zero)
                 for fs = fy+1:fx-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey-2, fs, gy+1:fs), pos_zero)
@@ -2610,21 +2622,21 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LABI1-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == fy + 3) & (gx == gy) &
+                (ex == ey + 1) & (gx == gy) & (ey == fy + 2) &
                 (fx + 1 < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gx+1:fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gx+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), pos_zero)
             end
             checker("SELBTZ-TwoSum-LABI1-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == fx + 3) & (gy == gx) &
+                (ey == ex + 1) & (gy == gx) & (ex == fx + 2) &
                 (fy + 1 < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gy+1:fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gy+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LABJ0-X",
@@ -2667,22 +2679,22 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lbx & lby &
                 (ex == ey + 1) & (fx == fy) & (gx == gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ey+1, ey+1), pos_zero)
-                for gs = gx+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ey+1, gs:fx-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ey, gs-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ey, gs+1:fx-1, gs), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ex, ex), pos_zero)
+                for gs = gx+1:fy-1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy-1, gs), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LABJ2-Y",
                 diff_sign & lby & lbx &
                 (ey == ex + 1) & (fy == fx) & (gy == gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ex+1, ex+1), pos_zero)
-                for gs = gy+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ex+1, gs:fy-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ex, gs-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ex, gs+1:fy-1, gs), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ey, ey), pos_zero)
+                for gs = gy+1:fx-1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx-1, gs), pos_zero)
                 end
             end
 
@@ -2726,7 +2738,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx == fy + 1) & (gx == gy) &
                 (fx > gx)
             ) do lemma
-                for fs = gy+1:fy+1
+                for fs = gx+1:fx
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, fs, fs), pos_zero)
                 end
                 for gs = gx+1:fx-2
@@ -2738,7 +2750,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 1) & (fy == fx + 1) & (gy == gx) &
                 (fy > gy)
             ) do lemma
-                for fs = gx+1:fx+1
+                for fs = gy+1:fy
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, fs, fs), pos_zero)
                 end
                 for gs = gy+1:fy-2
@@ -2821,21 +2833,21 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LABQ-X",
                 diff_sign & lbx & !lby &
-                (ex == fx + 3) & (ex == ey + 1) & (gx == gy) &
+                (ex == ey + 1) & (ex == fx + 3) & (gx == gy) &
                 (fx > fy + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gx+1:fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-LABQ-Y",
                 diff_sign & lby & !lbx &
-                (ey == fy + 3) & (ey == ex + 1) & (gy == gx) &
+                (ey == ex + 1) & (ey == fy + 3) & (gy == gx) &
                 (fy > fx + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gy+1:fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fx), pos_zero)
             end
 
 
@@ -2844,13 +2856,13 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (gx == gy) & (ey == fy + 2) &
                 (fx + 2 < fy)
             ) do lemma
-                for gs = gx+1:fy-1
-                    add_case!(lemma, SELBTZRange(sx, 0, fy+1, gs:fy-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sx, fy+1, fy+1), pos_zero)
                 for gs = gx+1:fx
                     add_case!(lemma, SELBTZRange(sx, 1, fy, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, fy, gs+1:fx, gs), pos_zero)
+                end
+                for gs = gx+1:fy-1
+                    add_case!(lemma, SELBTZRange(sx, 0, fy+1, gs:fy-1, gs), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LACI-Y",
@@ -2858,13 +2870,13 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex) & (gy == gx) & (ex == fx + 2) &
                 (fy + 2 < fx)
             ) do lemma
-                for gs = gy+1:fx-1
-                    add_case!(lemma, SELBTZRange(sy, 0, fx+1, gs:fx-1, gs), pos_zero)
-                end
                 add_case!(lemma, SELBTZRange(sy, fx+1, fx+1), pos_zero)
                 for gs = gy+1:fy
                     add_case!(lemma, SELBTZRange(sy, 1, fx, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, fx, gs+1:fy, gs), pos_zero)
+                end
+                for gs = gy+1:fx-1
+                    add_case!(lemma, SELBTZRange(sy, 0, fx+1, gs:fx-1, gs), pos_zero)
                 end
             end
 
@@ -2889,16 +2901,16 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LACJ2-X",
                 diff_sign & lbx & !lby &
                 (ex == ey) & (fx == fy) & (gx == gy) &
-                (ey > fy + 3)
+                (ex > fx + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ey-1, fy+1, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx+1, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LACJ2-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (fy == fx) & (gy == gx) &
-                (ex > fx + 3)
+                (ey > fy + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ex-1, fx+1, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy+1, gy+1:fy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LACL0-X",
@@ -2975,8 +2987,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx == fy + 1) & (gx == gy) &
                 (ex > fx + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, gx+1:fx-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx+1, gx+1:fx-1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LACM1-Y",
@@ -2984,8 +2996,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex) & (fy == fx + 1) & (gy == gx) &
                 (ey > fy + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, gy+1:fy-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy+1, gy+1:fy-1), pos_zero)
             end
 
@@ -3014,16 +3026,16 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (ex == ey) & (fx + 1 == fy) & (gx == gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, gy+1:fy-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy+1, gy+1:fy-1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LACN0-Y",
                 same_sign & lby & lbx &
                 (ey == ex) & (fy + 1 == fx) & (gy == gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, gx+1:fx-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx+1, gx+1:fx-1), pos_zero)
             end
 
@@ -3032,8 +3044,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx + 1 == fy) & (gx == gy) &
                 (ex > fy + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, gx+1:fy-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1, gx+1:fy-1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LACN1-Y",
@@ -3041,8 +3053,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex) & (fy + 1 == fx) & (gy == gx) &
                 (ey > fx + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, gy+1:fx-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1, gy+1:fx-1), pos_zero)
             end
 
@@ -3096,14 +3108,14 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LACU-X",
                 diff_sign & lbx & lby &
-                (ex == ey) & (fx + 1 == gy) & (gx == gy) &
+                (ex == ey) & (fx + 1 == gx) & (gx == gy) &
                 (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, fy, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-LACU-Y",
                 diff_sign & lby & lbx &
-                (ey == ex) & (fy + 1 == gx) & (gy == gx) &
+                (ey == ex) & (fy + 1 == gy) & (gy == gx) &
                 (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, fx, gx+1:fx), pos_zero)
@@ -3153,7 +3165,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:ey-3), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-LADI1-Y",
                 same_sign & lby & lbx &
@@ -3161,7 +3173,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:ex-3), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LADI2-X",
@@ -3310,7 +3322,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & lbx &
                 (fx == fy + 1) & (gx == gy) &
                 (
-                    (diff_sign & lby & (ex == ey + 1) & (ex > fx + 2)) |
+                    (diff_sign & lby & (ex == ey + 1) & (fx + 1 < ey)) |
                     (same_sign & !lby & (ex + 1 == ey))
                 )
             ) do lemma
@@ -3325,7 +3337,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & lby &
                 (fy == fx + 1) & (gy == gx) &
                 (
-                    (diff_sign & lbx & (ey == ex + 1) & (ey > fy + 2)) |
+                    (diff_sign & lbx & (ey == ex + 1) & (fy + 1 < ex)) |
                     (same_sign & !lbx & (ey + 1 == ex))
                 )
             ) do lemma
@@ -3344,7 +3356,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ey, fx, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ey, fx, fx+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ey, fx+1, gx+1:ey-4), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ey, fx+1, gx+1:fx-1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAES-Y",
                 same_sign & !lby & !lbx &
@@ -3353,7 +3365,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ex, fy, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ex, fy, fy+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ex, fy+1, gy+1:ex-4), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ex, fy+1, gy+1:fy-1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAGH-X",
@@ -3388,17 +3400,17 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lbx & lby &
                 (ex == ey + 2) & (fx + 1 == fy) & (gx == gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gy+1:fy-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAGN-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (fy + 1 == fx) & (gy == gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, fx+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gx+1:fx-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, fx+1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LAHI0-X",
@@ -3406,15 +3418,15 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (fx == fy + 2) & (gx == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), pos_zero)
-                for fs = gx+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, fs, fs), pos_zero)
+                for gs = gx+1:fy
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy, gs), pos_zero)
+                end
+                for gs = gx+1:fy+1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs, gs), pos_zero)
                 end
                 for gs = gx+1:fy-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs+1:fy+1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy, gs), pos_zero)
-                end
-                for fs = gy:fy-1
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LAHI0-Y",
@@ -3422,15 +3434,15 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (fy == fx + 2) & (gy == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), pos_zero)
-                for fs = gy+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, fs, fs), pos_zero)
+                for gs = gy+1:fx
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx, gs), pos_zero)
+                end
+                for gs = gy+1:fx+1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs, gs), pos_zero)
                 end
                 for gs = gy+1:fx-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs+1:fx+1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx, gs), pos_zero)
-                end
-                for fs = gx:fx-1
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), pos_zero)
                 end
             end
 
@@ -3439,12 +3451,14 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (fx == fy + 2) & (gx == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), pos_zero)
-                for gs = gy+1:fy+1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), pos_zero)
+                for gs = gx+1:fy+1
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
                 end
-                for gs = gy+1:fy-1
+                for gs = gx+1:fy-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy+1, gs), pos_zero)
+                end
+                for gs = gx+1:fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LAHI1-Y",
@@ -3452,12 +3466,14 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (fy == fx + 2) & (gy == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), pos_zero)
-                for gs = gx+1:fx+1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), pos_zero)
+                for gs = gy+1:fx+1
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
                 end
-                for gs = gx+1:fx-1
+                for gs = gy+1:fx-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx+1, gs), pos_zero)
+                end
+                for gs = gy+1:fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), pos_zero)
                 end
             end
 
@@ -3498,16 +3514,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx + 1 == ey) & (fy + 1 == gy) &
                 (fx > gy) & (gx < gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ey, gy:fx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ey, fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ey, gy:fx-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBDO-Y",
                 diff_sign & lby & lbx &
                 (ey == ex + 1) & (fy + 1 == ex) & (fx + 1 == gx) &
                 (fy > gx) & (gy < gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ex, gx:fy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ex, fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ex, gx:fy-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LBIN-X",
@@ -3532,16 +3548,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx == gy) & (ey == fy + 2) &
                 (gx < gy) & (fy > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex-2, fy-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex-2, gy+1:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-2, gy+1:fy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBIP-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + 1) & (fy == gx) & (ex == fx + 2) &
                 (gy < gx) & (fx > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey-2, fx-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey-2, gx+1:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-2, gx+1:fx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-2, fx-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LBJK0-X",
@@ -3566,7 +3582,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LBJK1-X",
                 diff_sign & !lbx & lby &
                 (ex == ey + 1) & (fx + 1 == gy) & (fy + 1 == gy) &
-                (fx + 1 > gx)
+                (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, fx+1, gx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fx+1, gx+1:fx-1, gx), pos_zero)
@@ -3574,7 +3590,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LBJK1-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 1) & (fy + 1 == gx) & (fx + 1 == gx) &
-                (fy + 1 > gy)
+                (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, fy+1, gy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fy+1, gy+1:fy-1, gy), pos_zero)
@@ -3627,7 +3643,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LCFR-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fy + 3) &
+                (ex == ey) & (ey == fy + 3) &
                 (gx < gy) &
                 ((fx == fy) | ((fx == gy) & (fy == gy + 1)))
             ) do lemma
@@ -3636,7 +3652,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LCFR-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fx + 3) &
+                (ey == ex) & (ex == fx + 3) &
                 (gy < gx) &
                 ((fy == fx) | ((fy == gx) & (fx == gx + 1)))
             ) do lemma
@@ -3647,7 +3663,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCFT-X",
                 diff_sign & lbx & !lby &
                 (ex == ey) &
-                (fx > gy + 1) & (gx < gy) & (gy + 1 < fy) &
+                (ey > gy + 4) &
+                (gx < gy) &
                 (
                     ((ex == fx + 2) & (ey == fy + 3)) |
                     ((ex == fx + 3) & (ey == fy + 2))
@@ -3661,7 +3678,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCFT-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) &
-                (fy > gx + 1) & (gy < gx) & (gx + 1 < fx) &
+                (ex > gx + 4) &
+                (gy < gx) &
                 (
                     ((ey == fy + 2) & (ex == fx + 3)) |
                     ((ey == fy + 3) & (ex == fx + 2))
@@ -3716,16 +3734,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx + 1 == gy) & (ey == fy + 2) &
                 (gx < gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ey-1, gy+1:ey-3, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ey-1, gx:gy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ey-1, gy+1:ey-3, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCIK-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (fy + 1 == gx) & (ex == fx + 2) &
                 (gy < gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ex-1, gx+1:ex-3, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ex-1, gy:gx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ex-1, gx+1:ex-3, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LCIP-X",
@@ -3733,18 +3751,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx == gy) & (ey == fy + 2) &
                 (gx < gy) & (fy > gy + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gy:fy-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, fy, gx+1:gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fy+1, gy:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy, gx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fy, gx+1:gy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCIP-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (fy == gx) & (ex == fx + 2) &
                 (gy < gx) & (fx > gx + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gx:fx-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, fx, gy+1:gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fx+1, gx:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx, gy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fx, gy+1:gx-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LCJK0-X",
@@ -3798,10 +3816,9 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lbx) & lby &
                 (fx == gy) & (gy == fy + 1) &
                 (gx < gy) &
-                (gx + (p-1) > ey) &
                 (
                     (diff_sign & !lbx & (ex == ey + 2) & (fx + 1 < ey)) |
-                    (same_sign & lbx & (ex == ey))
+                    (same_sign & lbx & (ex == ey) & (ex < gx + (p-1)))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ey+1, fx+1, gx), pos_zero)
@@ -3810,10 +3827,9 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lby) & lbx &
                 (fy == gx) & (gx == fx + 1) &
                 (gy < gx) &
-                (gy + (p-1) > ex) &
                 (
                     (diff_sign & !lby & (ey == ex + 2) & (fy + 1 < ex)) |
-                    (same_sign & lby & (ey == ex))
+                    (same_sign & lby & (ey == ex) & (ey < gy + (p-1)))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ex+1, fy+1, gy), pos_zero)
@@ -3850,7 +3866,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx < gy) &
                 (ex < gx + (p-1)) &
                 (
-                    (!lbx & (ex == ey + 1) & ((!lby & (ey == fy + 2) & (fy == gy)) | (lby & (fx == fy)))) |
+                    (!lbx & (ex == ey + 1) & ((!lby & (fx + 1 == ey) & (fx == fy + 1)) | (lby & (fx == fy)))) |
                     (lbx & lby & (fx == ey) & (fy + 1 == gy))
                 )
             ) do lemma
@@ -3864,7 +3880,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy < gx) &
                 (ey < gy + (p-1)) &
                 (
-                    (!lby & (ey == ex + 1) & ((!lbx & (ex == fx + 2) & (fx == gx)) | (lbx & (fy == fx)))) |
+                    (!lby & (ey == ex + 1) & ((!lbx & (fy + 1 == ex) & (fy == fx + 1)) | (lbx & (fy == fx)))) |
                     (lby & lbx & (fy == ex) & (fx + 1 == gx))
                 )
             ) do lemma
@@ -3878,7 +3894,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx == gy + 1) &
                 (gx < gy) &
                 (
-                    (!lbx & lby & (ey == gy + 1) & (fy + 1 == gy)) |
+                    (!lbx & lby & (fx == ey) & (fy + 1 == gy)) |
                     (lbx & (ex == ey + 1) & ((!lby & (fx + 1 == ey) & (fx == fy + 1)) | (lby & (fx == fy))))
                 )
             ) do lemma
@@ -3891,7 +3907,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy == gx + 1) &
                 (gy < gx) &
                 (
-                    (!lby & lbx & (ex == gx + 1) & (fx + 1 == gx)) |
+                    (!lby & lbx & (fy == ex) & (fx + 1 == gx)) |
                     (lby & (ey == ex + 1) & ((!lbx & (fy + 1 == ex) & (fy == fx + 1)) | (lbx & (fy == fx))))
                 )
             ) do lemma
@@ -3956,13 +3972,15 @@ function check_selbtz_two_sum_lemmas(
                     (lbx & (fx == ey))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), pos_zero)
                 for gs = gx+1:fy+1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), pos_zero)
                 for gs = gx+1:fy-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy+1, gs), pos_zero)
+                end
+                for gs = gx+1:fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LAFLT0-Y",
@@ -3973,13 +3991,15 @@ function check_selbtz_two_sum_lemmas(
                     (lby & (fy == ex))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), pos_zero)
                 for gs = gy+1:fx+1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), pos_zero)
                 for gs = gy+1:fx-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx+1, gs), pos_zero)
+                end
+                for gs = gy+1:fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), pos_zero)
                 end
             end
 
@@ -3992,13 +4012,16 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), pos_zero)
-                for gs = gy+1:fy
+                for gs = gx+1:fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, gy+1:fx-3), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, fx-1), pos_zero)
+                for gs = gx+1:fy+1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs, gs), pos_zero)
+                end
+                for gs = gx+1:fy-1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs+1:fy+1, gs), pos_zero)
+                end
             end
             checker("SELBTZ-TwoSum-LAFLT1-Y",
                 diff_sign & !lbx &
@@ -4009,13 +4032,16 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), pos_zero)
-                for gs = gx+1:fx
+                for gs = gy+1:fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, gx+1:fy-3), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, fy-1), pos_zero)
+                for gs = gy+1:fx+1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs, gs), pos_zero)
+                end
+                for gs = gy+1:fx-1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs+1:fx+1, gs), pos_zero)
+                end
             end
 
             checker("SELBTZ-TwoSum-LBKLO-X",
@@ -4075,10 +4101,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCU-X",
                 diff_sign &
                 (ex == ey) &
-                ((!lby & (ey == gy) & (ey == fy + p)) | (lbx & lby & (fy + 1 == gy))) &
+                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) &
                 (
                     (!lbx & !lby & (fx == gx)) |
-                    (lbx & (fx + 2 == gy) & (gx + 1 == gy))
+                    (lbx & (fx + 2 == gy) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, gx, gx), pos_zero)
@@ -4086,10 +4112,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCU-Y",
                 diff_sign &
                 (ey == ex) &
-                ((!lbx & (ex == gx) & (ex == fx + p)) | (lby & lbx & (fx + 1 == gx))) &
+                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) &
                 (
                     (!lby & !lbx & (fy == gy)) |
-                    (lby & (fy + 2 == gx) & (gy + 1 == gx))
+                    (lby & (fy + 2 == gx) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, gy, gy), pos_zero)
@@ -4108,13 +4134,13 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LADW-X",
                 same_sign & lbx & !lby &
-                (fx + 1 == gx) & (gx == gy) & (ey == fy + p) & (ey == gy)
+                (fx + 1 == gx) & (gx == gy) & (ey == gy) & (ey == fy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LADW-Y",
                 same_sign & lby & !lbx &
-                (fy + 1 == gy) & (gy == gx) & (ex == fx + p) & (ex == gx)
+                (fy + 1 == gy) & (gy == gx) & (ex == gx) & (ex == fx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), pos_zero)
             end
@@ -4144,20 +4170,20 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lbx & lby &
                 (ex == ey + 1) & (fx + 1 == ey) & (fx == fy + 1) & (gx == gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ey, fy, gx+1:ex-4), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gx+1:fy-1), pos_zero)
                 for gs = gx+1:fy+1
-                    add_case!(lemma, SELBTZRange(sx, 1, ey, gs-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sx, 1, ey, gs+1:fy, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), pos_zero)
                 end
             end
             checker("SELBTZ-TwoSum-LABDI1-Y",
                 diff_sign & lby & lbx &
                 (ey == ex + 1) & (fy + 1 == ex) & (fy == fx + 1) & (gy == gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ex, fx, gy+1:ey-4), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gy+1:fx-1), pos_zero)
                 for gs = gy+1:fx+1
-                    add_case!(lemma, SELBTZRange(sy, 1, ex, gs-1, gs), pos_zero)
-                    add_case!(lemma, SELBTZRange(sy, 1, ex, gs+1:fx, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), pos_zero)
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), pos_zero)
                 end
             end
 
@@ -4257,17 +4283,17 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lbx & !lby &
                 (ex == ey) & (gx == gy) &
                 (
-                    ((ex == fx + 2) & (fx == fy + 2)) |
-                    ((fx + 2 == fy) & (fy + 2 == ey))
+                    ((ex == fx + 2) & (ey == fy + 4)) |
+                    ((ex == fx + 4) & (ey == fy + 2))
                 )
             ) do lemma
-                for gs = gx+1:ex-3
-                    add_case!(lemma, SELBTZRange(sx, 0, ex-1, gs, gs), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ex-1, ex-1), pos_zero)
+                for gs = gx+1:ex-4
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-2, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sx, 1, ex-2, gs+1:ex-4, gs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sx, ex-1, ex-1), pos_zero)
-                for fs = gx:ex-5
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-2, fs, fs+1), pos_zero)
+                for gs = gx+1:ex-3
+                    add_case!(lemma, SELBTZRange(sx, 0, ex-1, gs, gs), pos_zero)
                 end
                 for gs = gx+1:ex-5
                     add_case!(lemma, SELBTZRange(sx, 0, ex-1, gs+1:ex-3, gs), pos_zero)
@@ -4277,17 +4303,17 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lby & !lbx &
                 (ey == ex) & (gy == gx) &
                 (
-                    ((ey == fy + 2) & (fy == fx + 2)) |
-                    ((fy + 2 == fx) & (fx + 2 == ex))
+                    ((ey == fy + 2) & (ex == fx + 4)) |
+                    ((ey == fy + 4) & (ex == fx + 2))
                 )
             ) do lemma
-                for gs = gy+1:ey-3
-                    add_case!(lemma, SELBTZRange(sy, 0, ey-1, gs, gs), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ey-1, ey-1), pos_zero)
+                for gs = gy+1:ey-4
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-2, gs-1, gs), pos_zero)
                     add_case!(lemma, SELBTZRange(sy, 1, ey-2, gs+1:ey-4, gs), pos_zero)
                 end
-                add_case!(lemma, SELBTZRange(sy, ey-1, ey-1), pos_zero)
-                for fs = gy:ey-5
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-2, fs, fs+1), pos_zero)
+                for gs = gy+1:ey-3
+                    add_case!(lemma, SELBTZRange(sy, 0, ey-1, gs, gs), pos_zero)
                 end
                 for gs = gy+1:ey-5
                     add_case!(lemma, SELBTZRange(sy, 0, ey-1, gs+1:ey-3, gs), pos_zero)
@@ -4324,13 +4350,13 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAENV-X",
                 same_sign & lbx & !lby &
-                (ex + 1 == ey) & (fx + 1 == gx) & (gx == gy) & (gx == fy)
+                (ex + 1 == ey) & (fx + 1 == gx) & (gx == gy) & (gy == fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ey+1, ey+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAENV-Y",
                 same_sign & lby & !lbx &
-                (ey + 1 == ex) & (fy + 1 == gy) & (gy == gx) & (gy == fx)
+                (ey + 1 == ex) & (fy + 1 == gy) & (gy == gx) & (gx == fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ex+1, ex+1), pos_zero)
             end
@@ -4367,8 +4393,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 3) & (fx == fy + 1) & (gx == gy) &
                 ((lbx & !lby & (ex == ey)) | (!lbx & lby & (ex == ey + 2)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex-1, fx, gx+1:fx-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex-1, fx, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, lbx, ex-1, fx, gx+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex-1, fx, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAMRT0-Y",
@@ -4376,8 +4402,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == fy + 3) & (fy == fx + 1) & (gy == gx) &
                 ((lby & !lbx & (ey == ex)) | (!lby & lbx & (ey == ex + 2)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey-1, fy, gy+1:fy-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey-1, fy, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, lby, ey-1, fy, gy+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey-1, fy, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), pos_zero)
             end
 
@@ -4427,11 +4453,11 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LCFTX-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (ex == gy + 4) &
+                (ex == ey) & (ey == gy + 4) &
                 (gx < gy) &
                 (
-                    ((ex == fx + 2) & (ex == fy + 3)) |
-                    ((ex == fx + 3) & (ex == fy + 2))
+                    ((ex == fx + 2) & (ey == fy + 3)) |
+                    ((ex == fx + 3) & (ey == fy + 2))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx:gy-1, gx), pos_zero)
@@ -4441,11 +4467,11 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LCFTX-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (ey == gx + 4) &
+                (ey == ex) & (ex == gx + 4) &
                 (gy < gx) &
                 (
-                    ((ey == fy + 2) & (ey == fx + 3)) |
-                    ((ey == fy + 3) & (ey == fx + 2))
+                    ((ey == fy + 2) & (ex == fx + 3)) |
+                    ((ey == fy + 3) & (ex == fx + 2))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy:gx-1, gy), pos_zero)
@@ -4472,25 +4498,25 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCIPX-X",
                 diff_sign & lbx & !lby &
                 (ex == ey) & (fx == gy) & (ey == fy + 2) & (fy == gy + 2) &
-                (fx > gx)
+                (gx < gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, fy+1, fx, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fy+1, gy, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, fy, gx+1:fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fy, gx+1:gy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCIPX-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (fy == gx) & (ex == fx + 2) & (fx == gx + 2) &
-                (fy > gy)
+                (gy < gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, fx+1, fy, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fx+1, gx, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, fx, gy+1:fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fx, gy+1:gx-1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LCKMS-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 2) & (ex == fy + 3) & (fy == gy) &
+                (ex == ey) & (ex == fx + 2) & (ey == fy + 3) & (fy == gy) &
                 (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx:gy-1, gx), pos_zero)
@@ -4499,7 +4525,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LCKMS-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 2) & (ey == fx + 3) & (fx == gx) &
+                (ey == ex) & (ey == fy + 2) & (ex == fx + 3) & (fx == gx) &
                 (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy:gx-1, gy), pos_zero)
@@ -4584,7 +4610,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex < gy + p) &
                 (
                     (lby & (fx < ey) & ((fx > fy) | (diff_sign & lbx & (fx == fy) & (fx + 1 == gx)))) |
-                    ((fx + 1 == ey) & ((diff_sign & lbx & (gx == ey)) | ((gx == fy) & (fy + 2 == ey))))
+                    (!lby & (fx + 1 == ey) &
+                        (((gx == fy) & (gx + 2 == ey)) | (diff_sign & lbx & (gx == ey))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gy), pos_zero)
@@ -4595,7 +4622,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey < gx + p) &
                 (
                     (lbx & (fy < ex) & ((fy > fx) | (diff_sign & lby & (fy == fx) & (fy + 1 == gy)))) |
-                    ((fy + 1 == ex) & ((diff_sign & lby & (gy == ex)) | ((gy == fx) & (fx + 2 == ex))))
+                    (!lbx & (fy + 1 == ex) &
+                        (((gy == fx) & (gy + 2 == ex)) | (diff_sign & lby & (gy == ex))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gx), pos_zero)
@@ -4876,9 +4904,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) &
                 (fx > fy + 2) & (gx < fy) & (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, fx, gy:fx-2, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, fx-1, gy+1:fy, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fx-1, gy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fx-1, gy+1:fy, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fx, gy:fx-2, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fx, fy:fx-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB2-Y",
@@ -4886,9 +4914,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex) &
                 (fy > fx + 2) & (gy < fx) & (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, fy, gx:fy-2, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, fy-1, gx+1:fx, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fy-1, gx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fy-1, gx+1:fx, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fy, gx:fy-2, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fy, fx:fy-2, gx), pos_zero)
             end
 
@@ -4933,9 +4961,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) &
                 (fx > fy + 2) & (gx < fy) & (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(~sx, 0, fx, gy:fx-2, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(~sx, 1, fx-1, gy+1:fy, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(~sx, 1, fx-1, gy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(~sx, 1, fx-1, gy+1:fy, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(~sx, 0, fx, gy:fx-2, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(~sx, 1, fx, fy:fx-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB5-Y",
@@ -4943,9 +4971,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex) &
                 (fy > fx + 2) & (gy < fx) & (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(~sy, 0, fy, gx:fy-2, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(~sy, 1, fy-1, gx+1:fx, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(~sy, 1, fy-1, gx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(~sy, 1, fy-1, gx+1:fx, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(~sy, 0, fy, gx:fy-2, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(~sy, 1, fy, fx:fy-2, gx), pos_zero)
             end
 
@@ -4976,8 +5004,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx) & (gx > fy + 1) &
                 (ex < gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC1-Y",
                 same_sign & lby & lbx &
@@ -4985,8 +5013,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy) & (gy > fx + 1) &
                 (ey < gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1:fy-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CC2-X",
@@ -5037,8 +5065,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx > fy + 1) & (gx > gy + 1) &
                 (ex < gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC4-Y",
                 diff_sign & !lby & lbx &
@@ -5046,8 +5074,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy > fx + 1) & (gy > gx + 1) &
                 (ey < gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CD0-X",
@@ -5220,11 +5248,10 @@ function check_selbtz_two_sum_lemmas(
                 (gx > gy) &
                 (ex < gy + p) &
                 (
-                    ((gx == ey) & ((same_sign & !lbx & (fx == ey)) | (diff_sign & lbx & (fx + 1 == ey)))) |
-                    (
-                        ((fx > fy) | (diff_sign & lbx & lby & (fx == fy) & (fx + 1 == gx))) &
-                        ((lby & (fx < ey)) | ((fx + 1 == ey) & (gx == fy) & (fy + 2 == ey)))
-                    )
+                    (lby & (fx < ey) & ((fx > fy) | (diff_sign & lbx & (fx == fy) & (fx + 1 == gx)))) |
+                    (!lby & (fx + 1 == ey) &
+                        (((gx == fy) & (gx + 2 == ey)) | (diff_sign & lbx & (gx == ey)))) |
+                    (same_sign & !lbx & (fx == ey) & (gx == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy), pos_zero)
@@ -5235,11 +5262,10 @@ function check_selbtz_two_sum_lemmas(
                 (gy > gx) &
                 (ey < gx + p) &
                 (
-                    ((gy == ex) & ((same_sign & !lby & (fy == ex)) | (diff_sign & lby & (fy + 1 == ex)))) |
-                    (
-                        ((fy > fx) | (diff_sign & lby & lbx & (fy == fx) & (fy + 1 == gy))) &
-                        ((lbx & (fy < ex)) | ((fy + 1 == ex) & (gy == fx) & (fx + 2 == ex)))
-                    )
+                    (lbx & (fy < ex) & ((fy > fx) | (diff_sign & lby & (fy == fx) & (fy + 1 == gy)))) |
+                    (!lbx & (fy + 1 == ex) &
+                        (((gy == fx) & (gy + 2 == ex)) | (diff_sign & lby & (gy == ex)))) |
+                    (same_sign & !lby & (fy == ex) & (gy == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx), pos_zero)
@@ -5281,7 +5307,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CG0-X",
                 same_sign & !lby &
-                (ex > fy + 3) & (gx < fy) & (gx > gy) &
+                (fx > fy + 1) & (gx < fy) & (gx > gy) &
                 (ex < gy + (p-1)) &
                 (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
@@ -5294,7 +5320,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CG0-Y",
                 same_sign & !lbx &
-                (ey > fx + 3) & (gy < fx) & (gy > gx) &
+                (fy > fx + 1) & (gy < fx) & (gy > gx) &
                 (ey < gx + (p-1)) &
                 (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
@@ -5308,7 +5334,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CG1-X",
                 diff_sign & !lby &
-                (ex > fy + 3) & (gx < fy) & (gx > gy) &
+                (fx > fy + 1) & (gx < fy) & (gx > gy) &
                 (ex < gy + p) &
                 (
                     (!lbx & (fx == ey)) |
@@ -5321,7 +5347,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CG1-Y",
                 diff_sign & !lbx &
-                (ey > fx + 3) & (gy < fx) & (gy > gx) &
+                (fy > fx + 1) & (gy < fx) & (gy > gx) &
                 (ey < gx + p) &
                 (
                     (!lby & (fy == ex)) |
@@ -5363,7 +5389,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (fx == ey) |
                     (diff_sign & lbx & (fx + 1 == gx)) |
-                    ((fx == ey + 1) & (gx < ey + 1) & (gx > fy) & (lby | (gx == ey)))
+                    ((fx == ey + 1) & (fx > gx) & (gx > fy) & (lby | (gx == ey)))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, gy), pos_zero)
@@ -5375,7 +5401,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (fy == ex) |
                     (diff_sign & lby & (fy + 1 == gy)) |
-                    ((fy == ex + 1) & (gy < ex + 1) & (gy > fx) & (lbx | (gy == ex)))
+                    ((fy == ex + 1) & (fy > gy) & (gy > fx) & (lbx | (gy == ex)))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy+1, gx), pos_zero)
@@ -5406,22 +5432,22 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CZ3-X",
                 diff_sign & !lbx &
-                (ex > ey + 2) & (fx > gx) & (gx + 2 < ey) & (gx < fy + 1) & (gx > gy) &
+                (ex > ey + 2) & (fx > gx) & (gx < fy + 1) & (gx > gy) &
                 (ex < gy + (p+1)) &
                 (
                     (!lby & (fx == fy)) |
-                    (lby & (fx + 1 == ey))
+                    (lby & (fx + 1 == ey) & (fx > gx + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CZ3-Y",
                 diff_sign & !lby &
-                (ey > ex + 2) & (fy > gy) & (gy + 2 < ex) & (gy < fx + 1) & (gy > gx) &
+                (ey > ex + 2) & (fy > gy) & (gy < fx + 1) & (gy > gx) &
                 (ey < gx + (p+1)) &
                 (
                     (!lbx & (fy == fx)) |
-                    (lbx & (fy + 1 == ex))
+                    (lbx & (fy + 1 == ex) & (fy > gy + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, gx), pos_zero)
@@ -5435,7 +5461,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 3) & (gx > gy) &
                 (
                     (fx == fy) |
-                    ((fx == fy + 1) & (fy == gx)) |
+                    ((fx == gx + 1) & (gx == fy)) |
                     ((fx + 1 == gx) & (gx > fy))
                 )
             ) do lemma
@@ -5447,7 +5473,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 3) & (gy > gx) &
                 (
                     (fy == fx) |
-                    ((fy == fx + 1) & (fx == gy)) |
+                    ((fy == gy + 1) & (gy == fx)) |
                     ((fy + 1 == gy) & (gy > fx))
                 )
             ) do lemma
@@ -5457,10 +5483,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CB7-X",
                 diff_sign & lbx & !lby &
                 (ex == ey) &
-                (gx < fy + 1) & (gx > gy) &
+                (gx > gy) &
                 (
-                    ((ex == fx + 3) & (fx > fy) & (fx > gx + 1)) |
-                    ((ex == fy + 3) & (fx < fy) & (gx < fy))
+                    ((ex == fx + 3) & (fx > gx + 1) & (fx > fy) & (gx < fy + 1)) |
+                    ((ey == fy + 3) & (fx < fy) & (gx < fy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex-1, ey-3, gy), pos_zero)
@@ -5468,10 +5494,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CB7-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) &
-                (gy < fx + 1) & (gy > gx) &
+                (gy > gx) &
                 (
-                    ((ey == fy + 3) & (fy > fx) & (fy > gy + 1)) |
-                    ((ey == fx + 3) & (fy < fx) & (gy < fx))
+                    ((ey == fy + 3) & (fy > gy + 1) & (fy > fx) & (gy < fx + 1)) |
+                    ((ex == fx + 3) & (fy < fx) & (gy < fx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ±, ey-1, ex-3, gx), pos_zero)
@@ -5520,7 +5546,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (fx == fy) |
                     (same_sign & lbx & lby & (fx + 1 == gx)) |
-                    ((fx == fy + 1) & (gx == fy))
+                    ((fx == gx + 1) & (gx == fy))
                 ) &
                 (
                     (diff_sign & !lbx & lby & (ex == ey + 2)) |
@@ -5535,7 +5561,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (fy == fx) |
                     (same_sign & lby & lbx & (fy + 1 == gy)) |
-                    ((fy == fx + 1) & (gy == fx))
+                    ((fy == gy + 1) & (gy == fx))
                 ) &
                 (
                     (diff_sign & !lby & lbx & (ey == ex + 2)) |
@@ -5547,24 +5573,22 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CF3-X",
                 (same_sign != lbx) &
-                (ex == ey + 2) &
-                (gx + 2 < ey) & (gx < fy + 1) & (gx > gy) &
+                (ex == ey + 2) & (fx > gx) & (gx > gy) &
                 (ex < gy + p) &
                 (
-                    (!lby & (fx + 1 == ey)) |
-                    (lby & (fx == fy) & (fx > gx))
+                    (!lby & (fx + 1 == ey) & (gx + 2 < ey) & (gx < fy + 1)) |
+                    (lby & (fx == fy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ey, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CF3-Y",
                 (same_sign != lby) &
-                (ey == ex + 2) &
-                (gy + 2 < ex) & (gy < fx + 1) & (gy > gx) &
+                (ey == ex + 2) & (fy > gy) & (gy > gx) &
                 (ey < gx + p) &
                 (
-                    (!lbx & (fy + 1 == ex)) |
-                    (lbx & (fy == fx) & (fy > gy))
+                    (!lbx & (fy + 1 == ex) & (gy + 2 < ex) & (gy < fx + 1)) |
+                    (lbx & (fy == fx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ±, ey, ex, gx), pos_zero)
@@ -5744,7 +5768,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) & (gx > gy) &
                 (ex < gy + (p-1)) &
                 (
-                    (!lby & (ex == fy + 3) & (fx == fy + 1)) |
+                    (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
             ) do lemma
@@ -5758,7 +5782,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) & (gy > gx) &
                 (ey < gx + (p-1)) &
                 (
-                    (!lbx & (ey == fx + 3) & (fy == fx + 1)) |
+                    (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
             ) do lemma
@@ -5773,7 +5797,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) & (gx > gy) &
                 (ex < gy + p) &
                 (
-                    (!lby & (ex == fy + 3) & (fx + 1 == ey)) |
+                    (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
             ) do lemma
@@ -5787,7 +5811,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) & (gy > gx) &
                 (ey < gx + p) &
                 (
-                    (!lbx & (ey == fx + 3) & (fy + 1 == ex)) |
+                    (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
             ) do lemma
@@ -6004,20 +6028,20 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (gx == fy) &
                 (fx > fy + 1) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, fx-1, gy+1:fy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fx-1, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, fx, gx, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, ±, fx, gx+1:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fx-1, gy+1:fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fx, gx:fx-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fx, gx+1:fx-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBH-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex) & (gy == fx) &
                 (fy > fx + 1) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, fy-1, gx+1:fx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fy-1, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, fy, gy, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, ±, fy, gy+1:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fy-1, gx+1:fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fy, gy:fy-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fy, gy+1:fy-2, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBI0-X",
@@ -6168,20 +6192,20 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx + 1 == gx) &
                 (fx + 2 < fy) & (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, fy, gy:fy-2, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, fy, gx:fy-2, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy-1, gy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, fy-1, gy+1:fx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, fy, gy:fy-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, fy, gx:fy-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBL1-Y",
                 diff_sign & lby & lbx &
                 (ey == ex) & (fy + 1 == gy) &
                 (fy + 2 < fx) & (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, fx, gx:fx-2, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, fx, gy:fx-2, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx-1, gx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, fx-1, gx+1:fy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, fx, gx:fx-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, fx, gy:fx-2, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBN-X",
@@ -6227,16 +6251,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (ex == fx + 2) &
                 (fx > gx) & (gx > fy + 1) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx+1:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBO1-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (ey == fy + 2) &
                 (fy > gy) & (gy > fx + 1) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy+1:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy+1:fy-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBR-X",
@@ -6295,7 +6319,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CCH0-X",
                 same_sign & lbx & lby &
                 (fx == ey) & (gx == fy) &
-                (fx > gx + 2) & (fy > gy) &
+                (fx > fy + 2) & (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy-1, gy), pos_zero)
@@ -6305,7 +6329,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CCH0-Y",
                 same_sign & lby & lbx &
                 (fy == ex) & (gy == fx) &
-                (fy > gy + 2) & (fx > gx) &
+                (fy > fx + 2) & (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gx-1, gx), pos_zero)
@@ -6316,7 +6340,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CCH1-X",
                 diff_sign & !lbx & lby &
                 (fx == ey) & (gx == fy) &
-                (fx > gx + 2) & (gx > gy) &
+                (fx > fy + 2) & (gx > gy) &
                 (ex < gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy:ey-1, gy), pos_zero)
@@ -6325,7 +6349,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CCH1-Y",
                 diff_sign & !lby & lbx &
                 (fy == ex) & (gy == fx) &
-                (fy > gy + 2) & (gy > gx) &
+                (fy > fx + 2) & (gy > gx) &
                 (ey < gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx:ex-1, gx), pos_zero)
@@ -6373,8 +6397,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex < gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy+1:fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CCN1-Y",
                 diff_sign & !lby & lbx &
@@ -6383,8 +6407,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey < gx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gx+1:fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CDH0-X",
@@ -6394,7 +6418,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex < gy + (p-1)) &
                 (!lby | (fx == fy + 1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:ey-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1:ey-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CDH0-Y",
                 same_sign & lby &
@@ -6403,7 +6427,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey < gx + (p-1)) &
                 (!lbx | (fy == fx + 1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1:ex-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1:ex-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CDH1-X",
@@ -6413,7 +6437,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex < gy + (p+1)) &
                 (!lby | (fx == fy + 1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1:ey-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CDH1-Y",
                 diff_sign & !lby &
@@ -6422,7 +6446,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey < gx + (p+1)) &
                 (!lbx | (fy == fx + 1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1:ex-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CEG-X",
@@ -6502,7 +6526,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 2) & (gx > gy) &
                 (ex < gy + (p-1)) &
                 (
-                    (!lbx & (ex == ey + 1) & (ex == fx + 2)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
@@ -6515,7 +6539,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 2) & (gy > gx) &
                 (ey < gx + (p-1)) &
                 (
-                    (!lby & (ey == ex + 1) & (ey == fy + 2)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
@@ -6526,11 +6550,11 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CGH1-X",
                 diff_sign & !lby &
                 (gx == fy) &
-                (fx > fy + 2) & (fy > gy) &
+                (fx > fy + 2) & (gx > gy) &
                 (ex < gy + p) &
                 (
                     (!lbx & (fx == ey)) |
-                    (lbx & (ex == fx + 2) & (fx + 1 == ey))
+                    (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy-1, gy), pos_zero)
@@ -6540,11 +6564,11 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CGH1-Y",
                 diff_sign & !lbx &
                 (gy == fx) &
-                (fy > fx + 2) & (fx > gx) &
+                (fy > fx + 2) & (gy > gx) &
                 (ey < gx + p) &
                 (
                     (!lby & (fy == ex)) |
-                    (lby & (ey == fy + 2) & (fy + 1 == ex))
+                    (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gx-1, gx), pos_zero)
@@ -6557,26 +6581,26 @@ function check_selbtz_two_sum_lemmas(
                 (gx == fy + 1) &
                 (ex < gy + p) &
                 (
-                    (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy+1:fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CGN-Y",
                 same_sign & !lbx &
                 (gy == fx + 1) &
                 (ey < gx + p) &
                 (
-                    (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey, gy+1:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gx+1:fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, gy+1:fy-1, gx), pos_zero)
             end
 
             ########################################### FAMILY C - CODIMENSION 3
@@ -6608,7 +6632,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lbx == lby) &
                 (ex == ey + 1) & (gx == fy) &
                 (gx > gy) &
-                ((ex == fx + 2) | (fx == fy + 1))
+                ((fx == fy + 1) | ((fx > fy + 1) & (fx + 1 == ey)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ey, fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ey, gx+1:fx-1, gy), pos_zero)
@@ -6617,7 +6641,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lby == lbx) &
                 (ey == ex + 1) & (gy == fx) &
                 (gy > gx) &
-                ((ey == fy + 2) | (fy == fx + 1))
+                ((fy == fx + 1) | ((fy > fx + 1) & (fy + 1 == ex)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ex, fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, ~lby, ex, gy+1:fy-1, gx), pos_zero)
@@ -6765,14 +6789,14 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CAKT1-X",
                 diff_sign & !lbx & lby &
-                (ex == gx) & (ex == ey + 1) & (ex == fx + p) &
+                (ex == ey + 1) & (ex == gx) & (ex == fx + p) &
                 (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CAKT1-Y",
                 diff_sign & !lby & lbx &
-                (ey == gy) & (ey == ex + 1) & (ey == fy + p) &
+                (ey == ex + 1) & (ey == gy) & (ey == fy + p) &
                 (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, fx, gx), pos_zero)
@@ -6916,16 +6940,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx + 1 == fy) & (ey == fy + 2) &
                 (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex-2, fy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex-2, gx:fy-2, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-2, fy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-2, gx:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CASW-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + 1) & (fy + 1 == fx) & (ex == fx + 2) &
                 (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey-2, fx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey-2, gy:fx-2, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-2, fx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-2, gy:fx-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBHI-X",
@@ -7088,16 +7112,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (ex == fx + 2) & (fy == gy) &
                 (fx > gx) & (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx+1:fx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBOU-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (ey == fy + 2) & (fx == gx) &
                 (fy > gy) & (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy+1:fy-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy+1:fy-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBRW-X",
@@ -7135,7 +7159,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx > gy) &
                 (ex < gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, gx+1:fx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fy+1:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CCFH-Y",
                 (same_sign != lby) & lbx &
@@ -7143,7 +7167,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy > gx) &
                 (ey < gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, gy+1:fy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fx+1:fy, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CCHI0-X",
@@ -7167,8 +7191,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CCHI1-X",
                 same_sign & lbx & lby &
-                (fx == ey) & (fx == gx + 2) & (gx == fy) &
-                (fy > gy) &
+                (fx == ey) & (fx == fy + 2) & (gx == fy) &
+                (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy-1, gy), pos_zero)
@@ -7177,8 +7201,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CCHI1-Y",
                 same_sign & lby & lbx &
-                (fy == ex) & (fy == gy + 2) & (gy == fx) &
-                (fx > gx) &
+                (fy == ex) & (fy == fx + 2) & (gy == fx) &
+                (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gx-1, gx), pos_zero)
@@ -7188,7 +7212,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CCHI2-X",
                 diff_sign & !lbx & lby &
-                (fx == ey) & (fx == gx + 2) & (gx == fy) &
+                (fx == ey) & (fx == fy + 2) & (gx == fy) &
                 (gx > gy) &
                 (ex < gy + p)
             ) do lemma
@@ -7197,7 +7221,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CCHI2-Y",
                 diff_sign & !lby & lbx &
-                (fy == ex) & (fy == gy + 2) & (gy == fx) &
+                (fy == ex) & (fy == fx + 2) & (gy == fx) &
                 (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -7292,7 +7316,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CGHIR-X",
                 diff_sign & !lby &
                 (fx == fy + 2) & (gx == fy) &
-                (fy > gy) &
+                (gx > gy) &
                 (ex < gy + p) &
                 (
                     (!lbx & (fx == ey)) |
@@ -7306,7 +7330,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CGHIR-Y",
                 diff_sign & !lbx &
                 (fy == fx + 2) & (gy == fx) &
-                (fx > gx) &
+                (gy > gx) &
                 (ey < gx + p) &
                 (
                     (!lby & (fy == ex)) |
@@ -7354,21 +7378,21 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CADHI-X",
                 same_sign & !lbx & !lby &
-                (ex == ey + 1) & (ex == fx + 2) & (fx == fy + 2) & (gx == fy) &
+                (ex == ey + 1) & (fx + 1 == ey) & (fx == fy + 2) & (gx == fy) &
                 (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gy:fy-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gy:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CADHI-Y",
                 same_sign & !lby & !lbx &
-                (ey == ex + 1) & (ey == fy + 2) & (fy == fx + 2) & (gy == fx) &
+                (ey == ex + 1) & (fy + 1 == ex) & (fy == fx + 2) & (gy == fx) &
                 (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gx:fx-1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gx:fx-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CADHJ0-X",
@@ -7393,21 +7417,21 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (ex == fx + 2) & (fx == fy + 1) & (gx == fy) &
                 (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, fx+1, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, fx+1, gy+1:ex-4, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy-1, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy+1:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CADHJ1-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex + 1) & (ey == fy + 2) & (fy == fx + 1) & (gy == fx) &
                 (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, fy+1, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, fy+1, gx+1:ey-4, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gx-1, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gx+1:fx-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CADJT0-X",
                 same_sign & !lbx & !lby &
-                (ex == ey + 1) & (ex == fy + 3) & (fx == fy + 1) & (gx + 1 == fy) &
+                (ex == ey + 1) & (fx + 1 == ey) & (fx == fy + 1) & (gx + 1 == fy) &
                 (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
@@ -7417,7 +7441,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CADJT0-Y",
                 same_sign & !lby & !lbx &
-                (ey == ex + 1) & (ey == fx + 3) & (fy == fx + 1) & (gy + 1 == fx) &
+                (ey == ex + 1) & (fy + 1 == ex) & (fy == fx + 1) & (gy + 1 == fx) &
                 (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -7428,7 +7452,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CADJT1-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == fy + 3) & (fx + 1 == ey) & (gx + 1 == fy) &
+                (ex == ey + 1) & (fx + 1 == ey) & (fx == fy + 1) & (gx + 1 == fy) &
                 (gx > gy) &
                 (ex < gy + p)
             ) do lemma
@@ -7438,7 +7462,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CADJT1-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == fx + 3) & (fy + 1 == ex) & (gy + 1 == fx) &
+                (ey == ex + 1) & (fy + 1 == ex) & (fy == fx + 1) & (gy + 1 == fx) &
                 (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -7560,14 +7584,14 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CBHJP-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 3) & (fx == fy + 1) & (gx == fy) &
+                (ex == ey) & (ex == fx + 3) & (fx == gx + 1) & (gx == fy) &
                 (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHJP-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 3) & (fy == fx + 1) & (gy == fx) &
+                (ey == ex) & (ey == fy + 3) & (fy == gy + 1) & (gy == fx) &
                 (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx), pos_zero)
@@ -7575,14 +7599,14 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CBHKP-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 3) & (gx + 2 == ey) & (gx == fy) &
+                (ex == ey) & (ex == gx + 2) & (ex == fx + 3) & (gx == fy) &
                 (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHKP-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 3) & (gy + 2 == ex) & (gy == fx) &
+                (ey == ex) & (ey == gy + 2) & (ey == fy + 3) & (gy == fx) &
                 (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, fx, gx), pos_zero)
@@ -7693,13 +7717,13 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CFKMU-X",
                 diff_sign & !lbx & !lby &
-                (ex == fx + p) & (ex == gx) & (ex == ey + 2) & (fx == fy) & (fy == gy)
+                (ex == ey + 2) & (ex == gx) & (ex == fx + p) & (fx == fy) & (fy == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, ex-3, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CFKMU-Y",
                 diff_sign & !lby & !lbx &
-                (ey == fy + p) & (ey == gy) & (ey == ex + 2) & (fy == fx) & (fx == gx)
+                (ey == ex + 2) & (ey == gy) & (ey == fy + p) & (fy == fx) & (fx == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, ey-3, gx), pos_zero)
             end
@@ -7758,7 +7782,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-TBC0-X",
                 diff_sign & !lby &
                 (gx == ey + 1) &
-                (fy + 1 > gy) &
+                (ey > gy) &
                 (ex < gy + p) &
                 (
                     (!lbx & (fx == gx)) |
@@ -7770,7 +7794,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-TBC0-Y",
                 diff_sign & !lbx &
                 (gy == ex + 1) &
-                (fx + 1 > gx) &
+                (ex > gx) &
                 (ey < gx + p) &
                 (
                     (!lby & (fy == gy)) |
@@ -7836,17 +7860,17 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-Ma-X",
                 (same_sign != lbx) &
-                (ex > fx + 2) & (fx > ey) & (gx < ey + 1) & (gx > gy) &
+                (ex > fx + 2) & (gx < ey + 1) & (gx > gy) &
                 (ex < gy + p) &
-                ((fx > ey + 1) | (gx < fy + 1) | (!lby & (gx < ey)))
+                ((fx > ey + 1) | ((fx == ey + 1) & ((gx < fy + 1) | (!lby & (gx < ey)))))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-Ma-Y",
                 (same_sign != lby) &
-                (ey > fy + 2) & (fy > ex) & (gy < ex + 1) & (gy > gx) &
+                (ey > fy + 2) & (gy < ex + 1) & (gy > gx) &
                 (ey < gx + p) &
-                ((fy > ex + 1) | (gy < fx + 1) | (!lbx & (gy < ex)))
+                ((fy > ex + 1) | ((fy == ex + 1) & ((gy < fx + 1) | (!lbx & (gy < ex)))))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy:fy+1, gx), pos_zero)
             end
@@ -7879,17 +7903,17 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-Md-X",
                 (same_sign == lbx) &
-                (fx > ey) & (gx < ey + 1) & (gx > gy) &
+                (gx < ey + 1) & (gx > gy) &
                 (ex < gy + p) &
-                ((fx > ey + 1) | (!lby & (gx < ey) & (gx > fy)))
+                ((fx > ey + 1) | ((fx == ey + 1) & !lby & (gx < ey) & (gx > fy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-Md-Y",
                 (same_sign == lby) &
-                (fy > ex) & (gy < ex + 1) & (gy > gx) &
+                (gy < ex + 1) & (gy > gx) &
                 (ey < gx + p) &
-                ((fy > ex + 1) | (!lbx & (gy < ex) & (gy > fx)))
+                ((fy > ex + 1) | ((fy == ex + 1) & !lbx & (gy < ex) & (gy > fx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy-1:fy, gx), pos_zero)
             end
@@ -7918,8 +7942,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MA1-X",
                 same_sign & lbx &
                 (gx == gy) &
-                (fx > ey) &
-                ((fx > ey + 1) | (!lby & (gx == ey) & (ey == fy + p)))
+                ((fx > ey + 1) | ((fx == ey + 1) & !lby & (ey == gy) & (ey == fy + p)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, gx+1:ey), pos_zero)
@@ -7928,8 +7951,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MA1-Y",
                 same_sign & lby &
                 (gy == gx) &
-                (fy > ex) &
-                ((fy > ex + 1) | (!lbx & (gy == ex) & (ex == fx + p)))
+                ((fy > ex + 1) | ((fy == ex + 1) & !lbx & (ex == gx) & (ex == fx + p)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, gy+1:ex), pos_zero)
@@ -7939,8 +7961,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MA2-X",
                 diff_sign & !lbx &
                 (gx == gy) &
-                (fx > ey) &
-                ((fx > ey + 1) | (!lby & (ey == gy) & (ey == fy + p)))
+                ((fx > ey + 1) | ((fx == ey + 1) & !lby & (ey == gy) & (ey == fy + p)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, gx+1:ey), pos_zero)
@@ -7948,8 +7969,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MA2-Y",
                 diff_sign & !lby &
                 (gy == gx) &
-                (fy > ex) &
-                ((fy > ex + 1) | (!lbx & (ex == gx) & (ex == fx + p)))
+                ((fy > ex + 1) | ((fy == ex + 1) & !lbx & (ex == gx) & (ex == fx + p)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, gy+1:ex), pos_zero)
@@ -8013,14 +8033,14 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MB2-X",
                 (same_sign == lbx) & !lby &
                 (fx == ey + 1) &
-                (gx < fy) & (gx < gy)
+                (gx < gy) & (gy < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-2:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB2-Y",
                 (same_sign == lby) & !lbx &
                 (fy == ex + 1) &
-                (gy < fx) & (gy < gx)
+                (gy < gx) & (gx < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy-2:fy, gy), pos_zero)
             end
@@ -8060,18 +8080,18 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MC0-X",
                 (same_sign != lbx) &
                 (ex == fx + 2) &
-                (fx > ey) & (gx < ey + 1) & (gx > gy) &
+                (gx < ey + 1) & (gx > gy) &
                 (ex < gy + p) &
-                ((fx > ey + 1) | (gx < fy + 1) | (!lby & (gx < ey)))
+                ((fx > ey + 1) | ((fx == ey + 1) & ((gx < fy + 1) | (!lby & (gx < ey)))))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ex-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MC0-Y",
                 (same_sign != lby) &
                 (ey == fy + 2) &
-                (fy > ex) & (gy < ex + 1) & (gy > gx) &
+                (gy < ex + 1) & (gy > gx) &
                 (ey < gx + p) &
-                ((fy > ex + 1) | (gy < fx + 1) | (!lbx & (gy < ex)))
+                ((fy > ex + 1) | ((fy == ex + 1) & ((gy < fx + 1) | (!lbx & (gy < ex)))))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ±, ey, ey-2, gx), pos_zero)
             end
@@ -8113,8 +8133,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gy+1:fx-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gy+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB0-Y",
@@ -8122,8 +8142,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gx+1:fy-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gx+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-2), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), pos_zero)
             end
 
@@ -8132,24 +8152,24 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gy+1:ey), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB1-Y",
                 same_sign & !lby & lbx &
                 (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gx+1:ex), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gx+1:fx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MAB2-X",
                 same_sign & lbx & !lby &
                 (fx == ey + 1) & (gx == gy) &
-                (fy + 1 > gy)
+                (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2, fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), pos_zero)
@@ -8159,7 +8179,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MAB2-Y",
                 same_sign & lby & !lbx &
                 (fy == ex + 1) & (gy == gx) &
-                (fx + 1 > gx)
+                (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2, fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), pos_zero)
@@ -8170,7 +8190,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MAB3-X",
                 diff_sign & !lbx & !lby &
                 (fx == ey + 1) & (gx == gy) &
-                (gx < fy + 1)
+                (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, fx-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), pos_zero)
@@ -8180,7 +8200,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MAB3-Y",
                 diff_sign & !lby & !lbx &
                 (fy == ex + 1) & (gy == gx) &
-                (gy < fx + 1)
+                (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, fy-1), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fy), pos_zero)
@@ -8195,7 +8215,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-2), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB4-Y",
                 diff_sign & lby & !lbx &
@@ -8204,7 +8224,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-2), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:ex), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MAB5-X",
@@ -8212,18 +8232,18 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gy+1:fy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gy+1:ey), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB5-Y",
                 diff_sign & lby & lbx &
                 (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gx+1:fx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gx+1:ex), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:ex), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MAC-X",
@@ -8231,26 +8251,26 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (gx == gy) &
                 (fx > ey + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ex-2, gx+1:ex-3), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-2, ex-1), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx+1:ey), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:ey), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAC-Y",
                 (same_sign != lby) &
                 (ey == fy + 2) & (gy == gx) &
                 (fy > ex + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ey-2, gy+1:ey-3), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-2, ey-1), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy+1:ex), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:ex), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MAD0-X",
                 same_sign & lby &
                 (gx == gy) &
-                (gx < fy) &
+                (fy > gy) &
                 (
-                    (!lbx & (ex == ey + 2) & (ex == fx + 2)) |
+                    (!lbx & (ex == fx + 2) & (ex == ey + 2)) |
                     (lbx & (fx == ey + 1))
                 )
             ) do lemma
@@ -8263,9 +8283,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-MAD0-Y",
                 same_sign & lbx &
                 (gy == gx) &
-                (gy < fx) &
+                (fx > gx) &
                 (
-                    (!lby & (ey == ex + 2) & (ey == fy + 2)) |
+                    (!lby & (ey == fy + 2) & (ey == ex + 2)) |
                     (lby & (fy == ex + 1))
                 )
             ) do lemma
@@ -8313,7 +8333,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx > gy) &
                 (ex < gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx+1:fx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fy+1:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MBE-Y",
                 (same_sign == lby) & lbx &
@@ -8321,7 +8341,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy > gx) &
                 (ey < gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, gy+1:fy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fx+1:fy, gx), pos_zero)
             end
 
             ########################################### FAMILY M - CODIMENSION 3
@@ -8331,7 +8351,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (fx == ey + 1) & (gx == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:ey), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MABC0-Y",
@@ -8339,7 +8359,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == fy + 2) & (fy == ex + 1) & (gy == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-2), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:ex), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), pos_zero)
             end
 
@@ -8348,7 +8368,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (fx == ey + 1) & (gx == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:ey), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MABC1-Y",
@@ -8356,15 +8376,15 @@ function check_selbtz_two_sum_lemmas(
                 (ey == fy + 2) & (fy == ex + 1) & (gy == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:ex), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MADF-X",
                 same_sign & lby &
-                (gx == fy + 1) & (gx == gy) &
+                (gx == gy) & (fy + 1 == gy) &
                 (
-                    (!lbx & (ex == ey + 2) & (ex == fx + 2)) |
+                    (!lbx & (ex == fx + 2) & (ex == ey + 2)) |
                     (lbx & (fx == ey + 1))
                 )
             ) do lemma
@@ -8375,9 +8395,9 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-MADF-Y",
                 same_sign & lbx &
-                (gy == fx + 1) & (gy == gx) &
+                (gy == gx) & (fx + 1 == gx) &
                 (
-                    (!lby & (ey == ex + 2) & (ey == fy + 2)) |
+                    (!lby & (ey == fy + 2) & (ey == ex + 2)) |
                     (lby & (fy == ex + 1))
                 )
             ) do lemma
@@ -8472,20 +8492,20 @@ function check_selbtz_two_sum_lemmas(
                 (gx == ey + 1) &
                 (fy > gy) &
                 (ex > fy + p) &
-                ((ex == fx + 2) | (diff_sign & lbx & (fx > ey + 1)))
+                ((ex == fx + 2) | (diff_sign & lbx & (fx > gx)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, fy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, fy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1A0-Y",
                 (same_sign != lby) & lbx &
                 (gy == ex + 1) &
                 (fx > gx) &
                 (ey > fx + p) &
-                ((ey == fy + 2) | (diff_sign & lby & (fy > ex + 1)))
+                ((ey == fy + 2) | (diff_sign & lby & (fy > gy)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, fx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, fx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, fx, gx))
             end
 
             checker("SELBTZ-TwoSum-1A1-X",
@@ -8494,8 +8514,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) & (fy > gy) &
                 (ex > fy + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, fy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, fy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, ey+2:fx-1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1A1-Y",
                 same_sign & !lby & lbx &
@@ -8503,25 +8523,25 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) & (fx > gx) &
                 (ey > fx + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, fx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, fx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, ex+2:fy-1), SELBTZRange(~sx, fx, gx))
             end
 
             checker("SELBTZ-TwoSum-1A2-X",
                 diff_sign & !lbx & lby &
                 (gx == ey + 1) &
-                (fx > ey + 1) & (fy > gy) &
+                (fx > gx) & (fy > gy) &
                 (ex > fy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, ey+2:fx), SELBTZRange(~sy, fy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1A2-Y",
                 diff_sign & !lby & lbx &
                 (gy == ex + 1) &
-                (fy > ex + 1) & (fx > gx) &
+                (fy > gy) & (fx > gx) &
                 (ey > fx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, ex+2:fy), SELBTZRange(~sx, fx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy), SELBTZRange(~sx, fx, gx))
             end
 
             checker("SELBTZ-TwoSum-1B0-X",
@@ -8543,11 +8563,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1C0-X",
                 (same_sign == lbx) & !lby &
-                (fx > fy + 2) &
                 (ex < fy + (p+1)) & (ex > gy + p) &
                 (
                     (diff_sign & !lbx & (fx == gx) & (gx > ey + 1)) |
-                    (same_sign & lbx & (fx == ey) & (gx == ey + 1)) |
+                    (same_sign & lbx & (fx == ey) & (gx == ey + 1) & (ey > fy + 2)) |
                     ((fx == ey + 1) & (gx == ey))
                 )
             ) do lemma
@@ -8557,11 +8576,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-1C0-Y",
                 (same_sign == lby) & !lbx &
-                (fy > fx + 2) &
                 (ey < fx + (p+1)) & (ey > gx + p) &
                 (
                     (diff_sign & !lby & (fy == gy) & (gy > ex + 1)) |
-                    (same_sign & lby & (fy == ex) & (gy == ex + 1)) |
+                    (same_sign & lby & (fy == ex) & (gy == ex + 1) & (ex > fx + 2)) |
                     ((fy == ex + 1) & (gy == ex))
                 )
             ) do lemma
@@ -8576,7 +8594,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex < ey + p) & (ex > fy + p) &
                 (
                     (!lbx & (fx == gx)) |
-                    (lbx & (ex == gx + 1) & (gx == fx + 1))
+                    (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey), SELBTZRange(sy, fy, gy))
@@ -8587,7 +8605,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey < ex + p) & (ey > fx + p) &
                 (
                     (!lby & (fy == gy)) |
-                    (lby & (ey == gy + 1) & (gy == fy + 1))
+                    (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, ex), SELBTZRange(sx, fx, gx))
@@ -8595,10 +8613,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1C2-X",
                 diff_sign & lby &
-                (fy > gy) &
+                (gx > ey + 1) & (fy > gy) &
                 (ex < ey + (p+1)) & (ex > fy + p) &
                 (
-                    (!lbx & (fx == gx) & (fx > ey + 1)) |
+                    (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
@@ -8606,10 +8624,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-1C2-Y",
                 diff_sign & lbx &
-                (fx > gx) &
+                (gy > ex + 1) & (fx > gx) &
                 (ey < ex + (p+1)) & (ey > fx + p) &
                 (
-                    (!lby & (fy == gy) & (fy > ex + 1)) |
+                    (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
@@ -8791,7 +8809,7 @@ function check_selbtz_two_sum_lemmas(
                 ((diff_sign & lbx) | (ex == fx + 2)) &
                 (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
-                    (lby & (fy + 1 == gy) & (ex > gy + (p-1)))
+                    (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
@@ -8804,7 +8822,7 @@ function check_selbtz_two_sum_lemmas(
                 ((diff_sign & lby) | (ey == fy + 2)) &
                 (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
-                    (lbx & (fx + 1 == gx) & (ey > gx + (p-1)))
+                    (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
@@ -8817,11 +8835,11 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) & (fx + 1 > gx) &
                 (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
-                    (lby & (fy + 1 == gy) & (ex > gy + (p-1)))
+                    (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1A4-Y",
                 same_sign & !lby &
@@ -8829,11 +8847,11 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) & (fy + 1 > gy) &
                 (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
-                    (lbx & (fx + 1 == gx) & (ey > gx + (p-1)))
+                    (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-1A5-X",
@@ -8842,7 +8860,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx) &
                 (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
-                    (lby & (fy + 1 == gy) & (ex > gy + (p-1)))
+                    (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
@@ -8854,7 +8872,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy) &
                 (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
-                    (lbx & (fx + 1 == gx) & (ey > gx + (p-1)))
+                    (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
@@ -8888,7 +8906,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & !lby &
                 (ex == ey + p) &
                 (ex > fx + 2) & (ey > fy + 2) & (fy > gy) &
-                (ex < gx + (p-1)) &
+                (gx > ey + 1) &
                 ((same_sign & !lbx & (ex == gx) & (ex == fx + p)) | (diff_sign & lbx & (fx + 1 == gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, ey+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
@@ -8897,7 +8915,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & !lbx &
                 (ey == ex + p) &
                 (ey > fy + 2) & (ex > fx + 2) & (fx > gx) &
-                (ey < gy + (p-1)) &
+                (gy > ex + 1) &
                 ((same_sign & !lby & (ey == gy) & (ey == fy + p)) | (diff_sign & lby & (fy + 1 == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy+1, ex+1), SELBTZRange(~sx, 1, ex-1, fx, gx))
@@ -8909,8 +8927,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx) & (ey > fy + 2) & (fy > gy) &
                 ((diff_sign & lbx) | (ex == fx + 2))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 1, ey-1, fy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1AB0-Y",
                 (same_sign != lby) & !lbx &
@@ -8918,8 +8936,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy) & (ex > fx + 2) & (fx > gx) &
                 ((diff_sign & lby) | (ey == fy + 2))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, 1, ex-1, fx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 1, ex-1, fx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, 1, ex-1, fx, gx))
             end
 
             checker("SELBTZ-TwoSum-1AB1-X",
@@ -8927,16 +8945,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + p) & (gx == ey + 1) &
                 (ex > fx + 2) & (ey > fy + 2) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, 1, gx-2, fy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 1, gx-2, fy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 1, ey-1, fy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1AB1-Y",
                 same_sign & !lby & !lbx &
                 (ey == ex + p) & (gy == ex + 1) &
                 (ey > fy + 2) & (ex > fx + 2) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, 1, gy-2, fx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 1, gy-2, fx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 1, ex-1, fx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, 1, ex-1, fx, gx))
             end
 
             checker("SELBTZ-TwoSum-1AB2-X",
@@ -8975,7 +8993,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1AI1-X",
                 diff_sign & !lbx & lby &
-                (fx == ey + 1) & (gx == ey + 1) &
+                (fx == gx) & (gx == ey + 1) &
                 (fy > gy) &
                 (ex > fy + p)
             ) do lemma
@@ -8983,7 +9001,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-1AI1-Y",
                 diff_sign & !lby & lbx &
-                (fy == ex + 1) & (gy == ex + 1) &
+                (fy == gy) & (gy == ex + 1) &
                 (fx > gx) &
                 (ey > fx + p)
             ) do lemma
@@ -9015,7 +9033,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx > ey + 1) & (ey > fy + 2) & (fy > gy) &
                 (
                     (!lbx & (fx == gx)) |
-                    (lbx & (ex == gx + 1) & (gx == fx + 1))
+                    (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
@@ -9026,7 +9044,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy > ex + 1) & (ex > fx + 2) & (fx > gx) &
                 (
                     (!lby & (fy == gy)) |
-                    (lby & (ey == gy + 1) & (gy == fy + 1))
+                    (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, ex+1), SELBTZRange(~sx, 1, ex-1, fx, gx))
@@ -9052,8 +9070,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BH-X",
                 same_sign & lbx & !lby &
                 (ex == ey + p) &
-                (fx > ey) & (ey > fy + 2) & (fy > gy) &
-                (((fx == ey + 1) & (fx + 1 == gx)) | (gx == ey + 1))
+                (ey > fy + 2) & (fy > gy) &
+                (((fx == ey + 1) & (fx + 1 == gx)) | ((gx == ey + 1) & (fx > gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 1, ey-1, fy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, 1, ey-1, fy, gy))
@@ -9061,8 +9079,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BH-Y",
                 same_sign & lby & !lbx &
                 (ey == ex + p) &
-                (fy > ex) & (ex > fx + 2) & (fx > gx) &
-                (((fy == ex + 1) & (fy + 1 == gy)) | (gy == ex + 1))
+                (ex > fx + 2) & (fx > gx) &
+                (((fy == ex + 1) & (fy + 1 == gy)) | ((gy == ex + 1) & (fy > gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 1, ex-1, fx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, 1, ex-1, fx, gx))
@@ -9092,7 +9110,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex < ey + p) & (ex > gy + (p-1)) &
                 (
                     (!lbx & (fx == gx)) |
-                    (lbx & (ex == gx + 1) & (gx == fx + 1))
+                    (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey), SELBTZRange(sy, gy, gy))
@@ -9104,7 +9122,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey < ex + p) & (ey > gx + (p-1)) &
                 (
                     (!lby & (fy == gy)) |
-                    (lby & (ey == gy + 1) & (gy == fy + 1))
+                    (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, ex), SELBTZRange(sx, gx, gx))
@@ -9113,10 +9131,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1CF-X",
                 (same_sign == lbx) & !lby &
                 (ex == gy + p) &
-                (fx > fy + 2) & (fy > gy) &
+                (fy > gy) &
                 (
                     (diff_sign & !lbx & (fx == gx) & (gx > ey + 1)) |
-                    (same_sign & lbx & (fx == ey) & (fx + 1 == gx)) |
+                    (same_sign & lbx & (fx == ey) & (gx == ey + 1) & (ey > fy + 2)) |
                     ((fx == ey + 1) & (gx == ey))
                 )
             ) do lemma
@@ -9127,10 +9145,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1CF-Y",
                 (same_sign == lby) & !lbx &
                 (ey == gx + p) &
-                (fy > fx + 2) & (fx > gx) &
+                (fx > gx) &
                 (
                     (diff_sign & !lby & (fy == gy) & (gy > ex + 1)) |
-                    (same_sign & lby & (fy == ex) & (fy + 1 == gy)) |
+                    (same_sign & lby & (fy == ex) & (gy == ex + 1) & (ex > fx + 2)) |
                     ((fy == ex + 1) & (gy == ex))
                 )
             ) do lemma
@@ -9142,11 +9160,11 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1CG-X",
                 diff_sign & lby &
                 (fy + 1 == gy) &
-                (ex > ey + 2) &
+                (gx > ey + 1) &
                 (ex < ey + (p+1)) & (ex > fy + p) &
                 (
-                    (!lbx & (fx == gx) & (fx > ey + 1)) |
-                    (lbx & (ex == gx + 1) & (gx == fx + 1))
+                    (!lbx & (fx == gx)) |
+                    (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, gy, gy))
@@ -9154,11 +9172,11 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1CG-Y",
                 diff_sign & lbx &
                 (fx + 1 == gx) &
-                (ey > ex + 2) &
+                (gy > ex + 1) &
                 (ey < ex + (p+1)) & (ey > fx + p) &
                 (
-                    (!lby & (fy == gy) & (fy > ex + 1)) |
-                    (lby & (ey == gy + 1) & (gy == fy + 1))
+                    (!lby & (fy == gy)) |
+                    (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, ex+1), SELBTZRange(~sx, gx, gx))
@@ -9246,7 +9264,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (!lbx & !lby & (ex == gy + p) & (fx == gx) & (ey == gy) & (ey == fy + p)) |
                     (!lbx & lby & (fx == gx) & (fy + 1 == gy) & (ex > fy + p)) |
-                    (lbx & lby & (ex == gx + 1) & (gx == fx + 1) & (fy + 1 == gy) & ((ex == gy + p) | (ex == gy + (p+1))))
+                    (lbx & lby & (ex == gx + 1) & (fx + 1 == gx) & (fy + 1 == gy) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
@@ -9257,7 +9275,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (!lby & !lbx & (ey == gx + p) & (fy == gy) & (ex == gx) & (ex == fx + p)) |
                     (!lby & lbx & (fy == gy) & (fx + 1 == gx) & (ey > fx + p)) |
-                    (lby & lbx & (ey == gy + 1) & (gy == fy + 1) & (fx + 1 == gx) & ((ey == gx + p) | (ey == gx + (p+1))))
+                    (lby & lbx & (ey == gy + 1) & (fy + 1 == gy) & (fx + 1 == gx) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx, gx))
@@ -9282,7 +9300,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & !lby &
                 (ex == ey + p) & (ey == fy + 2) &
                 (ex > fx + 2) & (fy > gy) &
-                (ex < gx + (p-1)) &
+                (gx > ey + 1) &
                 ((same_sign & !lbx & (ex == gx) & (ex == fx + p)) | (diff_sign & lbx & (fx + 1 == gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, ey+1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
@@ -9291,7 +9309,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & !lbx &
                 (ey == ex + p) & (ex == fx + 2) &
                 (ey > fy + 2) & (fx > gx) &
-                (ey < gy + (p-1)) &
+                (gy > ex + 1) &
                 ((same_sign & !lby & (ey == gy) & (ey == fy + p)) | (diff_sign & lby & (fy + 1 == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy+1, ex+1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
@@ -9301,7 +9319,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby &
                 (gx == ey + 2) & (fy + 1 == gy) &
                 (
-                    (!lbx & (ex == gx) & (ex == fx + p) & ((fx == gy) | (fx == gy + 1))) |
+                    (!lbx & (ex == gx) & (ex == fx + p) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lbx & (fx + 1 == gx) & (ex < ey + (p+1)) & (ex > fy + p))
                 )
             ) do lemma
@@ -9311,7 +9329,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx &
                 (gy == ex + 2) & (fx + 1 == gx) &
                 (
-                    (!lby & (ey == gy) & (ey == fy + p) & ((fy == gx) | (fy == gx + 1))) |
+                    (!lby & (ey == gy) & (ey == fy + p) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lby & (fy + 1 == gy) & (ey < ex + (p+1)) & (ey > fx + p))
                 )
             ) do lemma
@@ -9320,14 +9338,14 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1IM-X",
                 diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == ey + (p+1)) & (ex == fx + p) &
+                (ex == gx) & (ex == fx + p) & (ex == ey + (p+1)) &
                 (ey > fy + 2) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ey+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1IM-Y",
                 diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == ex + (p+1)) & (ey == fy + p) &
+                (ey == gy) & (ey == fy + p) & (ey == ex + (p+1)) &
                 (ex > fx + 2) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ex+1), SELBTZRange(~sx, 1, ex-1, fx, gx))
@@ -9357,16 +9375,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + p) & (gx == ey + 1) & (fy == gy) &
                 (ex > fx + 2)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, ey+2:fx-1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
             end
             checker("SELBTZ-TwoSum-1ABD1-Y",
                 same_sign & !lby & !lbx &
                 (ey == ex + p) & (gy == ex + 1) & (fx == gx) &
                 (ey > fy + 2)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, ex+2:fy-1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-1ABD2-X",
@@ -9405,8 +9423,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx) & (fy > gy) &
                 ((diff_sign & lbx) | (ex == fx + 2))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-1ABJ0-Y",
                 (same_sign != lby) & !lbx &
@@ -9414,8 +9432,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy) & (fx > gx) &
                 ((diff_sign & lby) | (ey == fy + 2))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-1ABJ1-X",
@@ -9423,16 +9441,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + p) & (gx == ey + 1) & (ey == fy + 2) &
                 (ex > fx + 2) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fy+4:fx-1), SELBTZRange(~sy, 0, fy+1, gy:fy-1, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, 0, fy+1, gy:fy-1, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-1ABJ1-Y",
                 same_sign & !lby & !lbx &
                 (ey == ex + p) & (gy == ex + 1) & (ex == fx + 2) &
                 (ey > fy + 2) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fx+4:fy-1), SELBTZRange(~sx, 0, fx+1, gx:fx-1, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, 0, fx+1, gx:fx-1, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-1ABJ2-X",
@@ -9440,14 +9458,14 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + p) & (gx == ey + 1) & (ey == fy + 2) &
                 (fx > gx) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), SELBTZRange(~sy, 0, ey-1, gy:ey-3, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-1ABJ2-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + p) & (gy == ex + 1) & (ex == fx + 2) &
                 (fy > gy) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy), SELBTZRange(~sx, 0, ex-1, gx:ex-3, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-1ACN0-X",
@@ -9490,8 +9508,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1ACN1-Y",
                 diff_sign & lbx &
@@ -9504,16 +9522,17 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, fx+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, fx+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-1BCD-X",
                 diff_sign & !lby &
                 (ex == ey + p) & (fy == gy) &
+                (gx > ey + 1) &
                 (
-                    (!lbx & (fx == gx) & (gx > ey + 1)) |
-                    (lbx & (ex == fx + 2) & (fx + 1 == gx))
+                    (!lbx & (fx == gx)) |
+                    (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
@@ -9521,9 +9540,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BCD-Y",
                 diff_sign & !lbx &
                 (ey == ex + p) & (fx == gx) &
+                (gy > ex + 1) &
                 (
-                    (!lby & (fy == gy) & (gy > ex + 1)) |
-                    (lby & (ey == fy + 2) & (fy + 1 == gy))
+                    (!lby & (fy == gy)) |
+                    (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, ex+1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
@@ -9535,7 +9555,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx > ey + 1) & (fy > gy) &
                 (
                     (!lbx & (fx == gx)) |
-                    (lbx & (ex == gx + 1) & (gx == fx + 1))
+                    (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
@@ -9546,7 +9566,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy > ex + 1) & (fx > gx) &
                 (
                     (!lby & (fy == gy)) |
-                    (lby & (ey == gy + 1) & (gy == fy + 1))
+                    (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, ex+1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
@@ -9555,8 +9575,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BDH-X",
                 same_sign & lbx & !lby &
                 (ex == ey + p) & (fy == gy) &
-                (fx > ey) &
-                (((fx == ey + 1) & (fx + 1 == gx)) | (gx == ey + 1))
+                (((fx == ey + 1) & (fx + 1 == gx)) | ((gx == ey + 1) & (fx > gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
@@ -9564,8 +9583,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BDH-Y",
                 same_sign & lby & !lbx &
                 (ey == ex + p) & (fx == gx) &
-                (fy > ex) &
-                (((fy == ex + 1) & (fy + 1 == gy)) | (gy == ex + 1))
+                (((fy == ex + 1) & (fy + 1 == gy)) | ((gy == ex + 1) & (fy > gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
@@ -9574,8 +9592,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BHJ-X",
                 same_sign & lbx & !lby &
                 (ex == ey + p) & (ey == fy + 2) &
-                (fx > ey) & (fy > gy) &
-                (((fx == ey + 1) & (fx + 1 == gx)) | (gx == ey + 1))
+                (fy > gy) &
+                (((fx == ey + 1) & (fx + 1 == gx)) | ((gx == ey + 1) & (fx > gx)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
@@ -9583,8 +9601,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BHJ-Y",
                 same_sign & lby & !lbx &
                 (ey == ex + p) & (ex == fx + 2) &
-                (fy > ex) & (fx > gx) &
-                (((fy == ex + 1) & (fy + 1 == gy)) | (gy == ex + 1))
+                (fx > gx) &
+                (((fy == ex + 1) & (fy + 1 == gy)) | ((gy == ex + 1) & (fy > gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
@@ -9634,30 +9652,30 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1DIM-X",
                 diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == ey + (p+1)) & (ex == fx + p) & (fy == gy)
+                (ex == gx) & (ex == fx + p) & (ex == ey + (p+1)) & (fy == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ey+1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
             end
             checker("SELBTZ-TwoSum-1DIM-Y",
                 diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == ex + (p+1)) & (ey == fy + p) & (fx == gx)
+                (ey == gy) & (ey == fy + p) & (ey == ex + (p+1)) & (fx == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ex+1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-1IJM-X",
                 diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == ey + (p+1)) & (ey == fy + 2) & (ex == fx + p) &
+                (ex == gx) & (ex == fx + p) & (ex == ey + (p+1)) & (ey == fy + 2) &
                 (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ey+1), SELBTZRange(~sy, 0, ey-1, gy:ey-3, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ey+1), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-1IJM-Y",
                 diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == ex + (p+1)) & (ex == fx + 2) & (ey == fy + p) &
+                (ey == gy) & (ey == fy + p) & (ey == ex + (p+1)) & (ex == fx + 2) &
                 (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ex+1), SELBTZRange(~sx, 0, ex-1, gx:ex-3, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ex+1), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-1ABDI-X",
@@ -9678,14 +9696,14 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + p) & (fx == gx) & (gx == ey + 1) & (ey == fy + 2) &
                 (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, 0, ey-1, gy:ey-3, gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-1ABIJ-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + p) & (fy == gy) & (gy == ex + 1) & (ex == fx + 2) &
                 (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, 0, ex-1, gx:ex-3, gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, 0, ex-1, gx:fx-1, gx))
             end
 
             ########################################### FAMILY 2 - CODIMENSION 0
@@ -9984,11 +10002,11 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) & (fx > ey + 1) &
                 (ex > gy + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):gx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):gx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2C-Y",
                 same_sign & !lby & !lbx &
@@ -9996,11 +10014,11 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) & (fy > ex + 1) &
                 (ey > gx + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):gy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):gy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2D0-X",
@@ -10207,26 +10225,26 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2H-X",
                 same_sign & lbx & !lby &
                 (fy > gy) &
-                (ex < ey + p) & (ex > fy + p) &
+                (ex > fy + p) &
                 (
-                    ((fx == ey) & (fx + 1 == gx)) |
-                    ((ey == gx) & (gx < fx))
+                    ((fx == ey) & (fx + 1 == gx) & (ex < fx + p)) |
+                    ((gx == ey) & (fx > gx))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), SELBTZRange(sy, fy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(sy, fy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, ey+1:fx-1), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2H-Y",
                 same_sign & lby & !lbx &
                 (fx > gx) &
-                (ey < ex + p) & (ey > fx + p) &
+                (ey > fx + p) &
                 (
-                    ((fy == ex) & (fy + 1 == gy)) |
-                    ((ex == gy) & (gy < fy))
+                    ((fy == ex) & (fy + 1 == gy) & (ey < fy + p)) |
+                    ((gy == ex) & (fy > gy))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), SELBTZRange(sx, fx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(sx, fx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, ex+1:fy-1), SELBTZRange(sx, fx, gx))
             end
 
             checker("SELBTZ-TwoSum-2Z-X",
@@ -10261,10 +10279,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2D4-X",
                 (same_sign != lbx) & lby &
                 (ex == gy + p) &
-                (ex > fx + 2) & (fx > ey) & (gx > fy + 1) & (fy > gy) &
+                (ex > fx + 2) & (fy > gy) &
                 (
-                    (diff_sign & lbx & (fx + 1 == gx)) |
-                    ((fx == ey + 1) & (gx < ey + 1))
+                    (diff_sign & lbx & (fx + 1 == gx) & (fx > ey)) |
+                    ((fx == ey + 1) & (fx > gx) & (gx > fy + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
@@ -10274,10 +10292,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2D4-Y",
                 (same_sign != lby) & lbx &
                 (ey == gx + p) &
-                (ey > fy + 2) & (fy > ex) & (gy > fx + 1) & (fx > gx) &
+                (ey > fy + 2) & (fx > gx) &
                 (
-                    (diff_sign & lby & (fy + 1 == gy)) |
-                    ((fy == ex + 1) & (gy < ex + 1))
+                    (diff_sign & lby & (fy + 1 == gy) & (fy > ex)) |
+                    ((fy == ex + 1) & (fy > gy) & (gy > fx + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy+1, gx+2:fx), SELBTZRange(~sx, gx, gx))
@@ -10293,8 +10311,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+2:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fy+2:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC0-Y",
@@ -10305,8 +10323,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+2:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fx+2:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
@@ -10316,10 +10334,10 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+2:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC1-Y",
                 same_sign & !lby & lbx &
@@ -10327,10 +10345,10 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+2:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2AC2-X",
@@ -10338,22 +10356,22 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == fy + 1) &
                 (ex > gy + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, fy+2:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey-1, ey), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, ex-(p-1):gx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, ex-(p-1):gx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, gx+1:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC2-Y",
                 same_sign & lby & !lbx &
                 (fy == ex + 1) & (gy == fx + 1) &
                 (ey > gx + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, fx+2:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex-1, ex), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, ey-(p-1):gy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, ey-(p-1):gy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, gy+1:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2AC3-X",
@@ -10361,24 +10379,24 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == fy + 1) &
                 (ex > gy + (p+1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 for gs = fy+2:ey+1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:ey, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC3-Y",
                 same_sign & lby & lbx &
                 (fy == ex + 1) & (gy == fx + 1) &
                 (ey > gx + (p+1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 for gs = fx+2:ex+1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:ex, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2AC4-X",
@@ -10386,22 +10404,22 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == fy + 1) &
                 (ex > gy + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, fy+2:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey, ey), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, fy+2:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC4-Y",
                 diff_sign & !lby & !lbx &
                 (fy == ex + 1) & (gy == fx + 1) &
                 (ey > gx + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, fx+2:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex, ex), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fy), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, fx+2:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2AC5-X",
@@ -10435,11 +10453,11 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fy+2:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, fy+2:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC6-Y",
                 diff_sign & lby & !lbx &
@@ -10447,11 +10465,11 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fx+2:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, fx+2:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2AC7-X",
@@ -10460,10 +10478,10 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2AC7-Y",
                 diff_sign & lby & lbx &
@@ -10471,29 +10489,29 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-2AD-X",
                 (same_sign == lbx) & lby &
                 (ex == gy + p) & (fx == ey + 1) &
-                (fx > gx) & (gx > fy + 1) & (fy > gy)
+                (gx < ey + 1) & (gx > fy + 1) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:fx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:fx-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:fx-1, fy+1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:ey, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2AD-Y",
                 (same_sign == lby) & lbx &
                 (ey == gx + p) & (fy == ex + 1) &
-                (fy > gy) & (gy > fx + 1) & (fx > gx)
+                (gy < ex + 1) & (gy > fx + 1) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, gy:fy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, gy:fy-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, gy:fy-1, fx+1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, gy:ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, gy:ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, gy:ex, fx+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2AG-X",
@@ -10590,43 +10608,47 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + p) & (gx == fy + 1) &
                 (ex > fx + 2) & (fx > ey + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+2:ey), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fy+2:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2CD-Y",
                 same_sign & !lby & !lbx &
                 (ey == gx + p) & (gy == fx + 1) &
                 (ey > fy + 2) & (fy > ex + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+2:ex), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fx+2:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2EF0-X",
-                (same_sign != lbx) & !lby &
+                !lby &
                 (gx == ey) & (fy == gy) &
-                (fx + 1 > ey) &
                 (ex > gy + (p-1)) &
-                ((diff_sign & lbx) | (ex == fx + 2))
+                (
+                    (same_sign & !lbx & (ex == fx + 2)) |
+                    (diff_sign & lbx & (fx > ey))
+                )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, ey+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2EF0-Y",
-                (same_sign != lby) & !lbx &
+                !lbx &
                 (gy == ex) & (fx == gx) &
-                (fy + 1 > ex) &
                 (ey > gx + (p-1)) &
-                ((diff_sign & lby) | (ey == fy + 2))
+                (
+                    (same_sign & !lby & (ey == fy + 2)) |
+                    (diff_sign & lby & (fy > ex))
+                )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, ex+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2EF1-X",
@@ -10668,36 +10690,35 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2FH-X",
                 same_sign & lbx & !lby &
                 (fy == gy) &
-                (ex < fx + p) & (ex > gy + (p-1)) &
+                (ex > gy + (p-1)) &
                 (
-                    ((fx == ey) & (fx + 1 == gx)) |
-                    ((ey == gx) & (gx < fx))
+                    ((fx == ey) & (fx + 1 == gx) & (ex < fx + p)) |
+                    ((gx == ey) & (fx > gx))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, ey+1:fx-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2FH-Y",
                 same_sign & lby & !lbx &
                 (fx == gx) &
-                (ey < fy + p) & (ey > gx + (p-1)) &
+                (ey > gx + (p-1)) &
                 (
-                    ((fy == ex) & (fy + 1 == gy)) |
-                    ((ex == gy) & (gy < fy))
+                    ((fy == ex) & (fy + 1 == gy) & (ey < fy + p)) |
+                    ((gy == ex) & (fy > gy))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, ex+1:fy-1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2GI0-X",
                 same_sign & lby &
                 (fy + 1 == gy) &
                 (gx < ey + 1) & (gx > gy + 1) &
-                (ex > fy + p) &
                 (
-                    (!lbx & (ex == ey + 2) & (ex == fx + 2) & ((ex == gy + p) | (ex == gy + (p+1)))) |
-                    (lbx & (fx == ey + 1))
+                    (!lbx & (ex == ey + 2) & (fx == ey) & ((ex == gy + p) | (ex == gy + (p+1)))) |
+                    (lbx & (fx == ey + 1) & (ex > fy + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx-1, gx), SELBTZRange(~sy, gy, gy))
@@ -10707,10 +10728,9 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx &
                 (fx + 1 == gx) &
                 (gy < ex + 1) & (gy > gx + 1) &
-                (ey > fx + p) &
                 (
-                    (!lby & (ey == ex + 2) & (ey == fy + 2) & ((ey == gx + p) | (ey == gx + (p+1)))) |
-                    (lby & (fy == ex + 1))
+                    (!lby & (ey == ex + 2) & (fy == ex) & ((ey == gx + p) | (ey == gx + (p+1)))) |
+                    (lby & (fy == ex + 1) & (ey > fx + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gy-1, gy), SELBTZRange(~sx, gx, gx))
@@ -10720,11 +10740,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2GI1-X",
                 diff_sign & lby &
                 (fy + 1 == gy) &
-                (fx > gx) & (gx > gy + 1) &
-                (ex > fy + p) &
+                (gx < ey + 1) & (gx > gy + 1) &
                 (
-                    (!lbx & (fx == ey + 1)) |
-                    (lbx & (ex == ey + 2) & (ex == fx + 2) & ((ex == gy + p) | (ex == gy + (p+1))))
+                    (!lbx & (fx == ey + 1) & (ex > fy + p)) |
+                    (lbx & (ex == ey + 2) & (fx == ey) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gx), SELBTZRange(~sy, gy, gy))
@@ -10732,11 +10751,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2GI1-Y",
                 diff_sign & lbx &
                 (fx + 1 == gx) &
-                (fy > gy) & (gy > gx + 1) &
-                (ey > fx + p) &
+                (gy < ex + 1) & (gy > gx + 1) &
                 (
-                    (!lby & (fy == ex + 1)) |
-                    (lby & (ey == ex + 2) & (ey == fy + 2) & ((ey == gx + p) | (ey == gx + (p+1))))
+                    (!lby & (fy == ex + 1) & (ey > fx + p)) |
+                    (lby & (ey == ex + 2) & (fy == ex) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fy-1, gy), SELBTZRange(~sx, gx, gx))
@@ -10791,64 +10809,64 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + p) & (fx == ey + 1) & (gx == fy + 1) &
                 (ex > fx + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, gy+2:fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-2), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2ACD0-Y",
                 same_sign & !lby & !lbx &
                 (ey == gx + p) & (fy == ex + 1) & (gy == fx + 1) &
                 (ey > fy + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, gx+2:fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-2), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2ACD1-X",
                 same_sign & lbx & !lby &
                 (ex == gy + p) & (fx == ey + 1) & (gx == fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2, fx-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, gx+1:fx-2), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, fy+2:fx-2), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey-1, ey), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2ACD1-Y",
                 same_sign & lby & !lbx &
                 (ey == gx + p) & (fy == ex + 1) & (gy == fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2, fy-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, gy+1:fy-2), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, fx+2:fy-2), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex-1, ex), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2ACD2-X",
                 diff_sign & !lbx & !lby &
                 (ex == gy + p) & (fx == ey + 1) & (gx == fy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, fx-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, gx+1:fx-2), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, fy+2:fx-2), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, ey), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2ACD2-Y",
                 diff_sign & !lby & !lbx &
                 (ey == gx + p) & (fy == ex + 1) & (gy == fx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, fy-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fy), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, gy+1:fy-2), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, fx+2:fy-2), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, ex), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2ACD3-X",
@@ -10856,45 +10874,45 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + p) & (fx == ey + 1) & (gx == fy + 1) &
                 (ex > fx + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-2), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2ACD3-Y",
                 diff_sign & lby & !lbx &
                 (ey == gx + p) & (fy == ex + 1) & (gy == fx + 1) &
                 (ey > fy + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-2), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2ADL-X",
                 same_sign & !lbx & lby &
                 (ex == gy + p) & (fx == ey + 1) &
                 (ex > fx + 2) &
-                ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy)))
+                ((gx == fy + 1) | ((gx == gy + 1) & (gy == fy + 1)))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gy+2:gx-2), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2ADL-Y",
                 same_sign & !lby & lbx &
                 (ey == gx + p) & (fy == ex + 1) &
                 (ey > fy + 2) &
-                ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx)))
+                ((gy == fx + 1) | ((gy == gx + 1) & (gx == fx + 1)))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gx+2:gy-2), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2IJL0-X",
@@ -10908,12 +10926,12 @@ function check_selbtz_two_sum_lemmas(
                     ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, gx:fx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, gx:fx-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
                 for gs = gx+1:fx
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(sy, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(sy, gy, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex, gx:fx-1, gy+2:gx-2), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, gx:fx-1, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2IJL0-Y",
                 same_sign & lbx &
@@ -10926,12 +10944,12 @@ function check_selbtz_two_sum_lemmas(
                     ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, gy:fy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, gy:fy-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
                 for gs = gy+1:fy
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(sx, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(sx, gx, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey, gy:fy-1, gx+2:gy-2), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, gy:fy-1, gx+2:gy-1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-2IJL1-X",
@@ -11021,19 +11039,19 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & lby &
                 (ex == fx + 2) & (ex == gy + (p+2)) & (fx == ey + 1) & (gx == fy + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fy), SELBTZRange(~sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fy-1), SELBTZRange(sy, gy:gy+1, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, fy+2:fx-1), SELBTZRange(sy, gy:gy+1, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fy-1), SELBTZRange(sy, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fy), SELBTZRange(~sy, gy:gy+1, gy))
             end
             checker("SELBTZ-TwoSum-2ABCK1-Y",
                 (same_sign != lby) & lbx &
                 (ey == fy + 2) & (ey == gx + (p+2)) & (fy == ex + 1) & (gy == fx + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fx), SELBTZRange(~sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fx-1), SELBTZRange(sx, gx:gx+1, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, fx+2:fy-1), SELBTZRange(sx, gx:gx+1, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fx-1), SELBTZRange(sx, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fx), SELBTZRange(~sx, gx:gx+1, gx))
             end
 
             checker("SELBTZ-TwoSum-2ABEJ-X",
@@ -11059,7 +11077,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-2ABEK-X",
                 (same_sign != lbx) & !lby &
-                (ex == fx + 2) & (ex == gy + (p+2)) & (fx == gx + 1) & (gx == ey) &
+                (ex == fx + 2) & (ex == gy + (p+2)) & (fx == ey + 1) & (gx == ey) &
                 (fy > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fy), SELBTZRange(sy, gy:gy+1, gy))
@@ -11068,7 +11086,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-2ABEK-Y",
                 (same_sign != lby) & !lbx &
-                (ey == fy + 2) & (ey == gx + (p+2)) & (fy == gy + 1) & (gy == ex) &
+                (ey == fy + 2) & (ey == gx + (p+2)) & (fy == ex + 1) & (gy == ex) &
                 (fx > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fx), SELBTZRange(sx, gx:gx+1, gx))
@@ -11421,9 +11439,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3B0-Y",
                 (same_sign != lby) & !lbx &
@@ -11432,9 +11450,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-3B1-X",
@@ -11443,9 +11461,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx) & (fx < ey + 1) &
                 (ex > gy + (p+1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gx+1:fx), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):gx-2), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):gx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3B1-Y",
                 (same_sign != lby) & lbx &
@@ -11453,9 +11471,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy) & (fy < ex + 1) &
                 (ey > gx + (p+1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gy+1:fy), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, ey-(p-1):gy-2), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, ey-(p-1):gy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-3B2-X",
@@ -11464,9 +11482,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey) & (fx > gx) &
                 (ex < fy + (p-1)) & (ex > gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy-1), SELBTZRange(±, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy+2:fx), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy-1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx+1:fx), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-3B2-Y",
                 same_sign & lby & !lbx &
@@ -11474,9 +11492,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex) & (fy > gy) &
                 (ey < fx + (p-1)) & (ey > gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx-1), SELBTZRange(±, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, fx), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, fx+2:fy), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx-1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gy+1:fy), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-3B3-X",
@@ -11485,10 +11503,10 @@ function check_selbtz_two_sum_lemmas(
                 (fx < ey) & (fx > fy) &
                 (ex < fy + (p-1)) & (ex > gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+2:fx-1), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fx-1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy-1), SELBTZRange(±, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-3B3-Y",
                 same_sign & lby & lbx &
@@ -11496,10 +11514,10 @@ function check_selbtz_two_sum_lemmas(
                 (fy < ex) & (fy > fx) &
                 (ey < fx + (p-1)) & (ey > gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+2:fy-1), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fy-1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx-1), SELBTZRange(±, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-3B4-X",
@@ -11508,9 +11526,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey) & (fx > gx) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ex-p:fy-1), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy), SELBTZRange(sy, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy+2:fx), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ex-p:fy), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ex-p:fy-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx+1:fx), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-3B4-Y",
                 diff_sign & !lby & !lbx &
@@ -11518,9 +11536,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex) & (fy > gy) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ey-p:fx-1), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx), SELBTZRange(sx, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx+2:fy), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ey-p:fx), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ey-p:fx-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gy+1:fy), SELBTZRange(~sx, gx:ey-(p+2), gx))
             end
 
             checker("SELBTZ-TwoSum-3B5-X",
@@ -11529,8 +11547,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:gx-2), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx+1:fx-1), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(sy, gy:ex-(p+2), gy))
             end
@@ -11540,8 +11558,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:gy-2), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gy-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gy+1:fy-1), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fy+1), SELBTZRange(sx, gx:ey-(p+2), gx))
             end
@@ -11566,9 +11584,12 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3C1-X",
                 (same_sign == lbx) & !lby &
                 (fx == ey) &
-                (gx < ey) & (gx > fy + 1) &
+                (gx < ey) &
                 (ex < fy + (p+1)) & (ex > gy + p) &
-                ((diff_sign & !lbx) | (gx > fy + 2))
+                (
+                    (diff_sign & !lbx & (gx > fy + 1)) |
+                    (same_sign & lbx & (gx > fy + 2))
+                )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gx+1:ey-1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gx-1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
@@ -11580,9 +11601,12 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3C1-Y",
                 (same_sign == lby) & !lbx &
                 (fy == ex) &
-                (gy < ex) & (gy > fx + 1) &
+                (gy < ex) &
                 (ey < fx + (p+1)) & (ey > gx + p) &
-                ((diff_sign & !lby) | (gy > fx + 2))
+                (
+                    (diff_sign & !lby & (gy > fx + 1)) |
+                    (same_sign & lby & (gy > fx + 2))
+                )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, gy+1:ex-1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, gy-1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
@@ -11648,7 +11672,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3C5-X",
                 diff_sign & !lbx & lby &
                 (fx == ey) &
-                (gx < ey + 1) & (fy > gy) &
+                (fx + 1 > gx) & (fy > gy) &
                 (ex > fy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), SELBTZRange(~sy, fy, gy))
@@ -11657,7 +11681,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3C5-Y",
                 diff_sign & !lby & lbx &
                 (fy == ex) &
-                (gy < ex + 1) & (fx > gx) &
+                (fy + 1 > gy) & (fx > gx) &
                 (ey > fx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), SELBTZRange(~sx, fx, gx))
@@ -11670,11 +11694,11 @@ function check_selbtz_two_sum_lemmas(
                 (gx > fy + 2) &
                 (ex < fy + (p+2)) & (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, ex-p:fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, fy+1), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, ex-p:fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, fy+1), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, fy+1), SELBTZRange(sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-3C6-Y",
@@ -11683,11 +11707,11 @@ function check_selbtz_two_sum_lemmas(
                 (gy > fx + 2) &
                 (ey < fx + (p+2)) & (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, ey-p:fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, fx+1), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, ey-p:fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, fx+1), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, fx+1), SELBTZRange(sx, gx:ey-(p+2), gx))
             end
 
@@ -11753,7 +11777,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3D3-X",
                 diff_sign & !lbx & !lby &
                 (fx + 1 == ey) &
-                (gx < ey) & (fy > gy) &
+                (fx + 1 > gx) & (fy > gy) &
                 (ex > fy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), SELBTZRange(sy, fy, gy))
@@ -11762,7 +11786,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3D3-Y",
                 diff_sign & !lby & !lbx &
                 (fy + 1 == ex) &
-                (gy < ex) & (fx > gx) &
+                (fy + 1 > gy) & (fx > gx) &
                 (ey > fx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), SELBTZRange(sx, fx, gx))
@@ -11948,14 +11972,14 @@ function check_selbtz_two_sum_lemmas(
                 (gx > fy + 1) &
                 (ex < fy + p) & (ex > gy + (p-1)) &
                 (
-                    ((fx + 1 == ey) & (gx == ey)) |
-                    ((fx == ey) & (fx > gx))
+                    ((fx == ey) & (fx > gx)) |
+                    ((fx + 1 == gx) & (gx == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx-1, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx-1, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx-1, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, fy+1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx-1, fy+1), SELBTZRange(sy, gy:ex-p, gy))
             end
@@ -11964,14 +11988,14 @@ function check_selbtz_two_sum_lemmas(
                 (gy > fx + 1) &
                 (ey < fx + p) & (ey > gx + (p-1)) &
                 (
-                    ((fy + 1 == ex) & (gy == ex)) |
-                    ((fy == ex) & (fy > gy))
+                    ((fy == ex) & (fy > gy)) |
+                    ((fy + 1 == gy) & (gy == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1:fy-1, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy-1, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy-1, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1:fy-1, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy-1, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1:fy-1, fx+1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy-1, fx+1), SELBTZRange(sx, gx:ey-p, gx))
             end
@@ -11983,7 +12007,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (fx == ey) |
                     (diff_sign & lbx & (fx + 1 == gx) & (gx > ey)) |
-                    ((fx == ey + 1) & (gx == ey))
+                    ((fx == gx + 1) & (gx == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
@@ -11997,7 +12021,7 @@ function check_selbtz_two_sum_lemmas(
                 (
                     (fy == ex) |
                     (diff_sign & lby & (fy + 1 == gy) & (gy > ex)) |
-                    ((fy == ex + 1) & (gy == ex))
+                    ((fy == gy + 1) & (gy == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
@@ -12046,8 +12070,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, gy+p, ey-1, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, gy+p, ey-1, gx+1:fx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, gy+p, ey-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, gy+p, ey-1, gx+1:fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AB0-Y",
                 (same_sign == lby) & !lbx &
@@ -12059,29 +12083,29 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, gx+p, ex-1, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, gx+p, ex-1, gy+1:fy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, gx+p, ex-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, gx+p, ex-1, gy+1:fy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3AB1-X",
                 same_sign & lbx & lby &
                 (ex == gy + (p-1)) & (gx == fy + 1) &
-                (ex > ey) & (fx < ey) & (fx > gx) & (fy > gy)
+                (ex > ey) & (fx < ey) & (fx > fy) & (fy > gy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AB1-Y",
                 same_sign & lby & lbx &
                 (ey == gx + (p-1)) & (gy == fx + 1) &
-                (ey > ex) & (fy < ex) & (fy > gy) & (fx > gx)
+                (ey > ex) & (fy < ex) & (fy > fx) & (fx > gx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3AB2-X",
@@ -12090,8 +12114,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 2) & (fx + 1 < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AB2-Y",
@@ -12100,8 +12124,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 2) & (fy + 1 < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fy+1), SELBTZRange(sx, gx, gx))
             end
 
@@ -12136,11 +12160,11 @@ function check_selbtz_two_sum_lemmas(
                 (gx > fy + 2) &
                 (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, fy+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, fy+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AC1-Y",
@@ -12149,11 +12173,11 @@ function check_selbtz_two_sum_lemmas(
                 (gy > fx + 2) &
                 (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, fx+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, fx+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, fx+1), SELBTZRange(sx, gx, gx))
             end
 
@@ -12198,10 +12222,13 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3AL0-X",
                 (same_sign != lbx) &
                 (ex > ey + 2) & (fx < ey + 1) & (fx > gx) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
                 (
-                    (!lby & (fx == ey) & (gx == fy)) |
-                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))))
+                    (!lby & (fx == ey) & (gx == fy) & ((ex == gy + p) | (ex == gy + (p+1)))) |
+                    (lby &
+                        (
+                            ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1)))) |
+                            ((gx == gy + 1) & (fy + 1 == gy) & (ex == gy + p))
+                        ))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gx+1:fx), SELBTZRange(sy, gy, gy))
@@ -12211,10 +12238,13 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3AL0-Y",
                 (same_sign != lby) &
                 (ey > ex + 2) & (fy < ex + 1) & (fy > gy) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
                 (
-                    (!lbx & (fy == ex) & (gy == fx)) |
-                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))))
+                    (!lbx & (fy == ex) & (gy == fx) & ((ey == gx + p) | (ey == gx + (p+1)))) |
+                    (lbx &
+                        (
+                            ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1)))) |
+                            ((gy == gx + 1) & (fx + 1 == gx) & (ey == gx + p))
+                        ))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gy+1:fy), SELBTZRange(sx, gx, gx))
@@ -12294,40 +12324,40 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (gx == fy + 1) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, ex-(p-1):gx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 for gs = ex-(p-1):gx-2
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:gx-2, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
-                for fs = ex-p:gx-2
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                for gs = ex-(p-1):gx-1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, ex-(p-1):gx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = gx+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 end
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3BC0-Y",
                 same_sign & lby & !lbx &
                 (fy == ex) & (gy == fx + 1) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gy+1:fy-1, ey-(p-1):gy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 for gs = ey-(p-1):gy-2
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:gy-2, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
-                for fs = ey-p:gy-2
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                for gs = ey-(p-1):gy-1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gy+1:fy-1, ey-(p-1):gy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = gy+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 end
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-3BC1-X",
@@ -12368,16 +12398,16 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (gx == fy + 1) &
                 (ex > gy + p)
             ) do lemma
-                for gs = ex-(p-1):gx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:gx-2, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                for gs = ex-(p-1):fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs+1:gx-2, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs+1:fy-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 0, ex, gx+1:fx-1, ex-(p-1):gx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, gx+1:fx-1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
                 for gs = gx+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fx-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 0, ex, gx+1:fx-1, ex-(p-1):gx-2), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, gx+1:fx-1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3BC2-Y",
@@ -12385,16 +12415,16 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (gy == fx + 1) &
                 (ey > gx + p)
             ) do lemma
-                for gs = ey-(p-1):gy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:gy-2, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                for gs = ey-(p-1):fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs+1:gy-2, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs+1:fx-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 0, ey, gy+1:fy-1, ey-(p-1):gy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, gy+1:fy-1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
                 for gs = gy+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fy-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 0, ey, gy+1:fy-1, ey-(p-1):gy-2), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, gy+1:fy-1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
@@ -12514,8 +12544,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 1) & (fx + 1 > gx) & (fx + 1 < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3BE-Y",
@@ -12524,8 +12554,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 1) & (fy + 1 > gy) & (fy + 1 < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
@@ -12574,8 +12604,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3BJ1-Y",
                 diff_sign & lby & !lbx &
@@ -12584,8 +12614,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-3BQ-X",
@@ -12593,25 +12623,28 @@ function check_selbtz_two_sum_lemmas(
                 (fx == gx) & (gx == fy + 1) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):gx-2), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):gx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3BQ-Y",
                 same_sign & !lby & lbx &
                 (fy == gy) & (gy == fx + 1) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):gy-2), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):gy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-3CE-X",
                 (same_sign == lbx) & !lby &
                 (ex == gy + p) & (fx == ey) &
-                (gx < ey) & (gx > fy + 1) & (fy > gy) &
-                ((diff_sign & !lbx) | (gx > fy + 2))
+                (gx < ey) & (fy > gy) &
+                (
+                    (diff_sign & !lbx & (gx > fy + 1)) |
+                    (same_sign & lbx & (gx > fy + 2))
+                )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gx+1:fx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
@@ -12623,8 +12656,11 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3CE-Y",
                 (same_sign == lby) & !lbx &
                 (ey == gx + p) & (fy == ex) &
-                (gy < ex) & (gy > fx + 1) & (fx > gx) &
-                ((diff_sign & !lby) | (gy > fx + 2))
+                (gy < ex) & (fx > gx) &
+                (
+                    (diff_sign & !lby & (gy > fx + 1)) |
+                    (same_sign & lby & (gy > fx + 2))
+                )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, gy+1:fy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, gy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
@@ -12674,8 +12710,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx < ey + 1) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3CH1-Y",
                 diff_sign & !lby & lbx &
@@ -12683,8 +12719,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy < ex + 1) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, gy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3CJ0-X",
@@ -12778,11 +12814,11 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (gx == fy + 2) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, ex-p:fy), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, ex-p:fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, fy+1), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, ex-p:fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:ey-1, fy+1), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-3CL1-Y",
@@ -12790,11 +12826,11 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (gy == fx + 2) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, ey-p:fx), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, ey-p:fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, fx+1), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, ey-p:fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:ex-1, fx+1), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(sx, gx:ey-(p+2), gx))
             end
 
@@ -12968,7 +13004,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy == gy) &
                 (gx < ey) & (gx > gy + 1) &
                 (
-                    (!lbx & (ex == gy + p) & (ex == fx + 2) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (ex == gy + p) & (ex == fx + 2)) |
                     (lbx & (fx == ey) & (ex > gy + (p-1)))
                 )
             ) do lemma
@@ -12980,7 +13016,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx == gx) &
                 (gy < ex) & (gy > gx + 1) &
                 (
-                    (!lby & (ey == gx + p) & (ey == fy + 2) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (ey == gx + p) & (ey == fy + 2)) |
                     (lby & (fy == ex) & (ey > gx + (p-1)))
                 )
             ) do lemma
@@ -13257,7 +13293,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3CPS0-X",
                 diff_sign & !lbx & !lby &
-                (fx == ey) & (gx == ey) &
+                (fx == gx) & (gx == ey) &
                 (ex < fy + (p+1)) & (ex > gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, ex-p:fy-1), SELBTZRange(±, gy:ex-(p+2), gy))
@@ -13266,7 +13302,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3CPS0-Y",
                 diff_sign & !lby & !lbx &
-                (fy == ex) & (gy == ex) &
+                (fy == gy) & (gy == ex) &
                 (ey < fx + (p+1)) & (ey > gx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, ey-p:fx-1), SELBTZRange(±, gx:ey-(p+2), gx))
@@ -13556,8 +13592,7 @@ function check_selbtz_two_sum_lemmas(
                     (!lbx & (ex == gx) & (ex == fx + p) & (fx == gy) & (fy == gy + 1))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy+1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy+1), SELBTZRange(sy, gy+1:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy+1), SELBTZRange(sy, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-3PR-Y",
                 same_sign & lbx &
@@ -13567,8 +13602,7 @@ function check_selbtz_two_sum_lemmas(
                     (!lby & (ey == gy) & (ey == fy + p) & (fy == gx) & (fx == gx + 1))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx+1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx+1), SELBTZRange(sx, gx+1:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx+1), SELBTZRange(sx, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3ABC-X",
@@ -13615,24 +13649,24 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p-1)) & (fx + 1 == ey) & (gx == fy + 1) &
                 (fy > gy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx:fx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx:fx-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
                 for gs = gx+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(~sy, gy, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx:fx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx:fx-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ABD0-Y",
                 same_sign & lby & !lbx &
                 (ey == gx + (p-1)) & (fy + 1 == ex) & (gy == fx + 1) &
                 (fx > gx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy:fy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy:fy-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
                 for gs = gy+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(~sx, gx, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy:fy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy:fy-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3ABD1-X",
@@ -13640,24 +13674,24 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p+1)) & (fx + 1 == ey) & (gx == fy + 1) &
                 (fx > gx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx:fx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx:fx-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
                 for gs = gx+1:fx
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(~sy, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fx-1, gs), SELBTZRange(~sy, gy, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx:fx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx:fx-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ABD1-Y",
                 diff_sign & !lby & !lbx &
                 (ey == gx + (p+1)) & (fy + 1 == ex) & (gy == fx + 1) &
                 (fy > gy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy:fy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy:fy-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
                 for gs = gy+1:fy
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(~sx, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fy-1, gs), SELBTZRange(~sx, gx, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy:fy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy:fy-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3ABI-X",
@@ -13692,24 +13726,24 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p-1)) & (fx == fy) & (fx + 1 == gx) &
                 (ex > ey) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ABJ-Y",
                 same_sign & lby & lbx &
                 (ey == gx + (p-1)) & (fy == fx) & (fy + 1 == gy) &
                 (ey > ex) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3ABM-X",
                 diff_sign & !lbx & lby &
                 (ex == ey + 2) & (ex == gy + (p+1)) & (gx == fy + 1) &
-                (ex > fx + 3)
+                (fx + 1 < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy+2:fy-1), SELBTZRange(sy, gy, gy))
@@ -13719,7 +13753,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ABM-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) & (gy == fx + 1) &
-                (ey > fy + 3)
+                (fy + 1 < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx+2:fx-1), SELBTZRange(sx, gx, gx))
@@ -13731,22 +13765,22 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lbx & lby &
                 (ex == gy + (p+1)) & (fx == ey) & (gx == fy + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, fy+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, fy+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ACL-Y",
                 diff_sign & !lby & lbx &
                 (ey == gx + (p+1)) & (fy == ex) & (gy == fx + 2)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, fx+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy+1:fy-1, fx+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(sx, gx, gx))
             end
 
@@ -13838,10 +13872,9 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & lby &
                 (fy + 1 == gy) &
                 (gx < ey + 1) & (gx > gy + 1) &
-                ((ex == gy + p) | (ex == gy + (p+1)) | (ex == gy + (p+2))) &
                 (
-                    ((ex == ey + 2) & (fx < ey)) |
-                    ((ex == fx + 2) & (fx == ey + 1))
+                    ((ex == ey + 2) & (fx < ey) & ((ex == gy + p) | (ex == gy + (p+1)))) |
+                    ((ex == fx + 2) & (fx == ey + 1) & ((ex == gy + p) | (ex == gy + (p+1)) | (ex == gy + (p+2))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx), SELBTZRange(~sy, gy, gy))
@@ -13850,10 +13883,9 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & lbx &
                 (fx + 1 == gx) &
                 (gy < ex + 1) & (gy > gx + 1) &
-                ((ey == gx + p) | (ey == gx + (p+1)) | (ey == gx + (p+2))) &
                 (
-                    ((ey == ex + 2) & (fy < ex)) |
-                    ((ey == fy + 2) & (fy == ex + 1))
+                    ((ey == ex + 2) & (fy < ex) & ((ey == gx + p) | (ey == gx + (p+1)))) |
+                    ((ey == fy + 2) & (fy == ex + 1) & ((ey == gx + p) | (ey == gx + (p+1)) | (ey == gx + (p+2))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy), SELBTZRange(~sx, gx, gx))
@@ -13890,7 +13922,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3AKN-X",
                 diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == gy + (p+1)) & (ex == fx + p) &
+                (ex == gx) & (ex == fx + p) & (ex == gy + (p+1)) &
                 (ex > ey + 2) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
@@ -13899,7 +13931,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3AKN-Y",
                 diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == gx + (p+1)) & (ey == fy + p) &
+                (ey == gy) & (ey == fy + p) & (ey == gx + (p+1)) &
                 (ey > ex + 2) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
@@ -13941,8 +13973,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 2) &
                 (fx > gx) & (fx < ey) &
                 (
-                    ((ex == gy + p) & (gx == gy + 1) & (gy == fy + 1)) |
-                    ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
+                    ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1)))) |
+                    ((gx == gy + 1) & (gy == fy + 1) & (ex == gy + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx+1:fx), SELBTZRange(sy, gy, gy))
@@ -13954,8 +13986,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 2) &
                 (fy > gy) & (fy < ex) &
                 (
-                    ((ey == gx + p) & (gy == gx + 1) & (gx == fx + 1)) |
-                    ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
+                    ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1)))) |
+                    ((gy == gx + 1) & (gx == fx + 1) & (ey == gx + p))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy+1:fy), SELBTZRange(sx, gx, gx))
@@ -14002,8 +14034,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ALQ0-Y",
                 same_sign & lby &
@@ -14015,8 +14047,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3ALQ1-X",
@@ -14027,9 +14059,9 @@ function check_selbtz_two_sum_lemmas(
                     (lby & (gx == fy) & (fy + 2 == ey))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ALQ1-Y",
                 diff_sign & !lby &
@@ -14039,21 +14071,20 @@ function check_selbtz_two_sum_lemmas(
                     (lbx & (gy == fx) & (fx + 2 == ex))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3ALS-X",
                 same_sign & !lbx &
                 (ex > ey + 2) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
                 (
-                    (!lby & (fx + 1 == ey) & (fx == gx + 1) & (gx == fy)) |
+                    (!lby & (fx + 1 == ey) & (fx == gx + 1) & (gx == fy) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lby & (fx == gx) &
                         (
-                            (gx == fy + 1) |
-                            ((gx == gy + 1) & (fy + 1 == gy))
+                            ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1)))) |
+                            ((gx == gy + 1) & (fy + 1 == gy) & (ex == gy + p))
                         ))
                 )
             ) do lemma
@@ -14064,13 +14095,12 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALS-Y",
                 same_sign & !lby &
                 (ey > ex + 2) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
                 (
-                    (!lbx & (fy + 1 == ex) & (fy == gy + 1) & (gy == fx)) |
+                    (!lbx & (fy + 1 == ex) & (fy == gy + 1) & (gy == fx) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lbx & (fy == gy) &
                         (
-                            (gy == fx + 1) |
-                            ((gy == gx + 1) & (fx + 1 == gx))
+                            ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1)))) |
+                            ((gy == gx + 1) & (fx + 1 == gx) & (ey == gx + p))
                         ))
                 )
             ) do lemma
@@ -14178,9 +14208,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + p) & ((ex == fy + (p-1)) | (ex == fy + p))
             ) do lemma
                 for gs = gx+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(sy, gy:gx-2, gy))
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(sy, gy:fy-1, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:gx-2, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-3BCG-Y",
                 same_sign & lby & lbx &
@@ -14188,9 +14218,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + p) & ((ey == fx + (p-1)) | (ey == fx + p))
             ) do lemma
                 for gs = gy+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(sx, gx:gy-2, gx))
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(sx, gx:fx-1, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:gy-2, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3BDE-X",
@@ -14245,8 +14275,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 1) & (gx + 1 < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3BEJ-Y",
                 diff_sign & lby & !lbx &
@@ -14254,8 +14284,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 1) & (gy + 1 < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3BEM-X",
@@ -14264,8 +14294,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) & (fx + 1 > gx) &
                 ((diff_sign & lbx) | (ex > fx + 3))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy+2:gx-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy+2:gx-2), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy+2:fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, fx+1), SELBTZRange(~sy, gy, gy))
             end
@@ -14275,8 +14305,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) & (fy + 1 > gy) &
                 ((diff_sign & lby) | (ey > fy + 3))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gx+2:gy-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gx+2:gy-2), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gx+2:fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, fy+1), SELBTZRange(~sx, gx, gx))
             end
@@ -14285,26 +14315,26 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & !lby &
                 (fx == fy) & (fx + 1 == gx) &
                 (ex > ey) &
-                ((ex == gx + (p-2)) | (ex == gx + (p-1)))
+                ((ex == fy + (p-1)) | (ex == fy + p))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, gy+1:gx-2, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, gy+1:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-3BGJ0-Y",
                 same_sign & lby & !lbx &
                 (fy == fx) & (fy + 1 == gy) &
                 (ey > ex) &
-                ((ey == gy + (p-2)) | (ey == gy + (p-1)))
+                ((ey == fx + (p-1)) | (ey == fx + p))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, gx+1:gy-2, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, gx+1:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3BGJ1-X",
                 same_sign & lbx & lby &
                 (fx == fy) & (fx + 1 == gx) &
                 (fy > gy) &
-                ((ex == gx + (p-2)) | (ex == gx + (p-1)))
+                ((ex == fy + (p-1)) | (ex == fy + p))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1), SELBTZRange(sy, gy:fy-1, gy))
             end
@@ -14312,7 +14342,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby & lbx &
                 (fy == fx) & (fy + 1 == gy) &
                 (fx > gx) &
-                ((ey == gy + (p-2)) | (ey == gy + (p-1)))
+                ((ey == fx + (p-1)) | (ey == fx + p))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1), SELBTZRange(sx, gx:fx-1, gx))
             end
@@ -14380,10 +14410,10 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx) &
                 (gx > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(~sy, 1, gx-1, gy-1, gy))
                 for gs = gx+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(~sy, 1, gx-1, gy-1, gy))
                 end
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(~sy, 1, gx-1, gy-1, gy))
             end
             checker("SELBTZ-TwoSum-3DFG-Y",
                 same_sign & lby & !lbx &
@@ -14391,10 +14421,10 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy) &
                 (gy > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(~sx, 1, gy-1, gx-1, gx))
                 for gs = gy+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(~sx, 1, gy-1, gx-1, gx))
                 end
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(~sx, 1, gy-1, gx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3EIL-X",
@@ -14459,8 +14489,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ELQ-Y",
                 diff_sign & lby &
@@ -14472,8 +14502,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3FJK-X",
@@ -14481,14 +14511,14 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gx + (p-1)) & (fx + 1 == gx) & (fy == gy) &
                 (gx < ey) & (gx > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, 1, fx, gy-1, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, 1, gx-1, gy-1, gy))
             end
             checker("SELBTZ-TwoSum-3FJK-Y",
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) & (fy + 1 == gy) & (fx == gx) &
                 (gy < ex) & (gy > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, 1, fy, gx-1, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, 1, gy-1, gx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3FKN0-X",
@@ -14560,14 +14590,14 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3JKQ0-X",
                 same_sign & lbx & !lby &
                 (ex == gx + (p-1)) & (fx + 1 == gx) & (gx == fy + 2) &
-                (fx + 1 < ey) & (fy > gy)
+                (gx < ey) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(~sy, 0, gx-1, gy:gx-3, gy))
             end
             checker("SELBTZ-TwoSum-3JKQ0-Y",
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) & (fy + 1 == gy) & (gy == fx + 2) &
-                (fy + 1 < ex) & (fx > gx)
+                (gy < ex) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(~sx, 0, gy-1, gx:gy-3, gx))
             end
@@ -14589,21 +14619,21 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3ACPS-X",
                 diff_sign & !lbx & !lby &
-                (ex == gy + (p+1)) & (fx == ey) & (gx == ey) &
+                (ex == gy + (p+1)) & (fx == gx) & (gx == ey) &
                 (fy > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy-1, fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy-1, fy), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ACPS-Y",
                 diff_sign & !lby & !lbx &
-                (ey == gx + (p+1)) & (fy == ex) & (gy == ex) &
+                (ey == gx + (p+1)) & (fy == gy) & (gy == ex) &
                 (fx > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx-1, fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx-1, fx), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3AHMR-X",
@@ -14690,8 +14720,7 @@ function check_selbtz_two_sum_lemmas(
                     ((ex == gy + (p+1)) & (fy == gy + 1))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy+1:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-3CPRS-Y",
                 diff_sign & !lby & !lbx &
@@ -14701,8 +14730,7 @@ function check_selbtz_two_sum_lemmas(
                     ((ey == gx + (p+1)) & (fx == gx + 1))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx+1:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx:fx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3DGLR-X",
@@ -14731,7 +14759,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gx + (p-1)) & (gx == fy + 2) &
                 (fy > gy) &
                 (
-                    (fx == ey) |
+                    ((fx == ey) & (fx > gx)) |
                     ((fx + 1 == gx) & (gx == ey))
                 )
             ) do lemma
@@ -14745,7 +14773,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == gy + (p-1)) & (gy == fx + 2) &
                 (fx > gx) &
                 (
-                    (fy == ex) |
+                    ((fy == ex) & (fy > gy)) |
                     ((fy + 1 == gy) & (gy == ex))
                 )
             ) do lemma
@@ -14782,9 +14810,9 @@ function check_selbtz_two_sum_lemmas(
                 ((diff_sign & lbx & (fx + 1 == gx)) | (same_sign & !lbx & (fx == gx))) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ABOQ-Y",
                 (same_sign != lby) & lbx &
@@ -14792,9 +14820,9 @@ function check_selbtz_two_sum_lemmas(
                 ((diff_sign & lby & (fy + 1 == gy)) | (same_sign & !lby & (fy == gy))) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3ACNO-X",
@@ -14837,26 +14865,26 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3AKMN0-X",
                 diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == gy + (p+1)) & (ex == fx + p) &
+                (ex == gx) & (ex == fx + p) & (ex == gy + (p+1)) &
                 (ex == ey + 2) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ey+1, ey-1, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ey+1, ey-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ey+1, ey-1, fy+1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, ey-1, gy+2:fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, ey-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, ey-1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AKMN0-Y",
                 diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == gx + (p+1)) & (ey == fy + p) &
+                (ey == gy) & (ey == fy + p) & (ey == gx + (p+1)) &
                 (ey == ex + 2) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ex+1, ex-1, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ex+1, ex-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ex+1, ex-1, fx+1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, ex-1, gx+2:fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, ex-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, ex-1, fx+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3AKMN1-X",
                 diff_sign & !lbx & lby &
-                (ex == gx) & (ex == gy + (p+1)) & (ex == fx + p) &
+                (ex == gx) & (ex == fx + p) & (ex == gy + (p+1)) &
                 (ex == ey + 2) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fy), SELBTZRange(~sy, gy, gy))
@@ -14865,7 +14893,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3AKMN1-Y",
                 diff_sign & !lby & lbx &
-                (ey == gy) & (ey == gx + (p+1)) & (ey == fy + p) &
+                (ey == gy) & (ey == fy + p) & (ey == gx + (p+1)) &
                 (ey == ex + 2) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:fx), SELBTZRange(~sx, gx, gx))
@@ -14878,7 +14906,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == gy + (p-1)) &
                 (
                     (!lbx & !lby & (ex == ey + 1) & (fx == fy + 1) & (gx == fy) & (ey == fy + 3)) |
-                    (lbx & lby & (ex == ey) & (fx + 1 == gx) & (fx == fy) & (fx > gy))
+                    (lbx & lby & (ex == ey) & (fx == fy) & (fx + 1 == gx) & (fy > gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ey+1, fy+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
@@ -14890,7 +14918,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gx + (p-1)) &
                 (
                     (!lby & !lbx & (ey == ex + 1) & (fy == fx + 1) & (gy == fx) & (ex == fx + 3)) |
-                    (lby & lbx & (ey == ex) & (fy + 1 == gy) & (fy == fx) & (fy > gx))
+                    (lby & lbx & (ey == ex) & (fy == fx) & (fy + 1 == gy) & (fx > gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ex+1, fx+1, gx+2:fx), SELBTZRange(~sx, gx, gx))
@@ -14973,7 +15001,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3BDMT-X",
                 diff_sign & !lbx & lby &
                 (ex == ey + 2) & (ex == gy + (p+1)) & (gx == fy + 1) &
-                (ex == fx + 3)
+                (fx + 1 == ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy+2:fy-1), SELBTZRange(sy, gy, gy))
@@ -14983,7 +15011,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3BDMT-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) & (gy == fx + 1) &
-                (ey == fy + 3)
+                (fy + 1 == ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx+2:fx-1), SELBTZRange(sx, gx, gx))
@@ -14993,34 +15021,34 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3BEJM-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) & (fx == fy) & (fx + 1 == gx) &
-                (ex > fx + 3)
+                (ex == ey + 1) & (ex == gy + p) & (fx + 1 == gx) &
+                (ex > gx + 2) & (gx == fy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, fy+2), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3BEJM-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) & (fy == fx) & (fy + 1 == gy) &
-                (ey > fy + 3)
+                (ey == ex + 1) & (ey == gx + p) & (fy + 1 == gy) &
+                (ey > gy + 2) & (gy == fx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, fx+2), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-3CFJK0-X",
                 same_sign & lbx & !lby &
                 (ex == ey + p) & (fx == ey) & (fx + 1 == gx) & (fy == gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, 1, fx-1, gy-1, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, 1, ey-1, gy-1, gy))
             end
             checker("SELBTZ-TwoSum-3CFJK0-Y",
                 same_sign & lby & !lbx &
                 (ey == ex + p) & (fy == ex) & (fy + 1 == gy) & (fx == gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, 1, fy-1, gx-1, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, 1, ex-1, gx-1, gx))
             end
 
             checker("SELBTZ-TwoSum-3CFJK1-X",
@@ -15068,8 +15096,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3EJMN-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) & (ex == fx + 3) & (gx + 1 == ey) &
-                (gx > fy + 1) & (fy > gy)
+                (ex == ey + 1) & (ex == gy + p) & (fx + 1 == gx) &
+                (ex == gx + 2) & (gx > fy + 1) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
@@ -15077,8 +15105,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3EJMN-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) & (ey == fy + 3) & (gy + 1 == ex) &
-                (gy > fx + 1) & (fx > gx)
+                (ey == ex + 1) & (ey == gx + p) & (fy + 1 == gy) &
+                (ey == gy + 2) & (gy > fx + 1) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy-1, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
@@ -15116,7 +15144,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3BEJMV-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) & (ex == gx + 2) & (gx == fy + 1) & (ex == fx + 3)
+                (ex == ey + 1) & (ex == gy + p) & (fx + 1 == gx) &
+                (ex == gx + 2) & (gx == fy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
                 for gs = gy+2:fy-1
@@ -15126,7 +15155,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3BEJMV-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) & (ey == gy + 2) & (gy == fx + 1) & (ey == fy + 3)
+                (ey == ex + 1) & (ey == gx + p) & (fy + 1 == gy) &
+                (ey == gy + 2) & (gy == fx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx, gx))
                 for gs = gx+2:fx-1
@@ -15235,7 +15265,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, ex-(p-1):fx-2), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, ex-(p-1):fx-1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, ex-(p-1):ey), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A0-Y",
@@ -15245,7 +15275,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, ey-(p-1):fy-2), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, ey-(p-1):fy-1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, ey-(p-1):ex), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(±, gx:ey-(p+1), gx))
             end
 
@@ -15299,7 +15329,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
-                for fs = fy:ey
+                for fs = fy:fx-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, fs, ex-(p-1):fs-1), SELBTZRange(±, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
@@ -15311,7 +15341,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
-                for fs = fx:ex
+                for fs = fx:fy-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, fs, ey-(p-1):fs-1), SELBTZRange(±, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
@@ -15376,7 +15406,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, ex-(p-1):fx-2), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, ex-(p-1):fx-1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, ex-(p-1):ey), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A6-Y",
                 diff_sign & lby & !lbx &
@@ -15386,7 +15416,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, ey-(p-1):fy-2), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, ey-(p-1):fy-1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, ey-(p-1):ex), SELBTZRange(±, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-4A7-X",
@@ -15493,8 +15523,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fy+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+1:ey), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4C-Y",
                 same_sign & !lby & lbx &
@@ -15505,8 +15535,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fx+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+1:ex), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-4D0-X",
@@ -15832,7 +15862,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gy+2:fx-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gy+2:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gy+2:ey), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4AB4-Y",
                 diff_sign & lby & !lbx &
@@ -15841,7 +15871,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gx+2:fy-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gx+2:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gx+2:ex), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-4AC0-X",
@@ -15850,9 +15880,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+1:fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fy+1:fx-2), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
@@ -15862,9 +15892,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+1:fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fx+1:fy-2), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
@@ -15875,8 +15905,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fy+1:ey), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
@@ -15886,8 +15916,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fx+1:ex), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
@@ -15899,8 +15929,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey-1, ey), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2:fx, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2:fx, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2:fx, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2:fx, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, fy+1:fx-2), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4AC2-Y",
@@ -15910,8 +15940,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex-1, ex), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2:fy, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2:fy, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2:fy, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2:fy, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1:fy, fx+1:fy-2), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
@@ -15920,24 +15950,24 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey+1, fy), SELBTZRange(sy, gy:ex-(p+1), gy))
-                for gs = fy+1:ey+1
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:fx, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                for gs = fy+1:fx
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:ey, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 end
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:fx, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4AC3-Y",
                 same_sign & lby & lbx &
                 (fy == ex + 1) & (gy == fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex+1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex+1, fx), SELBTZRange(sx, gx:ey-(p+1), gx))
-                for gs = fx+1:ex+1
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:fy, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                for gs = fx+1:fy
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:ex, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 end
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:fy, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-4AC4-X",
@@ -15945,8 +15975,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx == fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-2:fx, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-2:fx, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-2:fx, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fx-2:fx, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, fy+1:fx-2), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(sy, gy:ex-(p+1), gy))
@@ -15956,8 +15986,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex + 1) & (gy == fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-2:fy, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-2:fy, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-2:fy, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fy-2:fy, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, fx+1:fy-2), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fy), SELBTZRange(sx, gx:ey-(p+1), gx))
@@ -15966,10 +15996,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4AC5-X",
                 diff_sign & !lbx & lby &
                 (fx == ey + 1) & (gx == fy) &
-                (ex > gy + (p+1))
+                (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1:fx, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1:fx, fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1:fx, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1:fx, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
                 for gs = fy+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fx-1, gs), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 end
@@ -15978,10 +16008,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4AC5-Y",
                 diff_sign & !lby & lbx &
                 (fy == ex + 1) & (gy == fx) &
-                (ey > gx + (p+1))
+                (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1:fy, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1:fy, fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1:fy, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1:fy, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
                 for gs = fx+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fy-1, gs), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 end
@@ -15995,10 +16025,10 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fy+1:fx-2), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, fy+1:fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, fy+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4AC6-Y",
                 diff_sign & lby & !lbx &
@@ -16007,10 +16037,10 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fx+1:fy-2), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, fx+1:fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, fx+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-4AC7-X",
@@ -16021,8 +16051,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, fy), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4AC7-Y",
                 diff_sign & lby & lbx &
@@ -16032,8 +16062,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:ex), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, fx), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy:fy+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-4AH0-X",
@@ -16041,12 +16071,12 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx + 1 == fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, ex-(p-1):fy-2), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, ex-(p-1):fy-2), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:fx, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
                 for gs = fy+1:fx
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:ey, gs), SELBTZRange(±, gy:ex-(p+1), gy))
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
             end
             checker("SELBTZ-TwoSum-4AH0-Y",
@@ -16054,12 +16084,12 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex + 1) & (gy + 1 == fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, ey-(p-1):fx-2), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, ey-(p-1):fx-2), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:fy, ey-(p-1):fx), SELBTZRange(±, gx:ey-(p+1), gx))
                 for gs = fx+1:fy
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:ex, gs), SELBTZRange(±, gx:ey-(p+1), gx))
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
             end
 
@@ -16068,8 +16098,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey + 1) & (gx + 1 == fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, ex-(p-1):fy-2), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, ex-(p-1):fy-2), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(±, gy:ex-(p+1), gy))
                 for fs = fy+1:fx-1
@@ -16081,8 +16111,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex + 1) & (gy + 1 == fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, ey-(p-1):fx-2), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, ey-(p-1):fx-2), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, ey-(p-1):fx), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, fy), SELBTZRange(±, gx:ey-(p+1), gx))
                 for fs = fx+1:fy-1
@@ -16119,7 +16149,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) & (fx > ey + 1) &
                 (
                     (!lby & (gx == fy)) |
-                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))))
+                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (gy == fy + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, gx+1:ey), SELBTZRange(sy, gy, gy))
@@ -16134,7 +16164,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) & (fy > ex + 1) &
                 (
                     (!lbx & (gy == fx)) |
-                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))))
+                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (gx == fx + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy+1, gy+1:ex), SELBTZRange(sx, gx, gx))
@@ -16241,7 +16271,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx > ey + 1) &
                 (
                     (!lby & (gx == fy)) |
-                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))))
+                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (gy == fy + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, gy+2:fy), SELBTZRange(~sy, gy, gy))
@@ -16255,7 +16285,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy > ex + 1) &
                 (
                     (!lbx & (gy == fx)) |
-                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))))
+                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (gx == fx + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1:fy, gx+2:fx), SELBTZRange(~sx, gx, gx))
@@ -16301,7 +16331,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) & (fx > ey + 1) &
                 (
                     (!lby & (gx == fy)) |
-                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))))
+                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (gy == fy + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), SELBTZRange(sy, gy, gy))
@@ -16316,7 +16346,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) & (fy > ex + 1) &
                 (
                     (!lbx & (gy == fx)) |
-                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))))
+                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (gx == fx + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy+1, gy+1:ex), SELBTZRange(sx, gx, gx))
@@ -16331,8 +16361,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (ex == gy + p) &
                 (fx > ey + 1) & (gx < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:ey), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, ey+1:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+2:ey), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BE-Y",
@@ -16340,8 +16370,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == fy + 2) & (ey == gx + p) &
                 (fy > ex + 1) & (gy < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:ex), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, ex+1:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+2:ex), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gx+2:fy-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx, gx))
             end
 
@@ -16388,9 +16418,9 @@ function check_selbtz_two_sum_lemmas(
                     (lby & (gx == fy + 1))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gx+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, ey+1:fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, ex-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:ey), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, ex-(p-1):fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
@@ -16404,9 +16434,9 @@ function check_selbtz_two_sum_lemmas(
                     (lbx & (gy == fx + 1))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gy+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, ex+1:fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, ey-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:ex), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, fy, ey-(p-1):fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, fy, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
@@ -16588,8 +16618,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx < fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:fx-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gy+2:fx-2), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4AEF0-Y",
@@ -16598,8 +16628,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy < fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:fy-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gx+2:fy-2), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+2:fy-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx, gx))
             end
 
@@ -16610,8 +16640,8 @@ function check_selbtz_two_sum_lemmas(
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gy+2:fy), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+2:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4AEF1-Y",
                 (same_sign != lby) & lbx &
@@ -16620,8 +16650,8 @@ function check_selbtz_two_sum_lemmas(
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gx+2:fx), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+2:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-4AEI0-X",
@@ -16629,8 +16659,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (ex == gy + (p+2)) & (fx == ey + 1) &
                 (gx < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:fx-2), SELBTZRange(±, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, fx-1), SELBTZRange(±, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gy+3:fx-2), SELBTZRange(±, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fx-1), SELBTZRange(±, gy:gy+1, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy:gy+1, gy))
             end
             checker("SELBTZ-TwoSum-4AEI0-Y",
@@ -16638,8 +16668,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == fy + 2) & (ey == gx + (p+2)) & (fy == ex + 1) &
                 (gy < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:fy-2), SELBTZRange(±, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, fy-1), SELBTZRange(±, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gx+3:fy-2), SELBTZRange(±, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fy-1), SELBTZRange(±, gx:gx+1, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx:gx+1, gx))
             end
 
@@ -16649,8 +16679,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gy+3:fy), SELBTZRange(±, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy:gy+1, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+3:fx-1), SELBTZRange(±, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy:gy+1, gy))
             end
             checker("SELBTZ-TwoSum-4AEI1-Y",
                 (same_sign != lby) & lbx &
@@ -16658,8 +16688,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gx+3:fx), SELBTZRange(±, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx:gx+1, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+3:fy-1), SELBTZRange(±, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(±, gx:gx+1, gx))
             end
 
             checker("SELBTZ-TwoSum-4BDE0-X",
@@ -16699,7 +16729,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx > ey + 1) &
                 (
                     (!lby & (gx == fy)) |
-                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))))
+                    (lby & ((gx == fy + 1) | ((gx == gy + 1) & (gy == fy + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:ey), SELBTZRange(sy, gy, gy))
@@ -16714,7 +16744,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy > ex + 1) &
                 (
                     (!lbx & (gy == fx)) |
-                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))))
+                    (lbx & ((gy == fx + 1) | ((gy == gx + 1) & (gx == fx + 1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:ex), SELBTZRange(sx, gx, gx))
@@ -16758,10 +16788,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4CFG1-X",
                 diff_sign & lby &
                 (gx == fy) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
                 (
-                    (!lbx & (fx == ey + 1)) |
-                    (lbx & (ex == fx + 2) & (ex == ey + 2))
+                    (!lbx & (ex == gy + p) & (fx == ey + 1)) |
+                    (lbx & (ex == fx + 2) & (ex == ey + 2) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1:fx, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
@@ -16774,10 +16803,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4CFG1-Y",
                 diff_sign & lbx &
                 (gy == fx) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
                 (
-                    (!lby & (fy == ex + 1)) |
-                    (lby & (ey == fy + 2) & (ey == ex + 2))
+                    (!lby & (ey == gx + p) & (fy == ex + 1)) |
+                    (lby & (ey == fy + 2) & (ey == ex + 2) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1:fy, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
@@ -16861,22 +16889,22 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (fx == ey + 1) & (gx == fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gx+1:fx-2), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, ey), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:gx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-2), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4ACEF0-Y",
                 (same_sign != lby) & !lbx &
                 (ey == fy + 2) & (fy == ex + 1) & (gy == fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gy+1:fy-2), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, ex), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:gy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-2), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-4ACEF1-X",
@@ -16884,77 +16912,77 @@ function check_selbtz_two_sum_lemmas(
                 (ex == fx + 2) & (fx == ey + 1) & (gx == fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:gx), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4ACEF1-Y",
                 (same_sign != lby) & lbx &
                 (ey == fy + 2) & (fy == ex + 1) & (gy == fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:gy), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:gy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+2:gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-4ACEI0-X",
                 (same_sign != lbx) & !lby &
                 (ex == fx + 2) & (ex == gy + (p+2)) & (fx == ey + 1) & (gx == fy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:gx-1), SELBTZRange(sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:gx), SELBTZRange(~sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-2), SELBTZRange(sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), SELBTZRange(sy, gy:gy+1, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:gx-1), SELBTZRange(±, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gx), SELBTZRange(~sy, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gx+1:fx-2), SELBTZRange(sy, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, ey), SELBTZRange(sy, gy:gy+1, gy))
             end
             checker("SELBTZ-TwoSum-4ACEI0-Y",
                 (same_sign != lby) & !lbx &
                 (ey == fy + 2) & (ey == gx + (p+2)) & (fy == ex + 1) & (gy == fx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:gy-1), SELBTZRange(sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:gy), SELBTZRange(~sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-2), SELBTZRange(sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), SELBTZRange(sx, gx:gx+1, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(sx, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:gy-1), SELBTZRange(±, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gy), SELBTZRange(~sx, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gy+1:fy-2), SELBTZRange(sx, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, ex), SELBTZRange(sx, gx:gx+1, gx))
             end
 
             checker("SELBTZ-TwoSum-4ACEI1-X",
                 (same_sign != lbx) & lby &
                 (ex == fx + 2) & (ex == gy + (p+2)) & (fx == ey + 1) & (gx == fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:ey), SELBTZRange(~sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:gx-1), SELBTZRange(~sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:gx), SELBTZRange(sy, gy:gy+1, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gx+1:fx-1), SELBTZRange(~sy, gy:gy+1, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+3:fy-1), SELBTZRange(±, gy:gy+1, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex, fx, fy), SELBTZRange(sy, gy:gy+1, gy))
             end
             checker("SELBTZ-TwoSum-4ACEI1-Y",
                 (same_sign != lby) & lbx &
                 (ey == fy + 2) & (ey == gx + (p+2)) & (fy == ex + 1) & (gy == fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:ex), SELBTZRange(~sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:gy-1), SELBTZRange(~sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:gy), SELBTZRange(sx, gx:gx+1, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gy+1:fy-1), SELBTZRange(~sx, gx:gx+1, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, fy+1), SELBTZRange(~sx, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, gx+3:fx-1), SELBTZRange(±, gx:gx+1, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey, fy, fx), SELBTZRange(sx, gx:gx+1, gx))
             end
 
             ########################################### FAMILY 5 - CODIMENSION 0
 
             checker("SELBTZ-TwoSum-5a-X",
                 (same_sign != lbx) &
-                (ex > ey + 2) & (fx < ey + 1) & (fx > fy) & (gx < fy) &
+                (ex > ey + 2) & (fx > fy) & (gx < fy) &
                 (ex > gy + p) &
-                (lby | (fx == ey))
+                ((!lby & (fx == ey)) | (lby & (fx < ey + 1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):fx), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5a-Y",
                 (same_sign != lby) &
-                (ey > ex + 2) & (fy < ex + 1) & (fy > fx) & (gy < fx) &
+                (ey > ex + 2) & (fy > fx) & (gy < fx) &
                 (ey > gx + p) &
-                (lbx | (fy == ex))
+                ((!lbx & (fy == ex)) | (lbx & (fy < ex + 1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, ey-(p-1):fy), SELBTZRange(±, gx:ey-(p+1), gx))
             end
@@ -17103,9 +17131,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey) & (fx > fy) &
                 (ex > gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy+1:fx), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy+1:fx), SELBTZRange(sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5B1-Y",
                 same_sign & lby & !lbx &
@@ -17113,9 +17141,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex) & (fy > fx) &
                 (ey > gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, fx+1:fy), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, fx+1:fy), SELBTZRange(sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-5B2-X",
@@ -17124,10 +17152,10 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey) & (fx > fy) &
                 (ex > gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):gx), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fx-1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy-1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1:fx-1), SELBTZRange(~sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):gx-1), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5B2-Y",
                 same_sign & lby & lbx &
@@ -17135,10 +17163,10 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex) & (fy > fx) &
                 (ey > gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):gy), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fy-1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx-1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1:fy-1), SELBTZRange(~sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(~sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):gy-1), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-5B3-X",
@@ -17168,9 +17196,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1:fx-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:fy-1), SELBTZRange(±, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1:fx-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5B4-Y",
@@ -17179,9 +17207,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1:fy-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:fx-1), SELBTZRange(±, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1:fy-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fy+1), SELBTZRange(~sx, gx:ey-(p+2), gx))
             end
 
@@ -17303,22 +17331,22 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5C5-X",
                 diff_sign & lbx & !lby &
                 (fx + 1 == ey) &
-                (gx < fy) & (ey > fy + 2) &
+                (fx > fy + 1) & (gx < fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):ey-2), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fx-1), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5C5-Y",
                 diff_sign & lby & !lbx &
                 (fy + 1 == ex) &
-                (gy < fx) & (ex > fx + 2) &
+                (fy > fx + 1) & (gy < fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):ex-2), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fy-1), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, ey-(p-1):fx), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5D0-X",
@@ -17327,8 +17355,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 2) & (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = ex-(p-1):fx-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
@@ -17343,8 +17371,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 2) & (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = ey-(p-1):fy-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
@@ -17360,12 +17388,12 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = ex-(p-1):fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
                 for gs = ex-(p-2):fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(±, gy:ex-p, gy))
                 end
@@ -17376,12 +17404,12 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = ey-(p-1):fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
                 for gs = ey-(p-2):fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(±, gx:ey-p, gx))
                 end
@@ -17393,12 +17421,12 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 2) & (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = ex-p:fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
                 for gs = ex-(p-1):fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fx-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
@@ -17409,12 +17437,12 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 2) & (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = ey-p:fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
                 for gs = ey-(p-1):fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fy-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
@@ -17429,12 +17457,12 @@ function check_selbtz_two_sum_lemmas(
                 for gs = ex-(p-1):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = ex-p:ey-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:ey-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5D3-Y",
                 diff_sign & !lby & lbx &
@@ -17445,27 +17473,27 @@ function check_selbtz_two_sum_lemmas(
                 for gs = ey-(p-1):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = ey-p:ex-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:ex-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5E0-X",
                 (same_sign != lbx) &
                 (ex == gy + p) &
-                (ex > ey + 2) & (fx < ey + 1) & (fx > fy) & (gx < fy) &
-                (lby | (fx == ey))
+                (ex > ey + 2) & (fx > fy) & (gx < fy) &
+                ((!lby & (fx == ey)) | (lby & (fx < ey + 1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5E0-Y",
                 (same_sign != lby) &
                 (ey == gx + p) &
-                (ey > ex + 2) & (fy < ex + 1) & (fy > fx) & (gy < fx) &
-                (lbx | (fy == ex))
+                (ey > ex + 2) & (fy > fx) & (gy < fx) &
+                ((!lbx & (fy == ex)) | (lbx & (fy < ex + 1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gx+2:fy), SELBTZRange(±, gx, gx))
             end
@@ -17489,11 +17517,11 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5F-X",
                 (same_sign != lbx) &
-                (ex > ey + 2) & (fx > gx) & (fx < ey + 1) &
+                (ex > ey + 2) & (fx > gx) &
                 (ex > gy + p) &
                 (
                     (!lby & (fx == ey) & (gx == fy + 1)) |
-                    (lby & (gx == fy))
+                    (lby & (fx < ey + 1) & (gx == fy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
@@ -17502,11 +17530,11 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5F-Y",
                 (same_sign != lby) &
-                (ey > ex + 2) & (fy > gy) & (fy < ex + 1) &
+                (ey > ex + 2) & (fy > gy) &
                 (ey > gx + p) &
                 (
                     (!lbx & (fy == ex) & (gy == fx + 1)) |
-                    (lbx & (gy == fx))
+                    (lbx & (fy < ex + 1) & (gy == fx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
@@ -17516,8 +17544,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5Z0-X",
                 same_sign & (lbx != lby) &
-                (ex + 1 > ey) & (fx + 1 < ey) & (fx > fy) & (fx > gy) &
-                ((lbx & !lby) | (ex == ey)) &
+                (fx + 1 < ey) & (fx > fy) & (fx > gy) &
+                ((lbx & !lby & (ex > ey)) | (ex == ey)) &
                 (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx < fy) & (gx > gy))
@@ -17527,8 +17555,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5Z0-Y",
                 same_sign & (lby != lbx) &
-                (ey + 1 > ex) & (fy + 1 < ex) & (fy > fx) & (fy > gx) &
-                ((lby & !lbx) | (ey == ex)) &
+                (fy + 1 < ex) & (fy > fx) & (fy > gx) &
+                ((lby & !lbx & (ey > ex)) | (ey == ex)) &
                 (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy < fx) & (gy > gx))
@@ -17662,15 +17690,12 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5J-X",
-                (same_sign != lby) & !lbx &
-                (fx + 1 < ey) & (fx > fy + 1) & (gx < fy) & (fy > gy) &
+                !lbx &
+                (fx + 1 < ey) & (fx > fy + 1) & (gx < fy) &
                 (
-                    (diff_sign & lby & (ex == ey + 2)) |
-                    (same_sign & !lby & (ex == ey))
-                ) &
-                (
-                    (same_sign & !lby & (ey == gx + (p-1)) & (gx < gy)) |
-                    ((ey == gy + (p-1)) & (gy < gx))
+                    (same_sign & !lby & (ex == ey) & (fy > gy) &
+                        (((ex == gx + (p-1)) & (gx < gy)) | ((ey == gy + (p-1)) & (gy < gx)))) |
+                    (diff_sign & lby & (ex == ey + 2) & (ey == gy + (p-1)))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx, ey-(p-3):fx-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
@@ -17678,15 +17703,12 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, fx+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
             end
             checker("SELBTZ-TwoSum-5J-Y",
-                (same_sign != lbx) & !lby &
-                (fy + 1 < ex) & (fy > fx + 1) & (gy < fx) & (fx > gx) &
+                !lby &
+                (fy + 1 < ex) & (fy > fx + 1) & (gy < fx) &
                 (
-                    (diff_sign & lbx & (ey == ex + 2)) |
-                    (same_sign & !lbx & (ey == ex))
-                ) &
-                (
-                    (same_sign & !lbx & (ex == gy + (p-1)) & (gy < gx)) |
-                    ((ex == gx + (p-1)) & (gx < gy))
+                    (same_sign & !lbx & (ey == ex) & (fx > gx) &
+                        (((ey == gy + (p-1)) & (gy < gx)) | ((ex == gx + (p-1)) & (gx < gy)))) |
+                    (diff_sign & lbx & (ey == ex + 2) & (ex == gx + (p-1)))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy, ex-(p-3):fy-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
@@ -17738,20 +17760,20 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p-1)) & (gx == fy) &
                 (ex > ey) & (fx + 1 < ey) & (fx > fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1:fx-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AB0-Y",
                 same_sign & lby & lbx &
                 (ey == gx + (p-1)) & (gy == fx) &
                 (ey > ex) & (fy + 1 < ex) & (fy > fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1:fy-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AB1-X",
@@ -17759,18 +17781,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p+1)) & (gx == fy) &
                 (fx + 1 < ey) & (fx > fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx+1:fx), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy+1:fx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AB1-Y",
                 diff_sign & !lby & !lbx &
                 (ey == gx + (p+1)) & (gy == fx) &
                 (fy + 1 < ex) & (fy > fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gy+1:fy), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx+1:fy), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AB2-X",
@@ -17778,20 +17800,20 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p+1)) & (gx == fy) &
                 (ex > ey + 2) & (fx + 1 < ey)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1:fx-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AB2-Y",
                 diff_sign & !lby & lbx &
                 (ey == gx + (p+1)) & (gy == fx) &
                 (ey > ex + 2) & (fy + 1 < ex)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1:fy-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fy+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AC0-X",
@@ -17841,22 +17863,22 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5AC2-X",
                 diff_sign & lbx & !lby &
                 (fx + 1 == ey) &
-                (ex > ey + 2) & (gx < fy) & (ey > fy + 2) &
+                (ex > ey + 2) & (fx > fy + 1) & (gx < fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:ey-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gy+2:fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AC2-Y",
                 diff_sign & lby & !lbx &
                 (fy + 1 == ex) &
-                (ey > ex + 2) & (gy < fx) & (ex > fx + 2) &
+                (ey > ex + 2) & (fy > fx + 1) & (gy < fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:ex-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fy-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gx+2:fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AD-X",
@@ -17910,7 +17932,6 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5AJ1-X",
-                (same_sign == lby) & (lbx != lby) &
                 (fx > fy + 1) & (gx < fy) & (gx > gy) &
                 ((ey == gy + (p-2)) | (ey == gy + (p-1))) &
                 (
@@ -17922,7 +17943,6 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ey+2, fx-1, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AJ1-Y",
-                (same_sign == lbx) & (lby != lbx) &
                 (fy > fx + 1) & (gy < fx) & (gy > gx) &
                 ((ex == gx + (p-2)) | (ex == gx + (p-1))) &
                 (
@@ -17941,12 +17961,14 @@ function check_selbtz_two_sum_lemmas(
                     (same_sign & !lby & (ex == gy + p) & ((!lbx & (ex == ey + 1) & (fx + 1 == ey)) | (lbx & (fx == ey))))
                 )
             ) do lemma
-                for gs = gy+2:fx-1
+                add_case!(lemma, SELBTZRange(sx, gy+(p+1), gy+(p+1)), SELBTZRange(±, gy, gy))
+                for gs = gy+2:fy
                     add_case!(lemma, SELBTZRange(sx, 0, gy+(p+1), gs:fy, gs), SELBTZRange(±, gy, gy))
+                end
+                for gs = gy+2:fx-1
                     add_case!(lemma, SELBTZRange(sx, 1, gy+p, gs-1, gs), SELBTZRange(±, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, gy+p, gs+1:fx-1, gs), SELBTZRange(±, gy, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, gy+(p+1), gy+(p+1)), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AK0-Y",
                 (fy > fx + 2) & (gy + 1 < fx) &
@@ -17955,12 +17977,14 @@ function check_selbtz_two_sum_lemmas(
                     (same_sign & !lbx & (ey == gx + p) & ((!lby & (ey == ex + 1) & (fy + 1 == ex)) | (lby & (fy == ex))))
                 )
             ) do lemma
-                for gs = gx+2:fy-1
+                add_case!(lemma, SELBTZRange(sy, gx+(p+1), gx+(p+1)), SELBTZRange(±, gx, gx))
+                for gs = gx+2:fx
                     add_case!(lemma, SELBTZRange(sy, 0, gx+(p+1), gs:fx, gs), SELBTZRange(±, gx, gx))
+                end
+                for gs = gx+2:fy-1
                     add_case!(lemma, SELBTZRange(sy, 1, gx+p, gs-1, gs), SELBTZRange(±, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, gx+p, gs+1:fy-1, gs), SELBTZRange(±, gx, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, gx+(p+1), gx+(p+1)), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AK1-X",
@@ -18018,24 +18042,24 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 == ey) & (gx == fy) &
                 (ex > gy + (p-1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1:fx, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1:fx, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = fy+1:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(sy, gy:ex-p, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1:fx, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1:fx, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5BC1-Y",
                 same_sign & lby & !lbx &
                 (fy + 1 == ex) & (gy == fx) &
                 (ey > gx + (p-1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1:fy, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1:fy, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = fx+1:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(sx, gx:ey-p, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1:fy, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1:fy, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-5BC2-X",
@@ -18044,10 +18068,10 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ex > gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):gx), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fx-1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fy), SELBTZRange(sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fy-1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1:fx-1), SELBTZRange(~sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):gx-1), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5BC2-Y",
                 same_sign & lby & lbx &
@@ -18055,10 +18079,10 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ey > gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):gy), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fy-1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):fx), SELBTZRange(sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):fx-1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1:fy-1), SELBTZRange(~sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(~sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):gy-1), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-5BC3-X",
@@ -18092,9 +18116,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey > fy + 2) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1:fx-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, ex-p:fy-1), SELBTZRange(±, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, fy), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1:fx-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5BC4-Y",
@@ -18103,32 +18127,32 @@ function check_selbtz_two_sum_lemmas(
                 (ex > fx + 2) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1:fy-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, ey-p:fx-1), SELBTZRange(±, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, fx), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1:fy-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), SELBTZRange(~sx, gx:ey-(p+2), gx))
             end
 
             checker("SELBTZ-TwoSum-5BC5-X",
                 diff_sign & lbx & !lby &
                 (fx + 1 == ey) & (gx == fy) &
-                (ey > fy + 2) &
+                (fx > gx + 1) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, ex-(p-1):gx-1), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gx), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5BC5-Y",
                 diff_sign & lby & !lbx &
                 (fy + 1 == ex) & (gy == fx) &
-                (ex > fx + 2) &
+                (fy > gy + 1) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, ey-(p-1):gy-1), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gy), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
@@ -18164,12 +18188,12 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs+1:fy-1, gs), SELBTZRange(~sy, gy:ex-p, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy:ey-1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey-1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = fy+1:ey-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:ey-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1:ey-1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5BD1-Y",
                 same_sign & lby & !lbx &
@@ -18184,12 +18208,12 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs+1:fx-1, gs), SELBTZRange(~sx, gx:ey-p, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx:ex-1, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex-1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = fx+1:ex-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:ex-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1:ex-1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5BD2-X",
@@ -18235,17 +18259,17 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx + 2) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), SELBTZRange(~sy, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, ex-(p-1):gx-1), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gx), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                for gs = gx+1:fx-1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fx-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
+                end
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
                 for gs = ex-p:gx-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:gx-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                 end
-                for gs = gx+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fx-1, gs), SELBTZRange(sy, gy:ex-(p+1), gy))
-                end
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx-1, gx), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5BD3-Y",
                 diff_sign & !lby & !lbx &
@@ -18253,17 +18277,17 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy + 2) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), SELBTZRange(~sx, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fy-1, ey-(p-1):gy-1), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fy-1, gy), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                for gs = gy+1:fy-1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fy-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
+                end
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
                 for gs = ey-p:gy-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:gy-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                 end
-                for gs = gy+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fy-1, gs), SELBTZRange(sx, gx:ey-(p+1), gx))
-                end
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy-1, gy), SELBTZRange(~sx, gx:ey-(p+2), gx))
             end
 
             checker("SELBTZ-TwoSum-5BD4-X",
@@ -18310,9 +18334,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + p) & (gx == fy) &
                 (ex > ey + 1) & (fx + 1 < ey) & (fx + 1 > fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:gx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5BE-Y",
@@ -18320,9 +18344,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey == gx + p) & (gy == fx) &
                 (ey > ex + 1) & (fy + 1 < ex) & (fy + 1 > fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:gy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, fy+1), SELBTZRange(sx, gx, gx))
             end
 
@@ -18332,8 +18356,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, ex-(p-1):ey-3), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):ey-2), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5CG0-Y",
@@ -18342,8 +18366,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, ey-(p-1):ex-3), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):ex-2), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):fx), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
             end
 
@@ -18354,8 +18378,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-2):fy), SELBTZRange(±, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(±, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fx-2), SELBTZRange(±, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy-1), SELBTZRange(±, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(±, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5CG1-Y",
                 same_sign & lby & lbx &
@@ -18364,8 +18388,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-2):fx), SELBTZRange(±, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(±, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fy-2), SELBTZRange(±, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx-1), SELBTZRange(±, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(±, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-5CG2-X",
@@ -18395,9 +18419,9 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):ey-3), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, ex-(p-1):ey-2), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5CG3-Y",
                 diff_sign & lby & !lbx &
@@ -18405,9 +18429,9 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, ey-(p-1):fx), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):ex-3), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, ey-(p-1):ex-2), SELBTZRange(±, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5CH0-X",
@@ -18442,26 +18466,28 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 == ey) & (gx + 1 == fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, ex-p:fy-2), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1:ey-1, ex-p:fy), SELBTZRange(±, gy:ex-(p+2), gy))
-                for gs = fy+1:ey-1
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:ey-2, gs), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, ex-p:fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, ex-p:fy-2), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(±, gy:ex-(p+2), gy))
+                for fs = fy+1:ey-2
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, fs, ex-p:fs-1), SELBTZRange(±, gy:ex-(p+2), gy))
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, fs, fs+1), SELBTZRange(±, gy:ex-(p+2), gy))
                 end
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ex-p:fy), SELBTZRange(±, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5CH1-Y",
                 diff_sign & !lby & !lbx &
                 (fy + 1 == ex) & (gy + 1 == fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, ey-p:fx-2), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1:ex-1, ey-p:fx), SELBTZRange(±, gx:ey-(p+2), gx))
-                for gs = fx+1:ex-1
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:ex-2, gs), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, ey-p:fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, ey-p:fx-2), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(±, gx:ey-(p+2), gx))
+                for fs = fx+1:ex-2
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, fs, ey-p:fs-1), SELBTZRange(±, gx:ey-(p+2), gx))
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, fs, fs+1), SELBTZRange(±, gx:ey-(p+2), gx))
                 end
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ey-p:fx), SELBTZRange(±, gx:ey-(p+2), gx))
             end
 
             checker("SELBTZ-TwoSum-5DE0-X",
@@ -18524,17 +18550,17 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for fs = ex-(p-2):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, fs, ex-(p-2):fs), SELBTZRange(±, gy:ex-p, gy))
                 end
-                for fs = ex-p:fy
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), SELBTZRange(±, gy:ex-(p+1), gy))
+                for gs = ex-(p-1):fy+1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
                 for gs = ex-(p-1):fy-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy+1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5DG0-Y",
                 same_sign & lby & !lbx &
@@ -18542,17 +18568,17 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for fs = ey-(p-2):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, fs, ey-(p-2):fs), SELBTZRange(±, gx:ey-p, gx))
                 end
-                for fs = ey-p:fx
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), SELBTZRange(±, gx:ey-(p+1), gx))
+                for gs = ey-(p-1):fx+1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
                 for gs = ey-(p-1):fx-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx+1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-5DG1-X",
@@ -18561,8 +18587,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = ex-(p-1):fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
@@ -18579,8 +18605,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = ey-(p-1):fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
@@ -18598,7 +18624,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(±, gy:ex-(p+1), gy))
                 for gs = ex-p:fy
@@ -18608,7 +18635,6 @@ function check_selbtz_two_sum_lemmas(
                 for gs = ex-(p-1):fy-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy+1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5DG2-Y",
                 diff_sign & !lby & !lbx &
@@ -18616,7 +18642,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, fx+1), SELBTZRange(±, gx:ey-(p+1), gx))
                 for gs = ey-p:fx
@@ -18626,7 +18653,6 @@ function check_selbtz_two_sum_lemmas(
                 for gs = ey-(p-1):fx-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx+1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5DG3-X",
@@ -18635,10 +18661,10 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
-                for fs = ex-(p+1):fy
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, fs, fs+1), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                for gs = ex-p:fy+1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                 end
                 for gs = ex-(p-1):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
@@ -18653,10 +18679,10 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
-                for fs = ey-(p+1):fx
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, fs, fs+1), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                for gs = ey-p:fx+1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                 end
                 for gs = ey-(p-1):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
@@ -18672,8 +18698,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 2) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = ex-(p-2):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs, gs), SELBTZRange(sy, gy:ex-p, gy))
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), SELBTZRange(~sy, gy:ex-p, gy))
@@ -18692,8 +18718,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 2) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = ey-(p-2):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs, gs), SELBTZRange(sx, gx:ey-p, gx))
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), SELBTZRange(~sx, gx:ey-p, gx))
@@ -18713,11 +18739,11 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 == fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
-                for fs = ex-p:fy-1
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), SELBTZRange(±, gy:ex-(p+1), gy))
+                for gs = ex-(p-1):fy
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
                 for gs = ex-(p-1):fy-2
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
@@ -18732,11 +18758,11 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 == fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
-                for fs = ey-p:fx-1
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), SELBTZRange(±, gx:ey-(p+1), gx))
+                for gs = ey-(p-1):fx
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
                 for gs = ey-(p-1):fx-2
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
@@ -18752,8 +18778,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 2) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = ex-p:fy
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), SELBTZRange(~sy, gy:ex-(p+2), gy))
@@ -18771,8 +18797,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 2) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = ey-p:fx
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), SELBTZRange(~sx, gx:ey-(p+2), gx))
@@ -18791,9 +18817,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 2) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
                 for gs = ex-p:ey-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:ey-1, gs), SELBTZRange(±, gy:ex-(p+2), gy))
@@ -18810,9 +18836,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 2) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
                 for gs = ey-p:ex-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:ex-1, gs), SELBTZRange(±, gx:ey-(p+2), gx))
@@ -18827,10 +18853,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EF0-X",
                 (same_sign != lbx) &
                 (ex == gy + p) &
-                (ex > ey + 2) & (fx > gx) & (fx < ey + 1) &
+                (ex > ey + 2) & (fx > gx) &
                 (
                     (!lby & (fx == ey) & (gx == fy + 1)) |
-                    (lby & (gx == fy))
+                    (lby & (fx < ey + 1) & (gx == fy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gy+2:fy), SELBTZRange(sy, gy, gy))
@@ -18840,10 +18866,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EF0-Y",
                 (same_sign != lby) &
                 (ey == gx + p) &
-                (ey > ex + 2) & (fy > gy) & (fy < ex + 1) &
+                (ey > ex + 2) & (fy > gy) &
                 (
                     (!lbx & (fy == ex) & (gy == fx + 1)) |
-                    (lbx & (gy == fx))
+                    (lbx & (fy < ex + 1) & (gy == fx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex+1, gx+2:fx), SELBTZRange(sx, gx, gx))
@@ -18976,9 +19002,9 @@ function check_selbtz_two_sum_lemmas(
                     ((ex == gy + (p-1)) & (gx > gy))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, ex-(p-3):fx-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-3):ey-3), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-3):fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-3):fy-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-5CG4-Y",
                 same_sign & lby & lbx &
@@ -18989,9 +19015,9 @@ function check_selbtz_two_sum_lemmas(
                     ((ey == gx + (p-1)) & (gy > gx))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, ey-(p-3):fy-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-3):ex-3), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-3):fx), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-3):fx-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(±, ey-(p-1), ey-(p-1)))
             end
 
             checker("SELBTZ-TwoSum-5DG4-X",
@@ -19075,28 +19101,30 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5JN0-X",
                 (same_sign != lby) & !lbx &
                 (fx == fy + 1) &
-                (fx + 1 < ey) & (fx > gx + 2) &
+                (fx + 1 < ey) & (gx + 1 < fy) &
                 (
-                    (same_sign & !lby & (ex == ey) & (fy > gy + 1) & (((ey == gx + (p-1)) & (gx < gy)) | ((ey == gy + (p-1)) & (gx > gy)))) |
+                    (same_sign & !lby & (ex == ey) & (fy > gy + 1) &
+                        (((ex == gx + (p-1)) & (gx < gy)) | ((ey == gy + (p-1)) & (gy < gx)))) |
                     (diff_sign & lby & (ex == ey + 2) & (ey == gy + (p-1)))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, fx+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx, ey-(p-3):fy-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, ey-(p-3):fy), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ey+1, fy+1, ey-(p-3):fx-2), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, fx+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
             end
             checker("SELBTZ-TwoSum-5JN0-Y",
                 (same_sign != lbx) & !lby &
                 (fy == fx + 1) &
-                (fy + 1 < ex) & (fy > gy + 2) &
+                (fy + 1 < ex) & (gy + 1 < fx) &
                 (
-                    (same_sign & !lbx & (ey == ex) & (fx > gx + 1) & (((ex == gy + (p-1)) & (gy < gx)) | ((ex == gx + (p-1)) & (gy > gx)))) |
+                    (same_sign & !lbx & (ey == ex) & (fx > gx + 1) &
+                        (((ey == gy + (p-1)) & (gy < gx)) | ((ex == gx + (p-1)) & (gx < gy)))) |
                     (diff_sign & lbx & (ey == ex + 2) & (ex == gx + (p-1)))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, fy+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy, ex-(p-3):fx-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, ex-(p-3):fx), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ex+1, fx+1, ex-(p-3):fy-2), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, fy+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
 
             checker("SELBTZ-TwoSum-5ABC0-X",
@@ -19106,8 +19134,8 @@ function check_selbtz_two_sum_lemmas(
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, gy+2:gx-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ABC0-Y",
@@ -19117,8 +19145,8 @@ function check_selbtz_two_sum_lemmas(
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex:ex+1, gx+2:gy-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex:ex+1, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(sx, gx, gx))
             end
 
@@ -19194,24 +19222,24 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABC4-X",
                 diff_sign & lbx & !lby &
                 (fx + 1 == ey) & (gx == fy) &
-                (ex > ey + 2) & (ey > fy + 2) &
+                (ex > ey + 2) & (fx > gx + 1) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:gx-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy+1:fx-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ABC4-Y",
                 diff_sign & lby & !lbx &
                 (fy + 1 == ex) & (gy == fx) &
-                (ey > ex + 2) & (ex > fx + 2) &
+                (ey > ex + 2) & (fy > gy + 1) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gx+2:gy-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fx+1:fy-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ABD0-X",
@@ -19220,12 +19248,12 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx + 2) & (fy > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy:fx-1, fy), SELBTZRange(sy, gy, gy))
-                for gs = fy+1:ey-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(~sy, gy, gy))
-                end
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy+1:fy-1, gy), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy:fx-1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy:ey-1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy:ey-1, fy), SELBTZRange(sy, gy, gy))
+                for gs = fy+1:ey-1
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:ey-1, gs), SELBTZRange(~sy, gy, gy))
+                end
             end
             checker("SELBTZ-TwoSum-5ABD0-Y",
                 same_sign & lby & lbx &
@@ -19233,12 +19261,12 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy + 2) & (fx > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx:fy-1, fx), SELBTZRange(sx, gx, gx))
-                for gs = fx+1:ex-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(~sx, gx, gx))
-                end
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gx+1:fx-1, gx), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx:fy-1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx:ex-1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx:ex-1, fx), SELBTZRange(sx, gx, gx))
+                for gs = fx+1:ex-1
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:ex-1, gs), SELBTZRange(~sx, gx, gx))
+                end
             end
 
             checker("SELBTZ-TwoSum-5ABD1-X",
@@ -19428,7 +19456,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, fy+1:fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx:fx+1, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx:fx+1, fy), SELBTZRange(sy, gy, gy))
             end
@@ -19439,7 +19467,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy + 1 < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, fx+1:fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy:fy+1, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy:fy+1, fx), SELBTZRange(sx, gx, gx))
             end
@@ -19450,8 +19478,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 2) & (gx + 1 < fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gy+2:ey-3), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, gy+2:ey-2), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, gy+2:fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACG0-Y",
@@ -19460,8 +19488,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 2) & (gy + 1 < fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gx+2:ex-3), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, gx+2:ex-2), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, gx+2:fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(±, gx, gx))
             end
 
@@ -19472,7 +19500,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, gy+2:fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fx-2), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACG1-Y",
                 diff_sign & !lby & lbx &
@@ -19481,7 +19509,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, gx+2:fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fy-2), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ACG2-X",
@@ -19490,9 +19518,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 2) & (gx + 1 < fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gy+2:fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:ey-3), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gy+2:ey-2), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACG2-Y",
                 diff_sign & lby & !lbx &
@@ -19500,9 +19528,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 2) & (gy + 1 < fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gx+2:fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:ex-3), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gx+2:ex-2), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ACH0-X",
@@ -19560,22 +19588,22 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ACJ-X",
                 (same_sign != lbx) & !lby &
                 (ex == ey + 2) & (fx + 1 == ey) &
-                (gx < fy) & (ey > fy + 2) &
+                (fx > fy + 1) & (gx < fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ex-2, gy+2:ex-4), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy+2:fy), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-2, ex-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACJ-Y",
                 (same_sign != lby) & !lbx &
                 (ey == ex + 2) & (fy + 1 == ex) &
-                (gy < fx) & (ex > fx + 2) &
+                (fy > fx + 1) & (gy < fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ey-2, gx+2:ey-4), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gx+2:fx), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-2, ey-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ADG0-X",
@@ -19584,15 +19612,13 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(±, gy, gy))
-                for gs = gy+2:fy-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy+1, gs), SELBTZRange(±, gy, gy))
+                for gs = gy+2:fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), SELBTZRange(±, gy, gy))
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), SELBTZRange(±, gy, gy))
                 end
-                for fs = gy+1:fy-1
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, fs, fs+1), SELBTZRange(±, gy, gy))
-                end
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ADG0-Y",
                 diff_sign & !lby & !lbx &
@@ -19600,15 +19626,13 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, fx+1), SELBTZRange(±, gx, gx))
-                for gs = gx+2:fx-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx+1, gs), SELBTZRange(±, gx, gx))
+                for gs = gx+2:fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), SELBTZRange(±, gx, gx))
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), SELBTZRange(±, gx, gx))
                 end
-                for fs = gx+1:fx-1
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, fs, fs+1), SELBTZRange(±, gx, gx))
-                end
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, fx+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ADG1-X",
@@ -19720,9 +19744,9 @@ function check_selbtz_two_sum_lemmas(
                     (lby & (gx == fy) & (fx < ey))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gx+1:fx), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gx+1:fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AFJ-Y",
                 (same_sign != lby) &
@@ -19734,9 +19758,9 @@ function check_selbtz_two_sum_lemmas(
                     (lbx & (gy == fx) & (fy < ex))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gy+1:fy), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gy+1:fy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AJN-X",
@@ -19745,13 +19769,13 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) & (gx > gy) &
                 ((ex == gy + (p-1)) | (ex == gy + p))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
                 for fs = gx+1:fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, fs, gy+2:fs), SELBTZRange(±, gy, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gy+2:fy-1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AJN-Y",
                 same_sign & !lby & lbx &
@@ -19759,13 +19783,13 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) & (gy > gx) &
                 ((ey == gx + (p-1)) | (ey == gx + p))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy-1), SELBTZRange(~sx, gx, gx))
                 for fs = gy+1:fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, fs, gx+2:fs), SELBTZRange(±, gx, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gx+2:fx-1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AJR-X",
@@ -19776,8 +19800,8 @@ function check_selbtz_two_sum_lemmas(
                     ((ex == ey + 2) & (ex == fx + 2) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-3, ex-2), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ex-3, gy+2:fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-3, ex-2), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ex-2, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AJR-Y",
@@ -19788,48 +19812,48 @@ function check_selbtz_two_sum_lemmas(
                     ((ey == ex + 2) & (ey == fy + 2) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-3, ey-2), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ey-3, gx+2:fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-3, ey-2), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ey-2, gx+2:fy-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ALN-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ex == gy + (p-1)) & (fx == fy + 1) &
-                (fx > gx + 2) & (gx > gy)
+                (ex == ey) & (ey == gy + (p-1)) & (fx == fy + 1) &
+                (gx + 1 < fy) & (gy < gx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gy+2:fx-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gy+2:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ALN-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ey == gx + (p-1)) & (fy == fx + 1) &
-                (fy > gy + 2) & (gy > gx)
+                (ey == ex) & (ex == gx + (p-1)) & (fy == fx + 1) &
+                (gy + 1 < fx) & (gx < gy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, gx+2:fy-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gx+2:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gx+2:fx), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ALR-X",
-                diff_sign & (lbx != lby) &
+                diff_sign &
                 (ex == fx + 3) & (ey == gy + (p-1)) &
                 (fx > fy + 1) & (gx < fy) &
                 ((lbx & !lby & (ex == ey + 1)) | (!lbx & lby & (ex == ey + 2)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lby, ey+1, ey-1, fx+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lby, ey+1, fx, gy+2:fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lby, ey+1, ey-1, fx+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, ey-1, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ALR-Y",
-                diff_sign & (lby != lbx) &
+                diff_sign &
                 (ey == fy + 3) & (ex == gx + (p-1)) &
                 (fy > fx + 1) & (gy < fx) &
                 ((lby & !lbx & (ey == ex + 1)) | (!lby & lbx & (ey == ex + 2)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lbx, ex+1, ex-1, fy+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lbx, ex+1, fy, gx+2:fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lbx, ex+1, ex-1, fy+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, ex-1, gx+2:fy-1), SELBTZRange(±, gx, gx))
             end
 
@@ -19838,18 +19862,18 @@ function check_selbtz_two_sum_lemmas(
                 (fx + 1 == ey) & (fx == gx + 1) & (gx == fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ex-(p-1):gx-1), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, gx), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5BCG-Y",
                 same_sign & !lby & !lbx &
                 (fy + 1 == ex) & (fy == gy + 1) & (gy == fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ey-(p-1):gy-1), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, gy), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5BDE0-X",
@@ -19926,8 +19950,8 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs+1:fy-1, gs), SELBTZRange(~sy, gy:ex-p, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5BDG0-Y",
                 same_sign & lby & !lbx &
@@ -19941,8 +19965,8 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs+1:fx-1, gs), SELBTZRange(~sx, gx:ey-p, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx+1), SELBTZRange(sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx, fx+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5BDG1-X",
@@ -19950,9 +19974,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (fx == gx + 2) & (gx == fy) &
                 (ex > gy + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, ex-(p-2):fy-1), SELBTZRange(~sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, ex-(p-2):fy), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1, fy+1), SELBTZRange(~sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, ex-(p-2):fy-1), SELBTZRange(~sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = ex-(p-1):fy-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
@@ -19965,9 +19989,9 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (fy == gy + 2) & (gy == fx) &
                 (ey > gx + p)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, ey-(p-2):fx-1), SELBTZRange(~sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, ey-(p-2):fx), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1, fx+1), SELBTZRange(~sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, ey-(p-2):fx-1), SELBTZRange(~sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = ey-(p-1):fx-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
@@ -20015,11 +20039,11 @@ function check_selbtz_two_sum_lemmas(
                 for gs = ex-(p-1):fy-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy-1, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, ex-p:fy-1), SELBTZRange(±, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy-1, fy), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, fy+1), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5BDG3-Y",
                 diff_sign & !lby & lbx &
@@ -20029,11 +20053,11 @@ function check_selbtz_two_sum_lemmas(
                 for gs = ey-(p-1):fx-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx-1, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, ey-p:fx-1), SELBTZRange(±, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx-1, fx), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, fx+1), SELBTZRange(~sx, gx:ey-(p+2), gx))
             end
 
             checker("SELBTZ-TwoSum-5BEK0-X",
@@ -20121,8 +20145,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (ex == gy + p) & (gx == fy) &
                 (fx + 2 < ey) & (fx + 1 > fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey-1, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey-1, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey-1, gy+2:gx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey-1, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey-1, fx+1), SELBTZRange(sy, gy, gy))
             end
@@ -20131,8 +20155,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 1) & (ey == gx + p) & (gy == fx) &
                 (fy + 2 < ex) & (fy + 1 > fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex-1, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex-1, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex-1, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex-1, gx+2:gy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex-1, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex-1, fy+1), SELBTZRange(sx, gx, gx))
             end
@@ -20211,8 +20235,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy-2), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5CGH3-Y",
                 diff_sign & lby & !lbx &
@@ -20221,8 +20245,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx-2), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, ey-(p-1):fx), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-5CIM0-X",
@@ -20283,23 +20307,23 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5CIM2-X",
                 same_sign & lbx & lby &
-                (ex == gx + (p-1)) & (fx + 1 == ey) & (fy + 1 == gy) &
-                (gx < gy) & (ey > gy + 2)
+                (fx + 1 == ey) & (ex == gx + (p-1)) & (fy + 1 == gy) &
+                (gx < gy) & (fx > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx+2:gy), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx+2:gy-1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx+2:fy), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5CIM2-Y",
                 same_sign & lby & lbx &
-                (ey == gy + (p-1)) & (fy + 1 == ex) & (fx + 1 == gx) &
-                (gy < gx) & (ex > gx + 2)
+                (fy + 1 == ex) & (ey == gy + (p-1)) & (fx + 1 == gx) &
+                (gy < gx) & (fy > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gy+2:gx), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gy+2:gx-1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, gy+2:fx), SELBTZRange(~sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-5DEG-X",
@@ -20379,8 +20403,8 @@ function check_selbtz_two_sum_lemmas(
                 end
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1, ex-(p-1):fy-2), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy+1, fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = ex-(p-2):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs, gs), SELBTZRange(sy, gy:ex-p, gy))
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), SELBTZRange(~sy, gy:ex-p, gy))
@@ -20400,8 +20424,8 @@ function check_selbtz_two_sum_lemmas(
                 end
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1, ey-(p-1):fx-2), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx+1, fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = ey-(p-2):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs, gs), SELBTZRange(sx, gx:ey-p, gx))
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), SELBTZRange(~sx, gx:ey-p, gx))
@@ -20417,8 +20441,8 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 == fy) &
                 (ex > gy + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy:ex-p, gy))
                 for gs = ex-(p-2):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), SELBTZRange(±, gy:ex-p, gy))
                 end
@@ -20439,8 +20463,8 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 == fx) &
                 (ey > gx + p)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx:ey-p, gx))
                 for gs = ey-(p-2):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), SELBTZRange(±, gx:ey-p, gx))
                 end
@@ -20461,8 +20485,8 @@ function check_selbtz_two_sum_lemmas(
                 (fx == ey) & (fx == fy + 2) & (gx + 1 == fy) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = ex-(p-1):fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
@@ -20482,8 +20506,8 @@ function check_selbtz_two_sum_lemmas(
                 (fy == ex) & (fy == fx + 2) & (gy + 1 == fx) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = ey-(p-1):fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
@@ -20510,8 +20534,8 @@ function check_selbtz_two_sum_lemmas(
                 end
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1, ex-p:fy-2), SELBTZRange(±, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1, fy-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 for gs = ex-(p-1):fy-2
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), SELBTZRange(±, gy:ex-(p+1), gy))
                 end
@@ -20530,8 +20554,8 @@ function check_selbtz_two_sum_lemmas(
                 end
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1, ey-p:fx-2), SELBTZRange(±, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1, fx-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 for gs = ey-(p-1):fx-2
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), SELBTZRange(±, gx:ey-(p+1), gx))
                 end
@@ -20545,7 +20569,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + p) & (gx + 1 == fy) &
                 (fx > fy + 2) &
                 (
-                    (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
@@ -20567,7 +20591,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == gx + p) & (gy + 1 == fx) &
                 (fy > fx + 2) &
                 (
-                    (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
@@ -20667,7 +20691,7 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 1) &
                 (gx < gy) &
                 (
-                    (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
@@ -20686,7 +20710,7 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 1) &
                 (gy < gx) &
                 (
-                    (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
@@ -20703,68 +20727,68 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IMP0-X",
                 same_sign & !lbx & !lby &
                 (ex == ey) & (ex == gx + (p-1)) & (fy == gy) &
-                (fx > fy + 1) & (gx < fy)
+                (gx < gy) & (fx > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, fx+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+2:fx-1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, gx+2:fy-1), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, gx+2:fy), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, gx+2:gy-1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, gx+2:gy), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5IMP0-Y",
                 same_sign & !lby & !lbx &
                 (ey == ex) & (ey == gy + (p-1)) & (fx == gx) &
-                (fy > fx + 1) & (gy < fx)
+                (gy < gx) & (fy > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, fy+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, gy+2:fx-1), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, gy+2:fx), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, gy+2:gx-1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, gy+2:gx), SELBTZRange(~sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-5IMP1-X",
                 same_sign & !lbx & lby &
                 (ex == ey + 1) & (ex == gx + (p-1)) & (fy + 1 == gy) &
-                (fx > gy + 1) & (gx < fy + 1)
+                (gx < gy) & (fx > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1, gx+2:fy), SELBTZRange(~sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1, gx+2:fy+1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1, gx+2:gy-1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1, gx+2:gy), SELBTZRange(sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+2:fx), SELBTZRange(±, gx, gx))
             end
             checker("SELBTZ-TwoSum-5IMP1-Y",
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (ey == gy + (p-1)) & (fx + 1 == gx) &
-                (fy > gx + 1) & (gy < fx + 1)
+                (gy < gx) & (fy > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy-1, gy+2:fx), SELBTZRange(~sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy-1, gy+2:fx+1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy-1, gy+2:gx-1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy-1, gy+2:gx), SELBTZRange(sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gy+2:fy), SELBTZRange(±, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-5IMP2-X",
                 same_sign & lbx & lby &
-                (ex == gx + (p-1)) & (ex == ey) & (fy + 1 == gy) &
-                (fx > fy + 2) & (gx < gy)
+                (ex == ey) & (ex == gx + (p-1)) & (fy + 1 == gy) &
+                (gx < gy) & (fx > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gx+2:fy+1), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gx+2:fy), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gx+2:gy), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gx+2:gy-1), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5IMP2-Y",
                 same_sign & lby & lbx &
-                (ey == gy + (p-1)) & (ey == ex) & (fx + 1 == gx) &
-                (fy > fx + 2) & (gy < gx)
+                (ey == ex) & (ey == gy + (p-1)) & (fx + 1 == gx) &
+                (gy < gx) & (fy > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gy+2:fx+1), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gy+2:fx), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gy+2:gx), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gy+2:gx-1), SELBTZRange(~sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-5INP-X",
                 same_sign & !lbx & lby &
-                (ex == ey + 1) & (fx == fy + 1) & (gx + (p-2) == ey) &
-                (fx > gy + 2) & (gx < gy)
+                (ex == ey + 1) & (fx == fy + 1) & (ex == gx + (p-1)) &
+                (fy > gy + 1) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gy, gx+2:gy), SELBTZRange(sy, gx, gx))
@@ -20776,8 +20800,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5INP-Y",
                 same_sign & !lby & lbx &
-                (ey == ex + 1) & (fy == fx + 1) & (gy + (p-2) == ex) &
-                (fy > gx + 2) & (gy < gx)
+                (ey == ex + 1) & (fy == fx + 1) & (ey == gy + (p-1)) &
+                (fx > gx + 1) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gx, gy+2:gx), SELBTZRange(sx, gy, gy))
@@ -20794,7 +20818,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey) & (fx + 1 < ey) &
                 (gx < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx), SELBTZRange(sy, gx, gx))
             end
@@ -20804,7 +20828,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex) & (fy + 1 < ex) &
                 (gy < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(~sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy), SELBTZRange(sx, gy, gy))
             end
@@ -20814,34 +20838,32 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5CG5-X",
                 same_sign & lbx & lby &
                 (fx + 1 == ey) & (ey == fy + 2) &
-                (ex < fy + (p-2)) &
                 (
-                    ((ex == gx + (p-1)) & (fy == gy + 1)) |
-                    ((ex == gy + (p-1)) & (gx + 1 == fy))
+                    ((ex == gx + (p-1)) & (fy == gy + 1) & (gx < gy)) |
+                    ((ex == gy + (p-1)) & (gx + 1 == fy) & (gx > gy))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, ex-(p-3):fx-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, fx+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, ex-(p-3):fx-3), SELBTZRange(sy, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, ex-(p-3):fx-2), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, ex-(p-3):fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-3):fy-2), SELBTZRange(sy, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-3):fy-1), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-5CG5-Y",
                 same_sign & lby & lbx &
                 (fy + 1 == ex) & (ex == fx + 2) &
-                (ey < fx + (p-2)) &
                 (
-                    ((ey == gy + (p-1)) & (fx == gx + 1)) |
-                    ((ey == gx + (p-1)) & (gy + 1 == fx))
+                    ((ey == gy + (p-1)) & (fx == gx + 1) & (gy < gx)) |
+                    ((ey == gx + (p-1)) & (gy + 1 == fx) & (gy > gx))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, ey-(p-3):fy-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, fy+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, ey-(p-3):fy-3), SELBTZRange(sx, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, ey-(p-3):fy-2), SELBTZRange(~sx, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, ey-(p-3):fx), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-3):fx-2), SELBTZRange(sx, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-3):fx-1), SELBTZRange(~sx, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(±, ey-(p-1), ey-(p-1)))
             end
 
             checker("SELBTZ-TwoSum-5IQ-X",
-                same_sign & (lbx != lby) &
+                same_sign &
                 (ex == gx + (p-1)) &
                 (gx < gy) &
                 (
@@ -20857,7 +20879,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5IQ-Y",
-                same_sign & (lby != lbx) &
+                same_sign &
                 (ey == gy + (p-1)) &
                 (gy < gx) &
                 (
@@ -20878,26 +20900,26 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx == fy + 1) &
                 (
                     ((ex == gx + (p-1)) & (fy == gy + 1) & (gx < gy)) |
-                    ((ex == gy + (p-1)) & (gx + 1 == fy) & (gx > gy))
+                    ((ey == gy + (p-1)) & (gx + 1 == fy) & (gy < gx))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, fx+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, ex-(p-3):fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, ex-(p-3):fy-1), SELBTZRange(sy, ex-(p-1), ex-(p-1)))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, ex-(p-3):fy-2), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, ex-(p-3):fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, fx+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-5JN1-Y",
                 same_sign & !lby & !lbx &
                 (ey == ex) & (fy == fx + 1) &
                 (
                     ((ey == gy + (p-1)) & (fx == gx + 1) & (gy < gx)) |
-                    ((ey == gx + (p-1)) & (gy + 1 == fx) & (gy > gx))
+                    ((ex == gx + (p-1)) & (gy + 1 == fx) & (gx < gy))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, fy+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, ey-(p-3):fx), SELBTZRange(±, ey-(p-1), ey-(p-1)))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, ey-(p-3):fx-1), SELBTZRange(sx, ey-(p-1), ey-(p-1)))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, ey-(p-3):fx-2), SELBTZRange(~sx, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, ey-(p-3):fx), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy+1, fy+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
             end
 
             checker("SELBTZ-TwoSum-5IOQ-X",
@@ -20937,10 +20959,10 @@ function check_selbtz_two_sum_lemmas(
                 (fx > gx + 1) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ey, gy+2:gx-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ey, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ABCJ-Y",
                 (same_sign != lby) & !lbx &
@@ -20948,29 +20970,29 @@ function check_selbtz_two_sum_lemmas(
                 (fy > gy + 1) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, ex, gx+2:gy-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ±, ey, ex, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gy+1:fy-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ABCL-X",
                 diff_sign & !lbx & lby &
                 (ex == ey + 2) & (ex == gy + (p+1)) & (fx + 1 == ey) & (gx == fy) &
-                (ey > fy + 2)
+                (fx > fy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex-1, fx, gy+2:fy-1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex-1, fx, gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ex-1, fx, fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ABCL-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) & (fy + 1 == ex) & (gy == fx) &
-                (ex > fx + 2)
+                (fy > fx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ±, ey-1, fy, gx+2:fx-1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey-1, fy, gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ey-1, fy, fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gy+1:fy-1), SELBTZRange(~sx, gx, gx))
             end
@@ -21104,19 +21126,19 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (ex == gy + (p-1)) & (fx == ey) & (gx == fy) & (fy == gy + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 1, ex, gy-1, gy), pos_zero)
                 for gs = fy+1:ey-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:ey-1, gs), SELBTZRange(~sy, gy, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex, gy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-5ABDS-Y",
                 same_sign & lby & lbx &
                 (ey == gx + (p-1)) & (fy == ex) & (gy == fx) & (fx == gx + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 1, ey, gx-1, gx), pos_zero)
                 for gs = fx+1:ex-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:ex-1, gs), SELBTZRange(~sx, gx, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey, gx-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-5ABJN-X",
@@ -21124,18 +21146,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (fx == fy + 1) & (gx == fy) &
                 ((ex == gy + (p-1)) | (ex == gy + p))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ABJN-Y",
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (fy == fx + 1) & (gy == fx) &
                 ((ey == gx + (p-1)) | (ey == gx + p))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ABJR-X",
@@ -21169,7 +21191,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5ABLN-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ex == gy + (p-1)) & (fx == fy + 1) & (gx == fy)
+                (ex == ey) & (ey == gy + (p-1)) & (fx == fy + 1) & (gx == fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gy+2:fy), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(~sy, gy, gy))
@@ -21177,7 +21199,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5ABLN-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ey == gx + (p-1)) & (fy == fx + 1) & (gy == fx)
+                (ey == ex) & (ex == gx + (p-1)) & (fy == fx + 1) & (gy == fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gx+2:fx), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(~sx, gx, gx))
@@ -21190,7 +21212,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 2) & (gx + 1 == fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gy+2:gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey, gy+2:fy-2), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, gy+2:fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(±, gy, gy))
@@ -21201,7 +21223,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 2) & (gy + 1 == fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gx+2:gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex, gx+2:fx-2), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, gx+2:fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(±, gx, gx))
@@ -21236,8 +21258,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fy-2), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gy+2:fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACGH2-Y",
                 diff_sign & lby & !lbx &
@@ -21247,8 +21269,8 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fx-2), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fx-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gx+2:fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ACGJ-X",
@@ -21257,9 +21279,9 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 < fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ±, ex, ex-2, gy+2:ex-5), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, ex-4), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-2, ex-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ex, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACGJ-Y",
                 (same_sign != lby) & !lbx &
@@ -21267,9 +21289,9 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 < fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ±, ey, ey-2, gx+2:ey-5), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, ey-4), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-2, ey-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ey, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ACGL-X",
@@ -21277,18 +21299,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p+1)) & (fx + 1 == ey) & (ey == fy + 2) &
                 (ex == ey + 2) & (gx + 1 < fy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, gy+2:fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ex-1, fx, gy+2:fx-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ACGL-Y",
                 diff_sign & !lby & lbx &
                 (ey == gx + (p+1)) & (fy + 1 == ex) & (ex == fx + 2) &
                 (ey == ex + 2) & (gy + 1 < fx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, gx+2:fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ey-1, fy, gx+2:fy-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, fy-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ADGH0-X",
@@ -21330,39 +21352,37 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lbx & lby &
                 (ex == gy + (p+1)) & (fx == ey) & (fx == fy + 2) & (gx + 1 == fy)
             ) do lemma
-                for gs = gy+2:fy
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs, gs), SELBTZRange(±, gy, gy))
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), SELBTZRange(±, gy, gy))
-                end
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(±, gy, gy))
                 for gs = gy+2:fy-2
-                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs+1:fy, gs), SELBTZRange(±, gy, gy))
+                    add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy, gs), SELBTZRange(±, gy, gy))
                 end
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gy+2:fy-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy-1), SELBTZRange(~sy, gy, gy))
-                for fs = gy+1:fy
-                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, fs, fs+1), SELBTZRange(±, gy, gy))
-                end
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy-1, fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, fy), SELBTZRange(±, gy, gy))
+                for gs = gy+2:fy+1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs-1, gs), SELBTZRange(±, gy, gy))
+                    add_case!(lemma, SELBTZRange(sx, 1, ex-1, gs+1:fy, gs), SELBTZRange(±, gy, gy))
+                end
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1, gy+2:fy-2), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy+1, fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ADGH1-Y",
                 diff_sign & !lby & lbx &
                 (ey == gx + (p+1)) & (fy == ex) & (fy == fx + 2) & (gy + 1 == fx)
             ) do lemma
-                for gs = gx+2:fx
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs, gs), SELBTZRange(±, gx, gx))
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), SELBTZRange(±, gx, gx))
-                end
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(±, gx, gx))
                 for gs = gx+2:fx-2
-                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs+1:fx, gs), SELBTZRange(±, gx, gx))
+                    add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx, gs), SELBTZRange(±, gx, gx))
                 end
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gx+2:fx-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx-1), SELBTZRange(~sx, gx, gx))
-                for fs = gx+1:fx
-                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, fs, fs+1), SELBTZRange(±, gx, gx))
-                end
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx-1, fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, fx), SELBTZRange(±, gx, gx))
+                for gs = gx+2:fx+1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs-1, gs), SELBTZRange(±, gx, gx))
+                    add_case!(lemma, SELBTZRange(sy, 1, ey-1, gs+1:fx, gs), SELBTZRange(±, gx, gx))
+                end
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1, gx+2:fx-2), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx+1, fx-1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AHJN-X",
@@ -21371,12 +21391,12 @@ function check_selbtz_two_sum_lemmas(
                 (gx > gy) &
                 ((ex == gy + (p-1)) | (ex == gy + p))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, gy+2:fy), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gy+2:gx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gy+2:gx-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AHJN-Y",
                 same_sign & !lby & lbx &
@@ -21384,54 +21404,54 @@ function check_selbtz_two_sum_lemmas(
                 (gy > gx) &
                 ((ey == gx + (p-1)) | (ey == gx + p))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy-1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, gx+2:fx), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gx+2:gy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, gx+2:gy-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fy, fy), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AHLN0-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ex == gy + (p-1)) & (fx == gx + 2) & (fx == fy + 1) &
+                (ex == ey) & (ey == gy + (p-1)) & (fx == fy + 1) & (gx + 1 == fy) &
                 (fx > gy + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gy+2:fx-3), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx-2), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gy+2:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AHLN0-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ey == gx + (p-1)) & (fy == gy + 2) & (fy == fx + 1) &
+                (ey == ex) & (ex == gx + (p-1)) & (fy == fx + 1) & (gy + 1 == fx) &
                 (fy > gx + 3)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, gx+2:fy-3), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy-2), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gx+2:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gx+2:fx), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5AHLN1-X",
                 diff_sign & !lbx & lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) & (fx == fy + 1) & (fx == gx + 2) &
+                (ex == ey + 2) & (ex == gy + (p+1)) & (fx == fy + 1) & (gx + 1 == fy) &
                 (fx + 1 < ey)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, fx+1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gy+2:fy), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fx-2), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, gy+2:fy-2), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AHLN1-Y",
                 diff_sign & !lby & lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) & (fy == fx + 1) & (fy == gy + 2) &
+                (ey == ex + 2) & (ey == gx + (p+1)) & (fy == fx + 1) & (gy + 1 == fx) &
                 (fy + 1 < ex)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, fy+1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gx+2:fx), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, fy-2), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, gx+2:fx-2), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, fy+1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5BDEG0-X",
@@ -21439,37 +21459,37 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + p) & (fx == ey) & (fx == gx + 2) & (gx == fy) &
                 (gx > gy + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gx), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1, gx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gx), SELBTZRange(sy, gy, gy))
                 for gs = gy+2:gx-1
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:gx-1, gs), SELBTZRange(±, gy, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx-1, gx), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gy+2:gx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5BDEG0-Y",
                 same_sign & lby & lbx &
                 (ey == gx + p) & (fy == ex) & (fy == gy + 2) & (gy == fx) &
                 (gy > gx + 1)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gy), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy+1, gy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gy), SELBTZRange(sx, gx, gx))
                 for gs = gx+2:gy-1
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:gy-1, gs), SELBTZRange(±, gx, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gy-1, gy), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gx+2:gy-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5BDEG1-X",
                 diff_sign & !lbx & lby &
                 (ex == gy + p) & (fx == ey) & (fx == gx + 2) & (gx == fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
                 for gs = gy+2:fy
                     add_case!(lemma, SELBTZRange(sx, 0, ex, gs:fy-1, gs), SELBTZRange(~sy, gy, gy))
@@ -21481,7 +21501,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lby & lbx &
                 (ey == gx + p) & (fy == ex) & (fy == gy + 2) & (gy == fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, gy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx, gx))
                 for gs = gx+2:fx
                     add_case!(lemma, SELBTZRange(sy, 0, ey, gs:fx-1, gs), SELBTZRange(~sx, gx, gx))
@@ -21530,28 +21550,28 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby &
                 (ex == gy + p) & (gx == fy) & (gx == gy + 1) &
                 (
-                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
+                    (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy, gy))
                 for gs = gx+1:fx-1
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(sy, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(sy, gy, gy))
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fx-1, gs), SELBTZRange(sy, gy, gy))
                 end
             end
             checker("SELBTZ-TwoSum-5BEIK-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (gy == fx) & (gy == gx + 1) &
                 (
-                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
+                    (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx, gx))
                 for gs = gy+1:fy-1
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(sx, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(sx, gx, gx))
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fy-1, gs), SELBTZRange(sx, gx, gx))
                 end
             end
 
@@ -21627,9 +21647,9 @@ function check_selbtz_two_sum_lemmas(
                 (fx > fy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3:ex-2, gy+2:fy), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, fy+1:fx-1), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3:ex-2, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3:ex-2, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gx+1:fx-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3:ex-2, gy+2:gx-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5BELR-Y",
                 diff_sign & lby & !lbx &
@@ -21637,21 +21657,21 @@ function check_selbtz_two_sum_lemmas(
                 (fy > fx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3:ey-2, gx+2:fx), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, fx+1:fy-1), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3:ey-2, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3:ey-2, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gy+1:fy-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3:ey-2, gx+2:gy-1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5BINQ-X",
                 same_sign & lbx & lby &
-                (ex == fy + (p-1)) & (fx == gx + 1) & (fx == gy) & (gy == fy + 1) &
+                (ex == gx + (p-1)) & (fx == fy + 1) & (fx == gy) & (gx == fy) &
                 (ex > ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5BINQ-Y",
                 same_sign & lby & lbx &
-                (ey == fx + (p-1)) & (fy == gy + 1) & (fy == gx) & (gx == fx + 1) &
+                (ey == gy + (p-1)) & (fy == fx + 1) & (fy == gx) & (gy == fx) &
                 (ey > ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1), SELBTZRange(~sx, gy, gy))
@@ -21766,7 +21786,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby &
                 (ex == gy + p) & (fx == fy + 2) & (gx + 1 == fy) &
                 (
-                    (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
+                    (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey) & (fy > gy + 2))
                 )
             ) do lemma
@@ -21788,7 +21808,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx &
                 (ey == gx + p) & (fy == fx + 2) & (gy + 1 == fx) &
                 (
-                    (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
+                    (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex) & (fx > gx + 2))
                 )
             ) do lemma
@@ -21846,11 +21866,11 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5IMOP0-X",
                 same_sign & !lbx & lby &
-                (ex == ey + 1) & (ey == gx + (p-2)) &
+                (ex == ey + 1) & (ex == gx + (p-1)) &
                 (gx < gy) &
                 (
                     ((fx == fy + 1) & (fy == gy + 1)) |
-                    ((fx == fy + 2) & (fy + 1 == gy))
+                    ((fx == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 for fs = gy+1:fx
@@ -21863,11 +21883,11 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5IMOP0-Y",
                 same_sign & !lby & lbx &
-                (ey == ex + 1) & (ex == gy + (p-2)) &
+                (ey == ex + 1) & (ey == gy + (p-1)) &
                 (gy < gx) &
                 (
                     ((fy == fx + 1) & (fx == gx + 1)) |
-                    ((fy == fx + 2) & (fx + 1 == gx))
+                    ((fy == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 for fs = gx+1:fy
@@ -21881,11 +21901,11 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5IMOP1-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ey == gx + (p-1)) &
+                (ex == ey) & (ex == gx + (p-1)) &
                 (gx < gy) &
                 (
                     ((fx == fy + 1) & (fy == gy + 1)) |
-                    ((fx == fy + 2) & (fy + 1 == gy))
+                    ((fx == gy + 1) & (fy + 1 == gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(±, gx, gx))
@@ -21896,11 +21916,11 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5IMOP1-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ex == gy + (p-1)) &
+                (ey == ex) & (ey == gy + (p-1)) &
                 (gy < gx) &
                 (
                     ((fy == fx + 1) & (fx == gx + 1)) |
-                    ((fy == fx + 2) & (fx + 1 == gx))
+                    ((fy == gx + 1) & (fx + 1 == gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(±, gy, gy))
@@ -21933,17 +21953,17 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (ex == gx + (p-1)) & (ex == ey) & (fx == fy + 1) & (fx == gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ey+1, fx+1, gx+2:fx), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ey+1, fx+1, gx+2:fx-1), SELBTZRange(~sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ey+1, fx, fx+1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gx+2:fx), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, gx+2:fx-1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5INPQ1-Y",
                 same_sign & lby & lbx &
                 (ey == gy + (p-1)) & (ey == ex) & (fy == fx + 1) & (fy == gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ex+1, fy+1, gy+2:fy), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ex+1, fy+1, gy+2:fy-1), SELBTZRange(~sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ex+1, fy, fy+1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gy+2:fy), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, gy+2:fy-1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(~sx, gy, gy))
             end
 
             ########################################### FAMILY 5 - CODIMENSION 5
@@ -21957,14 +21977,14 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-(p-1), ex-(p-1)))
-                for gs = ex-(p-3):ex-5
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:ex-3, gs), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                for gs = ex-(p-3):fy-2
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), SELBTZRange(±, ex-(p-1), ex-(p-1)))
                 end
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ex-4, ex-4), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ex-3, ex-3), SELBTZRange(±, ex-(p-1), ex-(p-1)))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ex-3, ex-4), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy-1, fy-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, fy-1), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ex-p, ex-(p-1)), pos_zero)
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-(p-2):ex-5, ex-(p-1)), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ex-(p-2):fy-2, ex-(p-1)), pos_zero)
             end
             checker("SELBTZ-TwoSum-5CGJ-Y",
                 same_sign & !lby & !lbx &
@@ -21975,14 +21995,14 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-(p-1), ey-(p-1)))
-                for gs = ey-(p-3):ey-5
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:ey-3, gs), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                for gs = ey-(p-3):fx-2
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), SELBTZRange(±, ey-(p-1), ey-(p-1)))
                 end
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ey-4, ey-4), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ey-3, ey-3), SELBTZRange(±, ey-(p-1), ey-(p-1)))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ey-3, ey-4), SELBTZRange(~sx, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx-1, fx-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, fx), SELBTZRange(±, ey-(p-1), ey-(p-1)))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, fx-1), SELBTZRange(~sx, ey-(p-1), ey-(p-1)))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ey-p, ey-(p-1)), pos_zero)
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-(p-2):ey-5, ey-(p-1)), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ey-(p-2):fx-2, ey-(p-1)), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-5ABCGJ0-X",
@@ -21990,18 +22010,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 2) & (fx + 1 == ey) & (fx == gx + 1) & (gx == fy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5ABCGJ0-Y",
                 (same_sign != lby) & !lbx &
                 (ey == ex + 2) & (fy + 1 == ex) & (fy == gy + 1) & (gy == fx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ex, fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5ABCGJ1-X",
@@ -22031,23 +22051,25 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & !lby &
                 (ex == gy + (p-1)) & (ex == fx + 2) & (fx + 1 == ey) & (fx == fy + 2) & (gx == fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy, gy))
-                for gs = gy+2:gx-1
-                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:gx-1, gs), SELBTZRange(±, gy, gy))
-                end
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx, gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx, gy), pos_zero)
+                add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, gy, gy))
+                for gs = gy+2:fy
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy-1, gs), SELBTZRange(sy, gy, gy))
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs, gs), SELBTZRange(~sy, gy, gy))
+                    add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs+1:fy-1, gs), SELBTZRange(~sy, gy, gy))
+                end
             end
             checker("SELBTZ-TwoSum-5ABCJO-Y",
                 same_sign & !lby & !lbx &
                 (ey == gx + (p-1)) & (ey == fy + 2) & (fy + 1 == ex) & (fy == fx + 2) & (gy == fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx, gx))
-                for gs = gx+2:gy-1
-                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:gy-1, gs), SELBTZRange(±, gx, gx))
-                end
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, gy, gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, gy, gx), pos_zero)
+                add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, gx, gx))
+                for gs = gx+2:fx
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx-1, gs), SELBTZRange(sx, gx, gx))
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs, gs), SELBTZRange(~sx, gx, gx))
+                    add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs+1:fx-1, gs), SELBTZRange(~sx, gx, gx))
+                end
             end
 
             checker("SELBTZ-TwoSum-5ACGHJ-X",
@@ -22096,14 +22118,16 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5AHLNS-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ex == gy + (p-1)) & (fx == gy + 3) & (gx == gy + 1) & (fy == gy + 2)
+                (ex == ey) & (ey == gy + (p-1)) & (fx == fy + 1) & (gx + 1 == fy) &
+                (fx == gy + 3)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, fx+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx+1, fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AHLNS-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ey == gx + (p-1)) & (fy == gx + 3) & (gy == gx + 1) & (fx == gx + 2)
+                (ey == ex) & (ex == gx + (p-1)) & (fy == fx + 1) & (gy + 1 == fx) &
+                (fy == gx + 3)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy, fy+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fy+1, fx), SELBTZRange(±, gx, gx))
@@ -22132,7 +22156,7 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fy, gs), SELBTZRange(±, gy, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy, gy))
-                for fs = gy+1:fx-3
+                for fs = gy+1:gx
                     add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), SELBTZRange(±, gy, gy))
                 end
                 for gs = gy+2:gx-1
@@ -22148,7 +22172,7 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fx, gs), SELBTZRange(±, gx, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx, gx))
-                for fs = gx+1:fy-3
+                for fs = gx+1:gy
                     add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), SELBTZRange(±, gx, gx))
                 end
                 for gs = gx+2:gy-1
@@ -22159,14 +22183,16 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5CEGHI-X",
                 diff_sign & lbx & !lby &
-                (ex == gy + p) & (fx == gy + 3) & (gx == gy + 1) & (ey == gy + 4) & (fy == gy + 2)
+                (fx + 1 == ey) & (fx == fy + 1) & (gx + 1 == fy) &
+                (fy == gy + 2) & (ex == gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5CEGHI-Y",
                 diff_sign & lby & !lbx &
-                (ey == gx + p) & (fy == gx + 3) & (gy == gx + 1) & (ex == gx + 4) & (fx == gx + 2)
+                (fy + 1 == ex) & (fy == fx + 1) & (gy + 1 == fx) &
+                (fx == gx + 2) & (ey == gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, fx), SELBTZRange(±, gx, gx))
@@ -22320,22 +22346,22 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6d-X",
                 diff_sign & !lbx &
-                (fx + 1 > gx) &
+                (gx < fy) &
                 (ex > gy + (p+1)) &
                 (
                     (!lby & (fx < fy)) |
-                    (lby & (fx == fy) & (fx > gx))
+                    (lby & (fx == fy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:fy), SELBTZRange(±, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-6d-Y",
                 diff_sign & !lby &
-                (fy + 1 > gy) &
+                (gy < fx) &
                 (ey > gx + (p+1)) &
                 (
                     (!lbx & (fy < fx)) |
-                    (lbx & (fy == fx) & (fy > gy))
+                    (lbx & (fy == fx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:fx), SELBTZRange(±, gx:ey-(p+2), gx))
@@ -22360,7 +22386,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6f-X",
                 diff_sign & !lbx & lby &
-                (fx < fy) & (fx + 1 > gx) &
+                (fx < fy) & (gx < fy) &
                 (ex > gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:fy-1), SELBTZRange(±, gy:ex-(p+2), gy))
@@ -22368,7 +22394,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6f-Y",
                 diff_sign & !lby & lbx &
-                (fy < fx) & (fy + 1 > gy) &
+                (fy < fx) & (gy < fx) &
                 (ey > gx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:fx-1), SELBTZRange(±, gx:ey-(p+2), gx))
@@ -22399,22 +22425,26 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6A1-X",
                 same_sign & lbx & !lby &
                 (fx == fy) &
-                (fx > gx) &
                 (ex > gy + (p-1)) &
-                ((ex == gx + (p-1)) | (fx > gx + 1))
+                (
+                    ((fx == gx + 1) & (ex == gx + (p-1))) |
+                    (fx > gx + 1)
+                )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(±, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fy-1), SELBTZRange(±, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fx-1), SELBTZRange(±, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-6A1-Y",
                 same_sign & lby & !lbx &
                 (fy == fx) &
-                (fy > gy) &
                 (ey > gx + (p-1)) &
-                ((ey == gy + (p-1)) | (fy > gy + 1))
+                (
+                    ((fy == gy + 1) & (ey == gy + (p-1))) |
+                    (fy > gy + 1)
+                )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(±, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):fx-1), SELBTZRange(±, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):fy-1), SELBTZRange(±, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-6A2-X",
@@ -22517,10 +22547,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6D0-X",
                 diff_sign & !lbx &
                 (ex == gy + (p+1)) &
-                (ex > ey + 2) & (fx + 1 > gx) &
+                (ex > ey + 2) & (gx < fy) &
                 (
                     (!lby & (fx < fy)) |
-                    (lby & (fx == fy) & (fx > gx))
+                    (lby & (fx == fy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy), SELBTZRange(±, gy, gy))
@@ -22528,10 +22558,10 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6D0-Y",
                 diff_sign & !lby &
                 (ey == gx + (p+1)) &
-                (ey > ex + 2) & (fy + 1 > gy) &
+                (ey > ex + 2) & (gy < fx) &
                 (
                     (!lbx & (fy < fx)) |
-                    (lbx & (fy == fx) & (fy > gy))
+                    (lbx & (fy == fx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx), SELBTZRange(±, gx, gx))
@@ -22540,7 +22570,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6D1-X",
                 diff_sign & !lbx & lby &
                 (ex == gy + (p+1)) &
-                (ex > ey + 2) & (fx < fy) & (fx + 1 > gx)
+                (ex > ey + 2) & (fx < fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1), SELBTZRange(±, gy, gy))
@@ -22548,7 +22578,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6D1-Y",
                 diff_sign & !lby & lbx &
                 (ey == gx + (p+1)) &
-                (ey > ex + 2) & (fy < fx) & (fy + 1 > gy)
+                (ey > ex + 2) & (fy < fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx+1), SELBTZRange(±, gx, gx))
@@ -22556,28 +22586,28 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6Z0-X",
                 same_sign & lbx &
-                (ex > ey) & (gx < fy) &
+                (ex > ey) &
                 (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
                 ) &
                 (
-                    ((ex == gx + (p-1)) & (fx > gy) & (gx < gy)) |
-                    ((ex == gy + (p-1)) & (gx > gy))
+                    ((ex == gx + (p-1)) & (gx < gy) & (gy < fx)) |
+                    ((ex == gy + (p-1)) & (gx < fy) & (gx > gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-3):fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-6Z0-Y",
                 same_sign & lby &
-                (ey > ex) & (gy < fx) &
+                (ey > ex) &
                 (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
                 ) &
                 (
-                    ((ey == gy + (p-1)) & (fy > gx) & (gy < gx)) |
-                    ((ey == gx + (p-1)) & (gy > gx))
+                    ((ey == gy + (p-1)) & (gy < gx) & (gx < fy)) |
+                    ((ey == gx + (p-1)) & (gy < fx) & (gy > gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-3):fx), SELBTZRange(±, ey-(p-1), ey-(p-1)))
@@ -22611,10 +22641,16 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6A4-X",
                 same_sign & lbx & !lby &
                 (fx == fy) &
-                (ex > ey) & (fy > gy) &
+                (ex > ey) &
                 (
-                    ((ex == gx + (p-1)) & (gx < gy) & ((gx + 1 == gy) | (fy > gy + 1))) |
-                    ((ex == gy + (p-1)) & (gy < gx) & ((gx == gy + 1) | (fx > gx + 1)))
+                    ((ex == gx + (p-1)) & (
+                        ((fy == gy + 1) & (gx + 1 == gy)) |
+                        ((fy > gy + 1) & (gx < gy))
+                    )) |
+                    ((ex == gy + (p-1)) & (
+                        ((fx == gx + 1) & (gx == gy + 1)) |
+                        ((fx > gx + 1) & (gx > gy))
+                    ))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(±, ex-(p-1), ex-(p-1)))
@@ -22623,10 +22659,16 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6A4-Y",
                 same_sign & lby & !lbx &
                 (fy == fx) &
-                (ey > ex) & (fx > gx) &
+                (ey > ex) &
                 (
-                    ((ey == gy + (p-1)) & (gy < gx) & ((gy + 1 == gx) | (fx > gx + 1))) |
-                    ((ey == gx + (p-1)) & (gx < gy) & ((gy == gx + 1) | (fy > gy + 1)))
+                    ((ey == gy + (p-1)) & (
+                        ((fx == gx + 1) & (gy + 1 == gx)) |
+                        ((fx > gx + 1) & (gy < gx))
+                    )) |
+                    ((ey == gx + (p-1)) & (
+                        ((fy == gy + 1) & (gy == gx + 1)) |
+                        ((fy > gy + 1) & (gy > gx))
+                    ))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(±, ey-(p-1), ey-(p-1)))
@@ -22671,9 +22713,9 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1:fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6F1-Y",
                 diff_sign & lby &
@@ -22684,9 +22726,9 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1:fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(~sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-6H-X",
@@ -22694,8 +22736,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) &
                 (fx + 1 < fy) & (fx > gx) & (fx > gy) &
                 (
-                    ((ex == gy + (p-1)) & (gx > gy)) |
-                    ((gx + (p-1) == ey) & (gx < gy))
+                    ((ex == gx + (p-1)) & (gx < gy)) |
+                    ((ey == gy + (p-1)) & (gy < gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, ex-(p-3):fy-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
@@ -22707,8 +22749,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex) &
                 (fy + 1 < fx) & (fy > gy) & (fy > gx) &
                 (
-                    ((ey == gx + (p-1)) & (gy > gx)) |
-                    ((gy + (p-1) == ex) & (gy < gx))
+                    ((ey == gy + (p-1)) & (gy < gx)) |
+                    ((ex == gx + (p-1)) & (gx < gy))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, ey-(p-3):fx-1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
@@ -22721,16 +22763,16 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p+1)) & (fx == fy) &
                 (ex > ey + 2) & (fx > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AD-Y",
                 diff_sign & !lby & !lbx &
                 (ey == gx + (p+1)) & (fy == fx) &
                 (ey > ex + 2) & (fy > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6AF0-X",
@@ -22739,9 +22781,9 @@ function check_selbtz_two_sum_lemmas(
                 (ex > gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, ex-(p-1):fy-2), SELBTZRange(±, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, fy-1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, ex-(p-1):fx-2), SELBTZRange(±, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, fx-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey, fx-1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6AF0-Y",
                 same_sign & !lby & lbx &
@@ -22749,9 +22791,9 @@ function check_selbtz_two_sum_lemmas(
                 (ey > gx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex:ex+1, ey-(p-1):fx-2), SELBTZRange(±, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, fx-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, fx-1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex:ex+1, ey-(p-1):fy-2), SELBTZRange(±, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, fy-1), SELBTZRange(~sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex, fy-1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-6AF1-X",
@@ -22759,20 +22801,20 @@ function check_selbtz_two_sum_lemmas(
                 (fx == fy) & (fx == gx + 1) &
                 (ex < gx + (p-1)) & (ex > gy + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fx-2), SELBTZRange(±, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fx-1), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx-1), SELBTZRange(~sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(±, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fx-2), SELBTZRange(±, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx-1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fx-1), SELBTZRange(sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-6AF1-Y",
                 same_sign & lby & !lbx &
                 (fy == fx) & (fy == gy + 1) &
                 (ey < gy + (p-1)) & (ey > gx + (p-1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):fy-2), SELBTZRange(±, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, fy-1), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy-1), SELBTZRange(~sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(±, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1:ex, ey-(p-2):fy-2), SELBTZRange(±, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy-1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex-1, fy-1), SELBTZRange(sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-6AF2-X",
@@ -22780,20 +22822,20 @@ function check_selbtz_two_sum_lemmas(
                 (fx == fy) & (fx == gx + 1) &
                 (ex > gy + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, ex-p:fy-2), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(±, gy:ex-(p+2), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy-1), SELBTZRange(sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, ex-p:fx-2), SELBTZRange(±, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx-1), SELBTZRange(~sy, gy:ex-(p+2), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fx-1), SELBTZRange(sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-6AF2-Y",
                 diff_sign & !lby & !lbx &
                 (fy == fx) & (fy == gy + 1) &
                 (ey > gx + (p+1))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, ey-p:fx-2), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(±, gx:ey-(p+2), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fx-1), SELBTZRange(sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, ey-p:fy-2), SELBTZRange(±, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fy-1), SELBTZRange(~sx, gx:ey-(p+2), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, fy-1), SELBTZRange(sx, gx:ey-(p+2), gx))
             end
 
             checker("SELBTZ-TwoSum-6AF3-X",
@@ -22840,37 +22882,34 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & lby &
                 (fx == fy) &
                 (ex > ey + 2) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
                 (
-                    ((fx == gx + 1) & (gx == gy + 1)) |
-                    (fx > gx + 1)
+                    ((fx == gx + 1) & (gx == gy + 1) & (ex == gy + p)) |
+                    ((fx > gx + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AK0-Y",
                 same_sign & !lby & lbx &
                 (fy == fx) &
                 (ey > ex + 2) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
                 (
-                    ((fy == gy + 1) & (gy == gx + 1)) |
-                    (fy > gy + 1)
+                    ((fy == gy + 1) & (gy == gx + 1) & (ey == gx + p)) |
+                    ((fy > gy + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex+1, ex+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex:ex+1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ex:ex+1, gx+2:fy-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6AK1-X",
                 diff_sign & lbx & lby &
                 (fx == fy) &
                 (ex > ey + 2) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
                 (
-                    (gx == gy + 1) |
-                    (fx > gx + 1)
+                    ((fx == gx + 1) & (gx == gy + 1) & (ex == gy + p)) |
+                    ((fx > gx + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
@@ -22880,10 +22919,9 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lby & lbx &
                 (fy == fx) &
                 (ey > ex + 2) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
                 (
-                    (gy == gx + 1) |
-                    (fy > gy + 1)
+                    ((fy == gy + 1) & (gy == gx + 1) & (ey == gx + p)) |
+                    ((fy > gy + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
@@ -22911,7 +22949,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & lby &
                 (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 < fy) &
-                ((gx == gy + 1) | (fx > gx))
+                (((fx == gx) & (gx == gy + 1)) | (fx > gx))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, gy+2:fx), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(±, gy, gy))
@@ -22921,7 +22959,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 < fx) &
-                ((gy == gx + 1) | (fy > gy))
+                (((fy == gy) & (gy == gx + 1)) | (fy > gy))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, gx+2:fy), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(±, gx, gx))
@@ -22931,7 +22969,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CH0-X",
                 same_sign & !lbx & !lby &
                 (ex == ey) & (ex == gx + (p-1)) &
-                (fx + 1 < gy) & (fx > gx) & (fy + 1 > gy)
+                (fx + 1 < gy) & (fx > gx) & (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, gx+2:fx), SELBTZRange(sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy, gx+2:fx-1), SELBTZRange(~sy, gx, gx))
@@ -22940,7 +22978,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CH0-Y",
                 same_sign & !lby & !lbx &
                 (ey == ex) & (ey == gy + (p-1)) &
-                (fy + 1 < gx) & (fy > gy) & (fx + 1 > gx)
+                (fy + 1 < gx) & (fy > gy) & (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, gy+2:fy), SELBTZRange(sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx, gy+2:fy-1), SELBTZRange(~sx, gy, gy))
@@ -22950,7 +22988,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CH1-X",
                 same_sign & lbx & !lby &
                 (ex == ey) & (ex == gx + (p-1)) &
-                (fx + 1 < gy) & (fx > gx) & (fy + 1 > gy)
+                (fx + 1 < gy) & (fx > gx) & (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx), SELBTZRange(~sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx-1), SELBTZRange(sy, gx, gx))
@@ -22959,7 +22997,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CH1-Y",
                 same_sign & lby & !lbx &
                 (ey == ex) & (ey == gy + (p-1)) &
-                (fy + 1 < gx) & (fy > gy) & (fx + 1 > gx)
+                (fy + 1 < gx) & (fy > gy) & (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy), SELBTZRange(~sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy-1), SELBTZRange(sx, gy, gy))
@@ -22976,8 +23014,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fy), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:gy-2), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:gy-1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx-1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6CJ0-Y",
                 same_sign & lby & !lbx &
@@ -22989,29 +23027,27 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:fx), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:gx-2), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:gx-1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy-1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy), SELBTZRange(~sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-6CJ1-X",
                 same_sign & lbx & !lby &
                 (ex == gx + (p-1)) & (fx == gy) &
-                (ex > ey) &
-                (fx < fy) & (gx < gy)
+                (ex > ey) & (fx > gx) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1:fy), SELBTZRange(~sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:gy), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:gy-1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fy), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx-1), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6CJ1-Y",
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) & (fy == gx) &
-                (ey > ex) &
-                (fy < fx) & (gy < gx)
+                (ey > ex) & (fy > gy) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1:fx), SELBTZRange(~sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:gx), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:gx-1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:fx), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy-1), SELBTZRange(~sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-6CJ2-X",
@@ -23048,7 +23084,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gx + (p-1)) & (fx == gy) &
                 (ex > ey) & (fx > gx) & (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1:fy-1), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fy-1), SELBTZRange(~sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), SELBTZRange(~sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx), SELBTZRange(sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+2:fx-1), SELBTZRange(~sy, gx, gx))
@@ -23058,7 +23094,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == gy + (p-1)) & (fy == gx) &
                 (ey > ex) & (fy > gy) & (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fy+1:fx-1), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+1:fx-1), SELBTZRange(~sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1), SELBTZRange(~sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy), SELBTZRange(sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+2:fy-1), SELBTZRange(~sx, gy, gy))
@@ -23082,14 +23118,14 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6DE0-X",
                 diff_sign & !lbx & !lby &
                 (ex == ey + 2) & (ex == gy + (p+1)) &
-                (fx < fy) & (fx + 1 > gx)
+                (fx < fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, ex-3, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DE0-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) &
-                (fy < fx) & (fy + 1 > gy)
+                (fy < fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, ey-3, gx+2:fx), SELBTZRange(±, gx, gx))
             end
@@ -23114,7 +23150,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6EM-X",
-                (same_sign != lby) & lbx &
+                lbx &
                 (ey == gy + (p-1)) &
                 (fx + 1 < fy) & (fx > gx) & (gx > gy) &
                 (
@@ -23126,7 +23162,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fy, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6EM-Y",
-                (same_sign != lbx) & lby &
+                lby &
                 (ex == gx + (p-1)) &
                 (fy + 1 < fx) & (fy > gy) & (gy > gx) &
                 (
@@ -23140,21 +23176,21 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6GI0-X",
                 same_sign & lbx & !lby &
-                (fx + 1 == fy) & (gx == fy) &
+                (fx + 1 == fy) & (fy == gx) &
                 (ex > gy + (p-1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy-1), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):gx-1), SELBTZRange(sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):gx), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-6GI0-Y",
                 same_sign & lby & !lbx &
-                (fy + 1 == fx) & (gy == fx) &
+                (fy + 1 == fx) & (fx == gy) &
                 (ey > gx + (p-1))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx-1), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):gy-1), SELBTZRange(sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):gy), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-6GI1-X",
@@ -23165,7 +23201,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy), SELBTZRange(sy, gy:ex-p, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-2):fy-1), SELBTZRange(~sy, gy:ex-p, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1), SELBTZRange(~sy, gy:ex-p, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-6GI1-Y",
                 same_sign & lby & lbx &
@@ -23175,7 +23211,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx), SELBTZRange(sx, gx:ey-p, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ey-(p-2):fx-1), SELBTZRange(~sx, gx:ey-p, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1), SELBTZRange(~sx, gx:ey-p, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1), SELBTZRange(~sx, gx:ey-p, gx))
             end
 
             checker("SELBTZ-TwoSum-6GI2-X",
@@ -23186,7 +23222,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6GI2-Y",
                 diff_sign & lby & !lbx &
@@ -23196,7 +23232,7 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ey-(p-1):fx-1), SELBTZRange(±, gx:ey-(p+1), gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1), SELBTZRange(sx, gx:ey-(p+1), gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fx+1), SELBTZRange(sx, gx:ey-(p+1), gx))
             end
 
             checker("SELBTZ-TwoSum-6JN-X",
@@ -23256,8 +23292,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey) & (fx == fy) &
                 (fx > gy) & (gx < fy) &
                 (
-                    ((ex == gy + (p-1)) & (gy < gx)) |
-                    ((ey == gx + (p-1)) & (gx < gy))
+                    ((ex == gx + (p-1)) & (gx < gy)) |
+                    ((ey == gy + (p-1)) & (gy < gx))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex+1, fx+1, ex-(p-3):fx), SELBTZRange(±, ex-(p-1), ex-(p-1)))
@@ -23328,14 +23364,14 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 2) & (ex == gy + (p+1)) & (fx == fy) &
                 (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gy+2:fy), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6ADE-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) & (fy == fx) &
                 (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gx+2:fx), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gx+2:fy), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6ADF-X",
@@ -23343,20 +23379,20 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gy + (p+1)) & (fx == fy) &
                 (ex > ey + 2) & (fx == gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1:ey, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6ADF-Y",
                 diff_sign & !lby & !lbx &
                 (ey == gx + (p+1)) & (fy == fx) &
                 (ey > ex + 2) & (fy == gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gy), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1:ex, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gy), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6ADI-X",
@@ -23365,8 +23401,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex > ey + 2) & (fx == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6ADI-Y",
                 diff_sign & !lby & !lbx &
@@ -23374,33 +23410,35 @@ function check_selbtz_two_sum_lemmas(
                 (ey > ex + 2) & (fy == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, ex), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, fx), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6AEK-X",
                 (fx == fy) & (ey == gy + (p-1)) &
-                (fx > gx) & (gx > gy) &
-                ((fx > gx + 1) | (same_sign & (gx == gy + 1))) &
                 (
-                    (diff_sign & !lbx & !lby & (ex == ey + 2)) |
-                    (same_sign & (lbx != lby) & (ex == ey))
+                    (diff_sign & !lbx & !lby & (ex == ey + 2) & (fx > gx + 1)) |
+                    (same_sign & (lbx != lby) & (ex == ey) & (
+                        ((fx == gx + 1) & (gx == gy + 1)) |
+                        ((fx > gx + 1) & (gx > gy))
+                    ))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ey+1, ey-1, ey), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, ±, ey+1, ey-1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, ±, ey+1, ey-1, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AEK-Y",
                 (fy == fx) & (ex == gx + (p-1)) &
-                (fy > gy) & (gy > gx) &
-                ((fy > gy + 1) | (same_sign & (gy == gx + 1))) &
                 (
-                    (diff_sign & !lby & !lbx & (ey == ex + 2)) |
-                    (same_sign & (lby != lbx) & (ey == ex))
+                    (diff_sign & !lby & !lbx & (ey == ex + 2) & (fy > gy + 1)) |
+                    (same_sign & (lby != lbx) & (ey == ex) & (
+                        ((fy == gy + 1) & (gy == gx + 1)) |
+                        ((fy > gy + 1) & (gy > gx))
+                    ))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ex+1, ex-1, ex), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, ±, ex+1, ex-1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, ±, ex+1, ex-1, gx+2:fy-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6AFK0-X",
@@ -23433,9 +23471,9 @@ function check_selbtz_two_sum_lemmas(
                 ((ex == gy + p) | (ex == gy + (p+1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:fx-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, fx-1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fx-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey+1, gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AFK1-Y",
                 diff_sign & lby & lbx &
@@ -23444,17 +23482,16 @@ function check_selbtz_two_sum_lemmas(
                 ((ey == gx + p) | (ey == gx + (p+1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gx+2:fy-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, fy-1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fy-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex:ex+1, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex+1, gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6AKM-X",
                 (same_sign != lbx) & lby &
                 (ex == ey + 2) & (fx == fy) &
-                (fx > gx) &
                 (
-                    ((ex == gy + p) & (gx == gy + 1)) |
+                    ((fx == gx + 1) & (gx == gy + 1) & (ex == gy + p)) |
                     ((fx > gx + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
             ) do lemma
@@ -23464,9 +23501,8 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6AKM-Y",
                 (same_sign != lby) & lbx &
                 (ey == ex + 2) & (fy == fx) &
-                (fy > gy) &
                 (
-                    ((ey == gx + p) & (gy == gx + 1)) |
+                    ((fy == gy + 1) & (gy == gx + 1) & (ey == gx + p)) |
                     ((fy > gy + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
             ) do lemma
@@ -23532,22 +23568,22 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & lby &
                 (ex == ey + 1) & (ex == gy + p) & (fx == gx) &
                 (fx + 1 < fy) &
-                (fx > gy + 1)
+                (gx > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEL0-Y",
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (ey == gx + p) & (fy == gy) &
                 (fy + 1 < fx) &
-                (fy > gx + 1)
+                (gy > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, gx+2:fy-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx, gx+2:fx-1), SELBTZRange(±, gx, gx))
             end
 
@@ -23556,7 +23592,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (ex == gy + p) & (fx + 1 == gx) &
                 (gx + 1 < fy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy-1, gy+2:fx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy-1, gy+2:gx-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy-1, gy+2:gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:fy), SELBTZRange(±, gy, gy))
             end
@@ -23565,7 +23601,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 1) & (ey == gx + p) & (fy + 1 == gy) &
                 (gy + 1 < fx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx-1, gx+2:fy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx-1, gx+2:gy-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx-1, gx+2:gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:fx), SELBTZRange(±, gx, gx))
             end
@@ -23619,9 +23655,9 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 for gs = gy+2:fx-1
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs:fx-1, gs), SELBTZRange(±, gy, gy))
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy-1, gs), SELBTZRange(±, gy, gy))
                 end
                 for gs = gy+2:fy-1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:fy-1, gs), SELBTZRange(±, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(±, gy, gy))
                 end
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy, gy))
@@ -23637,9 +23673,9 @@ function check_selbtz_two_sum_lemmas(
             ) do lemma
                 for gs = gx+2:fy-1
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs:fy-1, gs), SELBTZRange(±, gx, gx))
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx-1, gs), SELBTZRange(±, gx, gx))
                 end
                 for gs = gx+2:fx-1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:fx-1, gs), SELBTZRange(±, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(±, gx, gx))
                 end
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx, gx))
@@ -23650,7 +23686,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 1) & (ex == gy + p) &
                 (gx + 2 < fy) &
                 (
-                    (!lby & (ex == fy + 3) & (fx + 1 == ey)) |
+                    (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
             ) do lemma
@@ -23666,7 +23702,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 1) & (ey == gx + p) &
                 (gy + 2 < fx) &
                 (
-                    (!lbx & (ey == fx + 3) & (fy + 1 == ex)) |
+                    (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
             ) do lemma
@@ -23681,20 +23717,20 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6BGI-X",
                 diff_sign & lbx & !lby &
                 (ex == gy + p) & (fx + 1 == fy) &
-                (gx == fy) & (ex > ey + 1)
+                (fy == gx) & (ex > ey + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gx+1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BGI-Y",
                 diff_sign & lby & !lbx &
                 (ey == gx + p) & (fy + 1 == fx) &
-                (gy == fx) & (ey > ex + 1)
+                (fx == gy) & (ey > ex + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gy+1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, fx+1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6CHJ0-X",
@@ -23765,9 +23801,9 @@ function check_selbtz_two_sum_lemmas(
                     ((fx + 1 == gy) & (fx > gx))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gy+1:fy), SELBTZRange(sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx), SELBTZRange(~sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx-1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gy+1:fy), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6CHJ3-Y",
                 same_sign & lby & !lbx &
@@ -23778,16 +23814,16 @@ function check_selbtz_two_sum_lemmas(
                     ((fy + 1 == gx) & (fy > gy))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gx+1:fx), SELBTZRange(sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy), SELBTZRange(~sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy-1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gx+1:fx), SELBTZRange(sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-6CHL0-X",
                 same_sign & !lbx & !lby &
                 (ex == ey) & (ex == gx + (p-1)) & (fx == gx) &
                 (gx + 1 < gy) &
-                (fy + 1 > gy)
+                (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fy, gy), SELBTZRange(sy, gx, gx))
             end
@@ -23795,7 +23831,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby & !lbx &
                 (ey == ex) & (ey == gy + (p-1)) & (fy == gy) &
                 (gy + 1 < gx) &
-                (fx + 1 > gx)
+                (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, fx, gx), SELBTZRange(sx, gy, gy))
             end
@@ -23817,23 +23853,23 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6CHQ-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ey == gx + (p-1)) & (fy + 1 == gy) &
-                (fx < fy) &
+                (ex == ey) & (ex == gx + (p-1)) & (fy + 1 == gy) &
+                (fx + 1 < gy) &
                 (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ey+1, gy, gx+2:fx), SELBTZRange(~sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ey+1, gy, gx+2:fx-1), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ey+1, gy, fx+1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, gy, gx+2:fx), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, gy, gx+2:fx-1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, gy, fx+1), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6CHQ-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ex == gy + (p-1)) & (fx + 1 == gx) &
-                (fy < fx) &
+                (ey == ex) & (ey == gy + (p-1)) & (fx + 1 == gx) &
+                (fy + 1 < gx) &
                 (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ex+1, gx, gy+2:fy), SELBTZRange(~sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ex+1, gx, gy+2:fy-1), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ex+1, gx, fy+1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, gx, gy+2:fy), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, gx, gy+2:fy-1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, gx, fy+1), SELBTZRange(sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-6CJQ0-X",
@@ -23922,8 +23958,8 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + 2) & (ex == gy + (p+1)) & (fx + 1 == fy) &
                 (fx > gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fy-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, gy+2:fx), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DEG-Y",
@@ -23931,8 +23967,8 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + 2) & (ey == gx + (p+1)) & (fy + 1 == fx) &
                 (fy > gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:fx-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:fy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, gx+2:fy), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, fx+1), SELBTZRange(±, gx, gx))
             end
 
@@ -23959,59 +23995,59 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6EGH-X",
                 same_sign & lbx & lby &
-                (ex == ey) & (ex == gy + (p-1)) & (fx + 1 == fy) &
+                (ex == ey) & (ey == gy + (p-1)) & (fx + 1 == fy) &
                 (fx > gx + 1) & (gx > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, gy+2:fy-2), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy, fy+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy+1, gy+2:fy-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy+1, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6EGH-Y",
                 same_sign & lby & lbx &
-                (ey == ex) & (ey == gx + (p-1)) & (fy + 1 == fx) &
+                (ey == ex) & (ex == gx + (p-1)) & (fy + 1 == fx) &
                 (fy > gy + 1) & (gy > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, gx+2:fx-2), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, gx+2:fy-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx, fx+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx+1, gx+2:fx-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, fx+1, gx+2:fy), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6GIK0-X",
                 same_sign & lbx & !lby &
-                (ex == gy + (p-1)) & (fx + 1 == fy) & (gx == fy) &
+                (ex == gy + (p-1)) & (fx + 1 == fy) & (fy == gx) &
                 (ex > ey) & (gx > gy)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy-1), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:gx), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:gx-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6GIK0-Y",
                 same_sign & lby & !lbx &
-                (ey == gx + (p-1)) & (fy + 1 == fx) & (gy == fx) &
+                (ey == gx + (p-1)) & (fy + 1 == fx) & (fx == gy) &
                 (ey > ex) & (gy > gx)
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx-1), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, ex), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:gy), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:gy-1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6GIK1-X",
                 same_sign & lbx & lby &
-                (ex == gy + (p-1)) & (fx + 1 == fy) & (gx == fy) &
+                (ex == gy + (p-1)) & (fx + 1 == fy) & (fy == gx) &
                 (ex > ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6GIK1-Y",
                 same_sign & lby & lbx &
-                (ey == gx + (p-1)) & (fy + 1 == fx) & (gy == fx) &
+                (ey == gx + (p-1)) & (fy + 1 == fx) & (fx == gy) &
                 (ey > ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, fx+1), SELBTZRange(~sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6IKP-X",
@@ -24026,8 +24062,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fy), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6IKP-Y",
                 (same_sign != lby) & lbx &
@@ -24041,8 +24077,8 @@ function check_selbtz_two_sum_lemmas(
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fx), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fx-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 1, ey, ex, ex+1), SELBTZRange(~sx, gx, gx))
             end
 
             ########################################### FAMILY 6 - CODIMENSION 4
@@ -24051,8 +24087,8 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & (lbx != lby) &
                 (ex == ey) & (fx == fy) &
                 (
-                    ((ex == gy + (p-1)) & ((lbx & !lby & (fx + 1 == gx)) | (!lbx & lby & (fx == gx)))) |
-                    ((ey == gx + (p-1)) & ((lby & !lbx & (fy + 1 == gy)) | (!lby & lbx & (fy == gy))))
+                    ((ey == gy + (p-1)) & ((lbx & !lby & (fx + 1 == gx)) | (!lbx & lby & (fx == gx)))) |
+                    ((ex == gx + (p-1)) & ((lby & !lbx & (fy + 1 == gy)) | (!lby & lbx & (fy == gy))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, ex), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
@@ -24064,8 +24100,8 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & (lbx != lby) &
                 (ex == ey) & (fx == fy) &
                 (
-                    ((ex == gy + (p-1)) & (fx == gx + 1) & (gx > gy + 1)) |
-                    ((ey == gx + (p-1)) & (fy == gy + 1) & (gy > gx + 1))
+                    ((ey == gy + (p-1)) & (fx == gx + 1) & (gx > gy + 1)) |
+                    ((ex == gx + (p-1)) & (fy == gy + 1) & (gy > gx + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, ex), SELBTZRange(±, ex-(p-1), ex-(p-1)))
@@ -24077,10 +24113,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6AR-X",
                 same_sign & !lbx & lby &
                 (ex == ey + 1) & (fx == fy) &
-                (fx + (p-3) > ey) &
                 (
-                    ((ex == gx + (p-1)) & (fx == gy + 1)) |
-                    ((ex == gy + (p-1)) & (fx == gx + 1))
+                    ((ex == gx + (p-1)) & (gx < gy) & (fx == gy + 1)) |
+                    ((ex == gy + (p-1)) & (gx > gy) & (fx == gx + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, ex-(p-1), ex-(p-1)))
@@ -24095,10 +24130,9 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6AR-Y",
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (fy == fx) &
-                (fy + (p-3) > ex) &
                 (
-                    ((ey == gy + (p-1)) & (fy == gx + 1)) |
-                    ((ey == gx + (p-1)) & (fy == gy + 1))
+                    ((ey == gy + (p-1)) & (gy < gx) & (fy == gx + 1)) |
+                    ((ey == gx + (p-1)) & (gy > gx) & (fy == gy + 1))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(sx, ey-(p-1), ey-(p-1)))
@@ -24123,8 +24157,8 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sx, 1, ex, gs+1:gx-1, gs), SELBTZRange(±, gy, gy))
                     add_case!(lemma, SELBTZRange(sx, 0, ex+1, gs+1:gx-1, gs), SELBTZRange(~sy, gy, gy))
                 end
-                for fs = gy+1:gx-2
-                    add_case!(lemma, SELBTZRange(sx, 1, ex, fs, fs+1), SELBTZRange(~sy, gy, gy))
+                for gs = gy+2:gx-1
+                    add_case!(lemma, SELBTZRange(sx, 1, ex, gs-1, gs), SELBTZRange(~sy, gy, gy))
                 end
             end
             checker("SELBTZ-TwoSum-6ABEF0-Y",
@@ -24139,8 +24173,8 @@ function check_selbtz_two_sum_lemmas(
                     add_case!(lemma, SELBTZRange(sy, 1, ey, gs+1:gy-1, gs), SELBTZRange(±, gx, gx))
                     add_case!(lemma, SELBTZRange(sy, 0, ey+1, gs+1:gy-1, gs), SELBTZRange(~sx, gx, gx))
                 end
-                for fs = gx+1:gy-2
-                    add_case!(lemma, SELBTZRange(sy, 1, ey, fs, fs+1), SELBTZRange(~sx, gx, gx))
+                for gs = gx+2:gy-1
+                    add_case!(lemma, SELBTZRange(sy, 1, ey, gs-1, gs), SELBTZRange(~sx, gx, gx))
                 end
             end
 
@@ -24393,7 +24427,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6BEFG1-X",
                 same_sign & !lbx & lby &
                 (ex == ey + 1) & (ex == gy + p) & (fx == gx) & (fx + 1 == fy) &
-                (fx > gy + 1)
+                (gx > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, gy, gy))
@@ -24403,7 +24437,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6BEFG1-Y",
                 same_sign & !lby & lbx &
                 (ey == ex + 1) & (ey == gx + p) & (fy == gy) & (fy + 1 == fx) &
-                (fy > gx + 1)
+                (gy > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fx-1, fx), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, fy), SELBTZRange(~sx, gx, gx))
@@ -24476,32 +24510,31 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6BELO1-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ey == fy + 2) & (ex == gy + p) & (fx + 1 == gx) &
+                (ex == ey + 1) & (ex == fy + 3) & (ex == gy + p) & (fx + 1 == gx) &
                 (gx + 1 < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:fx+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:fx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:gx), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:gx-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BELO1-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ex == fx + 2) & (ey == gx + p) & (fy + 1 == gy) &
+                (ey == ex + 1) & (ey == fx + 3) & (ey == gx + p) & (fy + 1 == gy) &
                 (gy + 1 < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx+1, fx+1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:fy+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:fy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:gy), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, fx, gx+2:gy-1), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6BEOS0-X",
                 same_sign & !lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
-                (fx > gx + 1) & (gx + 1 < fy) &
+                (ex == ey + 1) & (ex == gy + p) & (gx + 4 < ey) &
                 (
-                    ((ex == fx + 3) & (ey == fy + 3)) |
-                    ((ex == fx + 4) & (ey == fy + 2))
+                    ((fx + 3 == ey) & (ey == fy + 2)) |
+                    ((fx + 2 == ey) & (ey == fy + 3))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ex-3, ex-2), SELBTZRange(±, gy, gy))
@@ -24510,11 +24543,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6BEOS0-Y",
                 same_sign & !lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
-                (fy > gy + 1) & (gy + 1 < fx) &
+                (ey == ex + 1) & (ey == gx + p) & (gy + 4 < ex) &
                 (
-                    ((ey == fy + 3) & (ex == fx + 3)) |
-                    ((ey == fy + 4) & (ex == fx + 2))
+                    ((fy + 3 == ex) & (ex == fx + 2)) |
+                    ((fy + 2 == ex) & (ex == fx + 3))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, ey-3, ey-2), SELBTZRange(±, gx, gx))
@@ -24524,11 +24556,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6BEOS1-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
-                (fx > gx + 1) & (gx + 1 < fy) &
+                (ex == ey + 1) & (ex == gy + p) & (gx + 4 < ey) &
                 (
-                    ((ex == fx + 3) & (ey == fy + 3)) |
-                    ((ex == fx + 4) & (ey == fy + 2))
+                    ((fx + 3 == ey) & (ey == fy + 2)) |
+                    ((fx + 2 == ey) & (ey == fy + 3))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3, gy+2:ex-4), SELBTZRange(±, gy, gy))
@@ -24537,11 +24568,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6BEOS1-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
-                (fy > gy + 1) & (gy + 1 < fx) &
+                (ey == ex + 1) & (ey == gx + p) & (gy + 4 < ex) &
                 (
-                    ((ey == fy + 3) & (ex == fx + 3)) |
-                    ((ey == fy + 4) & (ex == fx + 2))
+                    ((fy + 3 == ex) & (ex == fx + 2)) |
+                    ((fy + 2 == ex) & (ex == fx + 3))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3, gx+2:ey-4), SELBTZRange(±, gx, gx))
@@ -24554,18 +24584,18 @@ function check_selbtz_two_sum_lemmas(
                 (ex == gx + (p-1)) & (ex == ey) & (fx + 1 == gy) & (fy == gy) &
                 (fx > gx)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, ex), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx-1), SELBTZRange(sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gx+2:fx-1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, ex), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6CGHQ-Y",
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) & (ey == ex) & (fy + 1 == gx) & (fx == gx) &
                 (fy > gy)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, ey), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy-1), SELBTZRange(sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, gy+2:fy-1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 1, ey+1, ey-1, ey), SELBTZRange(sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-6CHJP-X",
@@ -24574,9 +24604,9 @@ function check_selbtz_two_sum_lemmas(
                 (gx < gy) &
                 ((fx + 1 == fy) | (fx == fy))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1, fy+1), SELBTZRange(sy, gx, gx))
-                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1, gx+2:gy-1), SELBTZRange(sy, gx, gx))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1, gx+2:gy), SELBTZRange(~sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1, gx+2:gy-1), SELBTZRange(sy, gx, gx))
+                add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy+1, fy+1), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6CHJP-Y",
                 same_sign & !lby & !lbx &
@@ -24584,17 +24614,17 @@ function check_selbtz_two_sum_lemmas(
                 (gy < gx) &
                 ((fy + 1 == fx) | (fy == fx))
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1, fx+1), SELBTZRange(sx, gy, gy))
-                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1, gy+2:gx-1), SELBTZRange(sx, gy, gy))
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1, gy+2:gx), SELBTZRange(~sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1, gy+2:gx-1), SELBTZRange(sx, gy, gy))
+                add_case!(lemma, SELBTZRange(sy, 0, ey+1, fx+1, fx+1), SELBTZRange(sx, gy, gy))
             end
 
             checker("SELBTZ-TwoSum-6DEFG-X",
                 diff_sign & !lbx & lby &
                 (ex == ey + 2) & (ex == gy + (p+1)) & (fx + 1 == fy) & (fx == gx + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fx-2), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, fx-1), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gx), SELBTZRange(~sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, gy+2:fx), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), SELBTZRange(±, gy, gy))
             end
@@ -24602,8 +24632,8 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) & (fy + 1 == fx) & (fy == gy + 1)
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:fy-2), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, fy-1), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gy), SELBTZRange(~sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, gx+2:fy), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, fx+1), SELBTZRange(±, gx, gx))
             end
@@ -24611,20 +24641,20 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6DEIP-X",
                 diff_sign & !lbx & lby &
                 (ex == ey + 2) & (ex == gy + (p+1)) & (gx == fy) &
-                (fx + 1 < ey) & ((fx == gx) | (fx == gx + 1))
+                ((fx == gx) | ((fx == gx + 1) & (fx + 1 < ey)))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, gy+2:gx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, gx), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, gy+2:gx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DEIP-Y",
                 diff_sign & !lby & lbx &
                 (ey == ex + 2) & (ey == gx + (p+1)) & (gy == fx) &
-                (fy + 1 < ex) & ((fy == gy) | (fy == gy + 1))
+                ((fy == gy) | ((fy == gy + 1) & (fy + 1 < ex)))
             ) do lemma
+                add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, gx+2:gy-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, gy), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, fy+1), SELBTZRange(~sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ex+1, fy+1, gx+2:gy-1), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6FKLP-X",
@@ -24632,7 +24662,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx > gy) &
                 (
                     (lbx & lby & (ex == gy + (p-1)) & (fx == gx + 3) & (fx == ey) & (gx + 1 == fy)) |
-                    ((lbx != lby) & (fx == gx + 2) & (fx == fy) & ((!lbx & lby & (ex == ey + 1) & (ex == gy + (p-1))) | (lbx & !lby & (ex == gy + (p-2)) & (ex + 1 == ey))))
+                    ((lbx != lby) & (fx == gx + 2) & (fx == fy) & ((!lbx & lby & (ex == ey + 1) & (ex == gy + (p-1))) | (lbx & !lby & (ex + 1 == ey) & (ey == gy + (p-1)))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, gy+(p-1), gy-1, gy), pos_zero)
@@ -24650,7 +24680,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy > gx) &
                 (
                     (lby & lbx & (ey == gx + (p-1)) & (fy == gy + 3) & (fy == ex) & (gy + 1 == fx)) |
-                    ((lby != lbx) & (fy == gy + 2) & (fy == fx) & ((!lby & lbx & (ey == ex + 1) & (ey == gx + (p-1))) | (lby & !lbx & (ey == gx + (p-2)) & (ey + 1 == ex))))
+                    ((lby != lbx) & (fy == gy + 2) & (fy == fx) & ((!lby & lbx & (ey == ex + 1) & (ey == gx + (p-1))) | (lby & !lbx & (ey + 1 == ex) & (ex == gx + (p-1)))))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, gx+(p-1), gx-1, gx), pos_zero)
@@ -24710,7 +24740,7 @@ function check_selbtz_two_sum_lemmas(
                 (gx + 1 == fy) & (ey == gy + (p-1)) &
                 (
                     (!lbx & lby & (ex == ey + 2) & (fx == gx)) |
-                    (lbx & !lby & (ex == ey + 1) & (fx + 1 == gx) & (ey == fy + 2))
+                    (lbx & !lby & (ex == ey + 1) & (fx + 1 == gx) & (ex == fy + 3))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fy+1, fy+1), SELBTZRange(±, gy, gy))
@@ -24723,7 +24753,7 @@ function check_selbtz_two_sum_lemmas(
                 (gy + 1 == fx) & (ex == gx + (p-1)) &
                 (
                     (!lby & lbx & (ey == ex + 2) & (fy == gy)) |
-                    (lby & !lbx & (ey == ex + 1) & (fy + 1 == gy) & (ex == fx + 2))
+                    (lby & !lbx & (ey == ex + 1) & (fy + 1 == gy) & (ey == fx + 3))
                 )
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ex+1, fx+1, fx+1), SELBTZRange(±, gx, gx))
@@ -24843,25 +24873,25 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & lbx & !lby &
                 (ex == ey + 1) & (ex == gy + p) & (gx == fy) &
                 (
-                    ((ex == fy + 3) & (fy == fx + 1)) |
-                    ((ex == fy + 4) & (fx == fy + 1))
+                    ((fx + 3 == ey) & (ey == fy + 2)) |
+                    ((fx + 2 == ey) & (ey == fy + 3))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(sy, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3, fy), SELBTZRange(~sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEIOS-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex + 1) & (ey == gx + p) & (gy == fx) &
                 (
-                    ((ey == fx + 3) & (fx == fy + 1)) |
-                    ((ey == fx + 4) & (fy == fx + 1))
+                    ((fy + 3 == ex) & (ex == fx + 2)) |
+                    ((fy + 2 == ex) & (ex == fx + 3))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), SELBTZRange(sx, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3, gx+2:fx-1), SELBTZRange(±, gx, gx))
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3, fx), SELBTZRange(~sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), SELBTZRange(sx, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6BEOSU-X",
@@ -24872,10 +24902,10 @@ function check_selbtz_two_sum_lemmas(
                     ((fx + 2 == ey) & (ey == fy + 3))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey-1, ey-1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey-1, gy+2:gx-1), SELBTZRange(±, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey-1, gx), SELBTZRange(sy, gy, gy))
-                add_case!(lemma, SELBTZRange(sx, 0, ex, ey-2, gy+2:gx+1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-3, gy+2:ex-4), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gy+2:gx-1), SELBTZRange(±, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, gx), SELBTZRange(sy, gy, gy))
+                add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEOSU-Y",
                 diff_sign & lby & !lbx &
@@ -24885,10 +24915,10 @@ function check_selbtz_two_sum_lemmas(
                     ((fy + 2 == ex) & (ex == fx + 3))
                 )
             ) do lemma
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex-1, ex-1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex-1, gx+2:gy-1), SELBTZRange(±, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex-1, gy), SELBTZRange(sx, gx, gx))
-                add_case!(lemma, SELBTZRange(sy, 0, ey, ex-2, gx+2:gy+1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-3, gx+2:ey-4), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gx+2:gy-1), SELBTZRange(±, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, gy), SELBTZRange(sx, gx, gx))
+                add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-2), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6CHJKQ-X",
