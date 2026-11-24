@@ -96,8 +96,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Lc-X",
                 same_sign & lbx &
                 (ex + 1 > ey) & (gx < gy) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (!lby & (fx + 1 < ey) & ((fx > fy) | ((fx == fy) & (fx == gy)))) |
                     (lby & (fx + 1 == ey) & (fx == gy))
                 )
@@ -107,8 +106,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Lc-Y",
                 same_sign & lby &
                 (ey + 1 > ex) & (gy < gx) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (!lbx & (fy + 1 < ex) & ((fy > fx) | ((fy == fx) & (fy == gx)))) |
                     (lbx & (fy + 1 == ex) & (fy == gx))
                 )
@@ -135,8 +133,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-Le-X",
                 diff_sign & !lbx &
-                (ex > ey + 1) & (gx < gy) &
-                (
+                (ex > ey + 1) & (gx < gy) & (
                     (!lby & (fx + 1 < ey) & ((fx > fy) | ((fx == fy) & (fx == gy)))) |
                     (lby & (fx + 1 == ey) & (fx == gy))
                 )
@@ -145,8 +142,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-Le-Y",
                 diff_sign & !lby &
-                (ey > ex + 1) & (gy < gx) &
-                (
+                (ey > ex + 1) & (gy < gx) & (
                     (!lbx & (fy + 1 < ex) & ((fy > fx) | ((fy == fx) & (fy == gx)))) |
                     (lbx & (fy + 1 == ex) & (fy == gx))
                 )
@@ -172,10 +168,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY L - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-LA0-X",
-                (same_sign != lbx) &
-                (gx == gy) &
-                (ex > ey + 1) &
-                (
+                (same_sign != lbx) & (gx == gy) &
+                (ex > ey + 1) & (
                     (!lby & (fx == fy) & (fx > gx)) |
                     (lby & (fx < fy))
                 )
@@ -183,10 +177,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA0-Y",
-                (same_sign != lby) &
-                (gy == gx) &
-                (ey > ex + 1) &
-                (
+                (same_sign != lby) & (gy == gx) &
+                (ey > ex + 1) & (
                     (!lbx & (fy == fx) & (fy > gy)) |
                     (lbx & (fy < fx))
                 )
@@ -195,8 +187,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA1-X",
-                (same_sign != lbx) &
-                (gx == gy) &
+                (same_sign != lbx) & (gx == gy) &
                 (ex > ey + 2) &
                 (fx > gx) & (fx < ey + 1) & (fx > fy) &
                 (lby | (fx == ey))
@@ -204,8 +195,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA1-Y",
-                (same_sign != lby) &
-                (gy == gx) &
+                (same_sign != lby) & (gy == gx) &
                 (ey > ex + 2) &
                 (fy > gy) & (fy < ex + 1) & (fy > fx) &
                 (lbx | (fy == ex))
@@ -214,11 +204,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA2-X",
-                (same_sign != lbx) & !lby &
-                (gx == gy) &
+                (same_sign != lbx) & !lby & (gx == gy) &
                 (ex > ey + 1) &
-                (fx + 1 < ey) &
-                (
+                (fx + 1 < ey) & (
                     (fx > fy) |
                     (same_sign & !lbx & (fx == fy) & (fx == gx))
                 )
@@ -227,11 +215,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA2-Y",
-                (same_sign != lby) & !lbx &
-                (gy == gx) &
+                (same_sign != lby) & !lbx & (gy == gx) &
                 (ey > ex + 1) &
-                (fy + 1 < ex) &
-                (
+                (fy + 1 < ex) & (
                     (fy > fx) |
                     (same_sign & !lby & (fy == fx) & (fy == gy))
                 )
@@ -241,8 +227,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA3-X",
-                (same_sign != lbx) & !lby &
-                (gx == gy) &
+                (same_sign != lbx) & !lby & (gx == gy) &
                 (ex > ey + 1) &
                 (fx < fy)
             ) do lemma
@@ -250,8 +235,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fy+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA3-Y",
-                (same_sign != lby) & !lbx &
-                (gy == gx) &
+                (same_sign != lby) & !lbx & (gy == gx) &
                 (ey > ex + 1) &
                 (fy < fx)
             ) do lemma
@@ -260,10 +244,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA4-X",
-                same_sign & (lbx != lby) &
-                (gx == gy) &
-                (fx + 1 < ey) & (fx > fy) & (fx > gx) &
-                (
+                same_sign & (lbx != lby) & (gx == gy) &
+                (fx + 1 < ey) & (fx > fy) & (fx > gx) & (
                     (lbx & !lby & (ex > ey)) |
                     (ex == ey)
                 )
@@ -271,10 +253,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lby, ex+1, ey-1, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA4-Y",
-                same_sign & (lby != lbx) &
-                (gy == gx) &
-                (fy + 1 < ex) & (fy > fx) & (fy > gy) &
-                (
+                same_sign & (lby != lbx) & (gy == gx) &
+                (fy + 1 < ex) & (fy > fx) & (fy > gy) & (
                     (lby & !lbx & (ey > ex)) |
                     (ey == ex)
                 )
@@ -283,11 +263,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA5-X",
-                same_sign & lbx &
-                (gx == gy) &
+                same_sign & lbx & (gx == gy) &
                 (ex > ey) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
                 )
@@ -295,11 +273,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA5-Y",
-                same_sign & lby &
-                (gy == gx) &
+                same_sign & lby & (gy == gx) &
                 (ey > ex) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
                 )
@@ -308,10 +284,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA6-X",
-                diff_sign & !lbx &
-                (gx == gy) &
-                (ex > ey + 2) &
-                (
+                diff_sign & !lbx & (gx == gy) &
+                (ex > ey + 2) & (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
                 )
@@ -319,10 +293,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA6-Y",
-                diff_sign & !lby &
-                (gy == gx) &
-                (ey > ex + 2) &
-                (
+                diff_sign & !lby & (gy == gx) &
+                (ey > ex + 2) & (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
                 )
@@ -331,8 +303,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA7-X",
-                same_sign & lbx & lby &
-                (gx == gy) &
+                same_sign & lbx & lby & (gx == gy) &
                 (ex > ey) &
                 (fx + 1 < ey) & (fx > fy)
             ) do lemma
@@ -340,8 +311,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA7-Y",
-                same_sign & lby & lbx &
-                (gy == gx) &
+                same_sign & lby & lbx & (gy == gx) &
                 (ey > ex) &
                 (fy + 1 < ex) & (fy > fx)
             ) do lemma
@@ -350,8 +320,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA8-X",
-                same_sign & lbx & lby &
-                (gx == gy) &
+                same_sign & lbx & lby & (gx == gy) &
                 (ex > ey) &
                 (fx < fy)
             ) do lemma
@@ -359,8 +328,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA8-Y",
-                same_sign & lby & lbx &
-                (gy == gx) &
+                same_sign & lby & lbx & (gy == gx) &
                 (ey > ex) &
                 (fy < fx)
             ) do lemma
@@ -369,16 +337,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA9-X",
-                diff_sign & !lbx & !lby &
-                (gx == gy) &
+                diff_sign & !lbx & !lby & (gx == gy) &
                 (ex > ey + 1) &
                 (fx + 1 < ey) & (fx > fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA9-Y",
-                diff_sign & !lby & !lbx &
-                (gy == gx) &
+                diff_sign & !lby & !lbx & (gy == gx) &
                 (ey > ex + 1) &
                 (fy + 1 < ex) & (fy > fx)
             ) do lemma
@@ -386,8 +352,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA10-X",
-                diff_sign & !lbx & lby &
-                (gx == gy) &
+                diff_sign & !lbx & lby & (gx == gy) &
                 (ex > ey + 2) &
                 (fx + 1 < ey) & (fx > fy)
             ) do lemma
@@ -395,8 +360,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA10-Y",
-                diff_sign & !lby & lbx &
-                (gy == gx) &
+                diff_sign & !lby & lbx & (gy == gx) &
                 (ey > ex + 2) &
                 (fy + 1 < ex) & (fy > fx)
             ) do lemma
@@ -405,8 +369,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LA11-X",
-                diff_sign & !lbx & lby &
-                (gx == gy) &
+                diff_sign & !lbx & lby & (gx == gy) &
                 (ex > ey + 2) &
                 (fx < fy)
             ) do lemma
@@ -414,8 +377,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA11-Y",
-                diff_sign & !lby & lbx &
-                (gy == gx) &
+                diff_sign & !lby & lbx & (gy == gx) &
                 (ey > ex + 2) &
                 (fy < fx)
             ) do lemma
@@ -424,10 +386,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB0-X",
-                (same_sign != lbx) &
-                (ex == ey + 1) &
-                (gx < gy) &
-                (
+                (same_sign != lbx) & (ex == ey + 1) &
+                (gx < gy) & (
                     (!lby & (ex == fy + 3) & (fx == gy) & (fy == gy + 1)) |
                     (lby & (fx < fy) & (fx < gy))
                 )
@@ -435,10 +395,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB0-Y",
-                (same_sign != lby) &
-                (ey == ex + 1) &
-                (gy < gx) &
-                (
+                (same_sign != lby) & (ey == ex + 1) &
+                (gy < gx) & (
                     (!lbx & (ey == fx + 3) & (fy == gx) & (fx == gx + 1)) |
                     (lbx & (fy < fx) & (fy < gx))
                 )
@@ -447,10 +405,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB1-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + 1) &
-                (gx < gy) &
-                (
+                (same_sign != lbx) & !lby & (ex == ey + 1) &
+                (gx < gy) & (
                     ((ex > fx + 2) & (fx < gy)) |
                     ((ex > fx + 3) & (ex > fy + 3))
                 )
@@ -458,10 +414,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB1-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + 1) &
-                (gy < gx) &
-                (
+                (same_sign != lby) & !lbx & (ey == ex + 1) &
+                (gy < gx) & (
                     ((ey > fy + 2) & (fy < gx)) |
                     ((ey > fy + 3) & (ey > fx + 3))
                 )
@@ -470,16 +424,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB2-X",
-                diff_sign & (lbx == lby) &
-                (ex == ey + 1) &
+                diff_sign & (lbx == lby) & (ex == ey + 1) &
                 (fx + 1 < ey) & (fx > fy + 1) &
                 (gx < gy) & (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex-1, fx-1:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB2-Y",
-                diff_sign & (lby == lbx) &
-                (ey == ex + 1) &
+                diff_sign & (lby == lbx) & (ey == ex + 1) &
                 (fy + 1 < ex) & (fy > fx + 1) &
                 (gy < gx) & (ex > gx)
             ) do lemma
@@ -487,16 +439,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB3-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) &
+                same_sign & !lbx & lby & (ex == ey + 1) &
                 (fx > fy + 1) & (gx < gy) &
                 (ex < gx + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx-1:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB3-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) &
+                same_sign & !lby & lbx & (ey == ex + 1) &
                 (fy > fx + 1) & (gy < gx) &
                 (ey < gy + (p-1))
             ) do lemma
@@ -504,16 +454,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB4-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & !lby & (ex == ey + 1) &
                 (fx + 1 < fy) & (fx + 1 > gy) &
                 (gx < gy) & (ey > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1:fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB4-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & !lbx & (ey == ex + 1) &
                 (fy + 1 < fx) & (fy + 1 > gx) &
                 (gy < gx) & (ex > fx + 2)
             ) do lemma
@@ -521,8 +469,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB5-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & lby & (ex == ey + 1) &
                 (fx < fy) & (fx > gy) &
                 (gx < gy) & (gy + 2 < fy)
             ) do lemma
@@ -532,8 +479,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fy, gx+1:fy-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB5-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & lbx & (ey == ex + 1) &
                 (fy < fx) & (fy > gx) &
                 (gy < gx) & (gx + 2 < fx)
             ) do lemma
@@ -544,8 +490,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB6-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & lby & (ex == ey + 1) &
                 (fx > fy) & (fx > gy + 2) &
                 (gx < gy) & (gy < fy)
             ) do lemma
@@ -555,8 +500,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, gx+1:fx-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB6-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & lbx & (ey == ex + 1) &
                 (fy > fx) & (fy > gx + 2) &
                 (gy < gx) & (gx < fx)
             ) do lemma
@@ -567,8 +511,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LC0-X",
-                same_sign & (lbx == lby) &
-                (ex == ey) &
+                same_sign & (lbx == lby) & (ex == ey) &
                 (fx < fy) & (fx + 1 > gy) &
                 (gx < gy) & (gy + 1 < fy) &
                 (ex < gx + (p-1))
@@ -576,8 +519,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex+1, fy:fy+1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LC0-Y",
-                same_sign & (lby == lbx) &
-                (ey == ex) &
+                same_sign & (lby == lbx) & (ey == ex) &
                 (fy < fx) & (fy + 1 > gx) &
                 (gy < gx) & (gx + 1 < fx) &
                 (ey < gy + (p-1))
@@ -586,8 +528,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LC1-X",
-                same_sign & (lbx == lby) &
-                (ex == ey) &
+                same_sign & (lbx == lby) & (ex == ey) &
                 (fx > fy) & (fx > gy) &
                 (gx < gy) &
                 (ex < gx + (p-1))
@@ -595,8 +536,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex+1, fx:fx+1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LC1-Y",
-                same_sign & (lby == lbx) &
-                (ey == ex) &
+                same_sign & (lby == lbx) & (ey == ex) &
                 (fy > fx) & (fy > gx) &
                 (gy < gx) &
                 (ey < gy + (p-1))
@@ -605,8 +545,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LC2-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey) &
+                diff_sign & !lbx & !lby & (ex == ey) &
                 (fx > fy + 2) & (gx < gy) & (gy < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, fx-1, gx-1, gx), pos_zero)
@@ -615,8 +554,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, fy:fx-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LC2-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex) &
+                diff_sign & !lby & !lbx & (ey == ex) &
                 (fy > fx + 2) & (gy < gx) & (gx < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, fy-1, gy-1, gy), pos_zero)
@@ -626,16 +564,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LD0-X",
-                same_sign & lbx & !lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & !lby & (fx + 1 == ey) &
                 (gx < gy) & (gy < fy + 1) &
                 (ex < gx + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy:ey-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LD0-Y",
-                same_sign & lby & !lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & !lbx & (fy + 1 == ex) &
                 (gy < gx) & (gx < fx + 1) &
                 (ey < gy + (p-1))
             ) do lemma
@@ -643,15 +579,13 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LD1-X",
-                diff_sign & !lbx & !lby &
-                (fx + 1 == ey) &
+                diff_sign & !lbx & !lby & (fx + 1 == ey) &
                 (ex > ey + 1) & (gx < gy) & (gy < fy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy:ey-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LD1-Y",
-                diff_sign & !lby & !lbx &
-                (fy + 1 == ex) &
+                diff_sign & !lby & !lbx & (fy + 1 == ex) &
                 (ey > ex + 1) & (gy < gx) & (gx < fx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fx:ex-1, gy), pos_zero)
@@ -659,8 +593,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE0-X",
                 (fx + 1 < fy) & (fx + 1 > gy) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (same_sign & lbx & !lby & (ex + 1 == ey) & (gx + (p-1) > ey)) |
                     ((same_sign != lbx) & lby & (ex == ey + 1))
                 )
@@ -669,8 +602,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE0-Y",
                 (fy + 1 < fx) & (fy + 1 > gx) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (same_sign & lby & !lbx & (ey + 1 == ex) & (gy + (p-1) > ex)) |
                     ((same_sign != lby) & lbx & (ey == ex + 1))
                 )
@@ -680,8 +612,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE1-X",
                 diff_sign & !lby &
-                (fx < gy) & (gx < gy) & (ey > fy + 2) &
-                (
+                (fx < gy) & (gx < gy) & (ey > fy + 2) & (
                     (!lbx & (ex == ey + 1) & (fy > gy)) |
                     (lbx & (ex == ey) & (fy + 1 > gy))
                 )
@@ -690,8 +621,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE1-Y",
                 diff_sign & !lbx &
-                (fy < gx) & (gy < gx) & (ex > fx + 2) &
-                (
+                (fy < gx) & (gy < gx) & (ex > fx + 2) & (
                     (!lby & (ey == ex + 1) & (fx > gx)) |
                     (lby & (ey == ex) & (fx + 1 > gx))
                 )
@@ -703,8 +633,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lbx != lby) &
                 (ex > fx + 3) &
                 (fx > fy) & (fx > gy) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (!lbx & lby & (ex == ey + 2)) |
                     (lbx & !lby & (ex == ey))
                 )
@@ -715,8 +644,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lby != lbx) &
                 (ey > fy + 3) &
                 (fy > fx) & (fy > gx) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (!lby & lbx & (ey == ex + 2)) |
                     (lby & !lbx & (ey == ex))
                 )
@@ -727,8 +655,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LE3-X",
                 diff_sign & (lbx != lby) &
                 (fx < fy) & (fx + 1 > gy) &
-                (gx < gy) & (gy + 1 < fy) &
-                (
+                (gx < gy) & (gy + 1 < fy) & (
                     (!lbx & lby & (ex == ey + 2)) |
                     (lbx & !lby & (ex == ey) & (ey > fy + 3))
                 )
@@ -738,8 +665,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LE3-Y",
                 diff_sign & (lby != lbx) &
                 (fy < fx) & (fy + 1 > gx) &
-                (gy < gx) & (gx + 1 < fx) &
-                (
+                (gy < gx) & (gx + 1 < fx) & (
                     (!lby & lbx & (ey == ex + 2)) |
                     (lby & !lbx & (ey == ex) & (ex > fx + 3))
                 )
@@ -749,8 +675,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE4-X",
                 diff_sign & lby &
-                (fx + 1 < gy) & (fy > gy) &
-                (
+                (fx + 1 < gy) & (fy > gy) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 > gx)) |
                     (lbx & (ex == ey))
                 )
@@ -761,8 +686,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE4-Y",
                 diff_sign & lbx &
-                (fy + 1 < gx) & (fx > gx) &
-                (
+                (fy + 1 < gx) & (fx > gx) & (
                     (!lby & (ey == ex + 1) & (fy + 1 > gy)) |
                     (lby & (ey == ex))
                 )
@@ -773,10 +697,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LF0-X",
-                same_sign & !lby &
-                (gx < gy) & (gy < fy) &
-                (ex < gx + (p-1)) &
-                (
+                same_sign & !lby & (gx < gy) & (gy < fy) &
+                (ex < gx + (p-1)) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1)) |
                     (lbx & (fx == ey))
                 )
@@ -786,10 +708,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LF0-Y",
-                same_sign & !lbx &
-                (gy < gx) & (gx < fx) &
-                (ey < gy + (p-1)) &
-                (
+                same_sign & !lbx & (gy < gx) & (gx < fx) &
+                (ey < gy + (p-1)) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1)) |
                     (lby & (fy == ex))
                 )
@@ -800,9 +720,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LF1-X",
-                diff_sign & !lby &
-                (gx < gy) & (gy < fy) &
-                (
+                diff_sign & !lby & (gx < gy) & (gy < fy) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1))
                 )
@@ -812,9 +730,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LF1-Y",
-                diff_sign & !lbx &
-                (gy < gx) & (gx < fx) &
-                (
+                diff_sign & !lbx & (gy < gx) & (gx < fx) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1))
                 )
@@ -825,53 +741,46 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LG0-X",
-                (same_sign != lbx) & lby &
-                (ex == ey + 2) &
+                (same_sign != lbx) & lby & (ex == ey + 2) &
                 (fx < ey) & (fx > fy) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LG0-Y",
-                (same_sign != lby) & lbx &
-                (ey == ex + 2) &
+                (same_sign != lby) & lbx & (ey == ex + 2) &
                 (fy < ex) & (fy > fx) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LG1-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey + 2) &
+                diff_sign & !lbx & !lby & (ex == ey + 2) &
                 (fx < fy) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, ex-3, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LG1-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex + 2) &
+                diff_sign & !lby & !lbx & (ey == ex + 2) &
                 (fy < fx) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, ey-3, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LG2-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) &
+                diff_sign & !lbx & lby & (ex == ey + 2) &
                 (fx < gy) & (gx < gy) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LG2-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) &
+                diff_sign & !lby & lbx & (ey == ex + 2) &
                 (fy < gx) & (gy < gx) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LH0-X",
-                same_sign & lbx & lby &
-                (fx == ey) &
+                same_sign & lbx & lby & (fx == ey) &
                 (fx > gy + 1) & (gx < gy) &
                 (ex < gx + (p-1))
             ) do lemma
@@ -880,8 +789,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LH0-Y",
-                same_sign & lby & lbx &
-                (fy == ex) &
+                same_sign & lby & lbx & (fy == ex) &
                 (fy > gx + 1) & (gy < gx) &
                 (ey < gy + (p-1))
             ) do lemma
@@ -891,8 +799,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LH1-X",
-                diff_sign & !lbx & lby &
-                (fx == ey) &
+                diff_sign & !lbx & lby & (fx == ey) &
                 (fx > gy + 1) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fy, gx), pos_zero)
@@ -900,8 +807,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LH1-Y",
-                diff_sign & !lby & lbx &
-                (fy == ex) &
+                diff_sign & !lby & lbx & (fy == ex) &
                 (fy > gx + 1) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, gy:fx, gy), pos_zero)
@@ -912,8 +818,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LZ0-X",
                 (same_sign != lbx) &
                 (ex > ey + 2) &
-                (fx > gy) & (gx < gy) &
-                (
+                (fx > gy) & (gx < gy) & (
                     (!lby & (fx + 1 == ey)) |
                     (lby & (fx == fy))
                 )
@@ -923,8 +828,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LZ0-Y",
                 (same_sign != lby) &
                 (ey > ex + 2) &
-                (fy > gx) & (gy < gx) &
-                (
+                (fy > gx) & (gy < gx) & (
                     (!lbx & (fy + 1 == ex)) |
                     (lbx & (fy == fx))
                 )
@@ -936,8 +840,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx &
                 (ex > ey) &
                 (fx > gy) & (gx < gy) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (!lby & (fx == fy)) |
                     (lby & (fx + 1 == ey))
                 )
@@ -948,8 +851,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby &
                 (ey > ex) &
                 (fy > gx) & (gy < gx) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (!lbx & (fy == fx)) |
                     (lbx & (fy + 1 == ex))
                 )
@@ -960,8 +862,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LZ2-X",
                 diff_sign & !lbx &
                 (ex > ey + 2) &
-                (fx > gy) & (gx < gy) &
-                (
+                (fx > gy) & (gx < gy) & (
                     (!lby & (fx == fy)) |
                     (lby & (fx + 1 == ey))
                 )
@@ -971,8 +872,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LZ2-Y",
                 diff_sign & !lby &
                 (ey > ex + 2) &
-                (fy > gx) & (gy < gx) &
-                (
+                (fy > gx) & (gy < gx) & (
                     (!lbx & (fy == fx)) |
                     (lbx & (fy + 1 == ex))
                 )
@@ -983,10 +883,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY L - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-LA12-X",
-                same_sign & !lbx &
-                (gx == gy) &
-                (ex > ey + 2) &
-                (
+                same_sign & !lbx & (gx == gy) &
+                (ex > ey + 2) & (
                     (lby & (fx == fy)) |
                     ((fx == gx) &
                         ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))))
@@ -996,10 +894,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LA12-Y",
-                same_sign & !lby &
-                (gy == gx) &
-                (ey > ex + 2) &
-                (
+                same_sign & !lby & (gy == gx) &
+                (ey > ex + 2) & (
                     (lbx & (fy == fx)) |
                     ((fy == gy) &
                         ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))))
@@ -1010,16 +906,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LB7-X",
-                diff_sign & !lbx &
-                (ex == ey + 1) &
+                diff_sign & !lbx & (ex == ey + 1) &
                 (fx + 1 < gy) & (fx + 1 > gx) &
                 ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, gy, fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LB7-Y",
-                diff_sign & !lby &
-                (ey == ex + 1) &
+                diff_sign & !lby & (ey == ex + 1) &
                 (fy + 1 < gx) & (fy + 1 > gy) &
                 ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx)))
             ) do lemma
@@ -1027,16 +921,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LC3-X",
-                diff_sign & lbx &
-                (ex == ey) &
+                diff_sign & lbx & (ex == ey) &
                 (fx + 2 < gy) &
                 ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, gy-1, fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LC3-Y",
-                diff_sign & lby &
-                (ey == ex) &
+                diff_sign & lby & (ey == ex) &
                 (fy + 2 < gx) &
                 ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx)))
             ) do lemma
@@ -1045,8 +937,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE5-X",
                 diff_sign & !lby &
-                (fx > gy + 1) & (gx < gy) &
-                (
+                (fx > gy + 1) & (gx < gy) & (
                     (!lbx & (ex == ey + 1) & (fx == fy)) |
                     (lbx & (ex == ey) & (ex == fx + 2) & (fy == gy))
                 )
@@ -1057,8 +948,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE5-Y",
                 diff_sign & !lbx &
-                (fy > gx + 1) & (gy < gx) &
-                (
+                (fy > gx + 1) & (gy < gx) & (
                     (!lby & (ey == ex + 1) & (fy == fx)) |
                     (lby & (ey == ex) & (ey == fy + 2) & (fx == gx))
                 )
@@ -1070,12 +960,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LE6-X",
                 diff_sign & (lbx != lby) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (!lbx & lby & (ex == ey + 2)) |
                     (lbx & !lby & (ex == ey) & (ey > fy + 3))
-                ) &
-                (
+                ) & (
                     (!lbx & lby & (fx < gy) & (fy + 1 == gy)) |
                     ((fx == fy) & (fy + 1 > gy)) |
                     ((fx == gy) & (fy == gy + 1))
@@ -1085,12 +973,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LE6-Y",
                 diff_sign & (lby != lbx) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (!lby & lbx & (ey == ex + 2)) |
                     (lby & !lbx & (ey == ex) & (ex > fx + 3))
-                ) &
-                (
+                ) & (
                     (!lby & lbx & (fy < gx) & (fx + 1 == gx)) |
                     ((fy == fx) & (fx + 1 > gx)) |
                     ((fy == gx) & (fx == gx + 1))
@@ -1100,10 +986,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LG3-X",
-                (same_sign != lbx) &
-                (ex == ey + 2) &
-                (fx > gy) & (gx < gy) &
-                (
+                (same_sign != lbx) & (ex == ey + 2) &
+                (fx > gy) & (gx < gy) & (
                     (!lby & (fx + 1 == ey)) |
                     (lby & (fx == fy))
                 )
@@ -1111,10 +995,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ex-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LG3-Y",
-                (same_sign != lby) &
-                (ey == ex + 2) &
-                (fy > gx) & (gy < gx) &
-                (
+                (same_sign != lby) & (ey == ex + 2) &
+                (fy > gx) & (gy < gx) & (
                     (!lbx & (fy + 1 == ex)) |
                     (lbx & (fy == fx))
                 )
@@ -1125,8 +1007,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAB0-X",
                 (same_sign != lbx) & !lby &
                 (ex == ey + 1) & (gx == gy) &
-                (ex > fx + 3) &
-                (
+                (ex > fx + 3) & (
                     (fx > fy) |
                     (same_sign & !lbx & (fx == fy) & (fx == gx))
                 )
@@ -1137,8 +1018,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAB0-Y",
                 (same_sign != lby) & !lbx &
                 (ey == ex + 1) & (gy == gx) &
-                (ey > fy + 3) &
-                (
+                (ey > fy + 3) & (
                     (fy > fx) |
                     (same_sign & !lby & (fy == fx) & (fy == gy))
                 )
@@ -1546,10 +1426,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAE0-X",
-                (same_sign != lbx) &
-                (gx == gy) &
-                (fx > gx) &
-                (
+                (same_sign != lbx) & (gx == gy) &
+                (fx > gx) & (
                     (!lby & (ex == ey + 1) & (fx == fy) & (ex > fx + 3)) |
                     (lby & (ex == ey + 2) & (fx > fy) & (ex > fx + 2))
                 )
@@ -1557,10 +1435,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx+1:fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAE0-Y",
-                (same_sign != lby) &
-                (gy == gx) &
-                (fy > gy) &
-                (
+                (same_sign != lby) & (gy == gx) &
+                (fy > gy) & (
                     (!lbx & (ey == ex + 1) & (fy == fx) & (ey > fy + 3)) |
                     (lbx & (ey == ex + 2) & (fy > fx) & (ey > fy + 2))
                 )
@@ -1569,10 +1445,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAE1-X",
-                (same_sign != lby) & !lbx &
-                (gx == gy) &
-                (fx + 1 < fy) &
-                (
+                (same_sign != lby) & !lbx & (gx == gy) &
+                (fx + 1 < fy) & (
                     (diff_sign & lby & (ex == ey + 2)) |
                     (same_sign & !lby & (ex == ey))
                 )
@@ -1582,10 +1456,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fy+1, fy+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAE1-Y",
-                (same_sign != lbx) & !lby &
-                (gy == gx) &
-                (fy + 1 < fx) &
-                (
+                (same_sign != lbx) & !lby & (gy == gx) &
+                (fy + 1 < fx) & (
                     (diff_sign & lbx & (ey == ex + 2)) |
                     (same_sign & !lbx & (ey == ex))
                 )
@@ -1596,10 +1468,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAE2-X",
-                (same_sign != lby) & lbx &
-                (gx == gy) &
-                (fx > fy + 1) &
-                (
+                (same_sign != lby) & lbx & (gx == gy) &
+                (fx > fy + 1) & (
                     (diff_sign & lby & (ex == ey + 1) & (fx + 1 < ey)) |
                     (same_sign & !lby & (ex + 1 == ey))
                 )
@@ -1609,10 +1479,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ey, fx, gx+1:fx-1), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAE2-Y",
-                (same_sign != lbx) & lby &
-                (gy == gx) &
-                (fy > fx + 1) &
-                (
+                (same_sign != lbx) & lby & (gy == gx) &
+                (fy > fx + 1) & (
                     (diff_sign & lbx & (ey == ex + 1) & (fy + 1 < ex)) |
                     (same_sign & !lbx & (ey + 1 == ex))
                 )
@@ -1623,10 +1491,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAF0-X",
-                same_sign & !lby &
-                (gx == gy) &
-                (fx > fy + 2) &
-                (
+                same_sign & !lby & (gx == gy) &
+                (fx > fy + 2) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -1641,10 +1507,8 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-LAF0-Y",
-                same_sign & !lbx &
-                (gy == gx) &
-                (fy > fx + 2) &
-                (
+                same_sign & !lbx & (gy == gx) &
+                (fy > fx + 2) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -1660,10 +1524,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAF1-X",
-                diff_sign & !lby &
-                (gx == gy) &
-                (fx > fy + 2) &
-                (
+                diff_sign & !lby & (gx == gy) &
+                (fx > fy + 2) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -1678,10 +1540,8 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-LAF1-Y",
-                diff_sign & !lbx &
-                (gy == gx) &
-                (fy > fx + 2) &
-                (
+                diff_sign & !lbx & (gy == gx) &
+                (fy > fx + 2) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -1823,10 +1683,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAL-X",
-                same_sign & lbx & !lby &
-                (gx == gy) &
-                (ex > ey) &
-                (
+                same_sign & lbx & !lby & (gx == gy) &
+                (ex > ey) & (
                     (fx == fy) |
                     ((fx + 1 == gx) & (fy == gy))
                 )
@@ -1835,10 +1693,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAL-Y",
-                same_sign & lby & !lbx &
-                (gy == gx) &
-                (ey > ex) &
-                (
+                same_sign & lby & !lbx & (gy == gx) &
+                (ey > ex) & (
                     (fy == fx) |
                     ((fy + 1 == gy) & (fx == gx))
                 )
@@ -1954,11 +1810,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LBL0-X",
-                same_sign & !lbx &
-                (ex == ey + 1) &
+                same_sign & !lbx & (ex == ey + 1) &
                 (gx < gy) & (gy + 1 < fy) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (!lby & (ex == fy + 3) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -1968,11 +1822,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBL0-Y",
-                same_sign & !lby &
-                (ey == ex + 1) &
+                same_sign & !lby & (ey == ex + 1) &
                 (gy < gx) & (gx + 1 < fx) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (!lbx & (ey == fx + 3) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -1983,10 +1835,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LBL1-X",
-                diff_sign & lbx &
-                (ex == ey + 1) &
-                (gx < gy) & (gy + 1 < fy) &
-                (
+                diff_sign & lbx & (ex == ey + 1) &
+                (gx < gy) & (gy + 1 < fy) & (
                     (!lby & (ex == fy + 3) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -1996,10 +1846,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ey, gx+1:fx-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBL1-Y",
-                diff_sign & lby &
-                (ey == ex + 1) &
-                (gy < gx) & (gx + 1 < fx) &
-                (
+                diff_sign & lby & (ey == ex + 1) &
+                (gy < gx) & (gx + 1 < fx) & (
                     (!lbx & (ey == fx + 3) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -2042,8 +1890,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LBO0-X",
                 diff_sign & !lbx & !lby &
                 (ex == ey + 1) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     ((fx + 1 == fy) & (fx == gy)) |
                     ((fy == gy) & (fx + 1 < fy))
                 )
@@ -2053,8 +1900,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LBO0-Y",
                 diff_sign & !lby & !lbx &
                 (ey == ex + 1) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     ((fy + 1 == fx) & (fy == gx)) |
                     ((fx == gx) & (fy + 1 < fx))
                 )
@@ -2103,31 +1949,27 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LBQ-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + 1) & (ex == fx + 3) &
+                (same_sign != lbx) & !lby & (ex == ey + 1) & (ex == fx + 3) &
                 (fx > fy) & (gx < gy) & (fy + 1 > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-3:ex-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBQ-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + 1) & (ey == fy + 3) &
+                (same_sign != lby) & !lbx & (ey == ex + 1) & (ey == fy + 3) &
                 (fy > fx) & (gy < gx) & (fx + 1 > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-3:ey-2, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-LCF-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 3) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 3) &
                 (fx > fy) & (fx > gy) &
                 (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex-1, ex-3, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCF-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 3) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 3) &
                 (fy > fx) & (fy > gx) &
                 (gy < gx)
             ) do lemma
@@ -2310,8 +2152,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LCS-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 2) &
                 (fx > fy + 1) & (gx < gy) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx:fx-1, gx), pos_zero)
@@ -2319,8 +2160,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, gx+1:fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCS-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 2) &
                 (fy > fx + 1) & (gy < gx) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy:fy-1, gy), pos_zero)
@@ -2344,13 +2184,11 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LEL-X",
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     ((same_sign != lbx) & !lby & (ex == ey + 1) & (ey == fy + 2) & (fx == fy)) |
                     (
                         (fx + 1 == fy) &
-                        (fx > gy) &
-                        (
+                        (fx > gy) & (
                             (same_sign & lbx & !lby & (ex + 1 == ey) & (gx + (p-1) > ey)) |
                             ((same_sign != lbx) & lby & (ex == ey + 1))
                         )
@@ -2360,13 +2198,11 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ey+1, gy:fy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LEL-Y",
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     ((same_sign != lby) & !lbx & (ey == ex + 1) & (ex == fx + 2) & (fy == fx)) |
                     (
                         (fy + 1 == fx) &
-                        (fy > gx) &
-                        (
+                        (fy > gx) & (
                             (same_sign & lby & !lbx & (ey + 1 == ex) & (gy + (p-1) > ex)) |
                             ((same_sign != lby) & lbx & (ey == ex + 1))
                         )
@@ -2377,11 +2213,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LFO0-X",
-                same_sign & !lby &
-                (fy == gy) &
+                same_sign & !lby & (fy == gy) &
                 (gx < gy) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1)) |
                     (lbx & (fx == ey))
                 )
@@ -2391,11 +2225,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LFO0-Y",
-                same_sign & !lbx &
-                (fx == gx) &
+                same_sign & !lbx & (fx == gx) &
                 (gy < gx) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1)) |
                     (lby & (fy == ex))
                 )
@@ -2406,10 +2238,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LFO1-X",
-                diff_sign & !lby &
-                (fy == gy) &
-                (gx < gy) &
-                (
+                diff_sign & !lby & (fy == gy) &
+                (gx < gy) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey) & (fx > fy + 1))
                 )
@@ -2419,10 +2249,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LFO1-Y",
-                diff_sign & !lbx &
-                (fx == gx) &
-                (gy < gx) &
-                (
+                diff_sign & !lbx & (fx == gx) &
+                (gy < gx) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex) & (fy > fx + 1))
                 )
@@ -2482,8 +2310,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LK0-X",
                 same_sign &
                 (gx < gy) &
-                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) &
-                (
+                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == gy)) |
                     (lbx & !lby & (fx == gy))
                 )
@@ -2494,8 +2321,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LK0-Y",
                 same_sign &
                 (gy < gx) &
-                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) &
-                (
+                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == gx)) |
                     (lby & !lbx & (fy == gx))
                 )
@@ -2507,8 +2333,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LK1-X",
                 diff_sign &
                 (fx > gx) &
-                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) &
-                (
+                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) & (
                     (!lbx & !lby & (fx == gy)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == gy))
                 )
@@ -2518,8 +2343,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LK1-Y",
                 diff_sign &
                 (fy > gy) &
-                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) &
-                (
+                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) & (
                     (!lby & !lbx & (fy == gx)) |
                     (lby & (ey == ex + 1) & (fy + 1 == gx))
                 )
@@ -2530,8 +2354,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LK2-X",
                 same_sign & (lbx != lby) &
                 (fx > gx) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (lbx & !lby & (fx + 1 == ey) & (ey == gy) & (ey == fy + p)) |
                     (!lbx & lby & (ex == ey + 1) & (fx == fy + 1) & (fx == gy))
                 )
@@ -2541,8 +2364,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LK2-Y",
                 same_sign & (lby != lbx) &
                 (fy > gy) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (lby & !lbx & (fy + 1 == ex) & (ex == gx) & (ex == fx + p)) |
                     (!lby & lbx & (ey == ex + 1) & (fy == fx + 1) & (fy == gx))
                 )
@@ -2552,8 +2374,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LK3-X",
                 diff_sign & (lbx == lby) &
-                (fx + 1 > gx) &
-                (
+                (fx + 1 > gx) & (
                     (!lbx & !lby & (fx + 1 == ey) & (ey == gy) & (ey == fy + p)) |
                     (lbx & lby & (ex == ey + 1) & (fx == fy + 1) & (fx == gy))
                 )
@@ -2563,8 +2384,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LK3-Y",
                 diff_sign & (lby == lbx) &
-                (fy + 1 > gy) &
-                (
+                (fy + 1 > gy) & (
                     (!lby & !lbx & (fy + 1 == ex) & (ex == gx) & (ex == fx + p)) |
                     (lby & lbx & (ey == ex + 1) & (fy == fx + 1) & (fy == gx))
                 )
@@ -2575,8 +2395,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAG2-X",
                 (same_sign != lbx) &
-                (ex == ey + 2) & (gx == gy) &
-                (
+                (ex == ey + 2) & (gx == gy) & (
                     (same_sign & !lbx & (fx == gx) &
                         ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy)))) |
                     (lby & (fx == fy))
@@ -2587,8 +2406,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAG2-Y",
                 (same_sign != lby) &
-                (ey == ex + 2) & (gy == gx) &
-                (
+                (ey == ex + 2) & (gy == gx) & (
                     (same_sign & !lby & (fy == gy) &
                         ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx)))) |
                     (lbx & (fy == fx))
@@ -2616,16 +2434,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LCW-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey) &
+                diff_sign & !lbx & !lby & (ex == ey) &
                 (ey == gy) & (ey == fy + p) &
                 (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCW-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex) &
+                diff_sign & !lby & !lbx & (ey == ex) &
                 (ex == gx) & (ex == fx + p) &
                 (fy > gy)
             ) do lemma
@@ -2802,8 +2618,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LABL-X",
                 diff_sign & (lbx != lby) &
-                (ex == ey + 1) & (gx == gy) &
-                (
+                (ex == ey + 1) & (gx == gy) & (
                     (lbx & !lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (!lbx & lby & (fx + 1 == fy))
                 )
@@ -2819,8 +2634,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LABL-Y",
                 diff_sign & (lby != lbx) &
-                (ey == ex + 1) & (gy == gx) &
-                (
+                (ey == ex + 1) & (gy == gx) & (
                     (lby & !lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (!lby & lbx & (fy + 1 == fx))
                 )
@@ -3318,8 +3132,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAEJ0-X",
                 !lby &
-                (fx == fy) & (gx == gy) &
-                (
+                (fx == fy) & (gx == gy) & (
                     (diff_sign & !lbx & (ex == ey + 2)) |
                     (same_sign & lbx & (ex == ey))
                 )
@@ -3329,8 +3142,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAEJ0-Y",
                 !lbx &
-                (fy == fx) & (gy == gx) &
-                (
+                (fy == fx) & (gy == gx) & (
                     (diff_sign & !lby & (ey == ex + 2)) |
                     (same_sign & lby & (ey == ex))
                 )
@@ -3363,9 +3175,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAEL-X",
-                diff_sign & !lby &
-                (gx == gy) &
-                (
+                diff_sign & !lby & (gx == gy) & (
                     (!lbx & (ex == ey + 1) & (fx == fy + 1) & (fx + 1 < ey)) |
                     (lbx & (ex == fx + 3) & (fx == fy) & (fy + 3 == ey))
                 )
@@ -3378,9 +3188,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-LAEL-Y",
-                diff_sign & !lbx &
-                (gy == gx) &
-                (
+                diff_sign & !lbx & (gy == gx) & (
                     (!lby & (ey == ex + 1) & (fy == fx + 1) & (fy + 1 < ex)) |
                     (lby & (ey == fy + 3) & (fy == fx) & (fx + 3 == ex))
                 )
@@ -3396,8 +3204,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAEM0-X",
                 (same_sign != lby) & !lbx &
                 (fx == fy + 1) & (gx == gy) &
-                (fx + 1 < ey) &
-                (
+                (fx + 1 < ey) & (
                     (diff_sign & lby & (ex == ey + 2)) |
                     (same_sign & !lby & (ex == ey))
                 )
@@ -3409,8 +3216,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAEM0-Y",
                 (same_sign != lbx) & !lby &
                 (fy == fx + 1) & (gy == gx) &
-                (fy + 1 < ex) &
-                (
+                (fy + 1 < ex) & (
                     (diff_sign & lbx & (ey == ex + 2)) |
                     (same_sign & !lbx & (ey == ex))
                 )
@@ -3422,8 +3228,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAEM1-X",
                 (same_sign != lby) & lbx &
-                (fx == fy + 1) & (gx == gy) &
-                (
+                (fx == fy + 1) & (gx == gy) & (
                     (diff_sign & lby & (ex == ey + 1) & (fx + 1 < ey)) |
                     (same_sign & !lby & (ex + 1 == ey))
                 )
@@ -3437,8 +3242,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAEM1-Y",
                 (same_sign != lbx) & lby &
-                (fy == fx + 1) & (gy == gx) &
-                (
+                (fy == fx + 1) & (gy == gx) & (
                     (diff_sign & lbx & (ey == ex + 1) & (fy + 1 < ex)) |
                     (same_sign & !lbx & (ey + 1 == ex))
                 )
@@ -3746,8 +3550,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCFR-X",
                 diff_sign & lbx & !lby &
                 (ex == ey) & (ey == fy + 3) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (fx == fy) |
                     ((fx == gy) & (fy == gy + 1))
                 )
@@ -3758,8 +3561,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCFR-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (ex == fx + 3) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (fy == fx) |
                     ((fy == gx) & (fx == gx + 1))
                 )
@@ -3769,11 +3571,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LCFT-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) &
+                diff_sign & lbx & !lby & (ex == ey) &
                 (ey > gy + 4) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     ((ex == fx + 2) & (ey == fy + 3)) |
                     ((ex == fx + 3) & (ey == fy + 2))
                 )
@@ -3784,11 +3584,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, gx+1:ex-4, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCFT-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) &
+                diff_sign & lby & !lbx & (ey == ex) &
                 (ex > gx + 4) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     ((ey == fy + 2) & (ex == fx + 3)) |
                     ((ey == fy + 3) & (ex == fx + 2))
                 )
@@ -3891,8 +3689,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCJK1-X",
                 diff_sign & (lbx == lby) &
                 (ex == ey) & (fx == fy) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (lbx & lby & (fx + 1 == gy)) |
                     (!lbx & !lby & (fx == gy))
                 )
@@ -3902,8 +3699,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LCJK1-Y",
                 diff_sign & (lby == lbx) &
                 (ey == ex) & (fy == fx) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (lby & lbx & (fy + 1 == gx)) |
                     (!lby & !lbx & (fy == gx))
                 )
@@ -3933,8 +3729,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LEMP-X",
                 (same_sign == lbx) & lby &
                 (fx == gy) & (gy == fy + 1) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (diff_sign & !lbx & (ex == ey + 2) & (fx + 1 < ey)) |
                     (same_sign & lbx & (ex == ey) & (ex < gx + (p-1)))
                 )
@@ -3944,8 +3739,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LEMP-Y",
                 (same_sign == lby) & lbx &
                 (fy == gx) & (gx == fx + 1) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (diff_sign & !lby & (ey == ex + 2) & (fy + 1 < ex)) |
                     (same_sign & lby & (ey == ex) & (ey < gy + (p-1)))
                 )
@@ -3954,10 +3748,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LENO-X",
-                diff_sign & !lby &
-                (fx + 1 == fy) &
-                (fx + 1 > gx) &
-                (
+                diff_sign & !lby & (fx + 1 == fy) &
+                (fx + 1 > gx) & (
                     (!lbx & (ex == ey + 1) & (fy == gy)) |
                     (lbx & (ex == ey) & (ex == fx + 3) & (fy == gy + 1))
                 )
@@ -3966,10 +3758,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, gx+1:fy-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LENO-Y",
-                diff_sign & !lbx &
-                (fy + 1 == fx) &
-                (fy + 1 > gy) &
-                (
+                diff_sign & !lbx & (fy + 1 == fx) &
+                (fy + 1 > gy) & (
                     (!lby & (ey == ex + 1) & (fx == gx)) |
                     (lby & (ey == ex) & (ey == fy + 3) & (fx == gx + 1))
                 )
@@ -3979,11 +3769,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LKLO0-X",
-                same_sign &
-                (fx == gy + 1) &
+                same_sign & (fx == gy + 1) &
                 (gx < gy) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (!lbx & (ex == ey + 1) & (
                         (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                         (lby & (fx == fy))
@@ -3996,11 +3784,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LKLO0-Y",
-                same_sign &
-                (fy == gx + 1) &
+                same_sign & (fy == gx + 1) &
                 (gy < gx) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (!lby & (ey == ex + 1) & (
                         (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                         (lbx & (fy == fx))
@@ -4014,10 +3800,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LKLO1-X",
-                diff_sign &
-                (fx == gy + 1) &
-                (gx < gy) &
-                (
+                diff_sign & (fx == gy + 1) &
+                (gx < gy) & (
                     (!lbx & lby & (fx == ey) & (fy + 1 == gy)) |
                     (lbx & (ex == ey + 1) & (
                         (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
@@ -4030,10 +3814,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LKLO1-Y",
-                diff_sign &
-                (fy == gx + 1) &
-                (gy < gx) &
-                (
+                diff_sign & (fy == gx + 1) &
+                (gy < gx) & (
                     (!lby & lbx & (fy == ex) & (fx + 1 == gx)) |
                     (lby & (ey == ex + 1) & (
                         (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
@@ -4049,8 +3831,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAEFQ0-X",
                 diff_sign & (lbx != lby) &
                 (ex == fx + 3) & (gx == gy) &
-                (fx > fy + 1) &
-                (
+                (fx > fy + 1) & (
                     (lbx & !lby & (ex == ey)) |
                     (!lbx & lby & (ex == ey + 2))
                 )
@@ -4062,8 +3843,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAEFQ0-Y",
                 diff_sign & (lby != lbx) &
                 (ey == fy + 3) & (gy == gx) &
-                (fy > fx + 1) &
-                (
+                (fy > fx + 1) & (
                     (lby & !lbx & (ey == ex)) |
                     (!lby & lbx & (ey == ex + 2))
                 )
@@ -4076,8 +3856,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAEFQ1-X",
                 same_sign & !lbx & !lby &
                 (gx == gy) &
-                (fy + 1 > gy) &
-                (
+                (fy + 1 > gy) & (
                     ((ex == fx + 3) & (ex == ey + 1) & (fx > fy + 1)) |
                     ((ex == ey + 2) & (ex == fx + 2))
                 )
@@ -4089,8 +3868,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-LAEFQ1-Y",
                 same_sign & !lby & !lbx &
                 (gy == gx) &
-                (fx + 1 > gx) &
-                (
+                (fx + 1 > gx) & (
                     ((ey == fy + 3) & (ey == ex + 1) & (fy > fx + 1)) |
                     ((ey == ex + 2) & (ey == fy + 2))
                 )
@@ -4102,8 +3880,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAFLT0-X",
                 same_sign & !lby &
-                (fx == fy + 2) & (gx == gy) &
-                (
+                (fx == fy + 2) & (gx == gy) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -4121,8 +3898,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAFLT0-Y",
                 same_sign & !lbx &
-                (fy == fx + 2) & (gy == gx) &
-                (
+                (fy == fx + 2) & (gy == gx) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -4141,8 +3917,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAFLT1-X",
                 diff_sign & !lby &
-                (fx == fy + 2) & (gx == gy) &
-                (
+                (fx == fy + 2) & (gx == gy) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -4161,8 +3936,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAFLT1-Y",
                 diff_sign & !lbx &
-                (fy == fx + 2) & (gy == gx) &
-                (
+                (fy == fx + 2) & (gy == gx) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -4181,10 +3955,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LBKLO-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
-                (gx < gy) &
-                (
+                diff_sign & !lbx & lby & (ex == ey + 1) &
+                (gx < gy) & (
                     ((fx == gy + 1) & (fy == gy + 2)) |
                     ((fx == gy + 2) & (fy == gy + 1))
                 )
@@ -4194,10 +3966,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, gy+2, gx+1:gy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LBKLO-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
-                (gy < gx) &
-                (
+                diff_sign & !lby & lbx & (ey == ex + 1) &
+                (gy < gx) & (
                     ((fy == gx + 1) & (fx == gx + 2)) |
                     ((fy == gx + 2) & (fx == gx + 1))
                 )
@@ -4208,10 +3978,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LCKLO-X",
-                diff_sign & lbx & lby &
-                (ex == ey) &
-                (gx < gy) &
-                (
+                diff_sign & lbx & lby & (ex == ey) &
+                (gx < gy) & (
                     ((fx == fy + 1) & (fy == gy + 1)) |
                     ((fx == fy + 2) & (fy + 1 == gy))
                 )
@@ -4220,10 +3988,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(~sx, 0, fx, gx:gy-1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCKLO-Y",
-                diff_sign & lby & lbx &
-                (ey == ex) &
-                (gy < gx) &
-                (
+                diff_sign & lby & lbx & (ey == ex) &
+                (gy < gx) & (
                     ((fy == fx + 1) & (fx == gx + 1)) |
                     ((fy == fx + 2) & (fx + 1 == gx))
                 )
@@ -4235,10 +4001,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY L - CODIMENSION 4
 
             checker("SELBTZ-TwoSum-LCU-X",
-                diff_sign &
-                (ex == ey) &
-                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) &
-                (
+                diff_sign & (ex == ey) &
+                ((!lby & (ey == gy) & (ey == fy + p)) | (lby & (fy + 1 == gy))) & (
                     (!lbx & !lby & (fx == gx)) |
                     (lbx & (fx + 2 == gy) & (fx + 1 == gx))
                 )
@@ -4246,10 +4010,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, gx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCU-Y",
-                diff_sign &
-                (ey == ex) &
-                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) &
-                (
+                diff_sign & (ey == ex) &
+                ((!lbx & (ex == gx) & (ex == fx + p)) | (lbx & (fx + 1 == gx))) & (
                     (!lby & !lbx & (fy == gy)) |
                     (lby & (fy + 2 == gx) & (fy + 1 == gy))
                 )
@@ -4259,8 +4021,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LACJ3",
                 same_sign & (lbx == lby) &
-                (ex == ey) & (fx == fy) & (gx == gy) &
-                (
+                (ex == ey) & (fx == fy) & (gx == gy) & (
                     (lbx & lby & (fx + 1 == gx)) |
                     (!lbx & !lby & (((ex == gx) & (ex == fx + p)) | (fx == gx)))
                 )
@@ -4365,8 +4126,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LABQR-X",
                 diff_sign & lbx & !lby &
-                (ex == ey + 1) & (gx == gy) &
-                (
+                (ex == ey + 1) & (gx == gy) & (
                     ((ex == fx + 3) & (ey == fy + 3)) |
                     ((ex == fx + 4) & (ey == fy + 2))
                 )
@@ -4377,8 +4137,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LABQR-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex + 1) & (gy == gx) &
-                (
+                (ey == ex + 1) & (gy == gx) & (
                     ((ey == fy + 3) & (ex == fx + 3)) |
                     ((ey == fy + 4) & (ex == fx + 2))
                 )
@@ -4390,8 +4149,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LACFT0-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (gx == gy) &
-                (
+                (ex == ey) & (gx == gy) & (
                     ((ex == fx + 2) & (ey == fy + 3)) |
                     ((ex == fx + 3) & (ey == fy + 2))
                 )
@@ -4404,8 +4162,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LACFT0-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (gy == gx) &
-                (
+                (ey == ex) & (gy == gx) & (
                     ((ey == fy + 2) & (ex == fx + 3)) |
                     ((ey == fy + 3) & (ex == fx + 2))
                 )
@@ -4419,8 +4176,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LACFT1-X",
                 diff_sign & lbx & !lby &
-                (ex == ey) & (gx == gy) &
-                (
+                (ex == ey) & (gx == gy) & (
                     ((ex == fx + 2) & (ey == fy + 4)) |
                     ((ex == fx + 4) & (ey == fy + 2))
                 )
@@ -4439,8 +4195,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LACFT1-Y",
                 diff_sign & lby & !lbx &
-                (ey == ex) & (gy == gx) &
-                (
+                (ey == ex) & (gy == gx) & (
                     ((ey == fy + 2) & (ex == fx + 4)) |
                     ((ey == fy + 4) & (ex == fx + 2))
                 )
@@ -4477,8 +4232,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LACUV",
                 same_sign & (lbx != lby) &
-                (ex == ey) & (gx == gy) &
-                (
+                (ex == ey) & (gx == gy) & (
                     (lbx & !lby & (fx + 1 == gx) & (fy == gy)) |
                     (lby & !lbx & (fy + 1 == gy) & (fx == gx))
                 )
@@ -4528,8 +4282,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAMRT0-X",
                 diff_sign & (lbx != lby) &
-                (ex == fx + 3) & (fx == fy + 1) & (gx == gy) &
-                (
+                (ex == fx + 3) & (fx == fy + 1) & (gx == gy) & (
                     (lbx & !lby & (ex == ey)) |
                     (!lbx & lby & (ex == ey + 2))
                 )
@@ -4540,8 +4293,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAMRT0-Y",
                 diff_sign & (lby != lbx) &
-                (ey == fy + 3) & (fy == fx + 1) & (gy == gx) &
-                (
+                (ey == fy + 3) & (fy == fx + 1) & (gy == gx) & (
                     (lby & !lbx & (ey == ex)) |
                     (!lby & lbx & (ey == ex + 2))
                 )
@@ -4553,8 +4305,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAMRT1-X",
                 same_sign & !lbx & !lby &
-                (fx == fy + 1) & (gx == gy) &
-                (
+                (fx == fy + 1) & (gx == gy) & (
                     ((ex == fx + 2) & (fx + 3 == ey)) |
                     ((ex == fx + 3) & (fx + 2 == ey))
                 )
@@ -4565,8 +4316,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-LAMRT1-Y",
                 same_sign & !lby & !lbx &
-                (fy == fx + 1) & (gy == gx) &
-                (
+                (fy == fx + 1) & (gy == gx) & (
                     ((ey == fy + 2) & (fy + 3 == ex)) |
                     ((ey == fy + 3) & (fy + 2 == ex))
                 )
@@ -4596,11 +4346,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LCFTX-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) &
+                diff_sign & lbx & !lby & (ex == ey) &
                 (ey == gy + 4) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     ((ex == fx + 2) & (ey == fy + 3)) |
                     ((ex == fx + 3) & (ey == fy + 2))
                 )
@@ -4611,11 +4359,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, gx+1:gy, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-LCFTX-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) &
+                diff_sign & lby & !lbx & (ey == ex) &
                 (ex == gx + 4) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     ((ey == fy + 2) & (ex == fx + 3)) |
                     ((ey == fy + 3) & (ex == fx + 2))
                 )
@@ -4685,8 +4431,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-LAEFJQ",
                 same_sign & !lbx & !lby &
-                (fx == fy) & (gx == gy) &
-                (
+                (fx == fy) & (gx == gy) & (
                     ((ex == fx + 2) & (ey == fy + 3)) |
                     ((ey == fy + 2) & (ex == fx + 3))
                 )
@@ -4701,9 +4446,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-LAFQRT-X",
-                !lby &
-                (gx == gy) &
-                (
+                !lby & (gx == gy) & (
                     (diff_sign & lbx & (ex == ey) & (ex == fy + 3) & (fx + 1 == fy)) |
                     ((same_sign != lbx) & (ex == ey + 2) & (fx + 1 == ey) & (fx == fy + 1))
                 )
@@ -4713,9 +4456,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx+3, fx+1, fx+2), pos_zero)
             end
             checker("SELBTZ-TwoSum-LAFQRT-Y",
-                !lbx &
-                (gy == gx) &
-                (
+                !lbx & (gy == gx) & (
                     (diff_sign & lby & (ey == ex) & (ey == fx + 3) & (fy + 1 == fx)) |
                     ((same_sign != lby) & (ey == ex + 2) & (fy + 1 == ex) & (fy == fx + 1))
                 )
@@ -4730,8 +4471,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Ca-X",
                 (same_sign != lbx) &
                 (ex > ey + 1) & (fx < ey) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (fx < fy) |
                     (same_sign & !lbx & (fx == fy) & (fx == gx)) |
                     (same_sign & !lbx & (ex == gx) & (ex == fx + p)) |
@@ -4743,8 +4483,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Ca-Y",
                 (same_sign != lby) &
                 (ey > ex + 1) & (fy < ex) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (fy < fx) |
                     (same_sign & !lby & (fy == fx) & (fy == gy)) |
                     (same_sign & !lby & (ey == gy) & (ey == fy + p)) |
@@ -4757,8 +4496,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Cb-X",
                 (same_sign != lbx) &
                 (ex > ey + 2) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (lby & (fx < ey) &
                         ((fx > fy) | (diff_sign & lbx & (fx == fy) & (fx + 1 == gx)))) |
                     (!lby & (fx + 1 == ey) &
@@ -4770,8 +4508,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Cb-Y",
                 (same_sign != lby) &
                 (ey > ex + 2) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (lbx & (fy < ex) &
                         ((fy > fx) | (diff_sign & lby & (fy == fx) & (fy + 1 == gy)))) |
                     (!lbx & (fy + 1 == ex) &
@@ -4784,8 +4521,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Cc-X",
                 same_sign & lbx &
                 (ex + 1 > ey) & (gx > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lby & (fx + 1 < ey) & ((fx > fy) | ((fx == fy) & (fx + 1 == gx)))) |
                     (lby & (fx + 1 == ey) & (gx == ey))
                 )
@@ -4795,8 +4531,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Cc-Y",
                 same_sign & lby &
                 (ey + 1 > ex) & (gy > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lbx & (fy + 1 < ex) & ((fy > fx) | ((fy == fx) & (fy + 1 == gy)))) |
                     (lbx & (fy + 1 == ex) & (gy == ex))
                 )
@@ -4826,8 +4561,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Ce-X",
                 diff_sign & !lbx & !lby &
                 (ex > ey + 1) & (fx > fy) & (gx > gy) &
-                (ex < gy + (p+1)) &
-                (
+                (ex < gy + (p+1)) & (
                     (fx + 1 < ey) |
                     ((fx + 1 == ey) &
                         (((ex == gx) & (ex == fx + p) & (ey == gy) & (ey == fy + p)) | (fx == gx)))
@@ -4838,8 +4572,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Ce-Y",
                 diff_sign & !lby & !lbx &
                 (ey > ex + 1) & (fy > fx) & (gy > gx) &
-                (ey < gx + (p+1)) &
-                (
+                (ey < gx + (p+1)) & (
                     (fy + 1 < ex) |
                     ((fy + 1 == ex) &
                         (((ey == gy) & (ey == fy + p) & (ex == gx) & (ex == fx + p)) | (fy == gy)))
@@ -4851,8 +4584,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Cf-X",
                 diff_sign & !lbx &
                 (ex > ey + 2) & (fx < ey) & (gx > gy) &
-                (ex < gy + (p+1)) &
-                (
+                (ex < gy + (p+1)) & (
                     (fx < fy) |
                     (lby & ((fx + 1 < ey) | (gx > fy))) |
                     (!lby & (fx == fy) &
@@ -4864,8 +4596,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Cf-Y",
                 diff_sign & !lby &
                 (ey > ex + 2) & (fy < ex) & (gy > gx) &
-                (ey < gx + (p+1)) &
-                (
+                (ey < gx + (p+1)) & (
                     (fy < fx) |
                     (lbx & ((fy + 1 < ex) | (gy > fx))) |
                     (!lbx & (fy == fx) &
@@ -4878,11 +4609,9 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY C - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-CA0-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + 1) &
+                (same_sign != lbx) & !lby & (ex == ey + 1) &
                 (ex > fx + 2) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (same_sign & !lbx & (ex == gx) & (ex == fx + p)) |
                     ((ex > fy + 3) & ((ex > fx + 3) | ((fx + 1 > gx) & (gx > fy))))
                 )
@@ -4890,11 +4619,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA0-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + 1) &
+                (same_sign != lby) & !lbx & (ey == ex + 1) &
                 (ey > fy + 2) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (same_sign & !lby & (ey == gy) & (ey == fy + p)) |
                     ((ey > fx + 3) & ((ey > fy + 3) | ((fy + 1 > gy) & (gy > fx))))
                 )
@@ -4903,16 +4630,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CA1-X",
-                (same_sign != lbx) & lby &
-                (ex == ey + 1) &
+                (same_sign != lbx) & lby & (ex == ey + 1) &
                 (fx + 1 < fy) & (fx + 2 > gx) & (gx > gy) &
                 (ex < gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fy-1:fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA1-Y",
-                (same_sign != lby) & lbx &
-                (ey == ex + 1) &
+                (same_sign != lby) & lbx & (ey == ex + 1) &
                 (fy + 1 < fx) & (fy + 2 > gy) & (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -4920,16 +4645,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CA2-X",
-                diff_sign & (lbx == lby) &
-                (ex == ey + 1) &
+                diff_sign & (lbx == lby) & (ex == ey + 1) &
                 (fx + 1 < ey) & (fx > fy + 1) &
                 (gx < fy + 1) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex-1, fx-1:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA2-Y",
-                diff_sign & (lby == lbx) &
-                (ey == ex + 1) &
+                diff_sign & (lby == lbx) & (ey == ex + 1) &
                 (fy + 1 < ex) & (fy > fx + 1) &
                 (gy < fx + 1) & (gy > gx)
             ) do lemma
@@ -4937,31 +4660,27 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CA3-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & !lby & (ex == ey + 1) &
                 (ex > fx + 2) & (fx > gx) & (gx > fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA3-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & !lbx & (ey == ex + 1) &
                 (ey > fy + 2) & (fy > gy) & (gy > fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CA4-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & !lby & (ex == ey + 1) &
                 (fx + 1 < fy) & (fx + 1 > gx) & (gx > gy) &
                 (ey > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, fy-1:fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA4-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & !lbx & (ey == ex + 1) &
                 (fy + 1 < fx) & (fy + 1 > gy) & (gy > gx) &
                 (ex > fx + 2)
             ) do lemma
@@ -4969,8 +4688,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CA5-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & lby & (ex == ey + 1) &
                 (fx > gx + 2) & (fx > fy) &
                 (gx < fy) & (gx > gy)
             ) do lemma
@@ -4980,8 +4698,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, gy+1:fx-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA5-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & lbx & (ey == ex + 1) &
                 (fy > gy + 2) & (fy > fx) &
                 (gy < fx) & (gy > gx)
             ) do lemma
@@ -4992,8 +4709,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CA6-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
+                diff_sign & !lbx & lby & (ex == ey + 1) &
                 (fx > gx) & (fx < fy) &
                 (gx + 2 < fy) & (gx > gy)
             ) do lemma
@@ -5003,8 +4719,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fy, gy+1:fy-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA6-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
+                diff_sign & !lby & lbx & (ey == ex + 1) &
                 (fy > gy) & (fy < fx) &
                 (gy + 2 < fx) & (gy > gx)
             ) do lemma
@@ -5015,16 +4730,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CA7-X",
-                diff_sign & lbx & lby &
-                (ex == ey + 1) &
+                diff_sign & lbx & lby & (ex == ey + 1) &
                 (ex > fx + 2) & (fx > fy) & (fx > gy) &
                 (gx > fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CA7-Y",
-                diff_sign & lby & lbx &
-                (ey == ex + 1) &
+                diff_sign & lby & lbx & (ey == ex + 1) &
                 (ey > fy + 2) & (fy > fx) & (fy > gx) &
                 (gy > fx) & (gy > gx)
             ) do lemma
@@ -5032,16 +4745,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CB0-X",
-                same_sign & !lbx & lby &
-                (ex == ey) &
+                same_sign & !lbx & lby & (ex == ey) &
                 (fx > fy) & (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB0-Y",
-                same_sign & !lby & lbx &
-                (ey == ex) &
+                same_sign & !lby & lbx & (ey == ex) &
                 (fy > fx) & (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -5049,16 +4760,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CB1-X",
-                same_sign & lbx & !lby &
-                (ex == ey) &
+                same_sign & lbx & !lby & (ex == ey) &
                 (fx < fy) & (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB1-Y",
-                same_sign & lby & !lbx &
-                (ey == ex) &
+                same_sign & lby & !lbx & (ey == ex) &
                 (fy < fx) & (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -5066,8 +4775,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CB2-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey) &
+                diff_sign & !lbx & !lby & (ex == ey) &
                 (fx > fy + 2) &
                 (gx < fy) & (gx > gy)
             ) do lemma
@@ -5077,8 +4785,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, fy:fx-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB2-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex) &
+                diff_sign & !lby & !lbx & (ey == ex) &
                 (fy > fx + 2) &
                 (gy < fx) & (gy > gx)
             ) do lemma
@@ -5089,23 +4796,20 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CB3-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) &
+                diff_sign & lbx & !lby & (ex == ey) &
                 (ex > fx + 2) & (fx > gx) & (gx > fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB3-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) &
+                diff_sign & lby & !lbx & (ey == ex) &
                 (ey > fy + 2) & (fy > gy) & (gy > fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, fy, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CB4-X",
-                diff_sign & lbx & lby &
-                (ex == ey) &
+                diff_sign & lbx & lby & (ex == ey) &
                 (fx + 2 < fy) & (fx > gx) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, fy-1, gy-1, gy), pos_zero)
@@ -5114,8 +4818,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fy, fx:fy-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB4-Y",
-                diff_sign & lby & lbx &
-                (ey == ex) &
+                diff_sign & lby & lbx & (ey == ex) &
                 (fy + 2 < fx) & (fy > gy) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, fx-1, gx-1, gx), pos_zero)
@@ -5125,8 +4828,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CB5-X",
-                diff_sign & lbx & lby &
-                (ex == ey) &
+                diff_sign & lbx & lby & (ex == ey) &
                 (fx > fy + 2) &
                 (gx < fy) & (gx > gy)
             ) do lemma
@@ -5136,8 +4838,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(~sx, 1, fx, fy:fx-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB5-Y",
-                diff_sign & lby & lbx &
-                (ey == ex) &
+                diff_sign & lby & lbx & (ey == ex) &
                 (fy > fx + 2) &
                 (gy < fx) & (gy > gx)
             ) do lemma
@@ -5148,8 +4849,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CC0-X",
-                (same_sign == lbx) & !lby &
-                (fx == ey) &
+                (same_sign == lbx) & !lby & (fx == ey) &
                 (gx < ey) & (gx > gy) &
                 (ex < gy + p) &
                 ((gx > fy + 1) | (diff_sign & !lbx & (fy == gy)))
@@ -5158,8 +4858,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC0-Y",
-                (same_sign == lby) & !lbx &
-                (fy == ex) &
+                (same_sign == lby) & !lbx & (fy == ex) &
                 (gy < ex) & (gy > gx) &
                 (ey < gx + p) &
                 ((gy > fx + 1) | (diff_sign & !lby & (fx == gx)))
@@ -5169,8 +4868,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CC1-X",
-                same_sign & lbx & lby &
-                (fx == ey) &
+                same_sign & lbx & lby & (fx == ey) &
                 (fx > gx) & (gx > fy + 1) &
                 (ex < gy + (p-1))
             ) do lemma
@@ -5178,8 +4876,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC1-Y",
-                same_sign & lby & lbx &
-                (fy == ex) &
+                same_sign & lby & lbx & (fy == ex) &
                 (fy > gy) & (gy > fx + 1) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -5188,8 +4885,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CC2-X",
-                same_sign & lbx & lby &
-                (fx == ey) &
+                same_sign & lbx & lby & (fx == ey) &
                 (gx < fy) & (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
@@ -5198,8 +4894,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gy:ey-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC2-Y",
-                same_sign & lby & lbx &
-                (fy == ex) &
+                same_sign & lby & lbx & (fy == ex) &
                 (gy < fx) & (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -5209,8 +4904,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CC3-X",
-                diff_sign & !lbx & lby &
-                (fx == ey) &
+                diff_sign & !lbx & lby & (fx == ey) &
                 (gx < fy) & (gx > gy) &
                 (ex < gy + p)
             ) do lemma
@@ -5219,8 +4913,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gy:fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC3-Y",
-                diff_sign & !lby & lbx &
-                (fy == ex) &
+                diff_sign & !lby & lbx & (fy == ex) &
                 (gy < fx) & (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -5230,8 +4923,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CC4-X",
-                diff_sign & !lbx & lby &
-                (fx == ey) &
+                diff_sign & !lbx & lby & (fx == ey) &
                 (gx > fy + 1) & (gx > gy + 1) &
                 (ex < gy + (p+1))
             ) do lemma
@@ -5239,8 +4931,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC4-Y",
-                diff_sign & !lby & lbx &
-                (fy == ex) &
+                diff_sign & !lby & lbx & (fy == ex) &
                 (gy > fx + 1) & (gy > gx + 1) &
                 (ey < gx + (p+1))
             ) do lemma
@@ -5249,8 +4940,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CD0-X",
-                diff_sign & (lbx == lby) &
-                (fx + 1 == ey) &
+                diff_sign & (lbx == lby) & (fx + 1 == ey) &
                 (fx > gx) & (gx > fy) & (gx > gy) &
                 (ex < gy + (p+1)) &
                 ((!lbx & !lby) | (ex == fx + 2))
@@ -5258,8 +4948,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex-1, gx:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CD0-Y",
-                diff_sign & (lby == lbx) &
-                (fy + 1 == ex) &
+                diff_sign & (lby == lbx) & (fy + 1 == ex) &
                 (fy > gy) & (gy > fx) & (gy > gx) &
                 (ey < gx + (p+1)) &
                 ((!lby & !lbx) | (ey == fy + 2))
@@ -5268,16 +4957,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CD1-X",
-                same_sign & lbx & !lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & !lby & (fx + 1 == ey) &
                 (fx > gx) & (gx > fy) & (fy + 1 > gy) &
                 (ex < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CD1-Y",
-                same_sign & lby & !lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & !lbx & (fy + 1 == ex) &
                 (fy > gy) & (gy > fx) & (fx + 1 > gx) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -5285,16 +4972,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CD2-X",
-                same_sign & lbx & !lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & !lby & (fx + 1 == ey) &
                 (gx < fy) & (gx > gy) &
                 (ex < gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fy:ey-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CD2-Y",
-                same_sign & lby & !lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & !lbx & (fy + 1 == ex) &
                 (gy < fx) & (gy > gx) &
                 (ey < gx + (p-1))
             ) do lemma
@@ -5302,8 +4987,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CD3-X",
-                diff_sign & !lbx & !lby &
-                (fx + 1 == ey) &
+                diff_sign & !lbx & !lby & (fx + 1 == ey) &
                 (ex > ey + 1) &
                 (gx < fy) & (gx > gy) &
                 (ex < gy + (p+1))
@@ -5311,8 +4995,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fy:ey-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CD3-Y",
-                diff_sign & !lby & !lbx &
-                (fy + 1 == ex) &
+                diff_sign & !lby & !lbx & (fy + 1 == ex) &
                 (ey > ex + 1) &
                 (gy < fx) & (gy > gx) &
                 (ey < gx + (p+1))
@@ -5323,8 +5006,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CE0-X",
                 same_sign &
                 (fx + 1 > gx) & (gx > gy) & (gx > fy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lbx & lby & (ex == ey + 1) & (fx > gx)) |
                     ((lbx == lby) & (ex == ey))
                 )
@@ -5334,8 +5016,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CE0-Y",
                 same_sign &
                 (fy + 1 > gy) & (gy > gx) & (gy > fx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lby & lbx & (ey == ex + 1) & (fy > gy)) |
                     ((lby == lbx) & (ey == ex))
                 )
@@ -5345,8 +5026,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CE1-X",
                 diff_sign & !lbx &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (!lby & (ex == ey) & (gx > gy) & ((fy == gy) | (gx > fy + 1))) |
                     (lby & (ex == ey + 1) & (gx > fy + 1) & (gx > gy + 1))
                 )
@@ -5357,8 +5037,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CE1-Y",
                 diff_sign & !lby &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (!lbx & (ey == ex) & (gy > gx) & ((fx == gx) | (gy > fx + 1))) |
                     (lbx & (ey == ex + 1) & (gy > fx + 1) & (gy > gx + 1))
                 )
@@ -5372,8 +5051,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lbx != lby) &
                 (ex > fx + 3) & (fx > gx + 1) & (fx > fy) &
                 (gx < fy + 1) & (gx > gy) &
-                (ex < gy + (p+1)) &
-                (
+                (ex < gy + (p+1)) & (
                     (lbx & !lby & (ex == ey)) |
                     (!lbx & lby & (ex == ey + 2))
                 )
@@ -5384,8 +5062,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lby != lbx) &
                 (ey > fy + 3) & (fy > gy + 1) & (fy > fx) &
                 (gy < fx + 1) & (gy > gx) &
-                (ey < gx + (p+1)) &
-                (
+                (ey < gx + (p+1)) & (
                     (lby & !lbx & (ey == ex)) |
                     (!lby & lbx & (ey == ex + 2))
                 )
@@ -5397,8 +5074,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lbx != lby) &
                 (fx < fy) &
                 (gx < fy) & (gx > gy) &
-                (ex < gy + (p+1)) &
-                (
+                (ex < gy + (p+1)) & (
                     (lbx & !lby & (ex == ey) & (ey > fy + 3)) |
                     (!lbx & lby & (ex == ey + 2))
                 )
@@ -5409,8 +5085,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & (lby != lbx) &
                 (fy < fx) &
                 (gy < fx) & (gy > gx) &
-                (ey < gx + (p+1)) &
-                (
+                (ey < gx + (p+1)) & (
                     (lby & !lbx & (ey == ex) & (ex > fx + 3)) |
                     (!lby & lbx & (ey == ex + 2))
                 )
@@ -5419,11 +5094,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CF0-X",
-                (same_sign != lbx) &
-                (ex == ey + 2) &
+                (same_sign != lbx) & (ex == ey + 2) &
                 (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (lby & (fx < ey) &
                         ((fx > fy) | (diff_sign & lbx & (fx == fy) & (fx + 1 == gx)))) |
                     (!lby & (fx + 1 == ey) &
@@ -5434,11 +5107,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CF0-Y",
-                (same_sign != lby) &
-                (ey == ex + 2) &
+                (same_sign != lby) & (ey == ex + 2) &
                 (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (lbx & (fy < ex) &
                         ((fy > fx) | (diff_sign & lby & (fy == fx) & (fy + 1 == gy)))) |
                     (!lbx & (fy + 1 == ex) &
@@ -5450,16 +5121,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CF1-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey + 2) &
+                diff_sign & !lbx & !lby & (ex == ey + 2) &
                 (fx < fy) & (gx > gy) &
                 (ex < gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, ex-3, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CF1-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex + 2) &
+                diff_sign & !lby & !lbx & (ey == ex + 2) &
                 (fy < fx) & (gy > gx) &
                 (ey < gx + (p+1))
             ) do lemma
@@ -5467,8 +5136,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CF2-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) &
+                diff_sign & !lbx & lby & (ex == ey + 2) &
                 (fx < ey) & (fx > gy) &
                 (gx > fy) & (gx > gy) &
                 (ex < gy + (p+1))
@@ -5476,8 +5144,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CF2-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) &
+                diff_sign & !lby & lbx & (ey == ex + 2) &
                 (fy < ex) & (fy > gx) &
                 (gy > fx) & (gy > gx) &
                 (ey < gx + (p+1))
@@ -5486,11 +5153,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CG0-X",
-                same_sign & !lby &
-                (fx > fy + 1) &
+                same_sign & !lby & (fx > fy + 1) &
                 (gx < fy) & (gx > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -5500,11 +5165,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CG0-Y",
-                same_sign & !lbx &
-                (fy > fx + 1) &
+                same_sign & !lbx & (fy > fx + 1) &
                 (gy < fx) & (gy > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -5515,11 +5178,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CG1-X",
-                diff_sign & !lby &
-                (fx > fy + 1) &
+                diff_sign & !lby & (fx > fy + 1) &
                 (gx < fy) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -5529,11 +5190,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy+1:fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CG1-Y",
-                diff_sign & !lbx &
-                (fy > fx + 1) &
+                diff_sign & !lbx & (fy > fx + 1) &
                 (gy < fx) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -5546,8 +5205,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CZ0-X",
                 (same_sign != lbx) &
                 (ex > ey + 2) & (fx > gx) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lby & (fx + 1 == ey) & (gx + 2 < ey) & (gx < fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -5557,8 +5215,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CZ0-Y",
                 (same_sign != lby) &
                 (ey > ex + 2) & (fy > gy) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lbx & (fy + 1 == ex) & (gy + 2 < ex) & (gy < fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -5569,8 +5226,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CZ1-X",
                 (same_sign != lbx) &
                 (ex > fx + 2) & (fx + 1 > ey) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (fx == ey) |
                     (diff_sign & lbx & (fx + 1 == gx)) |
                     ((fx == ey + 1) & (fx > gx) & (gx > fy) & (lby | (gx == ey)))
@@ -5581,8 +5237,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CZ1-Y",
                 (same_sign != lby) &
                 (ey > fy + 2) & (fy + 1 > ex) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (fy == ex) |
                     (diff_sign & lby & (fy + 1 == gy)) |
                     ((fy == ex + 1) & (fy > gy) & (gy > fx) & (lbx | (gy == ex)))
@@ -5595,8 +5250,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx &
                 (ex > ey) &
                 (gx < fy + 1) & (gx > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lby & (fx == fy)) |
                     (lby & (fx + 1 == ey) & (fx > gx + 1))
                 )
@@ -5607,8 +5261,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby &
                 (ey > ex) &
                 (gy < fx + 1) & (gy > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lbx & (fy == fx)) |
                     (lbx & (fy + 1 == ex) & (fy > gy + 1))
                 )
@@ -5620,8 +5273,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lbx &
                 (ex > ey + 2) & (fx > gx) &
                 (gx < fy + 1) & (gx > gy) &
-                (ex < gy + (p+1)) &
-                (
+                (ex < gy + (p+1)) & (
                     (!lby & (fx == fy)) |
                     (lby & (fx + 1 == ey) & (fx > gx + 1))
                 )
@@ -5632,8 +5284,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lby &
                 (ey > ex + 2) & (fy > gy) &
                 (gy < fx + 1) & (gy > gx) &
-                (ey < gx + (p+1)) &
-                (
+                (ey < gx + (p+1)) & (
                     (!lbx & (fy == fx)) |
                     (lbx & (fy + 1 == ex) & (fy > gy + 1))
                 )
@@ -5644,10 +5295,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY C - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-CB6-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) &
-                (ex > fx + 3) & (gx > gy) &
-                (
+                diff_sign & lbx & !lby & (ex == ey) &
+                (ex > fx + 3) & (gx > gy) & (
                     (fx == fy) |
                     ((fx == gx + 1) & (gx == fy)) |
                     ((fx + 1 == gx) & (gx > fy))
@@ -5656,10 +5305,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, fx+1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB6-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) &
-                (ey > fy + 3) & (gy > gx) &
-                (
+                diff_sign & lby & !lbx & (ey == ex) &
+                (ey > fy + 3) & (gy > gx) & (
                     (fy == fx) |
                     ((fy == gy + 1) & (gy == fx)) |
                     ((fy + 1 == gy) & (gy > fx))
@@ -5669,10 +5316,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CB7-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) &
-                (gx > gy) &
-                (
+                diff_sign & lbx & !lby & (ex == ey) &
+                (gx > gy) & (
                     ((ex == fx + 3) & (fx > gx + 1) & (fx > fy) & (gx < fy + 1)) |
                     ((ey == fy + 3) & (fx < fy) & (gx < fy))
                 )
@@ -5680,10 +5325,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex-1, ey-3, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CB7-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) &
-                (gy > gx) &
-                (
+                diff_sign & lby & !lbx & (ey == ex) &
+                (gy > gx) & (
                     ((ey == fy + 3) & (fy > gy + 1) & (fy > fx) & (gy < fx + 1)) |
                     ((ex == fx + 3) & (fy < fx) & (gy < fx))
                 )
@@ -5693,13 +5336,11 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CE4-X",
                 (fx > gx) & (gx > gy) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (
                         diff_sign & !lbx &
                         (ex == ey + 2) &
-                        (gx < fy + 1) &
-                        (
+                        (gx < fy + 1) & (
                             (!lby & (fx == fy)) |
                             (lby & (fx + 1 == ey) & (fx > gx + 1))
                         )
@@ -5711,13 +5352,11 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CE4-Y",
                 (fy > gy) & (gy > gx) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (
                         diff_sign & !lby &
                         (ey == ex + 2) &
-                        (gy < fx + 1) &
-                        (
+                        (gy < fx + 1) & (
                             (!lbx & (fy == fx)) |
                             (lbx & (fy + 1 == ex) & (fy > gy + 1))
                         )
@@ -5730,13 +5369,11 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-CE5-X",
                 (ex > gx) & (fx + 1 < ey) & (fx + 1 > fy) & (gx > gy) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (fx == fy) |
                     (same_sign & lbx & lby & (fx + 1 == gx)) |
                     ((fx == gx + 1) & (gx == fy))
-                ) &
-                (
+                ) & (
                     (diff_sign & !lbx & lby & (ex == ey + 2)) |
                     (same_sign & (lbx == lby) & (ex == ey))
                 )
@@ -5745,13 +5382,11 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-CE5-Y",
                 (ey > gy) & (fy + 1 < ex) & (fy + 1 > fx) & (gy > gx) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (fy == fx) |
                     (same_sign & lby & lbx & (fy + 1 == gy)) |
                     ((fy == gy + 1) & (gy == fx))
-                ) &
-                (
+                ) & (
                     (diff_sign & !lby & lbx & (ey == ex + 2)) |
                     (same_sign & (lby == lbx) & (ey == ex))
                 )
@@ -5760,11 +5395,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CF3-X",
-                (same_sign != lbx) &
-                (ex == ey + 2) &
+                (same_sign != lbx) & (ex == ey + 2) &
                 (fx > gx) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lby & (fx + 1 == ey) & (gx + 2 < ey) & (gx < fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -5772,11 +5405,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ey, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CF3-Y",
-                (same_sign != lby) &
-                (ey == ex + 2) &
+                (same_sign != lby) & (ey == ex + 2) &
                 (fy > gy) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lbx & (fy + 1 == ex) & (gy + 2 < ex) & (gy < fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -5787,8 +5418,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CK0-X",
                 diff_sign &
                 (fy > gy) &
-                (ex < gy + (p+1)) &
-                (
+                (ex < gy + (p+1)) & (
                     (!lbx & lby & (ex == gx) & (ex == fx + p) & (ex == ey + 2)) |
                     ((gx == ey) &
                         ((!lbx & !lby & (fx == ey)) | (lbx & (ex == gx + 1) & (fx + 1 == gx))))
@@ -5799,8 +5429,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CK0-Y",
                 diff_sign &
                 (fx > gx) &
-                (ey < gx + (p+1)) &
-                (
+                (ey < gx + (p+1)) & (
                     (!lby & lbx & (ey == gy) & (ey == fy + p) & (ey == ex + 2)) |
                     ((gy == ex) &
                         ((!lby & !lbx & (fy == ex)) | (lby & (ey == gy + 1) & (fy + 1 == gy))))
@@ -5846,11 +5475,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CN-X",
-                same_sign & lby &
-                (gx == fy + 1) &
+                same_sign & lby & (gx == fy + 1) &
                 (fy > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lbx & (ex == ey + 1) & (fx == gx)) |
                     (lbx & (fx == ey))
                 )
@@ -5859,11 +5486,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CN-Y",
-                same_sign & lbx &
-                (gy == fx + 1) &
+                same_sign & lbx & (gy == fx + 1) &
                 (fx > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lby & (ey == ex + 1) & (fy == gy)) |
                     (lby & (fy == ex))
                 )
@@ -5873,11 +5498,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CO-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) &
+                (same_sign != lbx) & (ex == fx + 2) &
                 (gx > gy) & (gx > fy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (diff_sign & lbx & (gx == fx + 1) & (fx > ey)) |
                     ((fx > gx) & ((!lby & (fx == ey)) | ((fx == ey + 1) & (lby | (gx == ey)))))
                 )
@@ -5885,11 +5508,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CO-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) &
+                (same_sign != lby) & (ey == fy + 2) &
                 (gy > gx) & (gy > fx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (diff_sign & lby & (gy == fy + 1) & (fy > ex)) |
                     ((fy > gy) & ((!lbx & (fy == ex)) | ((fy == ex + 1) & (lbx | (gy == ex)))))
                 )
@@ -5957,11 +5578,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CAI0-X",
-                same_sign & !lbx &
-                (ex == ey + 1) &
+                same_sign & !lbx & (ex == ey + 1) &
                 (gx + 1 < fy) & (gx > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -5971,11 +5590,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gy+1:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CAI0-Y",
-                same_sign & !lby &
-                (ey == ex + 1) &
+                same_sign & !lby & (ey == ex + 1) &
                 (gy + 1 < fx) & (gy > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -5986,11 +5603,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CAI1-X",
-                diff_sign & lbx &
-                (ex == ey + 1) &
+                diff_sign & lbx & (ex == ey + 1) &
                 (gx + 1 < fy) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -6000,11 +5615,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ey, gy+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CAI1-Y",
-                diff_sign & lby &
-                (ey == ex + 1) &
+                diff_sign & lby & (ey == ex + 1) &
                 (gy + 1 < fx) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -6035,8 +5648,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & lby &
                 (ex == ey + 1) &
                 (gx > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     ((fx == gx) & (fx > fy + 1)) |
                     ((fx == fy + 1) & (gx == fy))
                 )
@@ -6047,8 +5659,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby & lbx &
                 (ey == ex + 1) &
                 (gy > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     ((fy == gy) & (fy > fx + 1)) |
                     ((fy == fx + 1) & (gy == fx))
                 )
@@ -6142,8 +5753,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CAP-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + 1) & (ex == fx + 3) &
+                (same_sign != lbx) & !lby & (ex == ey + 1) & (ex == fx + 3) &
                 (fx > fy) &
                 (gx + 3 < ey) & (gx < fy + 1) & (gx > gy) &
                 (ex < gy + p)
@@ -6151,8 +5761,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-3:ex-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CAP-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + 1) & (ey == fy + 3) &
+                (same_sign != lby) & !lbx & (ey == ex + 1) & (ey == fy + 3) &
                 (fy > fx) &
                 (gy + 3 < ex) & (gy < fx + 1) & (gy > gx) &
                 (ey < gx + p)
@@ -6161,9 +5770,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CAQ-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
-                (
+                diff_sign & !lbx & lby & (ex == ey + 1) & (
                     ((gx == fy + 1) & (fy > gy)) |
                     ((gx == gy + 1) & (gy == fy + 1))
                 )
@@ -6174,9 +5781,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, gy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CAQ-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
-                (
+                diff_sign & !lby & lbx & (ey == ex + 1) & (
                     ((gy == fx + 1) & (fx > gx)) |
                     ((gy == gx + 1) & (gx == fx + 1))
                 )
@@ -6348,16 +5953,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBJ-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey) & (fx == fy + 1) &
+                diff_sign & !lbx & !lby & (ex == ey) & (fx == fy + 1) &
                 (gx + 1 < fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, gx:fy, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, fy+1, gy:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBJ-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex) & (fy == fx + 1) &
+                diff_sign & !lby & !lbx & (ey == ex) & (fy == fx + 1) &
                 (gy + 1 < fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, gy:fx, gx), pos_zero)
@@ -6367,8 +5970,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CBL0-X",
                 diff_sign & !lby &
                 (ex == ey) &
-                (gx > fy + 2) & (fy > gy) &
-                (
+                (gx > fy + 2) & (fy > gy) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -6378,8 +5980,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CBL0-Y",
                 diff_sign & !lbx &
                 (ey == ex) &
-                (gy > fx + 2) & (fx > gx) &
-                (
+                (gy > fx + 2) & (fx > gx) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -6428,8 +6029,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBO0-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 2) &
                 (fx > fy + 1) &
                 (gx < fy) & (gx > gy)
             ) do lemma
@@ -6438,8 +6038,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, gy+1:fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBO0-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 2) &
                 (fy > fx + 1) &
                 (gy < fx) & (gy > gx)
             ) do lemma
@@ -6449,16 +6048,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBO1-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 2) &
                 (fx > gx) & (gx > fy + 1) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx-1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBO1-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 2) &
                 (fy > gy) & (gy > fx + 1) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, gy-1, gx), pos_zero)
@@ -6656,8 +6253,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CEG-X",
                 (same_sign != lbx) &
                 (fx > gx) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lby & (ex == ey + 1) & (fx == fy) & (fy + 3 == ex)) |
                     (lby & (ex == ey + 2) & (ex == fx + 2) & (gx > fy))
                 )
@@ -6667,8 +6263,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CEG-Y",
                 (same_sign != lby) &
                 (fy > gy) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lbx & (ey == ex + 1) & (fy == fx) & (fx + 3 == ey)) |
                     (lbx & (ey == ex + 2) & (ey == fy + 2) & (gy > fx))
                 )
@@ -6679,8 +6274,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CEI0-X",
                 (fx + 1 == fy) &
                 (gx < fy) & (gx > gy) &
-                (ey < gy + (p-1)) &
-                (
+                (ey < gy + (p-1)) & (
                     (same_sign & lbx & !lby & (ex + 1 == ey)) |
                     ((same_sign != lbx) & lby & (ex == ey + 1))
                 )
@@ -6690,8 +6284,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CEI0-Y",
                 (fy + 1 == fx) &
                 (gy < fx) & (gy > gx) &
-                (ex < gx + (p-1)) &
-                (
+                (ex < gx + (p-1)) & (
                     (same_sign & lby & !lbx & (ey + 1 == ex)) |
                     ((same_sign != lby) & lbx & (ey == ex + 1))
                 )
@@ -6702,8 +6295,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CEI1-X",
                 diff_sign & !lby &
                 (gx < fy + 1) & (gx > gy) &
-                (ey > fy + 2) &
-                (
+                (ey > fy + 2) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == fy)) |
                     (lbx & (ex == ey) & (ey == fy + 3) &
                         ((fx == fy) | ((fx + 1 == fy) & (fy == gx))))
@@ -6714,8 +6306,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CEI1-Y",
                 diff_sign & !lbx &
                 (gy < fx + 1) & (gy > gx) &
-                (ex > fx + 2) &
-                (
+                (ex > fx + 2) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == fx)) |
                     (lby & (ey == ex) & (ex == fx + 3) &
                         ((fy == fx) | ((fy + 1 == fx) & (fx == gy))))
@@ -6725,11 +6316,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CGH0-X",
-                same_sign & !lby &
-                (gx == fy) &
+                same_sign & !lby & (gx == fy) &
                 (fx > fy + 2) & (gx > gy) &
-                (ex < gy + (p-1)) &
-                (
+                (ex < gy + (p-1)) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -6738,11 +6327,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gy:gx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CGH0-Y",
-                same_sign & !lbx &
-                (gy == fx) &
+                same_sign & !lbx & (gy == fx) &
                 (fy > fx + 2) & (gy > gx) &
-                (ey < gx + (p-1)) &
-                (
+                (ey < gx + (p-1)) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -6752,11 +6339,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CGH1-X",
-                diff_sign & !lby &
-                (gx == fy) &
+                diff_sign & !lby & (gx == fy) &
                 (fx > fy + 2) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -6766,11 +6351,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CGH1-Y",
-                diff_sign & !lbx &
-                (gy == fx) &
+                diff_sign & !lbx & (gy == fx) &
                 (fy > fx + 2) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -6781,10 +6364,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CGN-X",
-                same_sign & !lby &
-                (gx == fy + 1) &
-                (ex < gy + p) &
-                (
+                same_sign & !lby & (gx == fy + 1) &
+                (ex < gy + p) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -6794,10 +6375,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CGN-Y",
-                same_sign & !lbx &
-                (gy == fx + 1) &
-                (ey < gx + p) &
-                (
+                same_sign & !lbx & (gy == fx + 1) &
+                (ey < gx + p) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -6810,10 +6389,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY C - CODIMENSION 3
 
             checker("SELBTZ-TwoSum-CC5-X",
-                diff_sign & !lbx & !lby &
-                (fx == ey) &
-                (ex < gy + (p+1)) &
-                (
+                diff_sign & !lbx & !lby & (fx == ey) &
+                (ex < gy + (p+1)) & (
                     ((ex == gx) & (ex == fx + p) & (ey == gy) & (ey == fy + p)) |
                     ((fx == gx) & (fy == gy))
                 )
@@ -6821,10 +6398,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, gy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CC5-Y",
-                diff_sign & !lby & !lbx &
-                (fy == ex) &
-                (ey < gx + (p+1)) &
-                (
+                diff_sign & !lby & !lbx & (fy == ex) &
+                (ey < gx + (p+1)) & (
                     ((ey == gy) & (ey == fy + p) & (ex == gx) & (ex == fx + p)) |
                     ((fy == gy) & (fx == gx))
                 )
@@ -6852,9 +6427,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CEQ-X",
-                diff_sign & !lby &
-                (fy > gy) &
-                (
+                diff_sign & !lby & (fy > gy) & (
                     (!lbx & (ex == ey + 1) & (ex == gx) & (ex == fx + p) & (ey == fy + 2)) |
                     ((ex == ey) & (gx == fy + 2) &
                         ((!lbx & (fx == gx)) | (lbx & (ex == gx + 1) & (fx + 1 == gx))))
@@ -6863,9 +6436,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, fy+1, gy:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CEQ-Y",
-                diff_sign & !lbx &
-                (fx > gx) &
-                (
+                diff_sign & !lbx & (fx > gx) & (
                     (!lby & (ey == ex + 1) & (ey == gy) & (ey == fy + p) & (ex == fx + 2)) |
                     ((ey == ex) & (gy == fx + 2) &
                         ((!lby & (fy == gy)) | (lby & (ey == gy + 1) & (fy + 1 == gy))))
@@ -7087,8 +6658,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CALV-X",
                 diff_sign & lby &
                 (ex == ey + 1) & (fy + 1 == gy) &
-                (gx > gy + 1) &
-                (
+                (gx > gy + 1) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -7098,8 +6668,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CALV-Y",
                 diff_sign & lbx &
                 (ey == ex + 1) & (fx + 1 == gx) &
-                (gy > gx + 1) &
-                (
+                (gy > gx + 1) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -7174,31 +6743,27 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBHJ0-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey) & (fx == fy + 1) & (gx == fy) &
-                (gx > gy)
+                diff_sign & !lbx & !lby & (ex == ey) & (fx == fy + 1) &
+                (gx == fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, gx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHJ0-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex) & (fy == fx + 1) & (gy == fx) &
-                (gy > gx)
+                diff_sign & !lby & !lbx & (ey == ex) & (fy == fx + 1) &
+                (gy == fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, gy, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBHJ1-X",
-                diff_sign & lbx & lby &
-                (ex == ey) & (fx == fy + 1) & (gx == fy) &
-                (gx > gy)
+                diff_sign & lbx & lby & (ex == ey) & (fx == fy + 1) &
+                (gx == fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(~sx, gx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHJ1-Y",
-                diff_sign & lby & lbx &
-                (ey == ex) & (fy == fx + 1) & (gy == fx) &
-                (gy > gx)
+                diff_sign & lby & lbx & (ey == ex) & (fy == fx + 1) &
+                (gy == fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(~sy, gy, gx), pos_zero)
             end
@@ -7223,34 +6788,30 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBJL0-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey) & (fx == fy + 1) & (gx + 1 == fy) &
-                (gx > gy)
+                diff_sign & !lbx & !lby & (ex == ey) & (fx == fy + 1) &
+                (gx + 1 == fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, gx:gx+1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(sx, 0, gx+2, gy:gx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBJL0-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex) & (fy == fx + 1) & (gy + 1 == fx) &
-                (gy > gx)
+                diff_sign & !lby & !lbx & (ey == ex) & (fy == fx + 1) &
+                (gy + 1 == fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, gy:gy+1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(sy, 0, gy+2, gx:gy-1, gx), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-CBJL1-X",
-                diff_sign & lbx & lby &
-                (ex == ey) & (fx == fy + 1) & (gx + 1 == fy) &
-                (gx > gy)
+                diff_sign & lbx & lby & (ex == ey) & (fx == fy + 1) &
+                (gx + 1 == fy) & (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(~sx, gx:gx+1, gy), pos_zero)
                 add_case!(lemma, SELBTZRange(~sx, 0, gx+2, gy:gx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBJL1-Y",
-                diff_sign & lby & lbx &
-                (ey == ex) & (fy == fx + 1) & (gy + 1 == fx) &
-                (gy > gx)
+                diff_sign & lby & lbx & (ey == ex) & (fy == fx + 1) &
+                (gy + 1 == fx) & (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(~sy, gy:gy+1, gx), pos_zero)
                 add_case!(lemma, SELBTZRange(~sy, 0, gy+2, gx:gy-1, gx), pos_zero)
@@ -7274,8 +6835,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CBLU-X",
                 diff_sign & !lby &
                 (ex == ey) & (fy == gy) &
-                (gx > gy + 1) &
-                (
+                (gx > gy + 1) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -7285,8 +6845,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CBLU-Y",
                 diff_sign & !lbx &
                 (ey == ex) & (fx == gx) &
-                (gy > gx + 1) &
-                (
+                (gy > gx + 1) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -7331,10 +6890,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBRW-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) &
-                (fx > gx + 1) & (gx + 1 < fy) & (gx > gy) &
-                (
+                diff_sign & lbx & !lby & (ex == ey) &
+                (fx > gx + 1) & (gx + 1 < fy) & (gx > gy) & (
                     ((ex == fx + 2) & (ey == fy + 3)) |
                     ((ex == fx + 3) & (ey == fy + 2))
                 )
@@ -7345,10 +6902,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-2, gy+1:ex-4, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBRW-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) &
-                (fy > gy + 1) & (gy + 1 < fx) & (gy > gx) &
-                (
+                diff_sign & lby & !lbx & (ey == ex) &
+                (fy > gy + 1) & (gy + 1 < fx) & (gy > gx) & (
                     ((ey == fy + 2) & (ex == fx + 3)) |
                     ((ey == fy + 3) & (ex == fx + 2))
                 )
@@ -7468,10 +7023,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CAILQ-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 1) &
-                (gx > gy) &
-                (
+                diff_sign & !lbx & lby & (ex == ey + 1) &
+                (gx > gy) & (
                     ((fx == gx + 1) & (gx + 2 == fy)) |
                     ((fx == gx + 2) & (gx + 1 == fy))
                 )
@@ -7481,10 +7034,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, gx+2, gy+1:gx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CAILQ-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 1) &
-                (gy > gx) &
-                (
+                diff_sign & !lby & lbx & (ey == ex + 1) &
+                (gy > gx) & (
                     ((fy == gy + 1) & (gy + 2 == fx)) |
                     ((fy == gy + 2) & (gy + 1 == fx))
                 )
@@ -7495,10 +7046,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBILQ-X",
-                diff_sign &
-                (ex == ey) &
-                (fy + 1 > gy) &
-                (
+                diff_sign & (ex == ey) &
+                (fy + 1 > gy) & (
                     (lbx & lby & (fx + 1 == fy) & (gx == fy)) |
                     (!lby & (gx == fy + 1) &
                         ((!lbx & (fx == gx)) | (lbx & (ex == gx + 1) & (fx + 1 == gx))))
@@ -7508,10 +7057,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, gy+1:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBILQ-Y",
-                diff_sign &
-                (ey == ex) &
-                (fx + 1 > gx) &
-                (
+                diff_sign & (ey == ex) &
+                (fx + 1 > gx) & (
                     (lby & lbx & (fy + 1 == fx) & (gy == fx)) |
                     (!lbx & (gy == fx + 1) &
                         ((!lby & (fy == gy)) | (lby & (ey == gy + 1) & (fy + 1 == gy))))
@@ -7525,8 +7072,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lby &
                 (fx == fy + 2) & (gx == fy) &
                 (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -7539,8 +7085,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lbx &
                 (fy == fx + 2) & (gy == fx) &
                 (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -7759,8 +7304,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBHIO-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 2) &
                 (fx == fy + 2) & (gx == fy) &
                 (fy > gy)
             ) do lemma
@@ -7769,8 +7313,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, gy+1:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHIO-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 2) &
                 (fy == fx + 2) & (gy == fx) &
                 (fx > gx)
             ) do lemma
@@ -7780,8 +7323,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBHJO-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 2) &
                 (fx == fy + 1) & (gx == fy) &
                 (fy > gy)
             ) do lemma
@@ -7789,8 +7331,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, gy+1:fy-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHJO-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 2) &
                 (fy == fx + 1) & (gy == fx) &
                 (fx > gx)
             ) do lemma
@@ -7799,16 +7340,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBHJP-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (ex == fx + 3) &
+                diff_sign & lbx & !lby & (ex == ey) & (ex == fx + 3) &
                 (fx == gx + 1) & (gx == fy) &
                 (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBHJP-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (ey == fy + 3) &
+                diff_sign & lby & !lbx & (ey == ex) & (ey == fy + 3) &
                 (fy == gy + 1) & (gy == fx) &
                 (gy > gx)
             ) do lemma
@@ -7833,8 +7372,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-CBJOT-X",
-                diff_sign & lbx & !lby &
-                (ex == ey) & (fx == fy + 1) & (gx + 1 == fy) & (fy + 3 == ex) &
+                diff_sign & lbx & !lby & (ex == ey) & (fx == fy + 1) &
+                (gx + 1 == fy) & (fy + 3 == ex) &
                 (gx > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, fx+1, gy:gx-1, gy), pos_zero)
@@ -7843,8 +7382,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, fx, gy+1:gx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-CBJOT-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex) & (fy == fx + 1) & (gy + 1 == fx) & (fx + 3 == ey) &
+                diff_sign & lby & !lbx & (ey == ex) & (fy == fx + 1) &
+                (gy + 1 == fx) & (fx + 3 == ey) &
                 (gy > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, fy+1, gx:gy-1, gx), pos_zero)
@@ -7873,8 +7412,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CBRTW-X",
                 diff_sign & lbx & !lby &
                 (ex == ey) & (ey == fy + 2) &
-                (gx > gy) &
-                (
+                (gx > gy) & (
                     ((fx == gx + 1) & (gx + 2 == fy)) |
                     ((fx + 1 == gx) & (gx + 1 == fy))
                 )
@@ -7887,8 +7425,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-CBRTW-Y",
                 diff_sign & lby & !lbx &
                 (ey == ex) & (ex == fx + 2) &
-                (gy > gx) &
-                (
+                (gy > gx) & (
                     ((fy == gy + 1) & (gy + 2 == fx)) |
                     ((fy + 1 == gy) & (gy + 1 == fx))
                 )
@@ -7989,16 +7526,14 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY T - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-TA-X",
-                diff_sign & !lbx &
-                (fx == gx) &
+                diff_sign & !lbx & (fx == gx) &
                 (gx > ey + 1) &
                 (ex < gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-TA-Y",
-                diff_sign & !lby &
-                (fy == gy) &
+                diff_sign & !lby & (fy == gy) &
                 (gy > ex + 1) &
                 (ey < gx + p)
             ) do lemma
@@ -8008,11 +7543,9 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY T - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-TBC0-X",
-                diff_sign & !lby &
-                (gx == ey + 1) &
+                diff_sign & !lby & (gx == ey + 1) &
                 (ey > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -8020,11 +7553,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-TBC0-Y",
-                diff_sign & !lbx &
-                (gy == ex + 1) &
+                diff_sign & !lbx & (gy == ex + 1) &
                 (ex > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -8033,11 +7564,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-TBC1-X",
-                diff_sign & lby &
-                (gx == ey + 1) &
+                diff_sign & lby & (gx == ey + 1) &
                 (fy > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -8045,11 +7574,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-TBC1-Y",
-                diff_sign & lbx &
-                (gy == ex + 1) &
+                diff_sign & lbx & (gy == ex + 1) &
                 (fx > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -8060,14 +7587,11 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY T - CODIMENSION 3
 
             checker("SELBTZ-TwoSum-TBC2-X",
-                diff_sign &
-                (gx == ey + 1) &
-                (ex < gy + p) &
-                (
+                diff_sign & (gx == ey + 1) &
+                (ex < gy + p) & (
                     (!lby & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy))
-                ) &
-                (
+                ) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -8075,14 +7599,11 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gy, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-TBC2-Y",
-                diff_sign &
-                (gy == ex + 1) &
-                (ey < gx + p) &
-                (
+                diff_sign & (gy == ex + 1) &
+                (ey < gx + p) & (
                     (!lbx & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx))
-                ) &
-                (
+                ) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -8093,26 +7614,22 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY M - CODIMENSION 0
 
             checker("SELBTZ-TwoSum-Ma-X",
-                (same_sign != lbx) &
-                (ex > fx + 2) &
+                (same_sign != lbx) & (ex > fx + 2) &
                 (fx > ey) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-Ma-Y",
-                (same_sign != lby) &
-                (ey > fy + 2) &
+                (same_sign != lby) & (ey > fy + 2) &
                 (fy > ex) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy:fy+1, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-Mb-X",
-                (same_sign != lbx) &
-                (ex > fx + 2) &
+                (same_sign != lbx) & (ex > fx + 2) &
                 (gx < ey + 1) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (fx > ey + 1) |
                     ((fx == ey + 1) & ((gx < fy + 1) | (!lby & (gx < ey))))
                 )
@@ -8120,11 +7637,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-Mb-Y",
-                (same_sign != lby) &
-                (ey > fy + 2) &
+                (same_sign != lby) & (ey > fy + 2) &
                 (gy < ex + 1) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (fy > ex + 1) |
                     ((fy == ex + 1) & ((gy < fx + 1) | (!lbx & (gy < ex))))
                 )
@@ -8148,8 +7663,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Md-X",
                 (same_sign == lbx) &
                 (gx < ey + 1) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (fx > ey + 1) |
                     ((fx == ey + 1) & !lby & (gx < ey) & (gx > fy))
                 )
@@ -8159,8 +7673,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-Md-Y",
                 (same_sign == lby) &
                 (gy < ex + 1) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (fy > ex + 1) |
                     ((fy == ex + 1) & !lbx & (gy < ex) & (gy > fx))
                 )
@@ -8171,8 +7684,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY M - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-MA0-X",
-                same_sign & !lbx &
-                (gx == gy) &
+                same_sign & !lbx & (gx == gy) &
                 (ex > fx + 2) & (fx > ey + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-1), pos_zero)
@@ -8180,8 +7692,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MA0-Y",
-                same_sign & !lby &
-                (gy == gx) &
+                same_sign & !lby & (gy == gx) &
                 (ey > fy + 2) & (fy > ex + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-1), pos_zero)
@@ -8190,9 +7701,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MA1-X",
-                same_sign & lbx &
-                (gx == gy) &
-                (
+                same_sign & lbx & (gx == gy) & (
                     (fx > ey + 1) |
                     ((fx == ey + 1) & !lby & (ey == gy) & (ey == fy + p))
                 )
@@ -8202,9 +7711,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MA1-Y",
-                same_sign & lby &
-                (gy == gx) &
-                (
+                same_sign & lby & (gy == gx) & (
                     (fy > ex + 1) |
                     ((fy == ex + 1) & !lbx & (ex == gx) & (ex == fx + p))
                 )
@@ -8215,9 +7722,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MA2-X",
-                diff_sign & !lbx &
-                (gx == gy) &
-                (
+                diff_sign & !lbx & (gx == gy) & (
                     (fx > ey + 1) |
                     ((fx == ey + 1) & !lby & (ey == gy) & (ey == fy + p))
                 )
@@ -8226,9 +7731,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, gx+1:ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-MA2-Y",
-                diff_sign & !lby &
-                (gy == gx) &
-                (
+                diff_sign & !lby & (gy == gx) & (
                     (fy > ex + 1) |
                     ((fy == ex + 1) & !lbx & (ex == gx) & (ex == fx + p))
                 )
@@ -8238,8 +7741,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MA3-X",
-                diff_sign & lbx &
-                (gx == gy) &
+                diff_sign & lbx & (gx == gy) &
                 (ex > fx + 2) & (fx > ey + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-1), pos_zero)
@@ -8247,8 +7749,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-MA3-Y",
-                diff_sign & lby &
-                (gy == gx) &
+                diff_sign & lby & (gy == gx) &
                 (ey > fy + 2) & (fy > ex + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-1), pos_zero)
@@ -8257,8 +7758,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MB0-X",
-                (same_sign == lbx) &
-                (fx == ey + 1) &
+                (same_sign == lbx) & (fx == ey + 1) &
                 (fx > gx) & (gx > fy) & (gx > gy) &
                 (ex < gy + p) &
                 (lby | (gx == ey))
@@ -8266,8 +7766,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gx:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB0-Y",
-                (same_sign == lby) &
-                (fy == ex + 1) &
+                (same_sign == lby) & (fy == ex + 1) &
                 (fy > gy) & (gy > fx) & (gy > gx) &
                 (ey < gx + p) &
                 (lbx | (gy == ex))
@@ -8276,16 +7775,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MB1-X",
-                (same_sign == lbx) & !lby &
-                (fx == ey + 1) &
+                (same_sign == lbx) & !lby & (fx == ey + 1) &
                 (gx < fy + 1) & (gx > gy) &
                 (ex < gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-2:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB1-Y",
-                (same_sign == lby) & !lbx &
-                (fy == ex + 1) &
+                (same_sign == lby) & !lbx & (fy == ex + 1) &
                 (gy < fx + 1) & (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -8293,31 +7790,27 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MB2-X",
-                (same_sign == lbx) & !lby &
-                (fx == ey + 1) &
+                (same_sign == lbx) & !lby & (fx == ey + 1) &
                 (gx < gy) & (gy < ey)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-2:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB2-Y",
-                (same_sign == lby) & !lbx &
-                (fy == ex + 1) &
+                (same_sign == lby) & !lbx & (fy == ex + 1) &
                 (gy < gx) & (gx < ex)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy-2:fy, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MB3-X",
-                (same_sign == lbx) & lby &
-                (fx == ey + 1) &
+                (same_sign == lbx) & lby & (fx == ey + 1) &
                 (gx < fy) & (gx > gy) &
                 (ex < gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fy:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB3-Y",
-                (same_sign == lby) & lbx &
-                (fy == ex + 1) &
+                (same_sign == lby) & lbx & (fy == ex + 1) &
                 (gy < fx) & (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -8325,26 +7818,22 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MB4-X",
-                (same_sign == lbx) & lby &
-                (fx == ey + 1) &
+                (same_sign == lbx) & lby & (fx == ey + 1) &
                 (gx < gy) & (gy < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fy:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB4-Y",
-                (same_sign == lby) & lbx &
-                (fy == ex + 1) &
+                (same_sign == lby) & lbx & (fy == ex + 1) &
                 (gy < gx) & (gx < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fx:fy, gy), pos_zero)
             end
 
             checker("SELBTZ-TwoSum-MC0-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) &
+                (same_sign != lbx) & (ex == fx + 2) &
                 (gx < ey + 1) & (gx > gy) &
-                (ex < gy + p) &
-                (
+                (ex < gy + p) & (
                     (fx > ey + 1) |
                     ((fx == ey + 1) & ((gx < fy + 1) | (!lby & (gx < ey))))
                 )
@@ -8352,11 +7841,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ex-2, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MC0-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) &
+                (same_sign != lby) & (ey == fy + 2) &
                 (gy < ex + 1) & (gy > gx) &
-                (ey < gx + p) &
-                (
+                (ey < gx + p) & (
                     (fy > ex + 1) |
                     ((fy == ex + 1) & ((gy < fx + 1) | (!lbx & (gy < ex))))
                 )
@@ -8365,15 +7852,13 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MC1-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) &
+                (same_sign != lbx) & (ex == fx + 2) &
                 (fx > ey) & (gx < gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ±, ex, ex-2, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MC1-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) &
+                (same_sign != lby) & (ey == fy + 2) &
                 (fy > ex) & (gy < gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ±, ey, ey-2, gy), pos_zero)
@@ -8382,10 +7867,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY M - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-MB5-X",
-                (same_sign == lbx) &
-                (fx == ey + 1) &
-                (gx < gy) &
-                (
+                (same_sign == lbx) & (fx == ey + 1) &
+                (gx < gy) & (
                     (!lby & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy))
                 )
@@ -8393,10 +7876,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, gy:fx, gx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MB5-Y",
-                (same_sign == lby) &
-                (fy == ex + 1) &
-                (gy < gx) &
-                (
+                (same_sign == lby) & (fy == ex + 1) &
+                (gy < gx) & (
                     (!lbx & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx))
                 )
@@ -8405,8 +7886,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAB0-X",
-                same_sign & !lbx & !lby &
-                (fx == ey + 1) & (gx == gy) &
+                same_sign & !lbx & !lby & (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx-2), pos_zero)
@@ -8414,8 +7894,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB0-Y",
-                same_sign & !lby & !lbx &
-                (fy == ex + 1) & (gy == gx) &
+                same_sign & !lby & !lbx & (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fy-2), pos_zero)
@@ -8424,8 +7903,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAB1-X",
-                same_sign & !lbx & lby &
-                (fx == ey + 1) & (gx == gy) &
+                same_sign & !lbx & lby & (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fy), pos_zero)
@@ -8433,8 +7911,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB1-Y",
-                same_sign & !lby & lbx &
-                (fy == ex + 1) & (gy == gx) &
+                same_sign & !lby & lbx & (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gy+1:fx), pos_zero)
@@ -8443,8 +7920,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAB2-X",
-                same_sign & lbx & !lby &
-                (fx == ey + 1) & (gx == gy) &
+                same_sign & lbx & !lby & (fx == ey + 1) & (gx == gy) &
                 (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2, fx-1), pos_zero)
@@ -8453,8 +7929,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2, gy+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB2-Y",
-                same_sign & lby & !lbx &
-                (fy == ex + 1) & (gy == gx) &
+                same_sign & lby & !lbx & (fy == ex + 1) & (gy == gx) &
                 (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-2, fy-1), pos_zero)
@@ -8464,8 +7939,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAB3-X",
-                diff_sign & !lbx & !lby &
-                (fx == ey + 1) & (gx == gy) &
+                diff_sign & !lbx & !lby & (fx == ey + 1) & (gx == gy) &
                 (ey > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, fx-1), pos_zero)
@@ -8474,8 +7948,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-2, gx+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB3-Y",
-                diff_sign & !lby & !lbx &
-                (fy == ex + 1) & (gy == gx) &
+                diff_sign & !lby & !lbx & (fy == ex + 1) & (gy == gx) &
                 (ex > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, fy-1), pos_zero)
@@ -8485,8 +7958,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAB4-X",
-                diff_sign & lbx & !lby &
-                (fx == ey + 1) & (gx == gy) &
+                diff_sign & lbx & !lby & (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fx-2), pos_zero)
@@ -8494,8 +7966,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB4-Y",
-                diff_sign & lby & !lbx &
-                (fy == ex + 1) & (gy == gx) &
+                diff_sign & lby & !lbx & (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fy-2), pos_zero)
@@ -8504,8 +7975,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAB5-X",
-                diff_sign & lbx & lby &
-                (fx == ey + 1) & (gx == gy) &
+                diff_sign & lbx & lby & (fx == ey + 1) & (gx == gy) &
                 (ex > fx + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fy), pos_zero)
@@ -8513,8 +7983,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gx+1:ey), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAB5-Y",
-                diff_sign & lby & lbx &
-                (fy == ex + 1) & (gy == gx) &
+                diff_sign & lby & lbx & (fy == ex + 1) & (gy == gx) &
                 (ey > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gy+1:fx), pos_zero)
@@ -8523,8 +7992,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAC-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) & (gx == gy) &
+                (same_sign != lbx) & (ex == fx + 2) & (gx == gy) &
                 (fx > ey + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, gx+1:fx-1), pos_zero)
@@ -8532,8 +8000,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAC-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) & (gy == gx) &
+                (same_sign != lby) & (ey == fy + 2) & (gy == gx) &
                 (fy > ex + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, fy, gy+1:fy-1), pos_zero)
@@ -8542,10 +8009,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAD0-X",
-                same_sign & lby &
-                (gx == gy) &
-                (fy > gy) &
-                (
+                same_sign & lby & (gx == gy) &
+                (fy > gy) & (
                     (!lbx & (ex == fx + 2) & (ex == ey + 2)) |
                     (lbx & (fx == ey + 1))
                 )
@@ -8557,10 +8022,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gx+1:fy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAD0-Y",
-                same_sign & lbx &
-                (gy == gx) &
-                (fx > gx) &
-                (
+                same_sign & lbx & (gy == gx) &
+                (fx > gx) & (
                     (!lby & (ey == fy + 2) & (ey == ex + 2)) |
                     (lby & (fy == ex + 1))
                 )
@@ -8573,9 +8036,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MAD1-X",
-                diff_sign & lby &
-                (gx == gy) &
-                (
+                diff_sign & lby & (gx == gy) & (
                     (!lbx & (fx == ey + 1)) |
                     (lbx & (ex == fx + 2) & (ex == ey + 2))
                 )
@@ -8588,9 +8049,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), pos_zero)
             end
             checker("SELBTZ-TwoSum-MAD1-Y",
-                diff_sign & lbx &
-                (gy == gx) &
-                (
+                diff_sign & lbx & (gy == gx) & (
                     (!lby & (fy == ex + 1)) |
                     (lby & (ey == fy + 2) & (ey == ex + 2))
                 )
@@ -8604,16 +8063,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MBE-X",
-                (same_sign == lbx) & lby &
-                (fx == ey + 1) & (gx == fy) &
+                (same_sign == lbx) & lby & (fx == ey + 1) & (gx == fy) &
                 (gx > gy) &
                 (ex < gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fy+1:fx, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-MBE-Y",
-                (same_sign == lby) & lbx &
-                (fy == ex + 1) & (gy == fx) &
+                (same_sign == lby) & lbx & (fy == ex + 1) & (gy == fx) &
                 (gy > gx) &
                 (ey < gx + p)
             ) do lemma
@@ -8657,9 +8114,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-MADF-X",
-                same_sign & lby &
-                (gx == gy) & (fy + 1 == gy) &
-                (
+                same_sign & lby & (gx == gy) & (fy + 1 == gy) & (
                     (!lbx & (ex == fx + 2) & (ex == ey + 2)) |
                     (lbx & (fx == ey + 1))
                 )
@@ -8670,9 +8125,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-MADF-Y",
-                same_sign & lbx &
-                (gy == gx) & (fx + 1 == gx) &
-                (
+                same_sign & lbx & (gy == gx) & (fx + 1 == gx) & (
                     (!lby & (ey == fy + 2) & (ey == ex + 2)) |
                     (lby & (fy == ex + 1))
                 )
@@ -8768,8 +8221,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 1 - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-1A0-X",
-                (same_sign != lbx) & lby &
-                (gx == ey + 1) &
+                (same_sign != lbx) & lby & (gx == ey + 1) &
                 (fy > gy) &
                 (ex > fy + p) &
                 ((ex == fx + 2) | (diff_sign & lbx & (fx > gx)))
@@ -8778,8 +8230,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1A0-Y",
-                (same_sign != lby) & lbx &
-                (gy == ex + 1) &
+                (same_sign != lby) & lbx & (gy == ex + 1) &
                 (fx > gx) &
                 (ey > fx + p) &
                 ((ey == fy + 2) | (diff_sign & lby & (fy > gy)))
@@ -8789,8 +8240,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1A1-X",
-                same_sign & !lbx & lby &
-                (gx == ey + 1) &
+                same_sign & !lbx & lby & (gx == ey + 1) &
                 (ex > fx + 2) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -8799,8 +8249,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1A1-Y",
-                same_sign & !lby & lbx &
-                (gy == ex + 1) &
+                same_sign & !lby & lbx & (gy == ex + 1) &
                 (ey > fy + 2) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -8810,8 +8259,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1A2-X",
-                diff_sign & !lbx & lby &
-                (gx == ey + 1) &
+                diff_sign & !lbx & lby & (gx == ey + 1) &
                 (fx > gx) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -8819,8 +8267,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1A2-Y",
-                diff_sign & !lby & lbx &
-                (gy == ex + 1) &
+                diff_sign & !lby & lbx & (gy == ex + 1) &
                 (fy > gy) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -8829,8 +8276,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1B0-X",
-                !lby &
-                (ex == ey + p) &
+                !lby & (ex == ey + p) &
                 (fx > ey + 1) & (gx > ey + 1) &
                 (ey > fy + 2) & (fy > gy) &
                 (same_sign | (fx > gx))
@@ -8838,8 +8284,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, ey+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1B0-Y",
-                !lbx &
-                (ey == ex + p) &
+                !lbx & (ey == ex + p) &
                 (fy > ex + 1) & (gy > ex + 1) &
                 (ex > fx + 2) & (fx > gx) &
                 (same_sign | (fy > gy))
@@ -8848,9 +8293,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1C0-X",
-                (same_sign == lbx) & !lby &
-                (ex < fy + (p+1)) & (ex > gy + p) &
-                (
+                (same_sign == lbx) & !lby & (ex < fy + (p+1)) & (ex > gy + p) & (
                     (diff_sign & !lbx & (fx == gx) & (gx > ey + 1)) |
                     (same_sign & lbx & (fx == ey) & (gx == ey + 1) & (ey > fy + 2)) |
                     ((fx == ey + 1) & (gx == ey))
@@ -8861,9 +8304,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1, fy+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-1C0-Y",
-                (same_sign == lby) & !lbx &
-                (ey < fx + (p+1)) & (ey > gx + p) &
-                (
+                (same_sign == lby) & !lbx & (ey < fx + (p+1)) & (ey > gx + p) & (
                     (diff_sign & !lby & (fy == gy) & (gy > ex + 1)) |
                     (same_sign & lby & (fy == ex) & (gy == ex + 1) & (ex > fx + 2)) |
                     ((fy == ex + 1) & (gy == ex))
@@ -8875,11 +8316,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1C1-X",
-                diff_sign & !lby &
-                (gx > ey) &
+                diff_sign & !lby & (gx > ey) &
                 (fy > gy) &
-                (ex < ey + p) & (ex > fy + p) &
-                (
+                (ex < ey + p) & (ex > fy + p) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -8887,11 +8326,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1C1-Y",
-                diff_sign & !lbx &
-                (gy > ex) &
+                diff_sign & !lbx & (gy > ex) &
                 (fx > gx) &
-                (ey < ex + p) & (ey > fx + p) &
-                (
+                (ey < ex + p) & (ey > fx + p) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -8900,11 +8337,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1C2-X",
-                diff_sign & lby &
-                (gx > ey + 1) &
+                diff_sign & lby & (gx > ey + 1) &
                 (fy > gy) &
-                (ex < ey + (p+1)) & (ex > fy + p) &
-                (
+                (ex < ey + (p+1)) & (ex > fy + p) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -8912,11 +8347,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1C2-Y",
-                diff_sign & lbx &
-                (gy > ex + 1) &
+                diff_sign & lbx & (gy > ex + 1) &
                 (fx > gx) &
-                (ey < ex + (p+1)) & (ey > fx + p) &
-                (
+                (ey < ex + (p+1)) & (ey > fx + p) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -8925,10 +8358,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1C3-X",
-                diff_sign & lby &
-                (gx > ey + 1) &
-                (ex < fy + (p+1)) & (ex > gy + p) &
-                (
+                diff_sign & lby & (gx > ey + 1) &
+                (ex < fy + (p+1)) & (ex > gy + p) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -8938,10 +8369,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-1C3-Y",
-                diff_sign & lbx &
-                (gy > ex + 1) &
-                (ey < fx + (p+1)) & (ey > gx + p) &
-                (
+                diff_sign & lbx & (gy > ex + 1) &
+                (ey < fx + (p+1)) & (ey > gx + p) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -8952,8 +8381,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1D-X",
-                !lby &
-                (fy == gy) &
+                !lby & (fy == gy) &
                 (fx > ey) & (gx > ey) &
                 (ex < ey + p) & (ex > gy + (p-1)) &
                 (same_sign | (fx > gx))
@@ -8961,8 +8389,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, ey), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1D-Y",
-                !lbx &
-                (fx == gx) &
+                !lbx & (fx == gx) &
                 (fy > ex) & (gy > ex) &
                 (ey < ex + p) & (ey > gx + (p-1)) &
                 (same_sign | (fy > gy))
@@ -8971,8 +8398,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1E0-X",
-                diff_sign & lbx & !lby &
-                (fx + 1 == gx) &
+                diff_sign & lbx & !lby & (fx + 1 == gx) &
                 (ex > gx + 1) & (gx > ey) &
                 (fy > gy) &
                 (ex < ey + p) & (ex > fy + p)
@@ -8980,8 +8406,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx, ey), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1E0-Y",
-                diff_sign & lby & !lbx &
-                (fy + 1 == gy) &
+                diff_sign & lby & !lbx & (fy + 1 == gy) &
                 (ey > gy + 1) & (gy > ex) &
                 (fx > gx) &
                 (ey < ex + p) & (ey > fx + p)
@@ -8990,8 +8415,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1E1-X",
-                diff_sign & lbx & lby &
-                (fx + 1 == gx) &
+                diff_sign & lbx & lby & (fx + 1 == gx) &
                 (ex > gx + 1) & (gx > ey + 1) &
                 (fy > gy) &
                 (ex < ey + (p+1)) & (ex > fy + p)
@@ -8999,8 +8423,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx, ey+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1E1-Y",
-                diff_sign & lby & lbx &
-                (fy + 1 == gy) &
+                diff_sign & lby & lbx & (fy + 1 == gy) &
                 (ey > gy + 1) & (gy > ex + 1) &
                 (fx > gx) &
                 (ey < ex + (p+1)) & (ey > fx + p)
@@ -9055,8 +8478,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1G-X",
-                lby &
-                (fy + 1 == gy) &
+                lby & (fy + 1 == gy) &
                 (fx > ey + 1) & (gx > ey + 1) &
                 (ex < ey + (p+1)) & (ex > fy + p) &
                 (same_sign | (fx > gx))
@@ -9064,8 +8486,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx, ey+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1G-Y",
-                lbx &
-                (fx + 1 == gx) &
+                lbx & (fx + 1 == gx) &
                 (fy > ex + 1) & (gy > ex + 1) &
                 (ey < ex + (p+1)) & (ey > fx + p) &
                 (same_sign | (fy > gy))
@@ -9074,10 +8495,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1H-X",
-                same_sign & lbx & lby &
-                (fy > gy) &
-                (ex > fy + p) &
-                (
+                same_sign & lbx & lby & (fy > gy) &
+                (ex > fy + p) & (
                     ((fx == ey + 1) & (gx == ey + 2) & (ex < ey + (p+1))) |
                     ((gx == ey + 1) & (fx > gx))
                 )
@@ -9086,10 +8505,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-1H-Y",
-                same_sign & lby & lbx &
-                (fx > gx) &
-                (ey > fx + p) &
-                (
+                same_sign & lby & lbx & (fx > gx) &
+                (ey > fx + p) & (
                     ((fy == ex + 1) & (gy == ex + 2) & (ey < ex + (p+1))) |
                     ((gy == ex + 1) & (fy > gy))
                 )
@@ -9101,11 +8518,9 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 1 - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-1A3-X",
-                (same_sign != lbx) &
-                (gx == ey + 1) &
+                (same_sign != lbx) & (gx == ey + 1) &
                 (fx + 1 > gx) &
-                ((diff_sign & lbx) | (ex == fx + 2)) &
-                (
+                ((diff_sign & lbx) | (ex == fx + 2)) & (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
@@ -9114,11 +8529,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1A3-Y",
-                (same_sign != lby) &
-                (gy == ex + 1) &
+                (same_sign != lby) & (gy == ex + 1) &
                 (fy + 1 > gy) &
-                ((diff_sign & lby) | (ey == fy + 2)) &
-                (
+                ((diff_sign & lby) | (ey == fy + 2)) & (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
@@ -9128,10 +8541,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1A4-X",
-                same_sign & !lbx &
-                (gx == ey + 1) &
-                (ex > fx + 2) & (fx + 1 > gx) &
-                (
+                same_sign & !lbx & (gx == ey + 1) &
+                (ex > fx + 2) & (fx + 1 > gx) & (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
@@ -9140,10 +8551,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1A4-Y",
-                same_sign & !lby &
-                (gy == ex + 1) &
-                (ey > fy + 2) & (fy + 1 > gy) &
-                (
+                same_sign & !lby & (gy == ex + 1) &
+                (ey > fy + 2) & (fy + 1 > gy) & (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
@@ -9153,10 +8562,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1A5-X",
-                same_sign & lbx &
-                (gx == ey + 1) &
-                (fx > gx) &
-                (
+                same_sign & lbx & (gx == ey + 1) &
+                (fx > gx) & (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
@@ -9165,10 +8572,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1A5-Y",
-                same_sign & lby &
-                (gy == ex + 1) &
-                (fy > gy) &
-                (
+                same_sign & lby & (gy == ex + 1) &
+                (fy > gy) & (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
@@ -9178,10 +8583,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1A6-X",
-                diff_sign & !lbx &
-                (gx == ey + 1) &
-                (fx > gx) &
-                (
+                diff_sign & !lbx & (gx == ey + 1) &
+                (fx > gx) & (
                     (!lby & (ex == gy + p) & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy) & (ex > fy + p))
                 )
@@ -9189,10 +8592,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1A6-Y",
-                diff_sign & !lby &
-                (gy == ex + 1) &
-                (fy > gy) &
-                (
+                diff_sign & !lby & (gy == ex + 1) &
+                (fy > gy) & (
                     (!lbx & (ey == gx + p) & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx) & (ey > fx + p))
                 )
@@ -9201,12 +8602,10 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1B1-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + p) &
+                (same_sign != lbx) & !lby & (ex == ey + p) &
                 (ex > fx + 2) &
                 (ey > fy + 2) & (fy > gy) &
-                (gx > ey + 1) &
-                (
+                (gx > ey + 1) & (
                     (same_sign & !lbx & (ex == gx) & (ex == fx + p)) |
                     (diff_sign & lbx & (fx + 1 == gx))
                 )
@@ -9214,12 +8613,10 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, ey+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1B1-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + p) &
+                (same_sign != lby) & !lbx & (ey == ex + p) &
                 (ey > fy + 2) &
                 (ex > fx + 2) & (fx > gx) &
-                (gy > ex + 1) &
-                (
+                (gy > ex + 1) & (
                     (same_sign & !lby & (ey == gy) & (ey == fy + p)) |
                     (diff_sign & lby & (fy + 1 == gy))
                 )
@@ -9340,11 +8737,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1BC-X",
-                diff_sign & !lby &
-                (ex == ey + p) &
+                diff_sign & !lby & (ex == ey + p) &
                 (gx > ey + 1) &
-                (ey > fy + 2) & (fy > gy) &
-                (
+                (ey > fy + 2) & (fy > gy) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9352,11 +8747,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1BC-Y",
-                diff_sign & !lbx &
-                (ey == ex + p) &
+                diff_sign & !lbx & (ey == ex + p) &
                 (gy > ex + 1) &
-                (ex > fx + 2) & (fx > gx) &
-                (
+                (ex > fx + 2) & (fx > gx) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9382,10 +8775,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1BH-X",
-                same_sign & lbx & !lby &
-                (ex == ey + p) &
-                (ey > fy + 2) & (fy > gy) &
-                (
+                same_sign & lbx & !lby & (ex == ey + p) &
+                (ey > fy + 2) & (fy > gy) & (
                     ((fx == ey + 1) & (fx + 1 == gx)) |
                     ((gx == ey + 1) & (fx > gx))
                 )
@@ -9394,10 +8785,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, 1, ey-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-1BH-Y",
-                same_sign & lby & !lbx &
-                (ey == ex + p) &
-                (ex > fx + 2) & (fx > gx) &
-                (
+                same_sign & lby & !lbx & (ey == ex + p) &
+                (ex > fx + 2) & (fx > gx) & (
                     ((fy == ex + 1) & (fy + 1 == gy)) |
                     ((gy == ex + 1) & (fy > gy))
                 )
@@ -9426,11 +8815,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1CD-X",
-                diff_sign & !lby &
-                (fy == gy) &
+                diff_sign & !lby & (fy == gy) &
                 (gx > ey) &
-                (ex < ey + p) & (ex > gy + (p-1)) &
-                (
+                (ex < ey + p) & (ex > gy + (p-1)) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9438,11 +8825,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1CD-Y",
-                diff_sign & !lbx &
-                (fx == gx) &
+                diff_sign & !lbx & (fx == gx) &
                 (gy > ex) &
-                (ey < ex + p) & (ey > gx + (p-1)) &
-                (
+                (ey < ex + p) & (ey > gx + (p-1)) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9451,10 +8836,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1CF-X",
-                (same_sign == lbx) & !lby &
-                (ex == gy + p) &
-                (fy > gy) &
-                (
+                (same_sign == lbx) & !lby & (ex == gy + p) &
+                (fy > gy) & (
                     (diff_sign & !lbx & (fx == gx) & (gx > ey + 1)) |
                     (same_sign & lbx & (fx == ey) & (gx == ey + 1) & (ey > fy + 2)) |
                     ((fx == ey + 1) & (gx == ey))
@@ -9465,10 +8848,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1CF-Y",
-                (same_sign == lby) & !lbx &
-                (ey == gx + p) &
-                (fx > gx) &
-                (
+                (same_sign == lby) & !lbx & (ey == gx + p) &
+                (fx > gx) & (
                     (diff_sign & !lby & (fy == gy) & (gy > ex + 1)) |
                     (same_sign & lby & (fy == ex) & (gy == ex + 1) & (ex > fx + 2)) |
                     ((fy == ex + 1) & (gy == ex))
@@ -9480,11 +8861,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1CG-X",
-                diff_sign & lby &
-                (fy + 1 == gy) &
+                diff_sign & lby & (fy + 1 == gy) &
                 (gx > ey + 1) &
-                (ex < ey + (p+1)) & (ex > fy + p) &
-                (
+                (ex < ey + (p+1)) & (ex > fy + p) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9492,11 +8871,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx-1, ey+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1CG-Y",
-                diff_sign & lbx &
-                (fx + 1 == gx) &
+                diff_sign & lbx & (fx + 1 == gx) &
                 (gy > ex + 1) &
-                (ey < ex + (p+1)) & (ey > fx + p) &
-                (
+                (ey < ex + (p+1)) & (ey > fx + p) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9539,8 +8916,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1EK-X",
-                diff_sign & lbx & !lby &
-                (ex == gx + 1) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == gx + 1) & (ex == fx + 2) &
                 (ex < fy + (p+1)) & (ex > gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-(p-1):fy), SELBTZRange(sy, gy:ex-(p+1), gy))
@@ -9548,8 +8924,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, fy+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-1EK-Y",
-                diff_sign & lby & !lbx &
-                (ey == gy + 1) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == gy + 1) & (ey == fy + 2) &
                 (ey < fx + (p+1)) & (ey > gx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ey-2, ey-(p-1):fx), SELBTZRange(sx, gx:ey-(p+1), gx))
@@ -9581,9 +8956,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 1 - CODIMENSION 3
 
             checker("SELBTZ-TwoSum-1AC-X",
-                diff_sign &
-                (gx == ey + 1) &
-                (
+                diff_sign & (gx == ey + 1) & (
                     (!lbx & !lby & (ex == gy + p) & (fx == gx) & (ey == gy) & (ey == fy + p)) |
                     (!lbx & lby & (fx == gx) & (fy + 1 == gy) & (ex > fy + p)) |
                     (lbx & lby & (ex == gx + 1) & (fx + 1 == gx) & (fy + 1 == gy) & ((ex == gy + p) | (ex == gy + (p+1))))
@@ -9592,9 +8965,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1AC-Y",
-                diff_sign &
-                (gy == ex + 1) &
-                (
+                diff_sign & (gy == ex + 1) & (
                     (!lby & !lbx & (ey == gx + p) & (fy == gy) & (ex == gx) & (ex == fx + p)) |
                     (!lby & lbx & (fy == gy) & (fx + 1 == gx) & (ey > fx + p)) |
                     (lby & lbx & (ey == gy + 1) & (fy + 1 == gy) & (fx + 1 == gx) & ((ey == gx + p) | (ey == gx + (p+1))))
@@ -9607,8 +8978,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lbx) & !lby &
                 (ex == ey + p) & (fy == gy) &
                 (ex > fx + 2) &
-                (gx > ey + 1) &
-                (
+                (gx > ey + 1) & (
                     (same_sign & !lbx & (ex == gx) & (ex == fx + p)) |
                     (diff_sign & lbx & (fx + 1 == gx))
                 )
@@ -9619,8 +8989,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign != lby) & !lbx &
                 (ey == ex + p) & (fx == gx) &
                 (ey > fy + 2) &
-                (gy > ex + 1) &
-                (
+                (gy > ex + 1) & (
                     (same_sign & !lby & (ey == gy) & (ey == fy + p)) |
                     (diff_sign & lby & (fy + 1 == gy))
                 )
@@ -9633,8 +9002,7 @@ function check_selbtz_two_sum_lemmas(
                 (ex == ey + p) & (ey == fy + 2) &
                 (ex > fx + 2) &
                 (fy > gy) &
-                (gx > ey + 1) &
-                (
+                (gx > ey + 1) & (
                     (same_sign & !lbx & (ex == gx) & (ex == fx + p)) |
                     (diff_sign & lbx & (fx + 1 == gx))
                 )
@@ -9646,8 +9014,7 @@ function check_selbtz_two_sum_lemmas(
                 (ey == ex + p) & (ex == fx + 2) &
                 (ey > fy + 2) &
                 (fx > gx) &
-                (gy > ex + 1) &
-                (
+                (gy > ex + 1) & (
                     (same_sign & !lby & (ey == gy) & (ey == fy + p)) |
                     (diff_sign & lby & (fy + 1 == gy))
                 )
@@ -9657,8 +9024,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1GO-X",
                 same_sign & lby &
-                (gx == ey + 2) & (fy + 1 == gy) &
-                (
+                (gx == ey + 2) & (fy + 1 == gy) & (
                     (!lbx & (ex == gx) & (ex == fx + p) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lbx & (fx + 1 == gx) & (ex < ey + (p+1)) & (ex > fy + p))
                 )
@@ -9667,8 +9033,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-1GO-Y",
                 same_sign & lbx &
-                (gy == ex + 2) & (fx + 1 == gx) &
-                (
+                (gy == ex + 2) & (fx + 1 == gx) & (
                     (!lby & (ey == gy) & (ey == fy + p) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lby & (fy + 1 == gy) & (ey < ex + (p+1)) & (ey > fx + p))
                 )
@@ -9815,11 +9180,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1ACN0-X",
-                diff_sign & !lby &
-                (gx == ey + 1) &
+                diff_sign & !lby & (gx == ey + 1) &
                 (fy > gy) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
-                (
+                ((ex == gy + p) | (ex == gy + (p+1))) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9829,11 +9192,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey-1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1ACN0-Y",
-                diff_sign & !lbx &
-                (gy == ex + 1) &
+                diff_sign & !lbx & (gy == ex + 1) &
                 (fx > gx) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
-                (
+                ((ey == gx + p) | (ey == gx + (p+1))) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9844,11 +9205,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1ACN1-X",
-                diff_sign & lby &
-                (gx == ey + 1) &
+                diff_sign & lby & (gx == ey + 1) &
                 (fy > gy) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
-                (
+                ((ex == gy + p) | (ex == gy + (p+1))) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9858,11 +9217,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy+1, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1ACN1-Y",
-                diff_sign & lbx &
-                (gy == ex + 1) &
+                diff_sign & lbx & (gy == ex + 1) &
                 (fx > gx) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
-                (
+                ((ey == gx + p) | (ey == gx + (p+1))) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9875,8 +9232,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BCD-X",
                 diff_sign & !lby &
                 (ex == ey + p) & (fy == gy) &
-                (gx > ey + 1) &
-                (
+                (gx > ey + 1) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9886,8 +9242,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-1BCD-Y",
                 diff_sign & !lbx &
                 (ey == ex + p) & (fx == gx) &
-                (gy > ex + 1) &
-                (
+                (gy > ex + 1) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9899,8 +9254,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lby &
                 (ex == ey + p) & (ey == fy + 2) &
                 (gx > ey + 1) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (!lbx & (fx == gx)) |
                     (lbx & (ex == gx + 1) & (fx + 1 == gx))
                 )
@@ -9911,8 +9265,7 @@ function check_selbtz_two_sum_lemmas(
                 diff_sign & !lbx &
                 (ey == ex + p) & (ex == fx + 2) &
                 (gy > ex + 1) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (!lby & (fy == gy)) |
                     (lby & (ey == gy + 1) & (fy + 1 == gy))
                 )
@@ -9922,8 +9275,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-1BDH-X",
                 same_sign & lbx & !lby &
-                (ex == ey + p) & (fy == gy) &
-                (
+                (ex == ey + p) & (fy == gy) & (
                     ((fx == ey + 1) & (fx + 1 == gx)) |
                     ((gx == ey + 1) & (fx > gx))
                 )
@@ -9933,8 +9285,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-1BDH-Y",
                 same_sign & lby & !lbx &
-                (ey == ex + p) & (fx == gx) &
-                (
+                (ey == ex + p) & (fx == gx) & (
                     ((fy == ex + 1) & (fy + 1 == gy)) |
                     ((gy == ex + 1) & (fy > gy))
                 )
@@ -9944,10 +9295,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1BHJ-X",
-                same_sign & lbx & !lby &
-                (ex == ey + p) &
-                (ey == fy + 2) & (fy > gy) &
-                (
+                same_sign & lbx & !lby & (ex == ey + p) &
+                (ey == fy + 2) & (fy > gy) & (
                     ((fx == ey + 1) & (fx + 1 == gx)) |
                     ((gx == ey + 1) & (fx > gx))
                 )
@@ -9956,10 +9305,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(~sy, 0, ey-1, gy:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-1BHJ-Y",
-                same_sign & lby & !lbx &
-                (ey == ex + p) &
-                (ex == fx + 2) & (fx > gx) &
-                (
+                same_sign & lby & !lbx & (ey == ex + p) &
+                (ex == fx + 2) & (fx > gx) & (
                     ((fy == ex + 1) & (fy + 1 == gy)) |
                     ((gy == ex + 1) & (fy > gy))
                 )
@@ -9990,8 +9337,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-1EKN-X",
-                diff_sign & lbx & !lby &
-                (ex == gx + 1) & (ex == fx + 2) &
+                diff_sign & lbx & !lby & (ex == gx + 1) & (ex == fx + 2) &
                 (fx > ey) &
                 (fy > gy) &
                 ((ex == gy + p) | (ex == gy + (p+1)))
@@ -10001,8 +9347,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-1EKN-Y",
-                diff_sign & lby & !lbx &
-                (ey == gy + 1) & (ey == fy + 2) &
+                diff_sign & lby & !lbx & (ey == gy + 1) & (ey == fy + 2) &
                 (fy > ex) &
                 (fx > gx) &
                 ((ey == gx + p) | (ey == gx + (p+1)))
@@ -10073,8 +9418,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 2 - CODIMENSION 0
 
             checker("SELBTZ-TwoSum-2a-X",
-                (same_sign != lbx) & !lby &
-                (ex > fx + 2) &
+                (same_sign != lbx) & !lby & (ex > fx + 2) &
                 (fx > ey) & (gx < ey) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -10082,8 +9426,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gx), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2a-Y",
-                (same_sign != lby) & !lbx &
-                (ey > fy + 2) &
+                (same_sign != lby) & !lbx & (ey > fy + 2) &
                 (fy > ex) & (gy < ex) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -10092,8 +9435,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2b-X",
-                (same_sign != lbx) & !lby &
-                (ex > fx + 2) &
+                (same_sign != lbx) & !lby & (ex > fx + 2) &
                 (fx > ey) & (fx > gx + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (ex < fy + (p+1)) & (ex > gy + p)
             ) do lemma
@@ -10102,8 +9444,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, fy+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2b-Y",
-                (same_sign != lby) & !lbx &
-                (ey > fy + 2) &
+                (same_sign != lby) & !lbx & (ey > fy + 2) &
                 (fy > ex) & (fy > gy + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (ey < fx + (p+1)) & (ey > gx + p)
             ) do lemma
@@ -10113,8 +9454,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2c-X",
-                (same_sign != lbx) & lby &
-                (ex > fx + 2) &
+                (same_sign != lbx) & lby & (ex > fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -10122,8 +9462,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gx), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2c-Y",
-                (same_sign != lby) & lbx &
-                (ey > fy + 2) &
+                (same_sign != lby) & lbx & (ey > fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -10132,8 +9471,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2d-X",
-                (same_sign != lbx) & lby &
-                (ex > fx + 2) &
+                (same_sign != lbx) & lby & (ex > fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (ex < fy + (p+1)) & (ex > gy + p)
             ) do lemma
@@ -10142,8 +9480,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2d-Y",
-                (same_sign != lby) & lbx &
-                (ey > fy + 2) &
+                (same_sign != lby) & lbx & (ey > fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (ey < fx + (p+1)) & (ey > gx + p)
             ) do lemma
@@ -10309,8 +9646,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2B0-X",
-                (same_sign != lbx) & !lby &
-                (ex == fx + 2) &
+                (same_sign != lbx) & !lby & (ex == fx + 2) &
                 (fx > ey) & (fx > gx + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (ex < fy + (p+1)) & (ex > gy + p)
             ) do lemma
@@ -10319,8 +9655,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, fy+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2B0-Y",
-                (same_sign != lby) & !lbx &
-                (ey == fy + 2) &
+                (same_sign != lby) & !lbx & (ey == fy + 2) &
                 (fy > ex) & (fy > gy + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (ey < fx + (p+1)) & (ey > gx + p)
             ) do lemma
@@ -10330,8 +9665,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2B1-X",
-                (same_sign != lbx) & !lby &
-                (ex == fx + 2) &
+                (same_sign != lbx) & !lby & (ex == fx + 2) &
                 (gx < ey) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -10339,8 +9673,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gx), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2B1-Y",
-                (same_sign != lby) & !lbx &
-                (ey == fy + 2) &
+                (same_sign != lby) & !lbx & (ey == fy + 2) &
                 (gy < ex) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -10349,8 +9682,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2B2-X",
-                (same_sign != lbx) & lby &
-                (ex == fx + 2) &
+                (same_sign != lbx) & lby & (ex == fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -10358,8 +9690,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gx), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2B2-Y",
-                (same_sign != lby) & lbx &
-                (ey == fy + 2) &
+                (same_sign != lby) & lbx & (ey == fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -10368,8 +9699,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2B3-X",
-                (same_sign != lbx) & lby &
-                (ex == fx + 2) &
+                (same_sign != lbx) & lby & (ex == fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (ex < fy + (p+1)) & (ex > gy + p)
             ) do lemma
@@ -10378,8 +9708,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2B3-Y",
-                (same_sign != lby) & lbx &
-                (ey == fy + 2) &
+                (same_sign != lby) & lbx & (ey == fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (ey < fx + (p+1)) & (ey > gx + p)
             ) do lemma
@@ -10389,8 +9718,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2C-X",
-                same_sign & !lbx & !lby &
-                (gx == fy + 1) &
+                same_sign & !lbx & !lby & (gx == fy + 1) &
                 (ex > fx + 2) & (fx > ey + 1) &
                 (ex > gy + p)
             ) do lemma
@@ -10401,8 +9729,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2C-Y",
-                same_sign & !lby & !lbx &
-                (gy == fx + 1) &
+                same_sign & !lby & !lbx & (gy == fx + 1) &
                 (ey > fy + 2) & (fy > ex + 1) &
                 (ey > gx + p)
             ) do lemma
@@ -10414,8 +9741,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2D0-X",
-                (same_sign != lbx) & !lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == gy + p) &
                 (ex > fx + 2) &
                 (fx > ey) & (fx > gx + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (fy > gy)
@@ -10425,8 +9751,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2D0-Y",
-                (same_sign != lby) & !lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == gx + p) &
                 (ey > fy + 2) &
                 (fy > ex) & (fy > gy + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (fx > gx)
@@ -10437,8 +9762,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2D1-X",
-                (same_sign != lbx) & lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & lby & (ex == gy + p) &
                 (ex > fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (fy > gy)
@@ -10448,8 +9772,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2D1-Y",
-                (same_sign != lby) & lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & lbx & (ey == gx + p) &
                 (ey > fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (fx > gx)
@@ -10460,8 +9783,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2D2-X",
-                (same_sign == lbx) & !lby &
-                (ex == gy + p) &
+                (same_sign == lbx) & !lby & (ex == gy + p) &
                 (fx > gx + 1) & (fx > ey) & (gx < ey + 1) & (gx > fy + 1) &
                 (fy > gy)
             ) do lemma
@@ -10470,8 +9792,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1:fx, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2D2-Y",
-                (same_sign == lby) & !lbx &
-                (ey == gx + p) &
+                (same_sign == lby) & !lbx & (ey == gx + p) &
                 (fy > gy + 1) & (fy > ex) & (gy < ex + 1) & (gy > fx + 1) &
                 (fx > gx)
             ) do lemma
@@ -10481,8 +9802,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2D3-X",
-                (same_sign == lbx) & lby &
-                (ex == gy + p) &
+                (same_sign == lbx) & lby & (ex == gy + p) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (fy > gy)
             ) do lemma
@@ -10491,8 +9811,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1:fx, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2D3-Y",
-                (same_sign == lby) & lbx &
-                (ey == gx + p) &
+                (same_sign == lby) & lbx & (ey == gx + p) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (fx > gx)
             ) do lemma
@@ -10502,8 +9821,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2E0-X",
-                (same_sign != lbx) & !lby &
-                (gx == ey) &
+                (same_sign != lbx) & !lby & (gx == ey) &
                 (fx > ey) &
                 (fy > gy) &
                 (ex > fy + p) &
@@ -10513,8 +9831,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2E0-Y",
-                (same_sign != lby) & !lbx &
-                (gy == ex) &
+                (same_sign != lby) & !lbx & (gy == ex) &
                 (fy > ex) &
                 (fx > gx) &
                 (ey > fx + p) &
@@ -10525,8 +9842,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2E1-X",
-                same_sign & !lbx & !lby &
-                (gx == ey) &
+                same_sign & !lbx & !lby & (gx == ey) &
                 (ex > fx + 2) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -10535,8 +9851,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2E1-Y",
-                same_sign & !lby & !lbx &
-                (gy == ex) &
+                same_sign & !lby & !lbx & (gy == ex) &
                 (ey > fy + 2) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -10546,8 +9861,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2E2-X",
-                diff_sign & !lbx & !lby &
-                (gx == ey) &
+                diff_sign & !lbx & !lby & (gx == ey) &
                 (fx > ey) &
                 (fy > gy) &
                 (ex > fy + p)
@@ -10555,8 +9869,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, ey+1:fx), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2E2-Y",
-                diff_sign & !lby & !lbx &
-                (gy == ex) &
+                diff_sign & !lby & !lbx & (gy == ex) &
                 (fy > ex) &
                 (fx > gx) &
                 (ey > fx + p)
@@ -10565,8 +9878,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2F0-X",
-                (same_sign != lbx) & !lby &
-                (fy == gy) &
+                (same_sign != lbx) & !lby & (fy == gy) &
                 (ex > fx + 2) &
                 (fx > ey) & (gx < ey) & (gx > gy + 1) &
                 (ex > gy + (p-1))
@@ -10574,8 +9886,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2F0-Y",
-                (same_sign != lby) & !lbx &
-                (fx == gx) &
+                (same_sign != lby) & !lbx & (fx == gx) &
                 (ey > fy + 2) &
                 (fy > ex) & (gy < ex) & (gy > gx + 1) &
                 (ey > gx + (p-1))
@@ -10584,16 +9895,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2F1-X",
-                (same_sign == lbx) & !lby &
-                (fy == gy) &
+                (same_sign == lbx) & !lby & (fy == gy) &
                 (fx > ey) & (gx < ey) & (gx > gy + 1) &
                 (ex > gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1:fx, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2F1-Y",
-                (same_sign == lby) & !lbx &
-                (fx == gx) &
+                (same_sign == lby) & !lbx & (fx == gx) &
                 (fy > ex) & (gy < ex) & (gy > gx + 1) &
                 (ey > gx + (p-1))
             ) do lemma
@@ -10601,8 +9910,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2G0-X",
-                (same_sign != lbx) & lby &
-                (fy + 1 == gy) &
+                (same_sign != lbx) & lby & (fy + 1 == gy) &
                 (ex > fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > gy + 1) &
                 (ex > fy + p)
@@ -10610,8 +9918,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx:fx+1, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2G0-Y",
-                (same_sign != lby) & lbx &
-                (fx + 1 == gx) &
+                (same_sign != lby) & lbx & (fx + 1 == gx) &
                 (ey > fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > gx + 1) &
                 (ey > fx + p)
@@ -10620,16 +9927,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2G1-X",
-                (same_sign == lbx) & lby &
-                (fy + 1 == gy) &
+                (same_sign == lbx) & lby & (fy + 1 == gy) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > gy + 1) &
                 (ex > fy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx-1:fx, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2G1-Y",
-                (same_sign == lby) & lbx &
-                (fx + 1 == gx) &
+                (same_sign == lby) & lbx & (fx + 1 == gx) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > gx + 1) &
                 (ey > fx + p)
             ) do lemma
@@ -10637,10 +9942,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2H-X",
-                same_sign & lbx & !lby &
-                (fy > gy) &
-                (ex > fy + p) &
-                (
+                same_sign & lbx & !lby & (fy > gy) &
+                (ex > fy + p) & (
                     ((fx == ey) & (fx + 1 == gx) & (ex < fx + p)) |
                     ((gx == ey) & (fx > gx))
                 )
@@ -10649,10 +9952,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-2H-Y",
-                same_sign & lby & !lbx &
-                (fx > gx) &
-                (ey > fx + p) &
-                (
+                same_sign & lby & !lbx & (fx > gx) &
+                (ey > fx + p) & (
                     ((fy == ex) & (fy + 1 == gy) & (ey < fy + p)) |
                     ((gy == ex) & (fy > gy))
                 )
@@ -10662,11 +9963,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2Z-X",
-                (same_sign != lbx) & lby &
-                (ex > fx + 2) &
+                (same_sign != lbx) & lby & (ex > fx + 2) &
                 (fx > ey) & (gx > fy + 1) &
-                (ex < fy + (p+1)) & (ex > gy + p) &
-                (
+                (ex < fy + (p+1)) & (ex > gy + p) & (
                     (diff_sign & lbx & (fx + 1 == gx)) |
                     ((fx == ey + 1) & (gx < ey + 1))
                 )
@@ -10676,11 +9975,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-2Z-Y",
-                (same_sign != lby) & lbx &
-                (ey > fy + 2) &
+                (same_sign != lby) & lbx & (ey > fy + 2) &
                 (fy > ex) & (gy > fx + 1) &
-                (ey < fx + (p+1)) & (ey > gx + p) &
-                (
+                (ey < fx + (p+1)) & (ey > gx + p) & (
                     (diff_sign & lby & (fy + 1 == gy)) |
                     ((fy == ex + 1) & (gy < ex + 1))
                 )
@@ -10693,11 +9990,9 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 2 - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-2D4-X",
-                (same_sign != lbx) & lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & lby & (ex == gy + p) &
                 (ex > fx + 2) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (diff_sign & lbx & (fx + 1 == gx) & (fx > ey)) |
                     ((fx == ey + 1) & (fx > gx) & (gx > fy + 1))
                 )
@@ -10707,11 +10002,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2D4-Y",
-                (same_sign != lby) & lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & lbx & (ey == gx + p) &
                 (ey > fy + 2) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (diff_sign & lby & (fy + 1 == gy) & (fy > ex)) |
                     ((fy == ex + 1) & (fy > gy) & (gy > fx + 1))
                 )
@@ -10954,8 +10247,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2BD0-X",
-                (same_sign != lbx) & !lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == gy + p) &
                 (ex == fx + 2) &
                 (fx > ey) & (fx > gx + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (fy > gy)
@@ -10965,8 +10257,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2BD0-Y",
-                (same_sign != lby) & !lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == gx + p) &
                 (ey == fy + 2) &
                 (fy > ex) & (fy > gy + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (fx > gx)
@@ -10977,8 +10268,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2BD1-X",
-                (same_sign != lbx) & lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & lby & (ex == gy + p) &
                 (ex == fx + 2) &
                 (fx > ey + 1) & (gx < ey + 1) & (gx > fy + 1) &
                 (fy > gy)
@@ -10988,8 +10278,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2BD1-Y",
-                (same_sign != lby) & lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & lbx & (ey == gx + p) &
                 (ey == fy + 2) &
                 (fy > ex + 1) & (gy < ex + 1) & (gy > fx + 1) &
                 (fx > gx)
@@ -11059,8 +10348,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2EF0-X",
                 !lby &
                 (gx == ey) & (fy == gy) &
-                (ex > gy + (p-1)) &
-                (
+                (ex > gy + (p-1)) & (
                     (same_sign & !lbx & (ex == fx + 2)) |
                     (diff_sign & lbx & (fx > ey))
                 )
@@ -11071,8 +10359,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2EF0-Y",
                 !lbx &
                 (gy == ex) & (fx == gx) &
-                (ey > gx + (p-1)) &
-                (
+                (ey > gx + (p-1)) & (
                     (same_sign & !lby & (ey == fy + 2)) |
                     (diff_sign & lby & (fy > ex))
                 )
@@ -11118,10 +10405,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2FH-X",
-                same_sign & lbx & !lby &
-                (fy == gy) &
-                (ex > gy + (p-1)) &
-                (
+                same_sign & lbx & !lby & (fy == gy) &
+                (ex > gy + (p-1)) & (
                     ((fx == ey) & (fx + 1 == gx) & (ex < fx + p)) |
                     ((gx == ey) & (fx > gx))
                 )
@@ -11130,10 +10415,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, fx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2FH-Y",
-                same_sign & lby & !lbx &
-                (fx == gx) &
-                (ey > gx + (p-1)) &
-                (
+                same_sign & lby & !lbx & (fx == gx) &
+                (ey > gx + (p-1)) & (
                     ((fy == ex) & (fy + 1 == gy) & (ey < fy + p)) |
                     ((gy == ex) & (fy > gy))
                 )
@@ -11143,10 +10426,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2GI0-X",
-                same_sign & lby &
-                (fy + 1 == gy) &
-                (gx < ey + 1) & (gx > gy + 1) &
-                (
+                same_sign & lby & (fy + 1 == gy) &
+                (gx < ey + 1) & (gx > gy + 1) & (
                     (!lbx & (ex == ey + 2) & (fx == ey) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lbx & (fx == ey + 1) & (ex > fy + p))
                 )
@@ -11155,10 +10436,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2GI0-Y",
-                same_sign & lbx &
-                (fx + 1 == gx) &
-                (gy < ex + 1) & (gy > gx + 1) &
-                (
+                same_sign & lbx & (fx + 1 == gx) &
+                (gy < ex + 1) & (gy > gx + 1) & (
                     (!lby & (ey == ex + 2) & (fy == ex) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lby & (fy == ex + 1) & (ey > fx + p))
                 )
@@ -11168,10 +10447,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2GI1-X",
-                diff_sign & lby &
-                (fy + 1 == gy) &
-                (gx < ey + 1) & (gx > gy + 1) &
-                (
+                diff_sign & lby & (fy + 1 == gy) &
+                (gx < ey + 1) & (gx > gy + 1) & (
                     (!lbx & (fx == ey + 1) & (ex > fy + p)) |
                     (lbx & (ex == ey + 2) & (fx == ey) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -11179,10 +10456,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2GI1-Y",
-                diff_sign & lbx &
-                (fx + 1 == gx) &
-                (gy < ex + 1) & (gy > gx + 1) &
-                (
+                diff_sign & lbx & (fx + 1 == gx) &
+                (gy < ex + 1) & (gy > gx + 1) & (
                     (!lby & (fy == ex + 1) & (ey > fx + p)) |
                     (lby & (ey == ex + 2) & (fy == ex) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -11327,8 +10602,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2ADL-X",
                 same_sign & !lbx & lby &
                 (ex == gy + p) & (fx == ey + 1) &
-                (ex > fx + 2) &
-                (
+                (ex > fx + 2) & (
                     (gx == fy + 1) |
                     ((gx == gy + 1) & (gy == fy + 1))
                 )
@@ -11341,8 +10615,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-2ADL-Y",
                 same_sign & !lby & lbx &
                 (ey == gx + p) & (fy == ex + 1) &
-                (ey > fy + 2) &
-                (
+                (ey > fy + 2) & (
                     (gy == fx + 1) |
                     ((gy == gx + 1) & (gx == fx + 1))
                 )
@@ -11354,12 +10627,10 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2IJL0-X",
-                same_sign & lby &
-                (
+                same_sign & lby & (
                     (!lbx & (ex == ey + 2) & (fx == ey)) |
                     (lbx & (fx == ey + 1))
-                ) &
-                (
+                ) & (
                     ((ex == gy + p) & (gx == gy + 1) & (gy == fy + 1)) |
                     ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -11372,12 +10643,10 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-2IJL0-Y",
-                same_sign & lbx &
-                (
+                same_sign & lbx & (
                     (!lby & (ey == ex + 2) & (fy == ex)) |
                     (lby & (fy == ex + 1))
-                ) &
-                (
+                ) & (
                     ((ey == gx + p) & (gy == gx + 1) & (gx == fx + 1)) |
                     ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -11391,12 +10660,10 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-2IJL1-X",
-                diff_sign & lby &
-                (
+                diff_sign & lby & (
                     (!lbx & (fx == ey + 1)) |
                     (lbx & (ex == ey + 2) & (fx == ey))
-                ) &
-                (
+                ) & (
                     ((ex == gy + p) & (gx == gy + 1) & (gy == fy + 1)) |
                     ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -11409,12 +10676,10 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-2IJL1-Y",
-                diff_sign & lbx &
-                (
+                diff_sign & lbx & (
                     (!lby & (fy == ex + 1)) |
                     (lby & (ey == ex + 2) & (fy == ex))
-                ) &
-                (
+                ) & (
                     ((ey == gx + p) & (gy == gx + 1) & (gx == fx + 1)) |
                     ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -11534,8 +10799,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-2ABJL-X",
                 (same_sign != lbx) & lby &
-                (ex == fx + 2) & (fx == ey + 1) &
-                (
+                (ex == fx + 2) & (fx == ey + 1) & (
                     ((ex == gy + p) & (gx == gy + 1) & (gy == fy + 1)) |
                     ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -11547,8 +10811,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-2ABJL-Y",
                 (same_sign != lby) & lbx &
-                (ey == fy + 2) & (fy == ex + 1) &
-                (
+                (ey == fy + 2) & (fy == ex + 1) & (
                     ((ey == gx + p) & (gy == gx + 1) & (gx == fx + 1)) |
                     ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -11799,8 +11062,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 3 - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-3A0-X",
-                same_sign & lbx & !lby &
-                (ex == gy + (p-1)) &
+                same_sign & lbx & !lby & (ex == gy + (p-1)) &
                 (fx + 1 < ey) &
                 (gx > fy + 1) & (fy > gy)
             ) do lemma
@@ -11809,8 +11071,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3A0-Y",
-                same_sign & lby & !lbx &
-                (ey == gx + (p-1)) &
+                same_sign & lby & !lbx & (ey == gx + (p-1)) &
                 (fy + 1 < ex) &
                 (gy > fx + 1) & (fx > gx)
             ) do lemma
@@ -11820,8 +11081,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3A1-X",
-                same_sign & lbx & lby &
-                (ex == gy + (p-1)) &
+                same_sign & lbx & lby & (ex == gy + (p-1)) &
                 (ex > ey) & (fx < ey) &
                 (gx < ey) & (gx > fy + 1) & (fy > gy)
             ) do lemma
@@ -11830,8 +11090,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3A1-Y",
-                same_sign & lby & lbx &
-                (ey == gx + (p-1)) &
+                same_sign & lby & lbx & (ey == gx + (p-1)) &
                 (ey > ex) & (fy < ex) &
                 (gy < ex) & (gy > fx + 1) & (fx > gx)
             ) do lemma
@@ -11841,8 +11100,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3A2-X",
-                diff_sign & !lbx & !lby &
-                (ex == gy + (p+1)) &
+                diff_sign & !lbx & !lby & (ex == gy + (p+1)) &
                 (fx < ey) & (fx + 1 > gx) &
                 (gx > fy + 1) & (fy > gy) &
                 ((fx == gx) | (fx + 1 < ey))
@@ -11852,8 +11110,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3A2-Y",
-                diff_sign & !lby & !lbx &
-                (ey == gx + (p+1)) &
+                diff_sign & !lby & !lbx & (ey == gx + (p+1)) &
                 (fy < ex) & (fy + 1 > gy) &
                 (gy > fx + 1) & (fx > gx) &
                 ((fy == gy) | (fy + 1 < ex))
@@ -11864,8 +11121,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3A3-X",
-                diff_sign & !lbx & lby &
-                (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == gy + (p+1)) &
                 (ex > ey + 2) & (fx < ey) &
                 (gx > fy + 1) & (fy > gy)
             ) do lemma
@@ -11874,8 +11130,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3A3-Y",
-                diff_sign & !lby & lbx &
-                (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == gx + (p+1)) &
                 (ey > ex + 2) & (fy < ex) &
                 (gy > fx + 1) & (fx > gx)
             ) do lemma
@@ -11885,8 +11140,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3B0-X",
-                (same_sign != lbx) & !lby &
-                (gx == fy + 1) &
+                (same_sign != lbx) & !lby & (gx == fy + 1) &
                 (fx + 1 > gx) & (fx + 1 < ey) &
                 (ex > gy + p)
             ) do lemma
@@ -11896,8 +11150,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3B0-Y",
-                (same_sign != lby) & !lbx &
-                (gy == fx + 1) &
+                (same_sign != lby) & !lbx & (gy == fx + 1) &
                 (fy + 1 > gy) & (fy + 1 < ex) &
                 (ey > gx + p)
             ) do lemma
@@ -11908,8 +11161,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3B1-X",
-                (same_sign != lbx) & lby &
-                (gx == fy + 1) &
+                (same_sign != lbx) & lby & (gx == fy + 1) &
                 (fx > gx) & (fx < ey + 1) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -11918,8 +11170,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gx+1:fx), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3B1-Y",
-                (same_sign != lby) & lbx &
-                (gy == fx + 1) &
+                (same_sign != lby) & lbx & (gy == fx + 1) &
                 (fy > gy) & (fy < ex + 1) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -11929,8 +11180,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3B2-X",
-                same_sign & lbx & !lby &
-                (gx == fy + 1) &
+                same_sign & lbx & !lby & (gx == fy + 1) &
                 (fx + 1 < ey) & (fx > gx) &
                 (ex < fy + (p-1)) & (ex > gy + (p-1))
             ) do lemma
@@ -11939,8 +11189,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx+1:fx), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-3B2-Y",
-                same_sign & lby & !lbx &
-                (gy == fx + 1) &
+                same_sign & lby & !lbx & (gy == fx + 1) &
                 (fy + 1 < ex) & (fy > gy) &
                 (ey < fx + (p-1)) & (ey > gx + (p-1))
             ) do lemma
@@ -11950,8 +11199,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3B3-X",
-                same_sign & lbx & lby &
-                (gx == fy + 1) &
+                same_sign & lbx & lby & (gx == fy + 1) &
                 (fx < ey) & (fx > fy) &
                 (ex < fy + (p-1)) & (ex > gy + (p-1))
             ) do lemma
@@ -11961,8 +11209,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-3B3-Y",
-                same_sign & lby & lbx &
-                (gy == fx + 1) &
+                same_sign & lby & lbx & (gy == fx + 1) &
                 (fy < ex) & (fy > fx) &
                 (ey < fx + (p-1)) & (ey > gx + (p-1))
             ) do lemma
@@ -11973,8 +11220,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3B4-X",
-                diff_sign & !lbx & !lby &
-                (gx == fy + 1) &
+                diff_sign & !lbx & !lby & (gx == fy + 1) &
                 (fx + 1 < ey) & (fx > gx) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -11983,8 +11229,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx+1:fx), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-3B4-Y",
-                diff_sign & !lby & !lbx &
-                (gy == fx + 1) &
+                diff_sign & !lby & !lbx & (gy == fx + 1) &
                 (fy + 1 < ex) & (fy > gy) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -11994,8 +11239,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3B5-X",
-                diff_sign & !lbx & lby &
-                (gx == fy + 1) &
+                diff_sign & !lbx & lby & (gx == fy + 1) &
                 (fx + 1 < ey) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -12005,8 +11249,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-3B5-Y",
-                diff_sign & !lby & lbx &
-                (gy == fx + 1) &
+                diff_sign & !lby & lbx & (gy == fx + 1) &
                 (fy + 1 < ex) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -12039,8 +11282,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lbx) & !lby &
                 (fx == ey) &
                 (gx < ey) &
-                (ex < fy + (p+1)) & (ex > gy + p) &
-                (
+                (ex < fy + (p+1)) & (ex > gy + p) & (
                     (diff_sign & !lbx & (gx > fy + 1)) |
                     (same_sign & lbx & (gx > fy + 2))
                 )
@@ -12056,8 +11298,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lby) & !lbx &
                 (fy == ex) &
                 (gy < ex) &
-                (ey < fx + (p+1)) & (ey > gx + p) &
-                (
+                (ey < fx + (p+1)) & (ey > gx + p) & (
                     (diff_sign & !lby & (gy > fx + 1)) |
                     (same_sign & lby & (gy > fx + 2))
                 )
@@ -12260,8 +11501,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3E0-X",
-                (same_sign != lbx) & !lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == gy + p) &
                 (ex > ey + 1) & (fx < ey) &
                 (gx > fy + 1) & (fy > gy) &
                 ((same_sign & !lbx) | (gx < ey))
@@ -12271,8 +11511,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3E0-Y",
-                (same_sign != lby) & !lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == gx + p) &
                 (ey > ex + 1) & (fy < ex) &
                 (gy > fx + 1) & (fx > gx) &
                 ((same_sign & !lby) | (gy < ex))
@@ -12283,8 +11522,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3E1-X",
-                (same_sign != lbx) & lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & lby & (ex == gy + p) &
                 (ex > ey + 2) & (fx < ey + 1) & (fx + 2 > gx) &
                 (gx > fy + 1) & (fy > gy)
             ) do lemma
@@ -12293,8 +11531,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3E1-Y",
-                (same_sign != lby) & lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & lbx & (ey == gx + p) &
                 (ey > ex + 2) & (fy < ex + 1) & (fy + 2 > gy) &
                 (gy > fx + 1) & (fx > gx)
             ) do lemma
@@ -12304,16 +11541,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3F0-X",
-                (same_sign != lbx) & !lby &
-                (fy == gy) &
+                (same_sign != lbx) & !lby & (fy == gy) &
                 (ex > ey + 1) & (fx < ey) & (gx < ey) & (gx > gy + 1) &
                 (ex > gy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3F0-Y",
-                (same_sign != lby) & !lbx &
-                (fx == gx) &
+                (same_sign != lby) & !lbx & (fx == gx) &
                 (ey > ex + 1) & (fy < ex) & (gy < ex) & (gy > gx + 1) &
                 (ey > gx + (p-1))
             ) do lemma
@@ -12321,16 +11556,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3F1-X",
-                same_sign & lbx & !lby &
-                (fy == gy) &
+                same_sign & lbx & !lby & (fy == gy) &
                 (fx + 1 < ey) & (gx > gy + 1) &
                 (ex < gx + (p-1)) & (ex > gy + (p-2))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3F1-Y",
-                same_sign & lby & !lbx &
-                (fx == gx) &
+                same_sign & lby & !lbx & (fx == gx) &
                 (fy + 1 < ex) & (gy > gx + 1) &
                 (ey < gy + (p-1)) & (ey > gx + (p-2))
             ) do lemma
@@ -12338,16 +11571,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3F2-X",
-                diff_sign & !lbx & !lby &
-                (fy == gy) &
+                diff_sign & !lbx & !lby & (fy == gy) &
                 (fx + 1 < ey) & (fx + 1 > gx) &
                 (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3F2-Y",
-                diff_sign & !lby & !lbx &
-                (fx == gx) &
+                diff_sign & !lby & !lbx & (fx == gx) &
                 (fy + 1 < ex) & (fy + 1 > gy) &
                 (ey > gx + p)
             ) do lemma
@@ -12355,16 +11586,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3G0-X",
-                same_sign & lbx & !lby &
-                (ex == gx + (p-1)) &
+                same_sign & lbx & !lby & (ex == gx + (p-1)) &
                 (fx + 1 < ey) & (fx > gx) &
                 (gx > fy + 2) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, gx+1:fx), SELBTZRange(~sy, 1, gx-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-3G0-Y",
-                same_sign & lby & !lbx &
-                (ey == gy + (p-1)) &
+                same_sign & lby & !lbx & (ey == gy + (p-1)) &
                 (fy + 1 < ex) & (fy > gy) &
                 (gy > fx + 2) & (fx > gx)
             ) do lemma
@@ -12372,16 +11601,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3G1-X",
-                same_sign & lbx & lby &
-                (ex == gx + (p-1)) &
+                same_sign & lbx & lby & (ex == gx + (p-1)) &
                 (fx < ey) & (fx > gx) & (gx > fy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx+1:fx-1), SELBTZRange(sy, 1, gx-1, fy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(sy, 1, gx-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-3G1-Y",
-                same_sign & lby & lbx &
-                (ey == gy + (p-1)) &
+                same_sign & lby & lbx & (ey == gy + (p-1)) &
                 (fy < ex) & (fy > gy) & (gy > fx + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey+1, ex, gy+1:fy-1), SELBTZRange(sx, 1, gy-1, fx, gx))
@@ -12389,16 +11616,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3H0-X",
-                (same_sign != lbx) & lby &
-                (fy + 1 == gy) &
+                (same_sign != lbx) & lby & (fy + 1 == gy) &
                 (ex > ey + 2) & (fx < ey + 1) & (gx < ey + 1) & (gx > gy + 1) &
                 (ex > fy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3H0-Y",
-                (same_sign != lby) & lbx &
-                (fx + 1 == gx) &
+                (same_sign != lby) & lbx & (fx + 1 == gx) &
                 (ey > ex + 2) & (fy < ex + 1) & (gy < ex + 1) & (gy > gx + 1) &
                 (ey > fx + p)
             ) do lemma
@@ -12406,16 +11631,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3H1-X",
-                same_sign & lbx & lby &
-                (fy + 1 == gy) &
+                same_sign & lbx & lby & (fy + 1 == gy) &
                 (ex > ey) & (fx < ey) & (gx > gy + 1) &
                 (ex < gx + (p-1)) & (ex > fy + (p-1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3H1-Y",
-                same_sign & lby & lbx &
-                (fx + 1 == gx) &
+                same_sign & lby & lbx & (fx + 1 == gx) &
                 (ey > ex) & (fy < ex) & (gy > gx + 1) &
                 (ey < gy + (p-1)) & (ey > fx + (p-1))
             ) do lemma
@@ -12423,16 +11646,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3H2-X",
-                diff_sign & !lbx & lby &
-                (fy + 1 == gy) &
+                diff_sign & !lbx & lby & (fy + 1 == gy) &
                 (ex > ey + 2) & (fx < ey) & (fx + 1 > gx) &
                 (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3H2-Y",
-                diff_sign & !lby & lbx &
-                (fx + 1 == gx) &
+                diff_sign & !lby & lbx & (fx + 1 == gx) &
                 (ey > ex + 2) & (fy < ex) & (fy + 1 > gy) &
                 (ey > gx + p)
             ) do lemma
@@ -12440,10 +11661,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3I-X",
-                same_sign & lbx & lby &
-                (gx > fy + 1) &
-                (ex < fy + p) & (ex > gy + (p-1)) &
-                (
+                same_sign & lbx & lby & (gx > fy + 1) &
+                (ex < fy + p) & (ex > gy + (p-1)) & (
                     ((fx == ey) & (fx > gx)) |
                     ((fx + 1 == gx) & (gx == ey))
                 )
@@ -12456,10 +11675,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, gx-1, fy+1), SELBTZRange(sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-3I-Y",
-                same_sign & lby & lbx &
-                (gy > fx + 1) &
-                (ey < fx + p) & (ey > gx + (p-1)) &
-                (
+                same_sign & lby & lbx & (gy > fx + 1) &
+                (ey < fx + p) & (ey > gx + (p-1)) & (
                     ((fy == ex) & (fy > gy)) |
                     ((fy + 1 == gy) & (gy == ex))
                 )
@@ -12475,8 +11692,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3Z-X",
                 (same_sign != lbx) & !lby &
                 (ex > fx + 2) & (gx > fy + 1) &
-                (ex < fy + (p+1)) & (ex > gy + p) &
-                (
+                (ex < fy + (p+1)) & (ex > gy + p) & (
                     (fx == ey) |
                     (diff_sign & lbx & (fx + 1 == gx) & (gx > ey)) |
                     ((fx == gx + 1) & (gx == ey))
@@ -12489,8 +11705,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3Z-Y",
                 (same_sign != lby) & !lbx &
                 (ey > fy + 2) & (gy > fx + 1) &
-                (ey < fx + (p+1)) & (ey > gx + p) &
-                (
+                (ey < fx + (p+1)) & (ey > gx + p) & (
                     (fy == ex) |
                     (diff_sign & lby & (fy + 1 == gy) & (gy > ex)) |
                     ((fy == gy + 1) & (gy == ex))
@@ -12504,11 +11719,9 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 3 - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-3E2-X",
-                (same_sign != lbx) & !lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == gy + p) &
                 (ex > fx + 2) &
-                (gx > fy + 1) & (fy > gy) &
-                (
+                (gx > fy + 1) & (fy > gy) & (
                     (fx == ey) |
                     (diff_sign & lbx & (fx + 1 == gx) & (gx > ey)) |
                     ((fx == gx + 1) & (gx == ey))
@@ -12519,11 +11732,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, fx+1, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3E2-Y",
-                (same_sign != lby) & !lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == gx + p) &
                 (ey > fy + 2) &
-                (gy > fx + 1) & (fx > gx) &
-                (
+                (gy > fx + 1) & (fx > gx) & (
                     (fy == ex) |
                     (diff_sign & lby & (fy + 1 == gy) & (gy > ex)) |
                     ((fy == gy + 1) & (gy == ex))
@@ -12538,8 +11749,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lbx) & !lby &
                 (gx == fy + 1) &
                 (fx + 1 < ey) & (fx > gx) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (diff_sign & !lbx & (ex == gy + (p+1))) |
                     (same_sign & lbx & (ex == gy + (p-1)))
                 )
@@ -12552,8 +11762,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lby) & !lbx &
                 (gy == fx + 1) &
                 (fy + 1 < ex) & (fy > gy) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (diff_sign & !lby & (ey == gx + (p+1))) |
                     (same_sign & lby & (ey == gx + (p-1)))
                 )
@@ -12695,11 +11904,9 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3AL0-X",
                 (same_sign != lbx) &
-                (ex > ey + 2) & (fx < ey + 1) & (fx > gx) &
-                (
+                (ex > ey + 2) & (fx < ey + 1) & (fx > gx) & (
                     (!lby & (fx == ey) & (gx == fy) & ((ex == gy + p) | (ex == gy + (p+1)))) |
-                    (lby &
-                        (
+                    (lby & (
                             ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                             ((gx == gy + 1) & (fy + 1 == gy) & (ex == gy + p))
                         ))
@@ -12711,11 +11918,9 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3AL0-Y",
                 (same_sign != lby) &
-                (ey > ex + 2) & (fy < ex + 1) & (fy > gy) &
-                (
+                (ey > ex + 2) & (fy < ex + 1) & (fy > gy) & (
                     (!lbx & (fy == ex) & (gy == fx) & ((ey == gx + p) | (ey == gx + (p+1)))) |
-                    (lbx &
-                        (
+                    (lbx & (
                             ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                             ((gy == gx + 1) & (fx + 1 == gx) & (ey == gx + p))
                         ))
@@ -12749,8 +11954,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3AO0-X",
                 same_sign & lby &
-                (fx > gx) & (gx > fy + 1) & (fy > gy) &
-                (
+                (fx > gx) & (gx > fy + 1) & (fy > gy) & (
                     (!lbx & (ex == ey + 1) & ((ex == gy + (p-1)) | (ex == gy + p))) |
                     (lbx & (ex == ey) & (ex == gy + (p-1)))
                 )
@@ -12761,8 +11965,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3AO0-Y",
                 same_sign & lbx &
-                (fy > gy) & (gy > fx + 1) & (fx > gx) &
-                (
+                (fy > gy) & (gy > fx + 1) & (fx > gx) & (
                     (!lby & (ey == ex + 1) & ((ey == gx + (p-1)) | (ey == gx + p))) |
                     (lby & (ey == ex) & (ey == gx + (p-1)))
                 )
@@ -13036,8 +12239,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3BG-X",
-                same_sign & lbx & !lby &
-                (gx == fy + 1) &
+                same_sign & lbx & !lby & (gx == fy + 1) &
                 (fx + 1 < ey) & (fx > gx) & (gx > gy) &
                 ((ex == fy + (p-1)) | (ex == fy + p))
             ) do lemma
@@ -13045,8 +12247,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy+2:fx), SELBTZRange(~sy, gy+1:fy-1, gy))
             end
             checker("SELBTZ-TwoSum-3BG-Y",
-                same_sign & lby & !lbx &
-                (gy == fx + 1) &
+                same_sign & lby & !lbx & (gy == fx + 1) &
                 (fy + 1 < ex) & (fy > gy) & (gy > gx) &
                 ((ey == fx + (p-1)) | (ey == fx + p))
             ) do lemma
@@ -13117,8 +12318,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lbx) & !lby &
                 (ex == gy + p) & (fx == ey) &
                 (gx < ey) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (diff_sign & !lbx & (gx > fy + 1)) |
                     (same_sign & lbx & (gx > fy + 2))
                 )
@@ -13134,8 +12334,7 @@ function check_selbtz_two_sum_lemmas(
                 (same_sign == lby) & !lbx &
                 (ey == gx + p) & (fy == ex) &
                 (gy < ex) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (diff_sign & !lby & (gy > fx + 1)) |
                     (same_sign & lby & (gy > fx + 2))
                 )
@@ -13257,8 +12456,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3CL0-X",
                 same_sign & lbx & !lby &
                 (fx == ey) &
-                (ex < fy + (p+1)) & (ex > gy + p) &
-                (
+                (ex < fy + (p+1)) & (ex > gy + p) & (
                     ((fx == fy + 2) & (fx + 1 == gx)) |
                     (gx == fy + 2)
                 )
@@ -13273,8 +12471,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3CL0-Y",
                 same_sign & lby & !lbx &
                 (fy == ex) &
-                (ey < fx + (p+1)) & (ey > gx + p) &
-                (
+                (ey < fx + (p+1)) & (ey > gx + p) & (
                     ((fy == fx + 2) & (fy + 1 == gy)) |
                     (gy == fx + 2)
                 )
@@ -13349,8 +12546,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3DG-X",
-                same_sign & lbx & !lby &
-                (ex == gx + (p-1)) &
+                same_sign & lbx & !lby & (ex == gx + (p-1)) &
                 (fx + 1 == ey) & (fx > gx) &
                 (gx > fy + 2) & (fy > gy)
             ) do lemma
@@ -13360,8 +12556,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(~sy, 1, gx-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-3DG-Y",
-                same_sign & lby & !lbx &
-                (ey == gy + (p-1)) &
+                same_sign & lby & !lbx & (ey == gy + (p-1)) &
                 (fy + 1 == ex) & (fy > gy) &
                 (gy > fx + 2) & (fx > gx)
             ) do lemma
@@ -13482,10 +12677,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3FI0-X",
-                same_sign & !lby &
-                (fy == gy) &
-                (gx < ey) & (gx > gy + 1) &
-                (
+                same_sign & !lby & (fy == gy) &
+                (gx < ey) & (gx > gy + 1) & (
                     (!lbx & (ex == ey + 1) & (ex == gy + p) & (ex == fx + 2)) |
                     (lbx & (fx == ey) & (ex > gy + (p-1)))
                 )
@@ -13494,10 +12687,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx+1:fx-1, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3FI0-Y",
-                same_sign & !lbx &
-                (fx == gx) &
-                (gy < ex) & (gy > gx + 1) &
-                (
+                same_sign & !lbx & (fx == gx) &
+                (gy < ex) & (gy > gx + 1) & (
                     (!lby & (ey == ex + 1) & (ey == gx + p) & (ey == fy + 2)) |
                     (lby & (fy == ex) & (ey > gx + (p-1)))
                 )
@@ -13507,10 +12698,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3FI1-X",
-                diff_sign & !lby &
-                (fy == gy) &
-                (fx > gx) & (gx > gy + 1) &
-                (
+                diff_sign & !lby & (fy == gy) &
+                (fx > gx) & (gx > gy + 1) & (
                     (!lbx & (fx == ey) & (ex > gy + (p-1))) |
                     (lbx & (ex == ey + 1) & (ex == gy + p) & (ex == fx + 2))
                 )
@@ -13518,10 +12707,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx:fx-1, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3FI1-Y",
-                diff_sign & !lbx &
-                (fx == gx) &
-                (fy > gy) & (gy > gx + 1) &
-                (
+                diff_sign & !lbx & (fx == gx) &
+                (fy > gy) & (gy > gx + 1) & (
                     (!lby & (fy == ex) & (ey > gx + (p-1))) |
                     (lby & (ey == ex + 1) & (ey == gx + p) & (ey == fy + 2))
                 )
@@ -13530,10 +12717,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3GI-X",
-                same_sign & lbx & lby &
-                (ex == gx + (p-1)) &
-                (gx > fy + 2) &
-                (
+                same_sign & lbx & lby & (ex == gx + (p-1)) &
+                (gx > fy + 2) & (
                     ((fx == ey) & (fx > gx)) |
                     ((fx + 1 == gx) & (gx == ey))
                 )
@@ -13544,10 +12729,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(sy, 1, gx-1, fy, gy))
             end
             checker("SELBTZ-TwoSum-3GI-Y",
-                same_sign & lby & lbx &
-                (ey == gy + (p-1)) &
-                (gy > fx + 2) &
-                (
+                same_sign & lby & lbx & (ey == gy + (p-1)) &
+                (gy > fx + 2) & (
                     ((fy == ex) & (fy > gy)) |
                     ((fy + 1 == gy) & (gy == ex))
                 )
@@ -13591,16 +12774,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3KN0-X",
-                same_sign & !lbx & !lby &
-                (ex == gx) & (ex == fx + p) &
+                same_sign & !lbx & !lby & (ex == gx) & (ex == fx + p) &
                 (fy > gy) &
                 (ex < ey + p) & (ex > fy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey, ey), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-3KN0-Y",
-                same_sign & !lby & !lbx &
-                (ey == gy) & (ey == fy + p) &
+                same_sign & !lby & !lbx & (ey == gy) & (ey == fy + p) &
                 (fx > gx) &
                 (ey < ex + p) & (ey > fx + p)
             ) do lemma
@@ -13608,8 +12789,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3KN1-X",
-                same_sign & !lbx & lby &
-                (ex == gx) & (ex == fx + p) &
+                same_sign & !lbx & lby & (ex == gx) & (ex == fx + p) &
                 (ex < fy + (p+1)) & (ex > gy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
@@ -13617,8 +12797,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey, fy+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-3KN1-Y",
-                same_sign & !lby & lbx &
-                (ey == gy) & (ey == fy + p) &
+                same_sign & !lby & lbx & (ey == gy) & (ey == fy + p) &
                 (ey < fx + (p+1)) & (ey > gx + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, ex, ey-(p-1):fx), SELBTZRange(~sx, gx:ey-(p+1), gx))
@@ -13627,16 +12806,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3KN2-X",
-                same_sign & !lbx & lby &
-                (ex == gx) & (ex == fx + p) &
+                same_sign & !lbx & lby & (ex == gx) & (ex == fx + p) &
                 (fy > gy) &
                 (ex < ey + (p+1)) & (ex > fy + p)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-3KN2-Y",
-                same_sign & !lby & lbx &
-                (ey == gy) & (ey == fy + p) &
+                same_sign & !lby & lbx & (ey == gy) & (ey == fy + p) &
                 (fx > gx) &
                 (ey < ex + (p+1)) & (ey > fx + p)
             ) do lemma
@@ -13644,8 +12821,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3KN3-X",
-                diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == fx + p) &
+                diff_sign & !lbx & !lby & (ex == gx) & (ex == fx + p) &
                 (ex < fy + (p+2)) & (ex > gy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:fy), SELBTZRange(sy, gy:ex-(p+2), gy))
@@ -13653,8 +12829,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-3KN3-Y",
-                diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == fy + p) &
+                diff_sign & !lby & !lbx & (ey == gy) & (ey == fy + p) &
                 (ey < fx + (p+2)) & (ey > gx + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, ey-p:fx), SELBTZRange(sx, gx:ey-(p+2), gx))
@@ -13663,16 +12838,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3KN4-X",
-                diff_sign & !lbx & !lby &
-                (ex == gx) & (ex == fx + p) &
+                diff_sign & !lbx & !lby & (ex == gx) & (ex == fx + p) &
                 (fy > gy) &
                 (ex < ey + (p+1)) & (ex > fy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-3KN4-Y",
-                diff_sign & !lby & !lbx &
-                (ey == gy) & (ey == fy + p) &
+                diff_sign & !lby & !lbx & (ey == gy) & (ey == fy + p) &
                 (fx > gx) &
                 (ey < ex + (p+1)) & (ey > fx + (p+1))
             ) do lemma
@@ -13680,16 +12853,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3KN5-X",
-                diff_sign & !lbx & lby &
-                (ex == gx) & (ex == fx + p) &
+                diff_sign & !lbx & lby & (ex == gx) & (ex == fx + p) &
                 (fy > gy) &
                 (ex < ey + (p+2)) & (ex > fy + (p+1))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ey+1), SELBTZRange(~sy, fy, gy))
             end
             checker("SELBTZ-TwoSum-3KN5-Y",
-                diff_sign & !lby & lbx &
-                (ey == gy) & (ey == fy + p) &
+                diff_sign & !lby & lbx & (ey == gy) & (ey == fy + p) &
                 (fx > gx) &
                 (ey < ex + (p+2)) & (ey > fx + (p+1))
             ) do lemma
@@ -13698,8 +12869,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3LQ0-X",
                 same_sign & lbx &
-                (ex > gy + (p-1)) &
-                (
+                (ex > gy + (p-1)) & (
                     (lby & (fx == fy + 1) & (gx == fy) & (fy + 2 == ey)) |
                     (!lby & (fx == fy) & (fx + 1 == gx) & (ex < fy + (p-1)))
                 )
@@ -13710,8 +12880,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3LQ0-Y",
                 same_sign & lby &
-                (ey > gx + (p-1)) &
-                (
+                (ey > gx + (p-1)) & (
                     (lbx & (fy == fx + 1) & (gy == fx) & (fx + 2 == ex)) |
                     (!lbx & (fy == fx) & (fy + 1 == gy) & (ey < fx + (p-1)))
                 )
@@ -13724,8 +12893,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3LQ1-X",
                 diff_sign & !lbx &
                 (fx == fy + 1) &
-                (ex > gy + (p+1)) &
-                (
+                (ex > gy + (p+1)) & (
                     (!lby & (fx == gx)) |
                     (lby & (gx == fy) & (fy + 2 == ey))
                 )
@@ -13737,8 +12905,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3LQ1-Y",
                 diff_sign & !lby &
                 (fy == fx + 1) &
-                (ey > gx + (p+1)) &
-                (
+                (ey > gx + (p+1)) & (
                     (!lbx & (fy == gy)) |
                     (lbx & (gy == fx) & (fx + 2 == ex))
                 )
@@ -13751,8 +12918,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3LQ2-X",
                 diff_sign & lbx &
                 (ex > ey + 2) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (fx + 1 == ey) & (gx + 2 == ey) & (gx == fy)) |
                     (lby & (fx == fy) & (fx + 1 == gx))
                 )
@@ -13764,8 +12930,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3LQ2-Y",
                 diff_sign & lby &
                 (ey > ex + 2) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (fy + 1 == ex) & (gy + 2 == ex) & (gy == fx)) |
                     (lbx & (fy == fx) & (fy + 1 == gy))
                 )
@@ -13874,8 +13039,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3P-X",
                 same_sign &
-                (gx == ey + 1) &
-                (
+                (gx == ey + 1) & (
                     (!lbx & lby & (ex == gx) & (ex == fx + p) & (ex == gy + p) & (fy + 1 == gy)) |
                     (lbx & !lby & (ex == gy + p) & (fx == ey) & (ey == gy) & (ey == fy + p)) |
                     (lbx & lby & (fx == ey) & (fy + 1 == gy) & (ex > gy + (p-1)))
@@ -13885,8 +13049,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3P-Y",
                 same_sign &
-                (gy == ex + 1) &
-                (
+                (gy == ex + 1) & (
                     (!lby & lbx & (ey == gy) & (ey == fy + p) & (ey == gx + p) & (fx + 1 == gx)) |
                     (lby & !lbx & (ey == gx + p) & (fy == ex) & (ex == gx) & (ex == fx + p)) |
                     (lby & lbx & (fy == ex) & (fx + 1 == gx) & (ey > gx + (p-1)))
@@ -13899,8 +13062,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby &
                 (gx > gy) &
                 ((ex == gy + (p-1)) | (ex == gy + p)) &
-                ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))) &
-                (
+                ((gx == fy + 1) | ((gx == gy + 1) & (fy + 1 == gy))) & (
                     (!lbx & (ex == ey + 1) & (fx == gx)) |
                     (lbx & (fx == ey))
                 )
@@ -13921,8 +13083,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx &
                 (gy > gx) &
                 ((ey == gx + (p-1)) | (ey == gx + p)) &
-                ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))) &
-                (
+                ((gy == fx + 1) | ((gy == gx + 1) & (fx + 1 == gx))) & (
                     (!lby & (ey == ex + 1) & (fy == gy)) |
                     (lby & (fy == ex))
                 )
@@ -13943,8 +13104,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3AP-X",
                 same_sign & !lby &
                 (ex == gy + (p-1)) & (gx == ey) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (lbx & (fx + 1 == ey)) |
                     (!lbx & (ex == gx) & (ex == fx + p))
                 )
@@ -13956,8 +13116,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3AP-Y",
                 same_sign & !lbx &
                 (ey == gx + (p-1)) & (gy == ex) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (lby & (fy + 1 == ex)) |
                     (!lby & (ey == gy) & (ey == fy + p))
                 )
@@ -13969,8 +13128,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3CJ3-X",
                 diff_sign & lbx &
-                (fx == ey) & (gx == ey + 1) &
-                (
+                (fx == ey) & (gx == ey + 1) & (
                     (!lby & (ex == ey + p) & (fx == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy) & (ex > ey + 2) & (ex > fy + p))
                 )
@@ -13979,8 +13137,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3CJ3-Y",
                 diff_sign & lby &
-                (fy == ex) & (gy == ex + 1) &
-                (
+                (fy == ex) & (gy == ex + 1) & (
                     (!lbx & (ey == ex + p) & (fy == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx) & (ey > ex + 2) & (ey > fx + p))
                 )
@@ -13989,13 +13146,10 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3EP-X",
-                same_sign &
-                (ex == gy + p) &
-                (fy > gy + 1) &
-                (
+                same_sign & (ex == gy + p) &
+                (fy > gy + 1) & (
                     (!lbx & !lby & (ex == ey + 1) & (ex == fx + 3) & (fx == fy) & (gx == fy)) |
-                    (lby & (gx == ey + 1) &
-                        (
+                    (lby & (gx == ey + 1) & (
                             (lbx & (fx == ey)) |
                             (!lbx & (ex == gx) & (ex == fx + p))
                         ))
@@ -14006,13 +13160,10 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy-1, fy), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3EP-Y",
-                same_sign &
-                (ey == gx + p) &
-                (fx > gx + 1) &
-                (
+                same_sign & (ey == gx + p) &
+                (fx > gx + 1) & (
                     (!lby & !lbx & (ey == ex + 1) & (ey == fy + 3) & (fy == fx) & (gy == fx)) |
-                    (lbx & (gy == ex + 1) &
-                        (
+                    (lbx & (gy == ex + 1) & (
                             (lby & (fy == ex)) |
                             (!lby & (ey == gy) & (ey == fy + p))
                         ))
@@ -14044,8 +13195,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3HP-X",
                 same_sign &
-                (gx == ey) &
-                (
+                (gx == ey) & (
                     (lbx & lby & (fx + 1 == gx) & (ey == gy + 1) & (gy == fy + 1) & ((ex == gy + (p-1)) | (ex == gy + p))) |
                     (lbx & !lby & (fx + 1 == gx) & (fy == gy) & (ex > gy + (p-2))) |
                     (!lbx & !lby & (ex == gx) & (ex == fx + p) & (ex == gy + (p-1)) & (fy == gy))
@@ -14055,8 +13205,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3HP-Y",
                 same_sign &
-                (gy == ex) &
-                (
+                (gy == ex) & (
                     (lby & lbx & (fy + 1 == gy) & (ex == gx + 1) & (gx == fx + 1) & ((ey == gx + (p-1)) | (ey == gx + p))) |
                     (lby & !lbx & (fy + 1 == gy) & (fx == gx) & (ey > gx + (p-2))) |
                     (!lby & !lbx & (ey == gy) & (ey == fy + p) & (ey == gx + (p-1)) & (fx == gx))
@@ -14067,11 +13216,9 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3HS-X",
                 (same_sign != lbx) &
-                (ex > ey + 1) &
-                (
+                (ex > ey + 1) & (
                     (diff_sign & lbx & !lby & (fx + 1 == gx) & (gx == ey) & (fy == gy) & (ex > gy + (p-1))) |
-                    (lby & (ex == gy + p) & (gx == gy + 1) & (gy == fy + 1) &
-                        (
+                    (lby & (ex == gy + p) & (gx == gy + 1) & (gy == fy + 1) & (
                             (diff_sign & lbx & (fx + 1 == gx)) |
                             (same_sign & !lbx & (ex == ey + 2) & (fx == gx))
                         ))
@@ -14081,11 +13228,9 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3HS-Y",
                 (same_sign != lby) &
-                (ey > ex + 1) &
-                (
+                (ey > ex + 1) & (
                     (diff_sign & lby & !lbx & (fy + 1 == gy) & (gy == ex) & (fx == gx) & (ey > gx + (p-1))) |
-                    (lbx & (ey == gx + p) & (gy == gx + 1) & (gx == fx + 1) &
-                        (
+                    (lbx & (ey == gx + p) & (gy == gx + 1) & (gx == fx + 1) & (
                             (diff_sign & lby & (fy + 1 == gy)) |
                             (same_sign & !lby & (ey == ex + 2) & (fy == gy))
                         ))
@@ -14096,10 +13241,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3PR-X",
                 same_sign & lby &
-                (gx == ey + 1) &
-                (
-                    (lbx & (fx == ey) &
-                        (
+                (gx == ey + 1) & (
+                    (lbx & (fx == ey) & (
                             ((ex == fy + p) & (fy > gy)) |
                             ((ex == gy + p) & (fy == gy + 1))
                         )) |
@@ -14110,10 +13253,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3PR-Y",
                 same_sign & lbx &
-                (gy == ex + 1) &
-                (
-                    (lby & (fy == ex) &
-                        (
+                (gy == ex + 1) & (
+                    (lby & (fy == ex) & (
                             ((ey == fx + p) & (fx > gx)) |
                             ((ey == gx + p) & (fx == gx + 1))
                         )) |
@@ -14213,8 +13354,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3ABI-X",
-                (same_sign != lbx) & !lby &
-                (gx == fy + 1) &
+                (same_sign != lbx) & !lby & (gx == fy + 1) &
                 (ex > ey + 1) &
                 ((fx + 1 == ey) | (diff_sign & lbx & (fx + 2 == ey) & (gx + 1 == ey))) &
                 ((ex == gy + p) | (ex == gy + (p+1))) &
@@ -14226,8 +13366,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gx+1:fx-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ABI-Y",
-                (same_sign != lby) & !lbx &
-                (gy == fx + 1) &
+                (same_sign != lby) & !lbx & (gy == fx + 1) &
                 (ey > ex + 1) &
                 ((fy + 1 == ex) | (diff_sign & lby & (fy + 2 == ex) & (gy + 1 == ex))) &
                 ((ey == gx + p) | (ey == gx + (p+1))) &
@@ -14368,10 +13507,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3AFO-X",
-                (same_sign != lbx) & !lby &
-                (fy == gy) &
-                (gx < ey) & (gx > gy + 1) &
-                (
+                (same_sign != lbx) & !lby & (fy == gy) &
+                (gx < ey) & (gx > gy + 1) & (
                     ((ex == ey + 1) & (ex == gy + p) & (ex > fx + 2)) |
                     ((ex == ey + 2) & (fx == ey) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -14379,10 +13516,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AFO-Y",
-                (same_sign != lby) & !lbx &
-                (fx == gx) &
-                (gy < ex) & (gy > gx + 1) &
-                (
+                (same_sign != lby) & !lbx & (fx == gx) &
+                (gy < ex) & (gy > gx + 1) & (
                     ((ey == ex + 1) & (ey == gx + p) & (ey > fy + 2)) |
                     ((ey == ex + 2) & (fy == ex) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -14391,10 +13526,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3AHO-X",
-                (same_sign != lbx) & lby &
-                (fy + 1 == gy) &
-                (gx < ey + 1) & (gx > gy + 1) &
-                (
+                (same_sign != lbx) & lby & (fy + 1 == gy) &
+                (gx < ey + 1) & (gx > gy + 1) & (
                     ((ex == ey + 2) & (fx < ey) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                     ((ex == fx + 2) & (fx == ey + 1) & ((ex == gy + p) | (ex == gy + (p+1)) | (ex == gy + (p+2))))
                 )
@@ -14402,10 +13535,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AHO-Y",
-                (same_sign != lby) & lbx &
-                (fx + 1 == gx) &
-                (gy < ex + 1) & (gy > gx + 1) &
-                (
+                (same_sign != lby) & lbx & (fx + 1 == gx) &
+                (gy < ex + 1) & (gy > gx + 1) & (
                     ((ey == ex + 2) & (fy < ex) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                     ((ey == fy + 2) & (fy == ex + 1) & ((ey == gx + p) | (ey == gx + (p+1)) | (ey == gx + (p+2))))
                 )
@@ -14416,8 +13547,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3AIL-X",
                 diff_sign & lby &
                 (fx < gy + (p-2)) &
-                ((gx == fy + 1) | (lbx & (gx == gy + 1) & (fy + 1 == gy))) &
-                (
+                ((gx == fy + 1) | (lbx & (gx == gy + 1) & (fy + 1 == gy))) & (
                     (!lbx & (ex == gy + (p+1)) & (fx + 1 == ey)) |
                     (lbx & (ex == gy + p) & (fx == ey + 1))
                 )
@@ -14430,8 +13560,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3AIL-Y",
                 diff_sign & lbx &
                 (fy < gx + (p-2)) &
-                ((gy == fx + 1) | (lby & (gy == gx + 1) & (fx + 1 == gx))) &
-                (
+                ((gy == fx + 1) | (lby & (gy == gx + 1) & (fx + 1 == gx))) & (
                     (!lby & (ey == gx + (p+1)) & (fy + 1 == ex)) |
                     (lby & (ey == gx + p) & (fy == ex + 1))
                 )
@@ -14466,8 +13595,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALM-X",
                 same_sign & lbx & lby &
                 (ex == ey) & (ex == gy + (p-1)) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((gx == fy + 1) & (fy > gy)) |
                     ((gx == gy + 1) & (gy == fy + 1))
                 )
@@ -14480,8 +13608,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALM-Y",
                 same_sign & lby & lbx &
                 (ey == ex) & (ey == gx + (p-1)) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((gy == fx + 1) & (fx > gx)) |
                     ((gy == gx + 1) & (gx == fx + 1))
                 )
@@ -14495,8 +13622,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALO0-X",
                 (same_sign != lbx) & lby &
                 (ex == ey + 2) &
-                (fx > gx) & (fx < ey) &
-                (
+                (fx > gx) & (fx < ey) & (
                     ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                     ((gx == gy + 1) & (gy == fy + 1) & (ex == gy + p))
                 )
@@ -14508,8 +13634,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALO0-Y",
                 (same_sign != lby) & lbx &
                 (ey == ex + 2) &
-                (fy > gy) & (fy < ex) &
-                (
+                (fy > gy) & (fy < ex) & (
                     ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                     ((gy == gx + 1) & (gx == fx + 1) & (ey == gx + p))
                 )
@@ -14523,8 +13648,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lbx & lby &
                 (ex == ey + 1) &
                 (fx > gx) &
-                ((ex == gy + (p-1)) | (ex == gy + p)) &
-                (
+                ((ex == gy + (p-1)) | (ex == gy + p)) & (
                     ((gx == fy + 1) & (fy > gy)) |
                     ((gx == gy + 1) & (fy + 1 == gy))
                 )
@@ -14537,8 +13661,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & !lby & lbx &
                 (ey == ex + 1) &
                 (fy > gy) &
-                ((ey == gx + (p-1)) | (ey == gx + p)) &
-                (
+                ((ey == gx + (p-1)) | (ey == gx + p)) & (
                     ((gy == fx + 1) & (fx > gx)) |
                     ((gy == gx + 1) & (fx + 1 == gx))
                 )
@@ -14551,8 +13674,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALQ0-X",
                 same_sign & lbx &
                 (ex == gy + (p-1)) &
-                (ex > ey) &
-                (
+                (ex > ey) & (
                     (!lby & (fx == fy) & (fx + 1 == gx) & (fy > gy)) |
                     (lby & (fx == fy + 1) & (gx == fy) & (fy + 2 == ey))
                 )
@@ -14564,8 +13686,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3ALQ0-Y",
                 same_sign & lby &
                 (ey == gx + (p-1)) &
-                (ey > ex) &
-                (
+                (ey > ex) & (
                     (!lbx & (fy == fx) & (fy + 1 == gy) & (fx > gx)) |
                     (lbx & (fy == fx + 1) & (gy == fx) & (fx + 2 == ex))
                 )
@@ -14577,8 +13698,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3ALQ1-X",
                 diff_sign & !lbx &
-                (ex == gy + (p+1)) & (fx == fy + 1) &
-                (
+                (ex == gy + (p+1)) & (fx == fy + 1) & (
                     (!lby & (fx == gx)) |
                     (lby & (gx == fy) & (fy + 2 == ey))
                 )
@@ -14589,8 +13709,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3ALQ1-Y",
                 diff_sign & !lby &
-                (ey == gx + (p+1)) & (fy == fx + 1) &
-                (
+                (ey == gx + (p+1)) & (fy == fx + 1) & (
                     (!lbx & (fy == gy)) |
                     (lbx & (gy == fx) & (fx + 2 == ex))
                 )
@@ -14602,11 +13721,9 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3ALS-X",
                 same_sign & !lbx &
-                (ex > ey + 2) &
-                (
+                (ex > ey + 2) & (
                     (!lby & (fx + 1 == ey) & (fx == gx + 1) & (gx == fy) & ((ex == gy + p) | (ex == gy + (p+1)))) |
-                    (lby & (fx == gx) &
-                        (
+                    (lby & (fx == gx) & (
                             ((gx == fy + 1) & ((ex == gy + p) | (ex == gy + (p+1)))) |
                             ((gx == gy + 1) & (fy + 1 == gy) & (ex == gy + p))
                         ))
@@ -14618,11 +13735,9 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3ALS-Y",
                 same_sign & !lby &
-                (ey > ex + 2) &
-                (
+                (ey > ex + 2) & (
                     (!lbx & (fy + 1 == ex) & (fy == gy + 1) & (gy == fx) & ((ey == gx + p) | (ey == gx + (p+1)))) |
-                    (lbx & (fy == gy) &
-                        (
+                    (lbx & (fy == gy) & (
                             ((gy == fx + 1) & ((ey == gx + p) | (ey == gx + (p+1)))) |
                             ((gy == gx + 1) & (fx + 1 == gx) & (ey == gx + p))
                         ))
@@ -14954,8 +14069,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3EIL-X",
                 same_sign & !lby &
                 (ex == gy + p) & (gx == fy + 2) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -14970,8 +14084,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3EIL-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (gy == fx + 2) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -15006,10 +14119,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3ELQ-X",
-                diff_sign & lbx &
-                (ex == gy + p) &
-                (ex > ey + 2) &
-                (
+                diff_sign & lbx & (ex == gy + p) &
+                (ex > ey + 2) & (
                     (!lby & (fx + 1 == ey) & (gx + 2 == ey) & (gx == fy)) |
                     (lby & (fx == fy) & (fx + 1 == gx))
                 )
@@ -15019,10 +14130,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3ELQ-Y",
-                diff_sign & lby &
-                (ey == gx + p) &
-                (ey > ex + 2) &
-                (
+                diff_sign & lby & (ey == gx + p) &
+                (ey > ex + 2) & (
                     (!lbx & (fy + 1 == ex) & (gy + 2 == ex) & (gy == fx)) |
                     (lbx & (fy == fx) & (fy + 1 == gy))
                 )
@@ -15182,10 +14291,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-3AHOR-X",
-                same_sign & lby &
-                (fy + 1 == gy) &
-                (gx > gy + 1) &
-                (
+                same_sign & lby & (fy + 1 == gy) &
+                (gx > gy + 1) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 > gx) & ((ex == gy + (p-1)) | (ex == gy + p))) |
                     (lbx & (ex == ey) & (ex == gy + (p-1)))
                 )
@@ -15193,10 +14300,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex+1, fx, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-3AHOR-Y",
-                same_sign & lbx &
-                (fx + 1 == gx) &
-                (gy > gx + 1) &
-                (
+                same_sign & lbx & (fx + 1 == gx) &
+                (gy > gx + 1) & (
                     (!lby & (ey == ex + 1) & (fy + 1 > gy) & ((ey == gx + (p-1)) | (ey == gx + p))) |
                     (lby & (ey == ex) & (ey == gx + (p-1)))
                 )
@@ -15244,8 +14349,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3CPRS-X",
                 diff_sign & !lbx & !lby &
-                (fx == gx) & (gx == ey) &
-                (
+                (fx == gx) & (gx == ey) & (
                     ((ex == fy + (p+1)) & (fy > gy)) |
                     ((ex == gy + (p+1)) & (fy == gy + 1))
                 )
@@ -15254,8 +14358,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3CPRS-Y",
                 diff_sign & !lby & !lbx &
-                (fy == gy) & (gy == ex) &
-                (
+                (fy == gy) & (gy == ex) & (
                     ((ey == fx + (p+1)) & (fx > gx)) |
                     ((ey == gx + (p+1)) & (fx == gx + 1))
                 )
@@ -15289,8 +14392,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3GILR-X",
                 same_sign & lbx & lby &
                 (ex == gx + (p-1)) & (gx == fy + 2) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((fx == ey) & (fx > gx)) |
                     ((fx + 1 == gx) & (gx == ey))
                 )
@@ -15303,8 +14405,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3GILR-Y",
                 same_sign & lby & lbx &
                 (ey == gy + (p-1)) & (gy == fx + 2) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((fy == ex) & (fy > gy)) |
                     ((fy + 1 == gy) & (gy == ex))
                 )
@@ -15320,8 +14421,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3EPV-X",
                 same_sign & !lby &
                 (ex == gy + p) & (gx == ey + 1) &
-                (ey == fy + 2) & (fy > gy) &
-                (
+                (ey == fy + 2) & (fy > gy) & (
                     (!lbx & (ex == gx) & (ex == fx + p)) |
                     (lbx & (fx + 1 == gx))
                 )
@@ -15333,8 +14433,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-3EPV-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (gy == ex + 1) &
-                (ex == fx + 2) & (fx > gx) &
-                (
+                (ex == fx + 2) & (fx > gx) & (
                     (!lby & (ey == gy) & (ey == fy + p)) |
                     (lby & (fy + 1 == gy))
                 )
@@ -15346,8 +14445,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3ABOQ-X",
                 (same_sign != lbx) & lby &
-                (ex == ey + 2) & (gx == fy + 1) &
-                (
+                (ex == ey + 2) & (gx == fy + 1) & (
                     (diff_sign & lbx & (fx + 1 == gx)) |
                     (same_sign & !lbx & (fx == gx))
                 ) &
@@ -15359,8 +14457,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3ABOQ-Y",
                 (same_sign != lby) & lbx &
-                (ey == ex + 2) & (gy == fx + 1) &
-                (
+                (ey == ex + 2) & (gy == fx + 1) & (
                     (diff_sign & lby & (fy + 1 == gy)) |
                     (same_sign & !lby & (fy == gy))
                 ) &
@@ -15453,8 +14550,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3ALMQ-X",
                 same_sign & (lbx == lby) &
-                (ey == gy + (p-1)) &
-                (
+                (ey == gy + (p-1)) & (
                     (!lbx & !lby & (ex == ey + 1) & (fx == fy + 1) & (gx == fy) & (ey == fy + 3)) |
                     (lbx & lby & (ex == ey) & (fx == fy) & (fx + 1 == gx) & (fy > gy))
                 )
@@ -15465,8 +14561,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3ALMQ-Y",
                 same_sign & (lby == lbx) &
-                (ex == gx + (p-1)) &
-                (
+                (ex == gx + (p-1)) & (
                     (!lby & !lbx & (ey == ex + 1) & (fy == fx + 1) & (gy == fx) & (ex == fx + 3)) |
                     (lby & lbx & (ey == ex) & (fy == fx) & (fy + 1 == gy) & (fx > gx))
                 )
@@ -15667,8 +14762,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-3ABIOT-X",
                 same_sign & !lbx & !lby &
-                (gx == fy + 1) &
-                (
+                (gx == fy + 1) & (
                     ((ex == ey + 1) & (ex == gy + p) & (ex == fx + 3)) |
                     ((ex == fx + 2) & (fx == ey) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -15680,8 +14774,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-3ABIOT-Y",
                 same_sign & !lby & !lbx &
-                (gy == fx + 1) &
-                (
+                (gy == fx + 1) & (
                     ((ey == ex + 1) & (ey == gx + p) & (ey == fy + 3)) |
                     ((ey == fy + 2) & (fy == ex) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -15811,8 +14904,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 4 - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-4A0-X",
-                same_sign & !lbx & !lby &
-                (fx == ey + 1) &
+                same_sign & !lbx & !lby & (fx == ey + 1) &
                 (ex > fx + 2) &
                 (gx < fy) &
                 (ex > gy + p)
@@ -15822,8 +14914,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A0-Y",
-                same_sign & !lby & !lbx &
-                (fy == ex + 1) &
+                same_sign & !lby & !lbx & (fy == ex + 1) &
                 (ey > fy + 2) &
                 (gy < fx) &
                 (ey > gx + p)
@@ -15834,8 +14925,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A1-X",
-                same_sign & !lbx & lby &
-                (fx == ey + 1) &
+                same_sign & !lbx & lby & (fx == ey + 1) &
                 (ex > fx + 2) &
                 (gx < fy) &
                 (ex > gy + p)
@@ -15845,8 +14935,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A1-Y",
-                same_sign & !lby & lbx &
-                (fy == ex + 1) &
+                same_sign & !lby & lbx & (fy == ex + 1) &
                 (ey > fy + 2) &
                 (gy < fx) &
                 (ey > gx + p)
@@ -15857,8 +14946,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A2-X",
-                same_sign & lbx & !lby &
-                (fx == ey + 1) &
+                same_sign & lbx & !lby & (fx == ey + 1) &
                 (gx < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -15868,8 +14956,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-2, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A2-Y",
-                same_sign & lby & !lbx &
-                (fy == ex + 1) &
+                same_sign & lby & !lbx & (fy == ex + 1) &
                 (gy < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -15880,8 +14967,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A3-X",
-                same_sign & lbx & lby &
-                (fx == ey + 1) &
+                same_sign & lbx & lby & (fx == ey + 1) &
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -15892,8 +14978,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A3-Y",
-                same_sign & lby & lbx &
-                (fy == ex + 1) &
+                same_sign & lby & lbx & (fy == ex + 1) &
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -15905,8 +14990,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A4-X",
-                diff_sign & !lbx & !lby &
-                (fx == ey + 1) &
+                diff_sign & !lbx & !lby & (fx == ey + 1) &
                 (gx < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -15916,8 +15000,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-2, ex-(p-1):fy), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A4-Y",
-                diff_sign & !lby & !lbx &
-                (fy == ex + 1) &
+                diff_sign & !lby & !lbx & (fy == ex + 1) &
                 (gy < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -15928,8 +15011,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A5-X",
-                diff_sign & !lbx & lby &
-                (fx == ey + 1) &
+                diff_sign & !lbx & lby & (fx == ey + 1) &
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -15941,8 +15023,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, fx), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A5-Y",
-                diff_sign & !lby & lbx &
-                (fy == ex + 1) &
+                diff_sign & !lby & lbx & (fy == ex + 1) &
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -15955,8 +15036,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A6-X",
-                diff_sign & lbx & !lby &
-                (fx == ey + 1) &
+                diff_sign & lbx & !lby & (fx == ey + 1) &
                 (ex > fx + 2) &
                 (gx < fy) &
                 (ex > gy + p)
@@ -15966,8 +15046,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, ex-(p-1):ey), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A6-Y",
-                diff_sign & lby & !lbx &
-                (fy == ex + 1) &
+                diff_sign & lby & !lbx & (fy == ex + 1) &
                 (ey > fy + 2) &
                 (gy < fx) &
                 (ey > gx + p)
@@ -15978,8 +15057,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4A7-X",
-                diff_sign & lbx & lby &
-                (fx == ey + 1) &
+                diff_sign & lbx & lby & (fx == ey + 1) &
                 (ex > fx + 2) &
                 (gx < fy) &
                 (ex > gy + p)
@@ -15989,8 +15067,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4A7-Y",
-                diff_sign & lby & lbx &
-                (fy == ex + 1) &
+                diff_sign & lby & lbx & (fy == ex + 1) &
                 (ey > fy + 2) &
                 (gy < fx) &
                 (ey > gx + p)
@@ -16001,8 +15078,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4B0-X",
-                same_sign & !lbx &
-                (ex == gy + p) &
+                same_sign & !lbx & (ex == gy + p) &
                 (ex > fx + 2) & (fx > ey + 1) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gy+2:fx-1), SELBTZRange(±, gy, gy))
@@ -16010,8 +15086,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx+1, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4B0-Y",
-                same_sign & !lby &
-                (ey == gx + p) &
+                same_sign & !lby & (ey == gx + p) &
                 (ey > fy + 2) & (fy > ex + 1) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy, gx+2:fy-1), SELBTZRange(±, gx, gx))
@@ -16020,8 +15095,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4B1-X",
-                same_sign & lbx &
-                (ex == gy + p) &
+                same_sign & lbx & (ex == gy + p) &
                 (fx > ey + 1) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1, gy+2:ey), SELBTZRange(±, gy, gy))
@@ -16029,8 +15103,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4B1-Y",
-                same_sign & lby &
-                (ey == gx + p) &
+                same_sign & lby & (ey == gx + p) &
                 (fy > ex + 1) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy-1, gx+2:ex), SELBTZRange(±, gx, gx))
@@ -16039,16 +15112,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4B2-X",
-                diff_sign & !lbx &
-                (ex == gy + p) &
+                diff_sign & !lbx & (ex == gy + p) &
                 (fx > ey + 1) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1, gy+2:ey), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4B2-Y",
-                diff_sign & !lby &
-                (ey == gx + p) &
+                diff_sign & !lby & (ey == gx + p) &
                 (fy > ex + 1) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fy-1, gx+2:ex), SELBTZRange(±, gx, gx))
@@ -16056,8 +15127,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4B3-X",
-                diff_sign & lbx &
-                (ex == gy + p) &
+                diff_sign & lbx & (ex == gy + p) &
                 (ex > fx + 2) & (fx > ey + 1) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, gy+2:fx-1), SELBTZRange(±, gy, gy))
@@ -16065,8 +15135,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx+1, gy+2:ey), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4B3-Y",
-                diff_sign & lby &
-                (ey == gx + p) &
+                diff_sign & lby & (ey == gx + p) &
                 (ey > fy + 2) & (fy > ex + 1) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey, fy, gx+2:fy-1), SELBTZRange(±, gx, gx))
@@ -16075,8 +15144,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4C-X",
-                same_sign & !lbx & lby &
-                (gx == fy) &
+                same_sign & !lbx & lby & (gx == fy) &
                 (ex > fx + 2) & (fx > ey + 1) &
                 (ex > gy + p)
             ) do lemma
@@ -16087,8 +15155,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4C-Y",
-                same_sign & !lby & lbx &
-                (gy == fx) &
+                same_sign & !lby & lbx & (gy == fx) &
                 (ey > fy + 2) & (fy > ex + 1) &
                 (ey > gx + p)
             ) do lemma
@@ -16102,8 +15169,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D0-X",
                 same_sign & !lbx &
                 (ex > fx + 2) & (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy)) |
                     (lby & (gx == fy + 1))
                 )
@@ -16117,8 +15183,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D0-Y",
                 same_sign & !lby &
                 (ey > fy + 2) & (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (gy == fx + 1))
                 )
@@ -16133,8 +15198,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D1-X",
                 same_sign & lbx &
                 (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16148,8 +15212,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D1-Y",
                 same_sign & lby &
                 (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16164,8 +15227,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D2-X",
                 same_sign & lbx &
                 (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy)) |
                     (lby & (gx == fy + 1))
                 )
@@ -16179,8 +15241,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D2-Y",
                 same_sign & lby &
                 (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (gy == fx + 1))
                 )
@@ -16195,8 +15256,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D3-X",
                 diff_sign & !lbx &
                 (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16209,8 +15269,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D3-Y",
                 diff_sign & !lby &
                 (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16224,8 +15283,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D4-X",
                 diff_sign & !lbx &
                 (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy)) |
                     (lby & (gx == fy + 1))
                 )
@@ -16238,8 +15296,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D4-Y",
                 diff_sign & !lby &
                 (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (gy == fx + 1))
                 )
@@ -16253,8 +15310,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D5-X",
                 diff_sign & lbx &
                 (ex > fx + 2) & (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16268,8 +15324,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D5-Y",
                 diff_sign & lby &
                 (ey > fy + 2) & (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16284,8 +15339,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D6-X",
                 diff_sign & lbx &
                 (ex > fx + 2) & (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy)) |
                     (lby & (gx == fy + 1))
                 )
@@ -16299,8 +15353,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-4D6-Y",
                 diff_sign & lby &
                 (ey > fy + 2) & (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (gy == fx + 1))
                 )
@@ -16313,8 +15366,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4E-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) &
+                (same_sign != lbx) & (ex == fx + 2) &
                 (fx > ey + 1) & (gx < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -16323,8 +15375,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4E-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) &
+                (same_sign != lby) & (ey == fy + 2) &
                 (fy > ex + 1) & (gy < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -16710,10 +15761,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD0-X",
-                same_sign & !lbx &
-                (ex == gy + p) &
-                (ex > fx + 2) & (fx > ey + 1) &
-                (
+                same_sign & !lbx & (ex == gy + p) &
+                (ex > fx + 2) & (fx > ey + 1) & (
                     (!lby & (gx == fy)) |
                     (lby & (
                         (gx == fy + 1) |
@@ -16728,10 +15777,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx:fx+1, gy+2:fy), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD0-Y",
-                same_sign & !lby &
-                (ey == gx + p) &
-                (ey > fy + 2) & (fy > ex + 1) &
-                (
+                same_sign & !lby & (ey == gx + p) &
+                (ey > fy + 2) & (fy > ex + 1) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (
                         (gy == fx + 1) |
@@ -16747,10 +15794,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD1-X",
-                same_sign & lbx &
-                (ex == gy + p) &
-                (fx > ey + 1) &
-                (
+                same_sign & lbx & (ex == gy + p) &
+                (fx > ey + 1) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16762,10 +15807,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD1-Y",
-                same_sign & lby &
-                (ey == gx + p) &
-                (fy > ex + 1) &
-                (
+                same_sign & lby & (ey == gx + p) &
+                (fy > ex + 1) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16778,10 +15821,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD2-X",
-                same_sign & lbx &
-                (ex == gy + p) &
-                (fx > ey + 1) &
-                (
+                same_sign & lbx & (ex == gy + p) &
+                (fx > ey + 1) & (
                     (!lby & (gx == fy)) |
                     (lby & (
                         (gx == fy + 1) |
@@ -16796,10 +15837,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx-1:fx, gy+2:fy), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD2-Y",
-                same_sign & lby &
-                (ey == gx + p) &
-                (fy > ex + 1) &
-                (
+                same_sign & lby & (ey == gx + p) &
+                (fy > ex + 1) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (
                         (gy == fx + 1) |
@@ -16815,10 +15854,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD3-X",
-                diff_sign & !lbx &
-                (ex == gy + p) &
-                (fx > ey + 1) &
-                (
+                diff_sign & !lbx & (ex == gy + p) &
+                (fx > ey + 1) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16829,10 +15866,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx-1:fx, gy+2:fy), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD3-Y",
-                diff_sign & !lby &
-                (ey == gx + p) &
-                (fy > ex + 1) &
-                (
+                diff_sign & !lby & (ey == gx + p) &
+                (fy > ex + 1) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16844,10 +15879,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD4-X",
-                diff_sign & !lbx &
-                (ex == gy + p) &
-                (fx > ey + 1) &
-                (
+                diff_sign & !lbx & (ex == gy + p) &
+                (fx > ey + 1) & (
                     (!lby & (gx == fy)) |
                     (lby & (
                         (gx == fy + 1) |
@@ -16861,10 +15894,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fx, gx+1:fx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD4-Y",
-                diff_sign & !lby &
-                (ey == gx + p) &
-                (fy > ex + 1) &
-                (
+                diff_sign & !lby & (ey == gx + p) &
+                (fy > ex + 1) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (
                         (gy == fx + 1) |
@@ -16879,10 +15910,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD5-X",
-                diff_sign & lbx &
-                (ex == gy + p) &
-                (ex > fx + 2) & (fx > ey + 1) &
-                (
+                diff_sign & lbx & (ex == gy + p) &
+                (ex > fx + 2) & (fx > ey + 1) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16894,10 +15923,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD5-Y",
-                diff_sign & lby &
-                (ey == gx + p) &
-                (ey > fy + 2) & (fy > ex + 1) &
-                (
+                diff_sign & lby & (ey == gx + p) &
+                (ey > fy + 2) & (fy > ex + 1) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16910,10 +15937,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BD6-X",
-                diff_sign & lbx &
-                (ex == gy + p) &
-                (ex > fx + 2) & (fx > ey + 1) &
-                (
+                diff_sign & lbx & (ex == gy + p) &
+                (ex > fx + 2) & (fx > ey + 1) & (
                     (!lby & (gx == fy)) |
                     (lby & (
                         (gx == fy + 1) |
@@ -16928,10 +15953,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx:fx+1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BD6-Y",
-                diff_sign & lby &
-                (ey == gx + p) &
-                (ey > fy + 2) & (fy > ex + 1) &
-                (
+                diff_sign & lby & (ey == gx + p) &
+                (ey > fy + 2) & (fy > ex + 1) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (
                         (gy == fx + 1) |
@@ -16947,8 +15970,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BE-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) & (ex == gy + p) &
+                (same_sign != lbx) & (ex == fx + 2) & (ex == gy + p) &
                 (fx > ey + 1) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, fx, gy+2:ey), SELBTZRange(±, gy, gy))
@@ -16956,8 +15978,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BE-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) & (ey == gx + p) &
+                (same_sign != lby) & (ey == fy + 2) & (ey == gx + p) &
                 (fy > ex + 1) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, fy, gx+2:ex), SELBTZRange(±, gx, gx))
@@ -16966,11 +15987,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4DE0-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) &
+                (same_sign != lbx) & (ex == fx + 2) &
                 (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -16982,11 +16001,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fx, fx+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4DE0-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) &
+                (same_sign != lby) & (ey == fy + 2) &
                 (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -16999,11 +16016,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4DE1-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) &
+                (same_sign != lbx) & (ex == fx + 2) &
                 (fx > ey + 1) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (gx == fy)) |
                     (lby & (gx == fy + 1))
                 )
@@ -17015,11 +16030,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, ex-(p-1):fy), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-4DE1-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) &
+                (same_sign != lby) & (ey == fy + 2) &
                 (fy > ex + 1) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (gy == fx + 1))
                 )
@@ -17033,8 +16046,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-4FG0-X",
                 same_sign & lby &
-                (gx + 1 < fy) &
-                (
+                (gx + 1 < fy) & (
                     (!lbx & (ex == ey + 2) & (ex == fx + 2) &
                         ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lbx & (ex == gy + p) & (fx == ey + 1))
@@ -17048,8 +16060,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-4FG0-Y",
                 same_sign & lbx &
-                (gy + 1 < fx) &
-                (
+                (gy + 1 < fx) & (
                     (!lby & (ey == ex + 2) & (ey == fy + 2) &
                         ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lby & (ey == gx + p) & (fy == ex + 1))
@@ -17064,8 +16075,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-4FG1-X",
                 diff_sign & lby &
-                (gx + 1 < fy) &
-                (
+                (gx + 1 < fy) & (
                     (!lbx & (ex == gy + p) & (fx == ey + 1)) |
                     (lbx & (ex == fx + 2) & (ex == ey + 2) &
                         ((ex == gy + p) | (ex == gy + (p+1))))
@@ -17080,8 +16090,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-4FG1-Y",
                 diff_sign & lbx &
-                (gy + 1 < fx) &
-                (
+                (gy + 1 < fx) & (
                     (!lby & (ey == gx + p) & (fy == ex + 1)) |
                     (lby & (ey == fy + 2) & (ey == ex + 2) &
                         ((ey == gx + p) | (ey == gx + (p+1))))
@@ -17287,10 +16296,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BDE0-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) & (ex == gy + p) &
-                (fx > ey + 1) &
-                (
+                (same_sign != lbx) & (ex == fx + 2) & (ex == gy + p) &
+                (fx > ey + 1) & (
                     (!lby & (gx == fy + 1)) |
                     (lby & (gx == fy))
                 )
@@ -17302,10 +16309,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BDE0-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) & (ey == gx + p) &
-                (fy > ex + 1) &
-                (
+                (same_sign != lby) & (ey == fy + 2) & (ey == gx + p) &
+                (fy > ex + 1) & (
                     (!lbx & (gy == fx + 1)) |
                     (lbx & (gy == fx))
                 )
@@ -17318,10 +16323,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-4BDE1-X",
-                (same_sign != lbx) &
-                (ex == fx + 2) & (ex == gy + p) &
-                (fx > ey + 1) &
-                (
+                (same_sign != lbx) & (ex == fx + 2) & (ex == gy + p) &
+                (fx > ey + 1) & (
                     (!lby & (gx == fy)) |
                     (lby & (
                         (gx == fy + 1) |
@@ -17336,10 +16339,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ex, fx, gy+2:fy-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-4BDE1-Y",
-                (same_sign != lby) &
-                (ey == fy + 2) & (ey == gx + p) &
-                (fy > ex + 1) &
-                (
+                (same_sign != lby) & (ey == fy + 2) & (ey == gx + p) &
+                (fy > ex + 1) & (
                     (!lbx & (gy == fx)) |
                     (lbx & (
                         (gy == fx + 1) |
@@ -17356,8 +16357,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-4CFG0-X",
                 same_sign & lby &
-                (gx == fy) &
-                (
+                (gx == fy) & (
                     (!lbx & (ex == ey + 2) & (ex == fx + 2) &
                         ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lbx & (ex == gy + p) & (fx == ey + 1))
@@ -17372,8 +16372,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-4CFG0-Y",
                 same_sign & lbx &
-                (gy == fx) &
-                (
+                (gy == fx) & (
                     (!lby & (ey == ex + 2) & (ey == fy + 2) &
                         ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lby & (ey == gx + p) & (fy == ex + 1))
@@ -17389,8 +16388,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-4CFG1-X",
                 diff_sign & lby &
-                (gx == fy) &
-                (
+                (gx == fy) & (
                     (!lbx & (ex == gy + p) & (fx == ey + 1)) |
                     (lbx & (ex == fx + 2) & (ex == ey + 2) &
                         ((ex == gy + p) | (ex == gy + (p+1))))
@@ -17405,8 +16403,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-4CFG1-Y",
                 diff_sign & lbx &
-                (gy == fx) &
-                (
+                (gy == fx) & (
                     (!lby & (ey == gx + p) & (fy == ex + 1)) |
                     (lby & (ey == fy + 2) & (ey == ex + 2) &
                         ((ey == gx + p) | (ey == gx + (p+1))))
@@ -17422,8 +16419,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-4FGH0-X",
                 same_sign & lby &
-                (gx + 1 == fy) &
-                (
+                (gx + 1 == fy) & (
                     (!lbx & (ex == ey + 2) & (ex == fx + 2) &
                         ((ex == gy + p) | (ex == gy + (p+1)))) |
                     (lbx & (ex == gy + p) & (fx == ey + 1))
@@ -17439,8 +16435,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-4FGH0-Y",
                 same_sign & lbx &
-                (gy + 1 == fx) &
-                (
+                (gy + 1 == fx) & (
                     (!lby & (ey == ex + 2) & (ey == fy + 2) &
                         ((ey == gx + p) | (ey == gx + (p+1)))) |
                     (lby & (ey == gx + p) & (fy == ex + 1))
@@ -17457,8 +16452,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-4FGH1-X",
                 diff_sign & lby &
-                (gx + 1 == fy) &
-                (
+                (gx + 1 == fy) & (
                     (!lbx & (ex == gy + p) & (fx == ey + 1)) |
                     (lbx & (ex == fx + 2) & (ex == ey + 2) &
                         ((ex == gy + p) | (ex == gy + (p+1))))
@@ -17474,8 +16468,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-4FGH1-Y",
                 diff_sign & lbx &
-                (gy + 1 == fx) &
-                (
+                (gy + 1 == fx) & (
                     (!lby & (ey == gx + p) & (fy == ex + 1)) |
                     (lby & (ey == fy + 2) & (ey == ex + 2) &
                         ((ey == gx + p) | (ey == gx + (p+1))))
@@ -17679,31 +16672,27 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 5 - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-5A0-X",
-                diff_sign & !lbx & !lby &
-                (ex == gy + (p+1)) &
+                diff_sign & !lbx & !lby & (ex == gy + (p+1)) &
                 (fx + 1 < ey) & (fx > fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5A0-Y",
-                diff_sign & !lby & !lbx &
-                (ey == gx + (p+1)) &
+                diff_sign & !lby & !lbx & (ey == gx + (p+1)) &
                 (fy + 1 < ex) & (fy > fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex-1, gx+2:fy), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-5A1-X",
-                diff_sign & !lbx & lby &
-                (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == gy + (p+1)) &
                 (ex > ey + 2) & (fx + 1 < ey) & (fx > fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5A1-Y",
-                diff_sign & !lby & lbx &
-                (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == gx + (p+1)) &
                 (ey > ex + 2) & (fy + 1 < ex) & (fy > fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fy-1), SELBTZRange(±, gx, gx))
@@ -17711,8 +16700,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5B0-X",
-                (same_sign != lbx) & !lby &
-                (gx == fy) &
+                (same_sign != lbx) & !lby & (gx == fy) &
                 (fx + 1 < ey) & (fx + 1 > fy) &
                 (ex > gy + p)
             ) do lemma
@@ -17722,8 +16710,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), SELBTZRange(sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5B0-Y",
-                (same_sign != lby) & !lbx &
-                (gy == fx) &
+                (same_sign != lby) & !lbx & (gy == fx) &
                 (fy + 1 < ex) & (fy + 1 > fx) &
                 (ey > gx + p)
             ) do lemma
@@ -17734,8 +16721,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5B1-X",
-                same_sign & lbx & !lby &
-                (gx == fy) &
+                same_sign & lbx & !lby & (gx == fy) &
                 (fx + 1 < ey) & (fx > fy) &
                 (ex > gy + (p-1))
             ) do lemma
@@ -17744,8 +16730,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1, fy+1:fx), SELBTZRange(sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5B1-Y",
-                same_sign & lby & !lbx &
-                (gy == fx) &
+                same_sign & lby & !lbx & (gy == fx) &
                 (fy + 1 < ex) & (fy > fx) &
                 (ey > gx + (p-1))
             ) do lemma
@@ -17755,8 +16740,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5B2-X",
-                same_sign & lbx & lby &
-                (gx == fy) &
+                same_sign & lbx & lby & (gx == fy) &
                 (fx + 1 < ey) & (fx > fy) &
                 (ex > gy + (p-1))
             ) do lemma
@@ -17766,8 +16750,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(~sy, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5B2-Y",
-                same_sign & lby & lbx &
-                (gy == fx) &
+                same_sign & lby & lbx & (gy == fx) &
                 (fy + 1 < ex) & (fy > fx) &
                 (ey > gx + (p-1))
             ) do lemma
@@ -17778,8 +16761,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5B3-X",
-                diff_sign & !lbx & !lby &
-                (gx == fy) &
+                diff_sign & !lbx & !lby & (gx == fy) &
                 (fx + 1 < ey) & (fx > fy) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -17788,8 +16770,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, fy+1:fx), SELBTZRange(sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5B3-Y",
-                diff_sign & !lby & !lbx &
-                (gy == fx) &
+                diff_sign & !lby & !lbx & (gy == fx) &
                 (fy + 1 < ex) & (fy > fx) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -17799,8 +16780,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5B4-X",
-                diff_sign & !lbx & lby &
-                (gx == fy) &
+                diff_sign & !lbx & lby & (gx == fy) &
                 (fx + 1 < ey) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -17810,8 +16790,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fx+1), SELBTZRange(~sy, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5B4-Y",
-                diff_sign & !lby & lbx &
-                (gy == fx) &
+                diff_sign & !lby & lbx & (gy == fx) &
                 (fy + 1 < ex) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -17822,8 +16801,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C0-X",
-                same_sign & !lbx & !lby &
-                (fx + 1 == ey) &
+                same_sign & !lbx & !lby & (fx + 1 == ey) &
                 (fx > fy + 1) & (gx < fy) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -17832,8 +16810,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5C0-Y",
-                same_sign & !lby & !lbx &
-                (fy + 1 == ex) &
+                same_sign & !lby & !lbx & (fy + 1 == ex) &
                 (fy > fx + 1) & (gy < fx) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -17843,8 +16820,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C1-X",
-                same_sign & lbx & !lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & !lby & (fx + 1 == ey) &
                 (gx + 1 < fy) &
                 (ex > gy + (p-1))
             ) do lemma
@@ -17856,8 +16832,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5C1-Y",
-                same_sign & lby & !lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & !lbx & (fy + 1 == ex) &
                 (gy + 1 < fx) &
                 (ey > gx + (p-1))
             ) do lemma
@@ -17870,8 +16845,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C2-X",
-                same_sign & lbx & lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & lby & (fx + 1 == ey) &
                 (gx < fy) & (ey > fy + 2) &
                 (ex > gy + (p-1))
             ) do lemma
@@ -17880,8 +16854,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(±, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-5C2-Y",
-                same_sign & lby & lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & lbx & (fy + 1 == ex) &
                 (gy < fx) & (ex > fx + 2) &
                 (ey > gx + (p-1))
             ) do lemma
@@ -17891,8 +16864,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C3-X",
-                diff_sign & !lbx & !lby &
-                (fx + 1 == ey) &
+                diff_sign & !lbx & !lby & (fx + 1 == ey) &
                 (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -17903,8 +16875,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ex-p:fy), SELBTZRange(±, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5C3-Y",
-                diff_sign & !lby & !lbx &
-                (fy + 1 == ex) &
+                diff_sign & !lby & !lbx & (fy + 1 == ex) &
                 (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -17916,8 +16887,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C4-X",
-                diff_sign & !lbx & lby &
-                (fx + 1 == ey) &
+                diff_sign & !lbx & lby & (fx + 1 == ey) &
                 (gx < fy) & (ey > fy + 2) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -17926,8 +16896,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, ex-p:ey-2), SELBTZRange(±, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-5C4-Y",
-                diff_sign & !lby & lbx &
-                (fy + 1 == ex) &
+                diff_sign & !lby & lbx & (fy + 1 == ex) &
                 (gy < fx) & (ex > fx + 2) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -17937,8 +16906,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C5-X",
-                diff_sign & lbx & !lby &
-                (fx + 1 == ey) &
+                diff_sign & lbx & !lby & (fx + 1 == ey) &
                 (fx > fy + 1) & (gx < fy) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -17947,8 +16915,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5C5-Y",
-                diff_sign & lby & !lbx &
-                (fy + 1 == ex) &
+                diff_sign & lby & !lbx & (fy + 1 == ex) &
                 (fy > fx + 1) & (gy < fx) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -17958,8 +16925,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5D0-X",
-                same_sign & lbx & !lby &
-                (fx == ey) &
+                same_sign & lbx & !lby & (fx == ey) &
                 (fx > fy + 2) & (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -17974,8 +16940,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5D0-Y",
-                same_sign & lby & !lbx &
-                (fy == ex) &
+                same_sign & lby & !lbx & (fy == ex) &
                 (fy > fx + 2) & (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -17991,8 +16956,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5D1-X",
-                same_sign & lbx & lby &
-                (fx == ey) & (ey > fy + 2) &
+                same_sign & lbx & lby & (fx == ey) & (ey > fy + 2) &
                 (gx + 1 < fy) &
                 (ex > gy + p)
             ) do lemma
@@ -18007,8 +16971,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5D1-Y",
-                same_sign & lby & lbx &
-                (fy == ex) & (ex > fx + 2) &
+                same_sign & lby & lbx & (fy == ex) & (ex > fx + 2) &
                 (gy + 1 < fx) &
                 (ey > gx + p)
             ) do lemma
@@ -18024,8 +16987,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5D2-X",
-                diff_sign & !lbx & !lby &
-                (fx == ey) &
+                diff_sign & !lbx & !lby & (fx == ey) &
                 (fx > fy + 2) & (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -18040,8 +17002,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5D2-Y",
-                diff_sign & !lby & !lbx &
-                (fy == ex) &
+                diff_sign & !lby & !lbx & (fy == ex) &
                 (fy > fx + 2) & (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -18057,8 +17018,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5D3-X",
-                diff_sign & !lbx & lby &
-                (fx == ey) &
+                diff_sign & !lbx & lby & (fx == ey) &
                 (fx > fy + 2) & (gx + 1 < fy) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -18073,8 +17033,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5D3-Y",
-                diff_sign & !lby & lbx &
-                (fy == ex) &
+                diff_sign & !lby & lbx & (fy == ex) &
                 (fy > fx + 2) & (gy + 1 < fx) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -18090,16 +17049,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5E0-X",
-                (same_sign != lbx) &
-                (ex == gy + p) &
+                (same_sign != lbx) & (ex == gy + p) &
                 (ex > ey + 2) & (fx > fy) & (gx < fy) &
                 ((!lby & (fx == ey)) | (lby & (fx < ey + 1)))
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5E0-Y",
-                (same_sign != lby) &
-                (ey == gx + p) &
+                (same_sign != lby) & (ey == gx + p) &
                 (ey > ex + 2) & (fy > fx) & (gy < fx) &
                 ((!lbx & (fy == ex)) | (lbx & (fy < ex + 1)))
             ) do lemma
@@ -18107,16 +17064,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5E1-X",
-                (same_sign != lbx) & !lby &
-                (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == gy + p) &
                 (ex > ey + 1) & (fx + 1 < ey) & (fx > fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5E1-Y",
-                (same_sign != lby) & !lbx &
-                (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == gx + p) &
                 (ey > ex + 1) & (fy + 1 < ex) & (fy > fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fy-1), SELBTZRange(±, gx, gx))
@@ -18124,10 +17079,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5F-X",
-                (same_sign != lbx) &
-                (ex > ey + 2) & (fx > gx) &
-                (ex > gy + p) &
-                (
+                (same_sign != lbx) & (ex > ey + 2) & (fx > gx) &
+                (ex > gy + p) & (
                     (!lby & (fx == ey) & (gx == fy + 1)) |
                     (lby & (fx < ey + 1) & (gx == fy))
                 )
@@ -18137,10 +17090,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, ex-(p-1):fy-1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-5F-Y",
-                (same_sign != lby) &
-                (ey > ex + 2) & (fy > gy) &
-                (ey > gx + p) &
-                (
+                (same_sign != lby) & (ey > ex + 2) & (fy > gy) &
+                (ey > gx + p) & (
                     (!lbx & (fy == ex) & (gy == fx + 1)) |
                     (lbx & (fy < ex + 1) & (gy == fx))
                 )
@@ -18153,8 +17104,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5Z0-X",
                 same_sign & (lbx != lby) &
                 (fx + 1 < ey) & (fx > fy) & (fx > gy) &
-                ((lbx & !lby & (ex > ey)) | (ex == ey)) &
-                (
+                ((lbx & !lby & (ex > ey)) | (ex == ey)) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx < fy) & (gx > gy))
                 )
@@ -18164,8 +17114,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5Z0-Y",
                 same_sign & (lby != lbx) &
                 (fy + 1 < ex) & (fy > fx) & (fy > gx) &
-                ((lby & !lbx & (ey > ex)) | (ey == ex)) &
-                (
+                ((lby & !lbx & (ey > ex)) | (ey == ex)) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy < fx) & (gy > gx))
                 )
@@ -18177,8 +17126,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (ex > ey) &
                 (fx + 1 < ey) & (fx > fy) & (gx < fy) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gy < gx))
                 )
@@ -18190,8 +17138,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby & lbx &
                 (ey > ex) &
                 (fy + 1 < ex) & (fy > fx) & (gy < fx) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gx < gy))
                 )
@@ -18203,11 +17150,9 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 5 - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-5C6-X",
-                same_sign & lbx & !lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & !lby & (fx + 1 == ey) &
                 (gx + 1 < fy) &
-                (fy > gy + 1) &
-                (
+                (fy > gy + 1) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gy < gx))
                 )
@@ -18220,11 +17165,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, fx), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-5C6-Y",
-                same_sign & lby & !lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & !lbx & (fy + 1 == ex) &
                 (gy + 1 < fx) &
-                (fx > gx + 1) &
-                (
+                (fx > gx + 1) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gx < gy))
                 )
@@ -18238,11 +17181,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5C7-X",
-                same_sign & lbx & lby &
-                (fx + 1 == ey) &
+                same_sign & lbx & lby & (fx + 1 == ey) &
                 (gx < fy) & (ey > fy + 2) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gy < gx))
                 )
@@ -18252,11 +17193,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-5C7-Y",
-                same_sign & lby & lbx &
-                (fy + 1 == ex) &
+                same_sign & lby & lbx & (fy + 1 == ex) &
                 (gy < fx) & (ex > fx + 2) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gx < gy))
                 )
@@ -18267,10 +17206,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5D4-X",
-                same_sign & lbx & lby &
-                (fx == ey) &
-                (ey > fy + 2) & (ey > gy + 2) &
-                (
+                same_sign & lbx & lby & (fx == ey) &
+                (ey > fy + 2) & (ey > gy + 2) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx < fy) & (gx > gy))
                 )
@@ -18283,10 +17220,8 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5D4-Y",
-                same_sign & lby & lbx &
-                (fy == ex) &
-                (ex > fx + 2) & (ex > gx + 2) &
-                (
+                same_sign & lby & lbx & (fy == ex) &
+                (ex > fx + 2) & (ex > gx + 2) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy < fx) & (gy > gx))
                 )
@@ -18301,8 +17236,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5J-X",
                 !lbx &
-                (fx + 1 < ey) & (fx > fy + 1) & (gx < fy) &
-                (
+                (fx + 1 < ey) & (fx > fy + 1) & (gx < fy) & (
                     (same_sign & !lby & (ex == ey) & (fy > gy) & (
                         ((ex == gx + (p-1)) & (gx < gy)) |
                         ((ey == gy + (p-1)) & (gy < gx))
@@ -18316,8 +17250,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5J-Y",
                 !lby &
-                (fy + 1 < ex) & (fy > fx + 1) & (gy < fx) &
-                (
+                (fy + 1 < ex) & (fy > fx + 1) & (gy < fx) & (
                     (same_sign & !lbx & (ey == ex) & (fx > gx) & (
                         ((ey == gy + (p-1)) & (gy < gx)) |
                         ((ex == gx + (p-1)) & (gx < gy))
@@ -18332,12 +17265,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5K0-X",
                 same_sign & !lby &
-                (ex > fy + 3) & (gx + 1 < fy) & (fy > gy + 1) &
-                (
+                (ex > fy + 3) & (gx + 1 < fy) & (fy > gy + 1) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
-                ) &
-                (
+                ) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx > gy))
                 )
@@ -18351,12 +17282,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5K0-Y",
                 same_sign & !lbx &
-                (ey > fx + 3) & (gy + 1 < fx) & (fx > gx + 1) &
-                (
+                (ey > fx + 3) & (gy + 1 < fx) & (fx > gx + 1) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
-                ) &
-                (
+                ) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy > gx))
                 )
@@ -18526,8 +17455,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5AJ0-X",
                 (same_sign != lbx) &
-                (ex > fy + 3) & (fx < ey) & (gx < fy) &
-                (
+                (ex > fy + 3) & (fx < ey) & (gx < fy) & (
                     (!lby & (ex == ey + 1) & (ex == gy + p) & (fx == fy)) |
                     (lby & (ex == ey + 2) & (fx > fy) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -18536,8 +17464,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5AJ0-Y",
                 (same_sign != lby) &
-                (ey > fx + 3) & (fy < ex) & (gy < fx) &
-                (
+                (ey > fx + 3) & (fy < ex) & (gy < fx) & (
                     (!lbx & (ey == ex + 1) & (ey == gx + p) & (fy == fx)) |
                     (lbx & (ey == ex + 2) & (fy > fx) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -18547,8 +17474,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5AJ1-X",
                 (fx > fy + 1) & (gx < fy) & (gx > gy) &
-                ((ey == gy + (p-2)) | (ey == gy + (p-1))) &
-                (
+                ((ey == gy + (p-2)) | (ey == gy + (p-1))) & (
                     (same_sign & !lbx & lby & (ex == ey + 1)) |
                     (diff_sign & lbx & !lby & (ex == ey + 2) & (ex == fx + 2))
                 )
@@ -18558,8 +17484,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5AJ1-Y",
                 (fy > fx + 1) & (gy < fx) & (gy > gx) &
-                ((ex == gx + (p-2)) | (ex == gx + (p-1))) &
-                (
+                ((ex == gx + (p-2)) | (ex == gx + (p-1))) & (
                     (same_sign & !lby & lbx & (ey == ex + 1)) |
                     (diff_sign & lby & !lbx & (ey == ex + 2) & (ey == fy + 2))
                 )
@@ -18569,8 +17494,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5AK0-X",
-                (fx > fy + 2) & (gx + 1 < fy) &
-                (
+                (fx > fy + 2) & (gx + 1 < fy) & (
                     (diff_sign & !lbx & lby & (ex == gy + (p+1)) & (fx == ey)) |
                     (same_sign & !lby & (ex == gy + p) & (
                         (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
@@ -18588,8 +17512,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5AK0-Y",
-                (fy > fx + 2) & (gy + 1 < fx) &
-                (
+                (fy > fx + 2) & (gy + 1 < fx) & (
                     (diff_sign & !lby & lbx & (ey == gx + (p+1)) & (fy == ex)) |
                     (same_sign & !lbx & (ey == gx + p) & (
                         (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
@@ -18609,9 +17532,8 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5AK1-X",
                 diff_sign & lby &
-                (gx < fy) & (fy + 1 < fx) &
-                (fx < gy + (p-2)) &
-                (
+                (gx < fy) &
+                (fy + 1 < fx) & (fx < gy + (p-2)) & (
                     (!lbx & (ex == gy + (p+1)) & (fx + 1 == ey)) |
                     (lbx & (ex == gy + p) & (fx == ey + 1))
                 )
@@ -18622,9 +17544,8 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5AK1-Y",
                 diff_sign & lbx &
-                (gy < fx) & (fx + 1 < fy) &
-                (fy < gx + (p-2)) &
-                (
+                (gy < fx) &
+                (fx + 1 < fy) & (fy < gx + (p-2)) & (
                     (!lby & (ey == gx + (p+1)) & (fy + 1 == ex)) |
                     (lby & (ey == gx + p) & (fy == ex + 1))
                 )
@@ -19354,8 +18275,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5DH1-X",
-                same_sign & lbx & lby &
-                (fx == ey) & (ey > fy + 2) &
+                same_sign & lbx & lby & (fx == ey) & (ey > fy + 2) &
                 (gx + 1 == fy) &
                 (ex > gy + p)
             ) do lemma
@@ -19373,8 +18293,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5DH1-Y",
-                same_sign & lby & lbx &
-                (fy == ex) & (ex > fx + 2) &
+                same_sign & lby & lbx & (fy == ex) & (ex > fx + 2) &
                 (gy + 1 == fx) &
                 (ey > gx + p)
             ) do lemma
@@ -19471,10 +18390,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5EF0-X",
-                (same_sign != lbx) &
-                (ex == gy + p) &
-                (ex > ey + 2) & (fx > gx) &
-                (
+                (same_sign != lbx) & (ex == gy + p) &
+                (ex > ey + 2) & (fx > gx) & (
                     (!lby & (fx == ey) & (gx == fy + 1)) |
                     (lby & (fx < ey + 1) & (gx == fy))
                 )
@@ -19484,10 +18401,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey+1, gy+2:fy-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5EF0-Y",
-                (same_sign != lby) &
-                (ey == gx + p) &
-                (ey > ex + 2) & (fy > gy) &
-                (
+                (same_sign != lby) & (ey == gx + p) &
+                (ey > ex + 2) & (fy > gy) & (
                     (!lbx & (fy == ex) & (gy == fx + 1)) |
                     (lbx & (fy < ex + 1) & (gy == fx))
                 )
@@ -19498,10 +18413,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5EK-X",
-                diff_sign & !lby &
-                (ex == gy + p) &
-                (fx > fy + 2) & (gx < fy) &
-                (
+                diff_sign & !lby & (ex == gy + p) &
+                (fx > fy + 2) & (gx < fy) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -19514,10 +18427,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5EK-Y",
-                diff_sign & !lbx &
-                (ey == gx + p) &
-                (fy > fx + 2) & (gy < fx) &
-                (
+                diff_sign & !lbx & (ey == gx + p) &
+                (fy > fx + 2) & (gy < fx) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -19531,16 +18442,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5EL-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 2 < ey) & (fx > fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, gy+2:fx-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, fx+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-5EL-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 2 < ex) & (fy > fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ~lby, ey, ey-2, gx+2:fy-1), SELBTZRange(±, gx, gx))
@@ -19568,12 +18477,10 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5K1-X",
                 same_sign & !lby &
-                (ex > fy + 3) &
-                (
+                (ex > fy + 3) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
-                ) &
-                (
+                ) & (
                     ((ex == gx + (p-1)) & (fy == gy + 1) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx + 1 == fy) & (gx > gy))
                 )
@@ -19591,12 +18498,10 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5K1-Y",
                 same_sign & !lbx &
-                (ey > fx + 3) &
-                (
+                (ey > fx + 3) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
-                ) &
-                (
+                ) & (
                     ((ey == gy + (p-1)) & (fx == gx + 1) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy + 1 == fx) & (gy > gx))
                 )
@@ -19617,8 +18522,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (fx + 1 == ey) & (ey == fy + 2) &
                 (gx + 1 < fy) &
-                (fy > gy + 1) &
-                (
+                (fy > gy + 1) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx > gy))
                 )
@@ -19631,8 +18535,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby & lbx &
                 (fy + 1 == ex) & (ex == fx + 2) &
                 (gy + 1 < fx) &
-                (fx > gx + 1) &
-                (
+                (fx > gx + 1) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy > gx))
                 )
@@ -19646,8 +18549,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (fx == ey) & (ey == fy + 2) &
                 (gx + 1 < fy) &
-                (ey > gy + 3) &
-                (
+                (ey > gy + 3) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx > gy))
                 )
@@ -19666,8 +18568,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby & lbx &
                 (fy == ex) & (ex == fx + 2) &
                 (gy + 1 < fx) &
-                (ex > gx + 3) &
-                (
+                (ex > gx + 3) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy > gx))
                 )
@@ -19684,9 +18585,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5EF1-X",
-                diff_sign &
-                (ex == gy + p) &
-                (
+                diff_sign & (ex == gy + p) & (
                     (!lbx & lby & (fx == ey) & (gx + 1 == fy)) |
                     (lbx & (ex == ey + 1) & (gx + 2 == fy) & (
                         (!lby & (ex == fy + 3) & (fx == fy + 1)) |
@@ -19706,9 +18605,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-5EF1-Y",
-                diff_sign &
-                (ey == gx + p) &
-                (
+                diff_sign & (ey == gx + p) & (
                     (!lby & lbx & (fy == ex) & (gy + 1 == fx)) |
                     (lby & (ey == ex + 1) & (gy + 2 == fx) & (
                         (!lbx & (ey == fx + 3) & (fy == fx + 1)) |
@@ -19729,10 +18626,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5JN0-X",
-                (same_sign != lby) & !lbx &
-                (fx == fy + 1) &
-                (fx + 1 < ey) & (gx + 1 < fy) &
-                (
+                (same_sign != lby) & !lbx & (fx == fy + 1) &
+                (fx + 1 < ey) & (gx + 1 < fy) & (
                     (same_sign & !lby & (ex == ey) & (fy > gy + 1) & (
                         ((ex == gx + (p-1)) & (gx < gy)) |
                         ((ey == gy + (p-1)) & (gy < gx))
@@ -19745,10 +18640,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fx+1, fx+1), SELBTZRange(±, ey-(p-1), ey-(p-1)))
             end
             checker("SELBTZ-TwoSum-5JN0-Y",
-                (same_sign != lbx) & !lby &
-                (fy == fx + 1) &
-                (fy + 1 < ex) & (gy + 1 < fx) &
-                (
+                (same_sign != lbx) & !lby & (fy == fx + 1) &
+                (fy + 1 < ex) & (gy + 1 < fx) & (
                     (same_sign & !lbx & (ey == ex) & (fx > gx + 1) & (
                         ((ey == gy + (p-1)) & (gy < gx)) |
                         ((ex == gx + (p-1)) & (gx < gy))
@@ -19999,8 +18892,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABK0-X",
                 same_sign & !lby &
                 (ex == gy + (p-1)) & (gx == fy) &
-                (fx > gx + 2) & (fy > gy) &
-                (
+                (fx > gx + 2) & (fy > gy) & (
                     (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -20016,8 +18908,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABK0-Y",
                 same_sign & !lbx &
                 (ey == gx + (p-1)) & (gy == fx) &
-                (fy > gy + 2) & (fx > gx) &
-                (
+                (fy > gy + 2) & (fx > gx) & (
                     (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -20034,9 +18925,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABK1-X",
                 diff_sign & lby &
                 (gx == fy) &
-                (fy + 1 < fx) &
-                (fx < gy + (p-2)) &
-                (
+                (fy + 1 < fx) & (fx < gy + (p-2)) & (
                     (!lbx & (ex == gy + (p+1)) & (fx + 1 == ey)) |
                     (lbx & (ex == gy + p) & (fx == ey + 1))
                 )
@@ -20049,9 +18938,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABK1-Y",
                 diff_sign & lbx &
                 (gy == fx) &
-                (fx + 1 < fy) &
-                (fy < gx + (p-2)) &
-                (
+                (fx + 1 < fy) & (fy < gx + (p-2)) & (
                     (!lby & (ey == gx + (p+1)) & (fy + 1 == ex)) |
                     (lby & (ey == gx + p) & (fy == ex + 1))
                 )
@@ -20367,11 +19254,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5AFJ-X",
-                (same_sign != lbx) &
-                (ex == ey + 2) &
+                (same_sign != lbx) & (ex == ey + 2) &
                 (fx > gx) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
-                (
+                ((ex == gy + p) | (ex == gy + (p+1))) & (
                     (diff_sign & lbx & !lby & (ex == fx + 2) & (gx == fy + 1)) |
                     (lby & (gx == fy) & (fx < ey))
                 )
@@ -20381,11 +19266,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ey, gx+1:fx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-5AFJ-Y",
-                (same_sign != lby) &
-                (ey == ex + 2) &
+                (same_sign != lby) & (ey == ex + 2) &
                 (fy > gy) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
-                (
+                ((ey == gx + p) | (ey == gx + (p+1))) & (
                     (diff_sign & lby & !lbx & (ey == fy + 2) & (gy == fx + 1)) |
                     (lbx & (gy == fx) & (fy < ex))
                 )
@@ -20426,8 +19309,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5AJR-X",
                 same_sign & !lbx & !lby &
-                (fx > fy + 1) & (gx < fy) &
-                (
+                (fx > fy + 1) & (gx < fy) & (
                     ((ex == fx + 3) & (ex == ey + 1) & (ex == gy + p)) |
                     ((ex == ey + 2) & (ex == fx + 2) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -20438,8 +19320,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5AJR-Y",
                 same_sign & !lby & !lbx &
-                (fy > fx + 1) & (gy < fx) &
-                (
+                (fy > fx + 1) & (gy < fx) & (
                     ((ey == fy + 3) & (ey == ex + 1) & (ey == gx + p)) |
                     ((ey == ex + 2) & (ey == fy + 2) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -20693,8 +19574,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5BEK0-X",
                 same_sign & !lby &
                 (ex == gy + p) & (gx == fy) &
-                (fx > gx + 2) & (gx > gy + 1) &
-                (
+                (fx > gx + 2) & (gx > gy + 1) & (
                     (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -20715,8 +19595,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5BEK0-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (gy == fx) &
-                (fy > gy + 2) & (gy > gx + 1) &
-                (
+                (fy > gy + 2) & (gy > gx + 1) & (
                     (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -20738,8 +19617,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5BEK1-X",
                 diff_sign & !lby &
                 (ex == gy + p) & (gx == fy) &
-                (fx > gx + 2) &
-                (
+                (fx > gx + 2) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == fx + 2) & (fx + 1 == ey))
                 )
@@ -20755,8 +19633,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5BEK1-Y",
                 diff_sign & !lbx &
                 (ey == gx + p) & (gy == fx) &
-                (fy > gy + 2) &
-                (
+                (fy > gy + 2) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == fy + 2) & (fy + 1 == ex))
                 )
@@ -21207,8 +20084,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EHK-X",
                 same_sign & !lby &
                 (ex == gy + p) & (gx + 1 == fy) &
-                (fx > fy + 2) &
-                (
+                (fx > fy + 2) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -21229,8 +20105,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EHK-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (gy + 1 == fx) &
-                (fy > fx + 2) &
-                (
+                (fy > fx + 2) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -21252,8 +20127,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EKO0-X",
                 same_sign & !lby &
                 (ex == gy + p) & (fx == fy + 2) &
-                ((gx + 1 < fy) | (lbx & (gx + 1 == fy) & (fy == gy + 2))) &
-                (
+                ((gx + 1 < fy) | (lbx & (gx + 1 == fy) & (fy == gy + 2))) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -21270,8 +20144,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EKO0-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (fy == fx + 2) &
-                ((gy + 1 < fx) | (lby & (gy + 1 == fx) & (fx == gx + 2))) &
-                (
+                ((gy + 1 < fx) | (lby & (gy + 1 == fx) & (fx == gx + 2))) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -21289,8 +20162,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EKO1-X",
                 diff_sign & !lby &
                 (ex == gy + p) & (fx == fy + 2) &
-                (gx + 1 < fy) &
-                (
+                (gx + 1 < fy) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -21308,8 +20180,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5EKO1-Y",
                 diff_sign & !lbx &
                 (ey == gx + p) & (fy == fx + 2) &
-                (gy + 1 < fx) &
-                (
+                (gy + 1 < fx) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -21328,8 +20199,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IKM-X",
                 same_sign & !lby &
                 (ex == gx + (p-1)) & (fy == gy) &
-                (fx > fy + 1) & (gx < gy) &
-                (
+                (fx > fy + 1) & (gx < gy) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -21346,8 +20216,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IKM-Y",
                 same_sign & !lbx &
                 (ey == gy + (p-1)) & (fx == gx) &
-                (fy > fx + 1) & (gy < gx) &
-                (
+                (fy > fx + 1) & (gy < gx) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -21475,8 +20344,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5CG5-X",
                 same_sign & lbx & lby &
-                (fx + 1 == ey) & (ey == fy + 2) &
-                (
+                (fx + 1 == ey) & (ey == fy + 2) & (
                     ((ex == gx + (p-1)) & (fy == gy + 1) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx + 1 == fy) & (gx > gy))
                 )
@@ -21488,8 +20356,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5CG5-Y",
                 same_sign & lby & lbx &
-                (fy + 1 == ex) & (ex == fx + 2) &
-                (
+                (fy + 1 == ex) & (ex == fx + 2) & (
                     ((ey == gy + (p-1)) & (fx == gx + 1) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy + 1 == fx) & (gy > gx))
                 )
@@ -21503,8 +20370,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IQ-X",
                 same_sign &
                 (ex == gx + (p-1)) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (lbx & !lby & (ey == gy) & (ey == fy + p) & (
                         (fx + 1 == gy) |
                         ((fx + 1 == gx) & (gx + 1 == gy))
@@ -21522,8 +20388,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IQ-Y",
                 same_sign &
                 (ey == gy + (p-1)) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (lby & !lbx & (ex == gx) & (ex == fx + p) & (
                         (fy + 1 == gx) |
                         ((fy + 1 == gy) & (gy + 1 == gx))
@@ -21540,9 +20405,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5JN1-X",
-                same_sign & !lbx & !lby &
-                (ex == ey) & (fx == fy + 1) &
-                (
+                same_sign & !lbx & !lby & (ex == ey) & (fx == fy + 1) & (
                     ((ex == gx + (p-1)) & (fy == gy + 1) & (gx < gy)) |
                     ((ey == gy + (p-1)) & (gx + 1 == fy) & (gy < gx))
                 )
@@ -21553,9 +20416,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx+1, fx+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-5JN1-Y",
-                same_sign & !lby & !lbx &
-                (ey == ex) & (fy == fx + 1) &
-                (
+                same_sign & !lby & !lbx & (ey == ex) & (fy == fx + 1) & (
                     ((ey == gy + (p-1)) & (fx == gx + 1) & (gy < gx)) |
                     ((ex == gx + (p-1)) & (gy + 1 == fx) & (gx < gy))
                 )
@@ -21569,8 +20430,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IOQ-X",
                 same_sign &
                 (ex == gx + (p-1)) & (fx == gy + 1) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     (!lbx & !lby & (ex == ey) & (fy == gy)) |
                     (lbx & lby & (fx + 1 == ey) & (fy + 1 == gy))
                 )
@@ -21584,8 +20444,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5IOQ-Y",
                 same_sign &
                 (ey == gy + (p-1)) & (fy == gx + 1) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     (!lby & !lbx & (ey == ex) & (fx == gx)) |
                     (lby & lbx & (fy + 1 == ex) & (fx + 1 == gx))
                 )
@@ -21807,8 +20666,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABJR-X",
                 same_sign & !lbx & !lby &
                 (gx == fy) &
-                (fx > gx + 1) &
-                (
+                (fx > gx + 1) & (
                     ((ex == fx + 3) & (ex == ey + 1) & (ex == gy + p)) |
                     ((ex == ey + 2) & (ex == fx + 2) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -21821,8 +20679,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5ABJR-Y",
                 same_sign & !lby & !lbx &
                 (gy == fx) &
-                (fy > gy + 1) &
-                (
+                (fy > gy + 1) & (
                     ((ey == fy + 3) & (ey == ex + 1) & (ey == gx + p)) |
                     ((ey == ex + 2) & (ey == fy + 2) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -22198,8 +21055,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5BEIK-X",
                 same_sign & !lby &
-                (ex == gy + p) & (gx == fy) & (gx == gy + 1) &
-                (
+                (ex == gy + p) & (gx == fy) & (gx == gy + 1) & (
                     (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -22212,8 +21068,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5BEIK-Y",
                 same_sign & !lbx &
-                (ey == gx + p) & (gy == fx) & (gy == gx + 1) &
-                (
+                (ey == gx + p) & (gy == fx) & (gy == gx + 1) & (
                     (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -22228,8 +21083,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5BEKO0-X",
                 same_sign & !lby &
                 (ex == gy + p) & (fx == gx + 2) & (gx == fy) &
-                (gx > gy + 1) &
-                (
+                (gx > gy + 1) & (
                     (!lbx & (ex == fx + 2) & (fx + 1 == ey)) |
                     (lbx & (fx == ey))
                 )
@@ -22246,8 +21100,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5BEKO0-Y",
                 same_sign & !lbx &
                 (ey == gx + p) & (fy == gy + 2) & (gy == fx) &
-                (gy > gx + 1) &
-                (
+                (gy > gx + 1) & (
                     (!lby & (ey == fy + 2) & (fy + 1 == ex)) |
                     (lby & (fy == ex))
                 )
@@ -22264,8 +21117,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5BEKO1-X",
                 diff_sign & !lby &
-                (ex == gy + p) & (fx == gx + 2) & (gx == fy) &
-                (
+                (ex == gy + p) & (fx == gx + 2) & (gx == fy) & (
                     (!lbx & (fx == ey) & (fy > gy + 1)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -22278,8 +21130,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5BEKO1-Y",
                 diff_sign & !lbx &
-                (ey == gx + p) & (fy == gy + 2) & (gy == fx) &
-                (
+                (ey == gx + p) & (fy == gy + 2) & (gy == fx) & (
                     (!lby & (fy == ex) & (fx > gx + 1)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -22396,8 +21247,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5DITU-X",
                 same_sign & lbx & lby &
                 (ex == gx + (p-1)) & (fx == ey) &
-                (gx < gy) &
-                (
+                (gx < gy) & (
                     ((ey == fy + 2) & (fy == gy + 1)) |
                     ((ey == gy + 2) & (fy + 1 == gy))
                 )
@@ -22415,8 +21265,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-5DITU-Y",
                 same_sign & lby & lbx &
                 (ey == gy + (p-1)) & (fy == ex) &
-                (gy < gx) &
-                (
+                (gy < gx) & (
                     ((ex == fx + 2) & (fx == gx + 1)) |
                     ((ex == gx + 2) & (fx + 1 == gx))
                 )
@@ -22434,8 +21283,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5EHKO0-X",
                 same_sign & !lby &
-                (ex == gy + p) & (fx == fy + 2) & (gx + 1 == fy) &
-                (
+                (ex == gy + p) & (fx == fy + 2) & (gx + 1 == fy) & (
                     (!lbx & (ex == ey + 1) & (fx + 1 == ey)) |
                     (lbx & (fx == ey) & (fy > gy + 2))
                 )
@@ -22456,8 +21304,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5EHKO0-Y",
                 same_sign & !lbx &
-                (ey == gx + p) & (fy == fx + 2) & (gy + 1 == fx) &
-                (
+                (ey == gx + p) & (fy == fx + 2) & (gy + 1 == fx) & (
                     (!lby & (ey == ex + 1) & (fy + 1 == ex)) |
                     (lby & (fy == ex) & (fx > gx + 2))
                 )
@@ -22479,8 +21326,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5EHKO1-X",
                 diff_sign & !lby &
-                (ex == gy + p) & (fx == fy + 2) & (gx + 1 == fy) &
-                (
+                (ex == gy + p) & (fx == fy + 2) & (gx + 1 == fy) & (
                     (!lbx & (fx == ey)) |
                     (lbx & (ex == ey + 1) & (fx + 1 == ey))
                 )
@@ -22497,8 +21343,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5EHKO1-Y",
                 diff_sign & !lbx &
-                (ey == gx + p) & (fy == fx + 2) & (gy + 1 == fx) &
-                (
+                (ey == gx + p) & (fy == fx + 2) & (gy + 1 == fx) & (
                     (!lby & (fy == ex)) |
                     (lby & (ey == ex + 1) & (fy + 1 == ex))
                 )
@@ -22515,10 +21360,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5IMOP0-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gx + (p-1)) &
-                (gx < gy) &
-                (
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gx + (p-1)) &
+                (gx < gy) & (
                     ((fx == fy + 1) & (fy == gy + 1)) |
                     ((fx == gy + 1) & (fy + 1 == gy))
                 )
@@ -22532,10 +21375,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, fx, gx+2:gy-1), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5IMOP0-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gy + (p-1)) &
-                (gy < gx) &
-                (
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gy + (p-1)) &
+                (gy < gx) & (
                     ((fy == fx + 1) & (fx == gx + 1)) |
                     ((fy == gx + 1) & (fx + 1 == gx))
                 )
@@ -22550,10 +21391,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-5IMOP1-X",
-                same_sign & lbx & lby &
-                (ex == ey) & (ex == gx + (p-1)) &
-                (gx < gy) &
-                (
+                same_sign & lbx & lby & (ex == ey) & (ex == gx + (p-1)) &
+                (gx < gy) & (
                     ((fx == fy + 1) & (fy == gy + 1)) |
                     ((fx == gy + 1) & (fy + 1 == gy))
                 )
@@ -22565,10 +21404,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fx, gx+2:gy), SELBTZRange(~sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-5IMOP1-Y",
-                same_sign & lby & lbx &
-                (ey == ex) & (ey == gy + (p-1)) &
-                (gy < gx) &
-                (
+                same_sign & lby & lbx & (ey == ex) & (ey == gy + (p-1)) &
+                (gy < gx) & (
                     ((fy == fx + 1) & (fx == gx + 1)) |
                     ((fy == gx + 1) & (fx + 1 == gx))
                 )
@@ -22620,8 +21457,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-5CGJ-X",
                 same_sign & !lbx & !lby &
-                (ex == ey + 1) & (ex == fx + 2) & (fx == fy + 1) &
-                (
+                (ex == ey + 1) & (ex == fx + 2) & (fx == fy + 1) & (
                     ((ex == gx + (p-1)) & (fy == gy + 1)) |
                     ((ex == gy + (p-1)) & (gx + 1 == fy))
                 )
@@ -22638,8 +21474,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-5CGJ-Y",
                 same_sign & !lby & !lbx &
-                (ey == ex + 1) & (ey == fy + 2) & (fy == fx + 1) &
-                (
+                (ey == ex + 1) & (ey == fy + 2) & (fy == fx + 1) & (
                     ((ey == gy + (p-1)) & (fx == gx + 1)) |
                     ((ey == gx + (p-1)) & (gy + 1 == fx))
                 )
@@ -22944,8 +21779,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6a-X",
                 (same_sign != lbx) &
                 (gx < fy) &
-                (ex > gy + p) &
-                (
+                (ex > gy + p) & (
                     (!lby & (fx == fy)) |
                     (lby & (fx < fy))
                 )
@@ -22955,8 +21789,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6a-Y",
                 (same_sign != lby) &
                 (gy < fx) &
-                (ey > gx + p) &
-                (
+                (ey > gx + p) & (
                     (!lbx & (fy == fx)) |
                     (lbx & (fy < fx))
                 )
@@ -22984,8 +21817,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6c-X",
                 same_sign & lbx &
                 (gx < fy) &
-                (ex > gy + (p-1)) &
-                (
+                (ex > gy + (p-1)) & (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
                 )
@@ -22995,8 +21827,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6c-Y",
                 same_sign & lby &
                 (gy < fx) &
-                (ey > gx + (p-1)) &
-                (
+                (ey > gx + (p-1)) & (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
                 )
@@ -23024,8 +21855,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6e-X",
                 diff_sign & !lbx &
                 (gx < fy) &
-                (ex > gy + (p+1)) &
-                (
+                (ex > gy + (p+1)) & (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
                 )
@@ -23035,8 +21865,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6e-Y",
                 diff_sign & !lby &
                 (gy < fx) &
-                (ey > gx + (p+1)) &
-                (
+                (ey > gx + (p+1)) & (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
                 )
@@ -23064,8 +21893,7 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 6 - CODIMENSION 1
 
             checker("SELBTZ-TwoSum-6A0-X",
-                same_sign & !lbx & lby &
-                (fx == fy) &
+                same_sign & !lbx & lby & (fx == fy) &
                 (fx > gx + 1) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -23073,8 +21901,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6A0-Y",
-                same_sign & !lby & lbx &
-                (fy == fx) &
+                same_sign & !lby & lbx & (fy == fx) &
                 (fy > gy + 1) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -23083,10 +21910,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6A1-X",
-                same_sign & lbx & !lby &
-                (fx == fy) &
-                (ex > gy + (p-1)) &
-                (
+                same_sign & lbx & !lby & (fx == fy) &
+                (ex > gy + (p-1)) & (
                     ((fx == gx + 1) & (ex == gx + (p-1))) |
                     (fx > gx + 1)
                 )
@@ -23095,10 +21920,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-2):fx-1), SELBTZRange(±, gy:ex-p, gy))
             end
             checker("SELBTZ-TwoSum-6A1-Y",
-                same_sign & lby & !lbx &
-                (fy == fx) &
-                (ey > gx + (p-1)) &
-                (
+                same_sign & lby & !lbx & (fy == fx) &
+                (ey > gx + (p-1)) & (
                     ((fy == gy + 1) & (ey == gy + (p-1))) |
                     (fy > gy + 1)
                 )
@@ -23108,8 +21931,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6A2-X",
-                diff_sign & !lbx & !lby &
-                (fx == fy) &
+                diff_sign & !lbx & !lby & (fx == fy) &
                 (fx > gx + 1) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -23117,8 +21939,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey-1, ey), SELBTZRange(±, gy:ex-(p+2), gy))
             end
             checker("SELBTZ-TwoSum-6A2-Y",
-                diff_sign & !lby & !lbx &
-                (fy == fx) &
+                diff_sign & !lby & !lbx & (fy == fx) &
                 (fy > gy + 1) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -23127,8 +21948,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6A3-X",
-                diff_sign & lbx & lby &
-                (fx == fy) &
+                diff_sign & lbx & lby & (fx == fy) &
                 (fx > gx + 1) &
                 (ex > gy + (p+1))
             ) do lemma
@@ -23136,8 +21956,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, ex-(p-1):fy-1), SELBTZRange(±, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6A3-Y",
-                diff_sign & lby & lbx &
-                (fy == fx) &
+                diff_sign & lby & lbx & (fy == fx) &
                 (fy > gy + 1) &
                 (ey > gx + (p+1))
             ) do lemma
@@ -23146,11 +21965,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6B0-X",
-                (same_sign != lbx) &
-                (ex == gy + p) &
-                (ex > ey + 1) &
-                (gx < fy) &
-                (
+                (same_sign != lbx) & (ex == gy + p) & (ex > ey + 1) &
+                (gx < fy) & (
                     (!lby & (fx == fy)) |
                     (lby & (fx < fy))
                 )
@@ -23158,11 +21974,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6B0-Y",
-                (same_sign != lby) &
-                (ey == gx + p) &
-                (ey > ex + 1) &
-                (gy < fx) &
-                (
+                (same_sign != lby) & (ey == gx + p) & (ey > ex + 1) &
+                (gy < fx) & (
                     (!lbx & (fy == fx)) |
                     (lbx & (fy < fx))
                 )
@@ -23171,18 +21984,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6B1-X",
-                (same_sign != lbx) & !lby &
-                (ex == gy + p) &
-                (ex > ey + 1) &
+                (same_sign != lbx) & !lby & (ex == gy + p) & (ex > ey + 1) &
                 (fx < fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, lbx, ex, ey, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6B1-Y",
-                (same_sign != lby) & !lbx &
-                (ey == gx + p) &
-                (ey > ex + 1) &
+                (same_sign != lby) & !lbx & (ey == gx + p) & (ey > ex + 1) &
                 (fy < fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, lby, ey, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
@@ -23190,8 +21999,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6C-X",
-                same_sign & lbx &
-                (ex == gx + (p-1)) &
+                same_sign & lbx & (ex == gx + (p-1)) &
                 (ex > ey) &
                 (fx + 1 < gy) & (fx > gx) &
                 (ey > gy)
@@ -23201,8 +22009,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fx+1), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6C-Y",
-                same_sign & lby &
-                (ey == gy + (p-1)) &
+                same_sign & lby & (ey == gy + (p-1)) &
                 (ey > ex) &
                 (fy + 1 < gx) & (fy > gy) &
                 (ex > gx)
@@ -23213,11 +22020,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6D0-X",
-                diff_sign & !lbx &
-                (ex == gy + (p+1)) &
-                (ex > ey + 2) &
-                (gx < fy) &
-                (
+                diff_sign & !lbx & (ex == gy + (p+1)) & (ex > ey + 2) &
+                (gx < fy) & (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
                 )
@@ -23225,11 +22029,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6D0-Y",
-                diff_sign & !lby &
-                (ey == gx + (p+1)) &
-                (ey > ex + 2) &
-                (gy < fx) &
-                (
+                diff_sign & !lby & (ey == gx + (p+1)) & (ey > ex + 2) &
+                (gy < fx) & (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
                 )
@@ -23238,18 +22039,14 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6D1-X",
-                diff_sign & !lbx & lby &
-                (ex == gy + (p+1)) &
-                (ex > ey + 2) &
+                diff_sign & !lbx & lby & (ex == gy + (p+1)) & (ex > ey + 2) &
                 (fx < fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, gy+2:fy-1), SELBTZRange(±, gy, gy))
                 add_case!(lemma, SELBTZRange(sx, 1, ex-1, ey, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6D1-Y",
-                diff_sign & !lby & lbx &
-                (ey == gx + (p+1)) &
-                (ey > ex + 2) &
+                diff_sign & !lby & lbx & (ey == gx + (p+1)) & (ey > ex + 2) &
                 (fy < fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 1, ey-1, ex, gx+2:fx-1), SELBTZRange(±, gx, gx))
@@ -23257,13 +22054,10 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6Z0-X",
-                same_sign & lbx &
-                (ex > ey) &
-                (
+                same_sign & lbx & (ex > ey) & (
                     (!lby & (fx < fy)) |
                     (lby & (fx == fy))
-                ) &
-                (
+                ) & (
                     ((ex == gx + (p-1)) & (gx < gy) & (gy < fx)) |
                     ((ex == gy + (p-1)) & (gx < fy) & (gx > gy))
                 )
@@ -23271,13 +22065,10 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ex-(p-3):fy), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-6Z0-Y",
-                same_sign & lby &
-                (ey > ex) &
-                (
+                same_sign & lby & (ey > ex) & (
                     (!lbx & (fy < fx)) |
                     (lbx & (fy == fx))
-                ) &
-                (
+                ) & (
                     ((ey == gy + (p-1)) & (gy < gx) & (gx < fy)) |
                     ((ey == gx + (p-1)) & (gy < fx) & (gy > gx))
                 )
@@ -23286,10 +22077,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6Z1-X",
-                same_sign & lbx & lby &
-                (ex > ey) &
-                (fx < fy) &
-                (
+                same_sign & lbx & lby & (ex > ey) &
+                (fx < fy) & (
                     ((ex == gx + (p-1)) & (gx < gy) & (gy < fx)) |
                     ((ex == gy + (p-1)) & (gx < fy) & (gx > gy))
                 )
@@ -23298,10 +22087,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-6Z1-Y",
-                same_sign & lby & lbx &
-                (ey > ex) &
-                (fy < fx) &
-                (
+                same_sign & lby & lbx & (ey > ex) &
+                (fy < fx) & (
                     ((ey == gy + (p-1)) & (gy < gx) & (gx < fy)) |
                     ((ey == gx + (p-1)) & (gy < fx) & (gy > gx))
                 )
@@ -23313,10 +22100,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 6 - CODIMENSION 2
 
             checker("SELBTZ-TwoSum-6A4-X",
-                same_sign & lbx & !lby &
-                (fx == fy) &
-                (ex > ey) &
-                (
+                same_sign & lbx & !lby & (fx == fy) &
+                (ex > ey) & (
                     ((ex == gx + (p-1)) & (
                         ((fy == gy + 1) & (gx + 1 == gy)) |
                         ((fy > gy + 1) & (gx < gy))
@@ -23331,10 +22116,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey-1:ey, ex-(p-3):fy-1), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-6A4-Y",
-                same_sign & lby & !lbx &
-                (fy == fx) &
-                (ey > ex) &
-                (
+                same_sign & lby & !lbx & (fy == fx) &
+                (ey > ex) & (
                     ((ey == gy + (p-1)) & (
                         ((fx == gx + 1) & (gy + 1 == gx)) |
                         ((fx > gx + 1) & (gy < gx))
@@ -23350,10 +22133,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6F0-X",
-                same_sign & !lbx &
-                (ex > ey + 2) &
-                (ex > gy + p) &
-                (
+                same_sign & !lbx & (ex > ey + 2) &
+                (ex > gy + p) & (
                     (!lby & (fx + 1 == ey) & (gx == fy + 1)) |
                     (lby & (fx == fy) & (fx == gx))
                 )
@@ -23364,10 +22145,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey+1, ey+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6F0-Y",
-                same_sign & !lby &
-                (ey > ex + 2) &
-                (ey > gx + p) &
-                (
+                same_sign & !lby & (ey > ex + 2) &
+                (ey > gx + p) & (
                     (!lbx & (fy + 1 == ex) & (gy == fx + 1)) |
                     (lbx & (fy == fx) & (fy == gy))
                 )
@@ -23379,9 +22158,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6F1-X",
-                diff_sign & lbx &
-                (ex > gy + (p+1)) &
-                (
+                diff_sign & lbx & (ex > gy + (p+1)) & (
                     (!lby & (gx == fy + 1) & (
                         (fx + 1 == ey) |
                         ((fx == fy) & (gx + 1 == ey))
@@ -23395,9 +22172,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(~sy, gy:ex-(p+1), gy))
             end
             checker("SELBTZ-TwoSum-6F1-Y",
-                diff_sign & lby &
-                (ey > gx + (p+1)) &
-                (
+                diff_sign & lby & (ey > gx + (p+1)) & (
                     (!lbx & (gy == fx + 1) & (
                         (fy + 1 == ex) |
                         ((fy == fx) & (gy + 1 == ex))
@@ -23412,10 +22187,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6H-X",
-                same_sign & lbx & lby &
-                (ex == ey) &
-                (fx + 1 < fy) & (fx > gx) & (fx > gy) &
-                (
+                same_sign & lbx & lby & (ex == ey) &
+                (fx + 1 < fy) & (fx > gx) & (fx > gy) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ey == gy + (p-1)) & (gy < gx))
                 )
@@ -23425,10 +22198,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, fy+1, ex-(p-3):fx), SELBTZRange(±, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-6H-Y",
-                same_sign & lby & lbx &
-                (ey == ex) &
-                (fy + 1 < fx) & (fy > gy) & (fy > gx) &
-                (
+                same_sign & lby & lbx & (ey == ex) &
+                (fy + 1 < fx) & (fy > gy) & (fy > gx) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ex == gx + (p-1)) & (gx < gy))
                 )
@@ -23559,10 +22330,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6AK0-X",
-                same_sign & !lbx & lby &
-                (fx == fy) &
-                (ex > ey + 2) &
-                (
+                same_sign & !lbx & lby & (fx == fy) &
+                (ex > ey + 2) & (
                     ((fx == gx + 1) & (gx == gy + 1) & (ex == gy + p)) |
                     ((fx > gx + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -23571,10 +22340,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey:ey+1, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AK0-Y",
-                same_sign & !lby & lbx &
-                (fy == fx) &
-                (ey > ex + 2) &
-                (
+                same_sign & !lby & lbx & (fy == fx) &
+                (ey > ex + 2) & (
                     ((fy == gy + 1) & (gy == gx + 1) & (ey == gx + p)) |
                     ((fy > gy + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -23584,10 +22351,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6AK1-X",
-                diff_sign & lbx & lby &
-                (fx == fy) &
-                (ex > ey + 2) &
-                (
+                diff_sign & lbx & lby & (fx == fy) &
+                (ex > ey + 2) & (
                     ((fx == gx + 1) & (gx == gy + 1) & (ex == gy + p)) |
                     ((fx > gx + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -23596,10 +22361,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey:ey+1, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AK1-Y",
-                diff_sign & lby & lbx &
-                (fy == fx) &
-                (ey > ex + 2) &
-                (
+                diff_sign & lby & lbx & (fy == fx) &
+                (ey > ex + 2) & (
                     ((fy == gy + 1) & (gy == gx + 1) & (ey == gx + p)) |
                     ((fy > gy + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -23609,8 +22372,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BE0-X",
-                (same_sign != lbx) & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                (same_sign != lbx) & !lby & (ex == ey + 1) & (ex == gy + p) &
                 (ex > fy + 3) &
                 (fx < fy) & (gx < fy)
             ) do lemma
@@ -23618,8 +22380,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ~lbx, ex, ex-2, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BE0-Y",
-                (same_sign != lby) & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                (same_sign != lby) & !lbx & (ey == ex + 1) & (ey == gx + p) &
                 (ey > fx + 3) &
                 (fy < fx) & (gy < fx)
             ) do lemma
@@ -23628,8 +22389,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BE1-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 < fy) &
                 (((fx == gx) & (gx == gy + 1)) | (fx > gx))
             ) do lemma
@@ -23638,8 +22398,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BE1-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 < fx) &
                 (((fy == gy) & (gy == gx + 1)) | (fy > gy))
             ) do lemma
@@ -23694,8 +22453,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & !lby &
                 (ex == gx + (p-1)) &
                 (ex > ey) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((fx + 1 == gx) & (gx + 1 == gy)) |
                     ((fx + 1 == gy) & (fx > gx))
                 )
@@ -23708,8 +22466,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) &
                 (ey > ex) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((fy + 1 == gy) & (gy + 1 == gx)) |
                     ((fy + 1 == gx) & (fy > gy))
                 )
@@ -23744,8 +22501,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lbx & lby &
                 (ex == gx + (p-1)) &
                 (ex > ey) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((fx + 1 == gx) & (gx + 1 == gy)) |
                     ((fx + 1 == gy) & (fx > gx))
                 )
@@ -23759,8 +22515,7 @@ function check_selbtz_two_sum_lemmas(
                 same_sign & lby & lbx &
                 (ey == gy + (p-1)) &
                 (ey > ex) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((fy + 1 == gy) & (gy + 1 == gx)) |
                     ((fy + 1 == gx) & (fy > gy))
                 )
@@ -23812,23 +22567,20 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6DE0-X",
-                diff_sign & !lbx & !lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) &
+                diff_sign & !lbx & !lby & (ex == ey + 2) & (ex == gy + (p+1)) &
                 (fx < fy) & (gx < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, ex-3, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DE0-Y",
-                diff_sign & !lby & !lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) &
+                diff_sign & !lby & !lbx & (ey == ex + 2) & (ey == gx + (p+1)) &
                 (fy < fx) & (gy < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, ey-3, gx+2:fx), SELBTZRange(±, gx, gx))
             end
 
             checker("SELBTZ-TwoSum-6DE1-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == ey + 2) & (ex == gy + (p+1)) &
                 (fx + 1 < fy) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
@@ -23836,8 +22588,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DE1-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == ex + 2) & (ey == gx + (p+1)) &
                 (fy + 1 < fx) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:fx-1), SELBTZRange(±, gx, gx))
@@ -23846,11 +22597,9 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6EM-X",
-                lbx &
-                (ey == gy + (p-1)) &
+                lbx & (ey == gy + (p-1)) &
                 (fx + 1 < fy) & (fx > gx) &
-                (gx > gy) &
-                (
+                (gx > gy) & (
                     (same_sign & !lby & (ex + 1 == ey)) |
                     (diff_sign & lby & (ex == ey + 1))
                 )
@@ -23859,11 +22608,9 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ey+1, fy, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6EM-Y",
-                lby &
-                (ex == gx + (p-1)) &
+                lby & (ex == gx + (p-1)) &
                 (fy + 1 < fx) & (fy > gy) &
-                (gy > gx) &
-                (
+                (gy > gx) & (
                     (same_sign & !lbx & (ey + 1 == ex)) |
                     (diff_sign & lbx & (ey == ex + 1))
                 )
@@ -23953,10 +22700,8 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 6 - CODIMENSION 3
 
             checker("SELBTZ-TwoSum-6A5-X",
-                same_sign & lbx & !lby &
-                (fx == fy) &
-                (ex > ey) &
-                (
+                same_sign & lbx & !lby & (fx == fy) &
+                (ex > ey) & (
                     ((ex == gx + (p-1)) & (fy == gy + 1) & (gx + 1 < gy)) |
                     ((ex == gy + (p-1)) & (fx == gx + 1) & (gx > gy + 1))
                 )
@@ -23967,10 +22712,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy-1), SELBTZRange(~sy, ex-(p-1), ex-(p-1)))
             end
             checker("SELBTZ-TwoSum-6A5-Y",
-                same_sign & lby & !lbx &
-                (fy == fx) &
-                (ey > ex) &
-                (
+                same_sign & lby & !lbx & (fy == fx) &
+                (ey > ex) & (
                     ((ey == gy + (p-1)) & (fx == gx + 1) & (gy + 1 < gx)) |
                     ((ey == gx + (p-1)) & (fy == gy + 1) & (gy > gx + 1))
                 )
@@ -23984,8 +22727,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6AH0",
                 same_sign & (lbx == lby) &
                 (ex == ey) & (fx == fy) &
-                (fx > gy) & (gx < fy) &
-                (
+                (fx > gy) & (gx < fy) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ey == gy + (p-1)) & (gy < gx))
                 )
@@ -23994,14 +22736,11 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6PR-X",
-                same_sign & !lbx &
-                (ex == ey + 1) &
-                (fx > gx + 2) & (fx > gy + 2) &
-                (
+                same_sign & !lbx & (ex == ey + 1) &
+                (fx > gx + 2) & (fx > gy + 2) & (
                     (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
-                ) &
-                (
+                ) & (
                     ((ex == gx + (p-1)) & (gx < gy)) |
                     ((ex == gy + (p-1)) & (gx > gy))
                 )
@@ -24014,14 +22753,11 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ex-(p-2):fy-1, ex-(p-1)), pos_zero)
             end
             checker("SELBTZ-TwoSum-6PR-Y",
-                same_sign & !lby &
-                (ey == ex + 1) &
-                (fy > gy + 2) & (fy > gx + 2) &
-                (
+                same_sign & !lby & (ey == ex + 1) &
+                (fy > gy + 2) & (fy > gx + 2) & (
                     (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
-                ) &
-                (
+                ) & (
                     ((ey == gy + (p-1)) & (gy < gx)) |
                     ((ey == gx + (p-1)) & (gy > gx))
                 )
@@ -24054,15 +22790,13 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6ADE-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == ey + 2) & (ex == gy + (p+1)) &
                 (fx == fy) & (fx > gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fx+1, gy+2:fx), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6ADE-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == ex + 2) & (ey == gx + (p+1)) &
                 (fy == fx) & (fy > gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fy+1, gx+2:fy), SELBTZRange(±, gx, gx))
@@ -24109,8 +22843,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6AEK-X",
-                (fx == fy) & (ey == gy + (p-1)) &
-                (
+                (fx == fy) & (ey == gy + (p-1)) & (
                     (diff_sign & !lbx & !lby & (ex == ey + 2) & (fx > gx + 1)) |
                     (same_sign & (lbx != lby) & (ex == ey) & (
                         ((fx == gx + 1) & (gx == gy + 1)) |
@@ -24122,8 +22855,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ±, ey+1, ey-1, gy+2:fx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6AEK-Y",
-                (fy == fx) & (ex == gx + (p-1)) &
-                (
+                (fy == fx) & (ex == gx + (p-1)) & (
                     (diff_sign & !lby & !lbx & (ey == ex + 2) & (fy > gy + 1)) |
                     (same_sign & (lby != lbx) & (ey == ex) & (
                         ((fy == gy + 1) & (gy == gx + 1)) |
@@ -24183,8 +22915,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6AKM-X",
                 (same_sign != lbx) & lby &
-                (ex == ey + 2) & (fx == fy) &
-                (
+                (ex == ey + 2) & (fx == fy) & (
                     ((fx == gx + 1) & (gx == gy + 1) & (ex == gy + p)) |
                     ((fx > gx + 1) & ((ex == gy + p) | (ex == gy + (p+1))))
                 )
@@ -24194,8 +22925,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6AKM-Y",
                 (same_sign != lby) & lbx &
-                (ey == ex + 2) & (fy == fx) &
-                (
+                (ey == ex + 2) & (fy == fx) & (
                     ((fy == gy + 1) & (gy == gx + 1) & (ey == gx + p)) |
                     ((fy > gy + 1) & ((ey == gx + p) | (ey == gx + (p+1))))
                 )
@@ -24205,8 +22935,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEG0-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 == fy) & (fx > gx + 1) &
                 (gx > gy + 1)
             ) do lemma
@@ -24218,8 +22947,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx-1, gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEG0-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 == fx) & (fy > gy + 1) &
                 (gy > gx + 1)
             ) do lemma
@@ -24232,8 +22960,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEG1-X",
-                diff_sign & lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                diff_sign & lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 == fy) & (fx > gx + 1)
             ) do lemma
                 for fs = gx+1:fx
@@ -24245,8 +22972,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, gx, gy+2:gx-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEG1-Y",
-                diff_sign & lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                diff_sign & lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 == fx) & (fy > gy + 1)
             ) do lemma
                 for fs = gy+1:fy
@@ -24259,8 +22985,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEL0-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == gx) & (fx + 1 < fy) &
                 (gx > gy + 1)
             ) do lemma
@@ -24270,8 +22995,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEL0-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == gy) & (fy + 1 < fx) &
                 (gy > gx + 1)
             ) do lemma
@@ -24282,8 +23006,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEL1-X",
-                diff_sign & lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                diff_sign & lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 == gx) & (gx + 1 < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy-1, gy+2:gx-1), SELBTZRange(sy, gy, gy))
@@ -24291,8 +23014,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:fy), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEL1-Y",
-                diff_sign & lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                diff_sign & lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 == gy) & (gy + 1 < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey, fx-1, gx+2:gy-1), SELBTZRange(sx, gx, gx))
@@ -24339,10 +23061,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEP0-X",
-                same_sign & !lbx &
-                (ex == ey + 1) & (ex == gy + p) &
-                (gx + 2 < fy) &
-                (
+                same_sign & !lbx & (ex == ey + 1) & (ex == gy + p) &
+                (gx + 2 < fy) & (
                     (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -24357,10 +23077,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEP0-Y",
-                same_sign & !lby &
-                (ey == ex + 1) & (ey == gx + p) &
-                (gy + 2 < fx) &
-                (
+                same_sign & !lby & (ey == ex + 1) & (ey == gx + p) &
+                (gy + 2 < fx) & (
                     (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -24376,10 +23094,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEP1-X",
-                diff_sign & lbx &
-                (ex == ey + 1) & (ex == gy + p) &
-                (gx + 2 < fy) &
-                (
+                diff_sign & lbx & (ex == ey + 1) & (ex == gy + p) &
+                (gx + 2 < fy) & (
                     (!lby & (fx + 1 == ey) & (fx == fy + 1)) |
                     (lby & (fx == fy))
                 )
@@ -24392,10 +23108,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ey, gy+1:fx-1, gy), pos_zero)
             end
             checker("SELBTZ-TwoSum-6BEP1-Y",
-                diff_sign & lby &
-                (ey == ex + 1) & (ey == gx + p) &
-                (gy + 2 < fx) &
-                (
+                diff_sign & lby & (ey == ex + 1) & (ey == gx + p) &
+                (gy + 2 < fx) & (
                     (!lbx & (fy + 1 == ex) & (fy == fx + 1)) |
                     (lbx & (fy == fx))
                 )
@@ -24409,8 +23123,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BGI-X",
-                diff_sign & lbx & !lby &
-                (ex == gy + p) &
+                diff_sign & lbx & !lby & (ex == gy + p) &
                 (fx + 1 == fy) & (fy == gx) &
                 (ex > ey + 1)
             ) do lemma
@@ -24419,8 +23132,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, fy+1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BGI-Y",
-                diff_sign & lby & !lbx &
-                (ey == gx + p) &
+                diff_sign & lby & !lbx & (ey == gx + p) &
                 (fy + 1 == fx) & (fx == gy) &
                 (ey > ex + 1)
             ) do lemma
@@ -24491,8 +23203,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CHJ3-X",
                 same_sign & lbx & !lby &
                 (ex == gx + (p-1)) & (ex == ey) &
-                (fy > gy) &
-                (
+                (fy > gy) & (
                     ((fx + 1 == gx) & (gx + 1 == gy)) |
                     ((fx + 1 == gy) & (fx > gx))
                 )
@@ -24504,8 +23215,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CHJ3-Y",
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) & (ey == ex) &
-                (fx > gx) &
-                (
+                (fx > gx) & (
                     ((fy + 1 == gy) & (gy + 1 == gx)) |
                     ((fy + 1 == gx) & (fy > gy))
                 )
@@ -24569,8 +23279,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CJQ0-X",
                 same_sign & lbx &
                 (ex == gx + (p-1)) & (fx == gy) &
-                (gx < fy) &
-                (
+                (gx < fy) & (
                     (!lby & (fy == gy) & (ex > ey)) |
                     (lby & (fx + 1 == ey) & (fy + 1 == gy))
                 )
@@ -24582,8 +23291,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CJQ0-Y",
                 same_sign & lby &
                 (ey == gy + (p-1)) & (fy == gx) &
-                (gy < fx) &
-                (
+                (gy < fx) & (
                     (!lbx & (fx == gx) & (ey > ex)) |
                     (lbx & (fy + 1 == ex) & (fx + 1 == gx))
                 )
@@ -24596,8 +23304,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CJQ1-X",
                 same_sign & lbx & !lby &
                 (ex == gx + (p-1)) & (fy == gy) &
-                (ex > ey) &
-                (
+                (ex > ey) & (
                     ((fx + 1 == gx) & (gx + 1 == gy)) |
                     ((fx + 1 == gy) & (fx > gx))
                 )
@@ -24609,8 +23316,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CJQ1-Y",
                 same_sign & lby & !lbx &
                 (ey == gy + (p-1)) & (fx == gx) &
-                (ey > ex) &
-                (
+                (ey > ex) & (
                     ((fy + 1 == gy) & (gy + 1 == gx)) |
                     ((fy + 1 == gx) & (fy > gy))
                 )
@@ -24623,8 +23329,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CJQ2-X",
                 same_sign & lbx & lby &
                 (ex == gx + (p-1)) & (fy + 1 == gy) &
-                (ex > ey) &
-                (
+                (ex > ey) & (
                     ((fx + 1 == gx) & (gx + 1 == gy)) |
                     ((fx + 1 == gy) & (fx > gx))
                 )
@@ -24636,8 +23341,7 @@ function check_selbtz_two_sum_lemmas(
             checker("SELBTZ-TwoSum-6CJQ2-Y",
                 same_sign & lby & lbx &
                 (ey == gy + (p-1)) & (fx + 1 == gx) &
-                (ey > ex) &
-                (
+                (ey > ex) & (
                     ((fy + 1 == gy) & (gy + 1 == gx)) |
                     ((fy + 1 == gx) & (fy > gy))
                 )
@@ -24648,8 +23352,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6DEG-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == ey + 2) & (ex == gy + (p+1)) &
                 (fx + 1 == fy) & (fx > gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fx-1), SELBTZRange(±, gy, gy))
@@ -24657,8 +23360,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DEG-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == ex + 2) & (ey == gx + (p+1)) &
                 (fy + 1 == fx) & (fy > gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:fy-1), SELBTZRange(±, gx, gx))
@@ -24667,8 +23369,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6DEL-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == ey + 2) & (ex == gy + (p+1)) &
                 (fx == gx) & (fx + 1 < fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), SELBTZRange(±, gy, gy))
@@ -24677,8 +23378,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:fy-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DEL-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == ex + 2) & (ey == gx + (p+1)) &
                 (fy == gy) & (fy + 1 < fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx+1, fx+1), SELBTZRange(±, gx, gx))
@@ -24709,8 +23409,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6GIK0-X",
-                same_sign & lbx & !lby &
-                (ex == gy + (p-1)) &
+                same_sign & lbx & !lby & (ex == gy + (p-1)) &
                 (fx + 1 == fy) & (fy == gx) &
                 (ex > ey) &
                 (gx > gy)
@@ -24720,8 +23419,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, ey), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6GIK0-Y",
-                same_sign & lby & !lbx &
-                (ey == gx + (p-1)) &
+                same_sign & lby & !lbx & (ey == gx + (p-1)) &
                 (fy + 1 == fx) & (fx == gy) &
                 (ey > ex) &
                 (gy > gx)
@@ -24732,8 +23430,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6GIK1-X",
-                same_sign & lbx & lby &
-                (ex == gy + (p-1)) &
+                same_sign & lbx & lby & (ex == gy + (p-1)) &
                 (fx + 1 == fy) & (fy == gx) &
                 (ex > ey)
             ) do lemma
@@ -24742,8 +23439,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex+1, ey, fy+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6GIK1-Y",
-                same_sign & lby & lbx &
-                (ey == gx + (p-1)) &
+                same_sign & lby & lbx & (ey == gx + (p-1)) &
                 (fy + 1 == fx) & (fx == gy) &
                 (ey > ex)
             ) do lemma
@@ -24753,10 +23449,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6IKP-X",
-                (same_sign != lbx) & lby &
-                (gx == fy) &
-                ((ex == gy + p) | (ex == gy + (p+1))) &
-                (
+                (same_sign != lbx) & lby & (gx == fy) &
+                ((ex == gy + p) | (ex == gy + (p+1))) & (
                     (diff_sign & lbx & (fx + 1 == gx) & (ex > ey + 1)) |
                     (same_sign & !lbx & (ex == ey + 2) & (fx == fy))
                 )
@@ -24766,10 +23460,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ey, ey+1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6IKP-Y",
-                (same_sign != lby) & lbx &
-                (gy == fx) &
-                ((ey == gx + p) | (ey == gx + (p+1))) &
-                (
+                (same_sign != lby) & lbx & (gy == fx) &
+                ((ey == gx + p) | (ey == gx + (p+1))) & (
                     (diff_sign & lby & (fy + 1 == gy) & (ey > ex + 1)) |
                     (same_sign & !lby & (ey == ex + 2) & (fy == fx))
                 )
@@ -24783,8 +23475,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6AH1",
                 same_sign & (lbx != lby) &
-                (ex == ey) & (fx == fy) &
-                (
+                (ex == ey) & (fx == fy) & (
                     ((ey == gy + (p-1)) & (
                         (lbx & !lby & (fx + 1 == gx)) |
                         (!lbx & lby & (fx == gx))
@@ -24802,8 +23493,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6AH2",
                 same_sign & (lbx != lby) &
-                (ex == ey) & (fx == fy) &
-                (
+                (ex == ey) & (fx == fy) & (
                     ((ey == gy + (p-1)) & (fx == gx + 1) & (gx > gy + 1)) |
                     ((ex == gx + (p-1)) & (fy == gy + 1) & (gy > gx + 1))
                 )
@@ -24816,8 +23506,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6AR-X",
                 same_sign & !lbx & lby &
-                (ex == ey + 1) & (fx == fy) &
-                (
+                (ex == ey + 1) & (fx == fy) & (
                     ((ex == gx + (p-1)) & (gx < gy) & (fx == gy + 1)) |
                     ((ex == gy + (p-1)) & (gx > gy) & (fx == gx + 1))
                 )
@@ -24833,8 +23522,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6AR-Y",
                 same_sign & !lby & lbx &
-                (ey == ex + 1) & (fy == fx) &
-                (
+                (ey == ex + 1) & (fy == fx) & (
                     ((ey == gy + (p-1)) & (gy < gx) & (fy == gx + 1)) |
                     ((ey == gx + (p-1)) & (gy > gx) & (fy == gy + 1))
                 )
@@ -24850,8 +23538,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6ABEF0-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == fy) & (fx == gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy, gy))
@@ -24867,8 +23554,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-6ABEF0-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == fx) & (fy == gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx, gx))
@@ -24885,8 +23571,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6ABEF1-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == fy) & (fx == gx + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(±, gy, gy))
@@ -24902,8 +23587,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-6ABEF1-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == fx) & (fy == gy + 2)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(±, gx, gx))
@@ -24920,8 +23604,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6ABEF2-X",
-                diff_sign & lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                diff_sign & lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == fy) & (fx == gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
@@ -24934,8 +23617,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-6ABEF2-Y",
-                diff_sign & lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                diff_sign & lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == fx) & (fy == gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx, gx))
@@ -24949,8 +23631,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6ABEI-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == fy) & (fx == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex+1, ex+1), SELBTZRange(~sy, gy, gy))
@@ -24963,8 +23644,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-6ABEI-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == fx) & (fy == gy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey+1, ey+1), SELBTZRange(~sx, gx, gx))
@@ -25091,8 +23771,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BCEG-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 == fy) & (gx == gy + 1)
             ) do lemma
                 for fs = gx:fy-1
@@ -25103,8 +23782,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-6BCEG-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 == fx) & (gy == gx + 1)
             ) do lemma
                 for fs = gy:fx-1
@@ -25116,8 +23794,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEFG0-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == gx + 1) & (fx + 1 == fy) &
                 (gx > gy + 1)
             ) do lemma
@@ -25129,8 +23806,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, gx:gx+2, gy+2:gx-1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEFG0-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == gy + 1) & (fy + 1 == fx) &
                 (gy > gx + 1)
             ) do lemma
@@ -25143,8 +23819,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEFG1-X",
-                same_sign & !lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                same_sign & !lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx == gx) & (fx + 1 == fy) &
                 (gx > gy + 1)
             ) do lemma
@@ -25154,8 +23829,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, fy, fx), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEFG1-Y",
-                same_sign & !lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                same_sign & !lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy == gy) & (fy + 1 == fx) &
                 (gy > gx + 1)
             ) do lemma
@@ -25166,8 +23840,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEGI0-X",
-                diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                diff_sign & lbx & !lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 == fy) & (gx == fy) &
                 (ey > fy + 2)
             ) do lemma
@@ -25176,8 +23849,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ey-1, gy+2:fy-1), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEGI0-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                diff_sign & lby & !lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 == fx) & (gy == fx) &
                 (ex > fx + 2)
             ) do lemma
@@ -25187,8 +23859,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEGI1-X",
-                diff_sign & lbx & lby &
-                (ex == ey + 1) & (ex == gy + p) &
+                diff_sign & lbx & lby & (ex == ey + 1) & (ex == gy + p) &
                 (fx + 1 == fy) & (gx == fy)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, ex, ex), SELBTZRange(~sy, gy, gy))
@@ -25199,8 +23870,7 @@ function check_selbtz_two_sum_lemmas(
                 end
             end
             checker("SELBTZ-TwoSum-6BEGI1-Y",
-                diff_sign & lby & lbx &
-                (ey == ex + 1) & (ey == gx + p) &
+                diff_sign & lby & lbx & (ey == ex + 1) & (ey == gx + p) &
                 (fy + 1 == fx) & (gy == fx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, ey, ey), SELBTZRange(~sx, gx, gx))
@@ -25254,10 +23924,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEOS0-X",
-                same_sign & !lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
-                (gx + 4 < ey) &
-                (
+                same_sign & !lbx & !lby & (ex == ey + 1) & (ex == gy + p) &
+                (gx + 4 < ey) & (
                     ((fx + 3 == ey) & (ey == fy + 2)) |
                     ((fx + 2 == ey) & (ey == fy + 3))
                 )
@@ -25267,10 +23935,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 1, ex, ex-2, gy+2:ex-5), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEOS0-Y",
-                same_sign & !lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
-                (gy + 4 < ex) &
-                (
+                same_sign & !lby & !lbx & (ey == ex + 1) & (ey == gx + p) &
+                (gy + 4 < ex) & (
                     ((fy + 3 == ex) & (ex == fx + 2)) |
                     ((fy + 2 == ex) & (ex == fx + 3))
                 )
@@ -25281,10 +23947,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEOS1-X",
-                diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
-                (gx + 4 < ey) &
-                (
+                diff_sign & lbx & !lby & (ex == ey + 1) & (ex == gy + p) &
+                (gx + 4 < ey) & (
                     ((fx + 3 == ey) & (ey == fy + 2)) |
                     ((fx + 2 == ey) & (ey == fy + 3))
                 )
@@ -25294,10 +23958,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEOS1-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
-                (gy + 4 < ex) &
-                (
+                diff_sign & lby & !lbx & (ey == ex + 1) & (ey == gx + p) &
+                (gy + 4 < ex) & (
                     ((fy + 3 == ex) & (ex == fx + 2)) |
                     ((fy + 2 == ex) & (ex == fx + 3))
                 )
@@ -25350,8 +24012,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6DEFG-X",
-                diff_sign & !lbx & lby &
-                (ex == ey + 2) & (ex == gy + (p+1)) &
+                diff_sign & !lbx & lby & (ex == ey + 2) & (ex == gy + (p+1)) &
                 (fx + 1 == fy) & (fx == gx + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy, gy+2:gx-1), SELBTZRange(±, gy, gy))
@@ -25360,8 +24021,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex-1, fy+1, fy+1), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6DEFG-Y",
-                diff_sign & !lby & lbx &
-                (ey == ex + 2) & (ey == gx + (p+1)) &
+                diff_sign & !lby & lbx & (ey == ex + 2) & (ey == gx + (p+1)) &
                 (fy + 1 == fx) & (fy == gy + 1)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sy, 0, ey-1, fx, gx+2:gy-1), SELBTZRange(±, gx, gx))
@@ -25390,9 +24050,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6FKLP-X",
-                same_sign &
-                (gx > gy) &
-                (
+                same_sign & (gx > gy) & (
                     (lbx & lby & (ex == gy + (p-1)) & (fx == gx + 3) & (fx == ey) & (gx + 1 == fy)) |
                     ((lbx != lby) & (fx == gx + 2) & (fx == fy) & (
                         (!lbx & lby & (ex == ey + 1) & (ex == gy + (p-1))) |
@@ -25411,9 +24069,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, gy+p, fx-1, gy+2:gx), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6FKLP-Y",
-                same_sign &
-                (gy > gx) &
-                (
+                same_sign & (gy > gx) & (
                     (lby & lbx & (ey == gx + (p-1)) & (fy == gy + 3) & (fy == ex) & (gy + 1 == fx)) |
                     ((lby != lbx) & (fy == gy + 2) & (fy == fx) & (
                         (!lby & lbx & (ey == ex + 1) & (ey == gx + (p-1))) |
@@ -25433,9 +24089,7 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEFLP-X",
-                diff_sign & lbx &
-                (ex == ey + 1) & (ex == gy + p) &
-                (
+                diff_sign & lbx & (ex == ey + 1) & (ex == gy + p) & (
                     (!lby & (ex == fx + 3) & (fx == fy) & (fx == gx + 1)) |
                     (lby & (
                         ((fx + 1 == fy) & (fx == gx + 1)) |
@@ -25452,9 +24106,7 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, fy, gy+2:gx-1), SELBTZRange(~sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEFLP-Y",
-                diff_sign & lby &
-                (ey == ex + 1) & (ey == gx + p) &
-                (
+                diff_sign & lby & (ey == ex + 1) & (ey == gx + p) & (
                     (!lbx & (ey == fy + 3) & (fy == fx) & (fy == gy + 1)) |
                     (lbx & (
                         ((fy + 1 == fx) & (fy == gy + 1)) |
@@ -25473,8 +24125,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6EFLMP-X",
                 diff_sign &
-                (gx + 1 == fy) & (ey == gy + (p-1)) &
-                (
+                (gx + 1 == fy) & (ey == gy + (p-1)) & (
                     (!lbx & lby & (ex == ey + 2) & (fx == gx)) |
                     (lbx & !lby & (ex == ey + 1) & (fx + 1 == gx) & (ex == fy + 3))
                 )
@@ -25486,8 +24137,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6EFLMP-Y",
                 diff_sign &
-                (gy + 1 == fx) & (ex == gx + (p-1)) &
-                (
+                (gy + 1 == fx) & (ex == gx + (p-1)) & (
                     (!lby & lbx & (ey == ex + 2) & (fy == gy)) |
                     (lby & !lbx & (ey == ex + 1) & (fy + 1 == gy) & (ey == fx + 3))
                 )
@@ -25501,16 +24151,14 @@ function check_selbtz_two_sum_lemmas(
             ########################################### FAMILY 6 - CODIMENSION 5
 
             checker("SELBTZ-TwoSum-6ACIV-X",
-                same_sign & !lbx & !lby &
-                (ex == gx + (p-1)) & (ex + 1 == ey) &
+                same_sign & !lbx & !lby & (ex == gx + (p-1)) & (ex + 1 == ey) &
                 (ey == gy) & (ey == fy + p) &
                 (fx == gx)
             ) do lemma
                 add_case!(lemma, SELBTZRange(sx, 1, ex+1, ex-1, ex), SELBTZRange(sy, gx, gx))
             end
             checker("SELBTZ-TwoSum-6ACIV-Y",
-                same_sign & !lby & !lbx &
-                (ey == gy + (p-1)) & (ey + 1 == ex) &
+                same_sign & !lby & !lbx & (ey == gy + (p-1)) & (ey + 1 == ex) &
                 (ex == gx) & (ex == fx + p) &
                 (fy == gy)
             ) do lemma
@@ -25519,8 +24167,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6AMOT",
                 same_sign & !lbx & !lby &
-                (fx == fy) &
-                (
+                (fx == fy) & (
                     ((ex == ey + 1) & (ex == fx + 3) & (ex == gy + p) & (fx == gx + 1)) |
                     ((ey == ex + 1) & (ey == fy + 3) & (ey == gx + p) & (fy == gy + 1))
                 )
@@ -25548,8 +24195,7 @@ function check_selbtz_two_sum_lemmas(
 
             checker("SELBTZ-TwoSum-6GMOT-X",
                 same_sign & !lbx & !lby &
-                (fx + 1 == fy) &
-                (
+                (fx + 1 == fy) & (
                     ((ex == ey + 1) & (ex == fy + 3) & (ex == gy + p) & (fx == gx + 1)) |
                     ((ex + 1 == ey) & (ey == fy + 3) & (gx + p == ey) & (fx == gy + 1))
                 )
@@ -25561,8 +24207,7 @@ function check_selbtz_two_sum_lemmas(
             end
             checker("SELBTZ-TwoSum-6GMOT-Y",
                 same_sign & !lby & !lbx &
-                (fy + 1 == fx) &
-                (
+                (fy + 1 == fx) & (
                     ((ey == ex + 1) & (ey == fx + 3) & (ey == gx + p) & (fy == gy + 1)) |
                     ((ey + 1 == ex) & (ex == fx + 3) & (gy + p == ex) & (fy == gx + 1))
                 )
@@ -25618,10 +24263,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEIOS-X",
-                diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
-                (gx == fy) &
-                (
+                diff_sign & lbx & !lby & (ex == ey + 1) & (ex == gy + p) &
+                (gx == fy) & (
                     ((fx + 3 == ey) & (ey == fy + 2)) |
                     ((fx + 2 == ey) & (ey == fy + 3))
                 )
@@ -25631,10 +24274,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(sy, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEIOS-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
-                (gy == fx) &
-                (
+                diff_sign & lby & !lbx & (ey == ex + 1) & (ey == gx + p) &
+                (gy == fx) & (
                     ((fy + 3 == ex) & (ex == fx + 2)) |
                     ((fy + 2 == ex) & (ex == fx + 3))
                 )
@@ -25645,10 +24286,8 @@ function check_selbtz_two_sum_lemmas(
             end
 
             checker("SELBTZ-TwoSum-6BEOSU-X",
-                diff_sign & lbx & !lby &
-                (ex == ey + 1) & (ex == gy + p) &
-                (gx + 4 == ey) &
-                (
+                diff_sign & lbx & !lby & (ex == ey + 1) & (ex == gy + p) &
+                (gx + 4 == ey) & (
                     ((fx + 3 == ey) & (ey == fy + 2)) |
                     ((fx + 2 == ey) & (ey == fy + 3))
                 )
@@ -25659,10 +24298,8 @@ function check_selbtz_two_sum_lemmas(
                 add_case!(lemma, SELBTZRange(sx, 0, ex, ex-2, ex-2), SELBTZRange(±, gy, gy))
             end
             checker("SELBTZ-TwoSum-6BEOSU-Y",
-                diff_sign & lby & !lbx &
-                (ey == ex + 1) & (ey == gx + p) &
-                (gy + 4 == ex) &
-                (
+                diff_sign & lby & !lbx & (ey == ex + 1) & (ey == gx + p) &
+                (gy + 4 == ex) & (
                     ((fy + 3 == ex) & (ex == fx + 2)) |
                     ((fy + 2 == ex) & (ex == fx + 3))
                 )
